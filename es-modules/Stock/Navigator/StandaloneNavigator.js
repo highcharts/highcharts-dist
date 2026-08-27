@@ -15,7 +15,7 @@ import Navigator from './Navigator.js';
 import G from '../../Core/Globals.js';
 import Axis from '../../Core/Axis/Axis.js';
 import standaloneNavigatorDefaults from './StandaloneNavigatorDefaults.js';
-import { addEvent, fireEvent, merge, pick } from '../../Shared/Utilities.js';
+import { addEvent, fireEvent, merge } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class
@@ -279,7 +279,7 @@ class StandaloneNavigator {
      *        Options for the series to be added to the navigator.
      */
     addSeries(seriesOptions) {
-        this.navigator.chart.addSeries(merge(seriesOptions, { showInNavigator: pick(seriesOptions.showInNavigator, true) }));
+        this.navigator.chart.addSeries(merge(seriesOptions, { showInNavigator: (seriesOptions.showInNavigator ?? true) }));
         this.navigator.setBaseSeries();
     }
     /**
@@ -318,8 +318,8 @@ class StandaloneNavigator {
     getRange() {
         const { min, max } = this.navigator.chart.xAxis[0].getExtremes(), { userMin, userMax, min: dataMin, max: dataMax } = this.navigator.xAxis.getExtremes();
         return {
-            min: pick(min, dataMin),
-            max: pick(max, dataMax),
+            min: (min ?? dataMin),
+            max: (max ?? dataMax),
             dataMin,
             dataMax,
             userMin,

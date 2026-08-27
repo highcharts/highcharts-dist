@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.1 (2026-08-17)
+ * @license Highcharts JS v13.0.2 (2026-08-27)
  * @module highcharts/modules/exporting
  * @requires highcharts
  *
@@ -2545,7 +2545,7 @@ class Exporting {
             };
         }
         if (btnOptions.text && btnOptions.symbol) {
-            theme.paddingLeft = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(theme.paddingLeft, 30);
+            theme.paddingLeft = (theme.paddingLeft ?? 30);
         }
         else if (!btnOptions.text) {
             (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.extend)(theme, {
@@ -2558,8 +2558,8 @@ class Exporting {
             .button(btnOptions.text || '', 0, 0, callback, theme, void 0, void 0, void 0, void 0, btnOptions.useHTML)
             .addClass(options.className || '')
             .attr({
-            title: (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(chart.options.lang[(btnOptions._titleKey ||
-                btnOptions.titleKey)], '')
+            title: (chart.options.lang[(btnOptions._titleKey ||
+                btnOptions.titleKey)] ?? '')
         });
         button.menuClassName = (options.menuClassName ||
             'highcharts-menu-' + exporting.btnCount++);
@@ -2588,7 +2588,7 @@ class Exporting {
             .add(exporting.group)
             .align((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.extend)(btnOptions, {
             width: button.width,
-            x: (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(btnOptions.x, exporting.buttonOffset) // #1654
+            x: (btnOptions.x ?? exporting.buttonOffset) // #1654
         }), true, 'spacingBox');
         exporting.buttonOffset += (((button.width || 0) + (btnOptions.buttonSpacing || 0)) *
             (btnOptions.align === 'right' ? -1 : 1));
@@ -3842,7 +3842,7 @@ class Exporting {
     update(exportingOptions, redraw) {
         this.isDirty = true;
         (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(true, this.options, exportingOptions);
-        if ((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(redraw, true)) {
+        if (redraw ?? true) {
             this.chart.redraw();
         }
     }
@@ -4064,7 +4064,7 @@ Exporting.unstyledElements = [
                 if (chart.exporting) {
                     chart.exporting.isDirty = true;
                     (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(true, chart.options.navigation, options);
-                    if ((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(redraw, true)) {
+                    if (redraw ?? true) {
                         chart.redraw();
                     }
                 }

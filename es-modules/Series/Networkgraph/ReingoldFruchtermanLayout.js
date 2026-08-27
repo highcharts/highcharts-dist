@@ -18,7 +18,7 @@ const { win } = H;
 import GraphLayout from '../GraphLayoutComposition.js';
 import QuadTree from './QuadTree.js';
 import VerletIntegration from './VerletIntegration.js';
-import { clamp, defined, fireEvent, isFunction, pick } from '../../Shared/Utilities.js';
+import { clamp, defined, fireEvent, isFunction } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class
@@ -66,12 +66,16 @@ class ReingoldFruchtermanLayout {
         this.integration =
             GraphLayout.integrations[options.integration];
         this.enableSimulation = options.enableSimulation;
-        this.attractiveForce = pick(options.attractiveForce, this.integration.attractiveForceFunction);
-        this.repulsiveForce = pick(options.repulsiveForce, this.integration.repulsiveForceFunction);
+        this.attractiveForce =
+            options.attractiveForce ??
+                this.integration.attractiveForceFunction;
+        this.repulsiveForce =
+            options.repulsiveForce ??
+                this.integration.repulsiveForceFunction;
         this.approximation = options.approximation;
     }
     updateSimulation(enable) {
-        this.enableSimulation = pick(enable, this.options.enableSimulation);
+        this.enableSimulation = (enable ?? this.options.enableSimulation);
     }
     start() {
         const layout = this, series = this.series, options = this.options;
@@ -201,7 +205,7 @@ class ReingoldFruchtermanLayout {
         }
     }
     setMaxIterations(maxIterations) {
-        this.maxIterations = pick(maxIterations, this.options.maxIterations);
+        this.maxIterations = (maxIterations ?? this.options.maxIterations);
     }
     setTemperature() {
         this.temperature = this.startTemperature =
@@ -277,8 +281,12 @@ class ReingoldFruchtermanLayout {
         // as a cluster in the middle
         for (let i = 0, iEnd = sortedNodes.length; i < iEnd; ++i) {
             node = sortedNodes[i];
-            node.plotX = node.prevX = pick(node.plotX, box.width / 2 + radius * Math.cos(i * angle));
-            node.plotY = node.prevY = pick(node.plotY, box.height / 2 + radius * Math.sin(i * angle));
+            node.plotX = node.prevX =
+                node.plotX ??
+                    box.width / 2 + radius * Math.cos(i * angle);
+            node.plotY = node.prevY =
+                node.plotY ??
+                    box.height / 2 + radius * Math.sin(i * angle);
             node.dispX = 0;
             node.dispY = 0;
         }
@@ -299,8 +307,9 @@ class ReingoldFruchtermanLayout {
         // Initial positions:
         for (let i = 0, iEnd = nodes.length; i < iEnd; ++i) {
             node = nodes[i];
-            node.plotX = node.prevX = pick(node.plotX, box.width * unrandom(i));
-            node.plotY = node.prevY = pick(node.plotY, box.height * unrandom(nodesLength + i));
+            node.plotX = node.prevX = (node.plotX ?? box.width * unrandom(i));
+            node.plotY = node.prevY =
+                node.plotY ?? box.height * unrandom(nodesLength + i);
             node.dispX = 0;
             node.dispY = 0;
         }

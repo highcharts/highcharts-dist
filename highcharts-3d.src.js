@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.1 (2026-08-17)
+ * @license Highcharts JS v13.0.2 (2026-08-27)
  * @module highcharts/highcharts-3d
  * @requires highcharts
  *
@@ -187,7 +187,6 @@ var highcharts_Color_commonjs_highcharts_Color_commonjs2_highcharts_Color_root_H
  * */
 
 
-
 const { deg2rad } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 /* *
  *
@@ -274,11 +273,11 @@ function perspective(points, chart, insidePlotArea, useInvertedPersp) {
     /* The useInvertedPersp argument is used for inverted charts with
      * already inverted elements, such as dataLabels or tooltip positions.
      */
-    inverted = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(useInvertedPersp, insidePlotArea ? chart.inverted : false), origin = {
+    inverted = useInvertedPersp ?? (insidePlotArea ? chart.inverted : false), origin = {
         x: chart.plotWidth / 2,
         y: chart.plotHeight / 2,
         z: options3d.depth / 2,
-        vd: (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(options3d.depth, 1) * (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(options3d.viewDistance, 0)
+        vd: (options3d.depth ?? 1) * (options3d.viewDistance ?? 0)
     }, scale = chart.scale3d || 1, beta = deg2rad * options3d.beta * (inverted ? -1 : 1), alpha = deg2rad * options3d.alpha * (inverted ? -1 : 1), angles = {
         cosA: Math.cos(alpha),
         cosB: Math.cos(-beta),
@@ -357,13 +356,13 @@ function pointCameraDistance(coordinates, chart) {
     const options3d = chart.options.chart.options3d, cameraPosition = {
         x: chart.plotWidth / 2,
         y: chart.plotHeight / 2,
-        z: (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(options3d.depth, 1) * (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(options3d.viewDistance, 0) +
+        z: (options3d.depth ?? 1) * (options3d.viewDistance ?? 0) +
             options3d.depth
     }, 
     // Added support for objects with plotX or x coordinates.
-    distance = Math.sqrt(Math.pow(cameraPosition.x - (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(coordinates.plotX, coordinates.x), 2) +
-        Math.pow(cameraPosition.y - (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(coordinates.plotY, coordinates.y), 2) +
-        Math.pow(cameraPosition.z - (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(coordinates.plotZ, coordinates.z), 2));
+    distance = Math.sqrt(Math.pow(cameraPosition.x - (coordinates.plotX ?? coordinates.x), 2) +
+        Math.pow(cameraPosition.y - (coordinates.plotY ?? coordinates.y), 2) +
+        Math.pow(cameraPosition.z - (coordinates.plotZ ?? coordinates.z), 2));
     return distance;
 }
 /**
@@ -1743,8 +1742,8 @@ var Chart3D;
                     isVisible = faceOrientation > 0;
                 }
                 return {
-                    size: (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(options.size, 1),
-                    color: (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(options.color, 'none'),
+                    size: (options.size ?? 1),
+                    color: (options.color ?? 'none'),
                     frontFacing: faceOrientation > 0,
                     visible: isVisible
                 };
@@ -2438,8 +2437,8 @@ function onAxisAfterSetOptions() {
     const axis = this, chart = axis.chart, options = axis.options;
     if (chart.is3d?.() && axis.coll !== 'colorAxis') {
         this.clippable = false;
-        options.tickWidth = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(options.tickWidth, 0);
-        options.gridLineWidth = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(options.gridLineWidth, 1);
+        options.tickWidth = (options.tickWidth ?? 0);
+        options.gridLineWidth = (options.gridLineWidth ?? 1);
     }
 }
 /** @internal */
@@ -2579,8 +2578,8 @@ function wrapAxisGetSlotWidth(proceed, tick) {
             x: chart.plotWidth / 2,
             y: chart.plotHeight / 2,
             z: options3d.depth / 2,
-            vd: ((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(options3d.depth, 1) *
-                (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(options3d.viewDistance, 0))
+            vd: ((options3d.depth ?? 1) *
+                (options3d.viewDistance ?? 0))
         }, index = tickPositions.indexOf(tick.pos), prevTick = ticks[tickPositions[index - 1]], nextTick = ticks[tickPositions[index + 1]];
         let labelPos, prevLabelPos, nextLabelPos;
         // Check whether the tick is not the first one and previous tick
@@ -2695,7 +2694,9 @@ class Axis3DAdditions {
             !chart.is3d()) {
             return pos;
         }
-        const alpha = Axis3DComposition_deg2rad * chart.options.chart.options3d.alpha, beta = Axis3DComposition_deg2rad * chart.options.chart.options3d.beta, positionMode = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(isTitle && axis.options.title.position3d, axis.options.labels.position3d), skew = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(isTitle && axis.options.title.skew3d, axis.options.labels.skew3d), frame = chart.chart3d.frame3d, plotLeft = chart.plotLeft, plotRight = chart.plotWidth + plotLeft, plotTop = chart.plotTop, plotBottom = chart.plotHeight + plotTop;
+        const alpha = Axis3DComposition_deg2rad * chart.options.chart.options3d.alpha, beta = Axis3DComposition_deg2rad * chart.options.chart.options3d.beta, positionMode = ((isTitle && axis.options.title.position3d) ??
+            axis.options.labels.position3d), skew = ((isTitle && axis.options.title.skew3d) ??
+            axis.options.labels.skew3d), frame = chart.chart3d.frame3d, plotLeft = chart.plotLeft, plotRight = chart.plotWidth + plotLeft, plotTop = chart.plotTop, plotBottom = chart.plotHeight + plotTop;
         let offsetX = 0, offsetY = 0, vecX, vecY = { x: 0, y: 1, z: 0 }, 
         // Indicates that we are labelling an X or Z axis on the "back" of
         // the chart
@@ -2938,7 +2939,7 @@ class Series3D extends (highcharts_Series_commonjs_highcharts_Series_commonjs2_h
      * @internal
      */
     translate3dPoints() {
-        const series = this, seriesOptions = series.options, chart = series.chart, zAxis = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(series.zAxis, chart.options.zAxis[0]), rawPoints = [], rawPointsX = [], stack = seriesOptions.stacking ?
+        const series = this, seriesOptions = series.options, chart = series.chart, zAxis = (series.zAxis ?? chart.options.zAxis[0]), rawPoints = [], rawPointsX = [], stack = seriesOptions.stacking ?
             ((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.isNumber)(seriesOptions.stack) ? seriesOptions.stack : 0) :
             series.index || 0;
         let projectedPoint, zValue;
@@ -3117,7 +3118,7 @@ class SVGElement3D extends (highcharts_SVGElement_commonjs_highcharts_SVGElement
         for (const part of elem3d.parts) {
             // If different props for different parts
             if (partsProps) {
-                props = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(partsProps[part], false);
+                props = (partsProps[part] ?? false);
             }
             // Only if something to set, but allow undefined
             if (props !== false) {
@@ -3350,9 +3351,10 @@ var SVGRenderer3D;
                 ((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.defined)(hash.enabled) ||
                     (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.defined)(hash.vertexes) ||
                     (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.defined)(hash.insidePlotArea))) {
-                this.enabled = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(hash.enabled, this.enabled);
-                this.vertexes = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(hash.vertexes, this.vertexes);
-                this.insidePlotArea = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(hash.insidePlotArea, this.insidePlotArea);
+                this.enabled = (hash.enabled ?? this.enabled);
+                this.vertexes = (hash.vertexes ?? this.vertexes);
+                this.insidePlotArea =
+                    hash.insidePlotArea ?? this.insidePlotArea;
                 delete hash.enabled;
                 delete hash.vertexes;
                 delete hash.insidePlotArea;
@@ -3368,9 +3370,10 @@ var SVGRenderer3D;
                 ((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.defined)(params.enabled) ||
                     (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.defined)(params.vertexes) ||
                     (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.defined)(params.insidePlotArea))) {
-                this.enabled = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(params.enabled, this.enabled);
-                this.vertexes = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(params.vertexes, this.vertexes);
-                this.insidePlotArea = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(params.insidePlotArea, this.insidePlotArea);
+                this.enabled = (params.enabled ?? this.enabled);
+                this.vertexes = (params.vertexes ?? this.vertexes);
+                this.insidePlotArea =
+                    params.insidePlotArea ?? this.insidePlotArea;
                 delete params.enabled;
                 delete params.vertexes;
                 delete params.insidePlotArea;
@@ -3784,7 +3787,7 @@ var SVGRenderer3D;
             // been in the attribs collection in the first place.
             delete params.center;
             delete params.z;
-            const anim = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.animObject)((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(animation, this.renderer.globalAnimation));
+            const anim = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.animObject)((animation ?? this.renderer.globalAnimation));
             if (anim.duration) {
                 const paramArr = extractCustom(params);
                 // Params need to have a property in order for the step to run
@@ -3794,7 +3797,7 @@ var SVGRenderer3D;
                 wrapper[randomProp + 'Setter'] = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default()).noop;
                 if (paramArr) {
                     const to = paramArr[0], // Custom attr
-                    interpolate = (key, pos) => (from[key] + ((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(to[key], from[key]) -
+                    interpolate = (key, pos) => (from[key] + ((to[key] ?? from[key]) -
                         from[key]) * pos);
                     anim.step = function (a, fx) {
                         if (fx.prop === randomProp && fx.elem) {
@@ -4321,7 +4324,8 @@ function retrieveStacks(chart, stacking) {
     const series = chart.series, stacks = { totalStacks: 0 };
     let stackNumber, i = 1;
     series.forEach(function (s) {
-        stackNumber = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(s.options.stack, (stacking ? 0 : series.length - 1 - s.index)); // #3841, #4532
+        stackNumber = (s.options.stack ??
+            (stacking ? 0 : series.length - 1 - s.index)); // #3841, #4532
         if (!stacks[stackNumber]) {
             stacks[stackNumber] = { series: [s], position: i };
             i++;
@@ -4453,7 +4457,7 @@ function wrapColumnSeriesPointAttribs(proceed) {
     if (this.chart.is3d && this.chart.is3d()) {
         // Set the fill color to the fill color to provide a smooth edge
         attr.stroke = this.options.edgeColor || attr.fill;
-        attr['stroke-width'] = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(this.options.edgeWidth, 1); // #4055
+        attr['stroke-width'] = (this.options.edgeWidth ?? 1); // #4055
     }
     return attr;
 }
@@ -4483,7 +4487,7 @@ function wrapColumnSeriesSetVisible(proceed, vis) {
         for (const point of series.points) {
             point.visible = point.options.visible = vis =
                 typeof vis === 'undefined' ?
-                    !(0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(series.visible, point.visible) : vis;
+                    !(series.visible ?? point.visible) : vis;
             if (series.options.data) {
                 series.options.data[series.data.indexOf(point)] = point.options;
             }
@@ -4511,7 +4515,7 @@ function wrapSeriesAlignDataLabel(proceed, point, _dataLabel, options, alignTo) 
     // Only do this for 3D columns and it's derived series
     if (chart.is3d() &&
         this.is('column')) {
-        const series = this, seriesOptions = series.options, inside = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(options.inside, !!series.options.stacking), options3d = chart.options.chart.options3d, xOffset = (point.pointWidth || 0) / 2;
+        const series = this, seriesOptions = series.options, inside = (options.inside ?? !!series.options.stacking), options3d = chart.options.chart.options3d, xOffset = (point.pointWidth || 0) / 2;
         let dLPosition = {
             x: alignTo.x + xOffset,
             y: alignTo.y,
@@ -4757,8 +4761,12 @@ class Pie3DSeries extends PieSeries {
             // Initialize the animation
             if (init) {
                 // Scale down the group and place it in the center
-                group.oldtranslateX = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(group.oldtranslateX, group.translateX);
-                group.oldtranslateY = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(group.oldtranslateY, group.translateY);
+                group.oldtranslateX =
+                    group.oldtranslateX ??
+                        group.translateX;
+                group.oldtranslateY =
+                    group.oldtranslateY ??
+                        group.translateY;
                 attribs = {
                     translateX: center[0],
                     translateY: center[1],
@@ -4816,7 +4824,7 @@ class Pie3DSeries extends PieSeries {
         const attr = super.pointAttribs.apply(this, arguments), options = this.options;
         if (this.chart.is3d() && !this.chart.styledMode) {
             attr.stroke = options.edgeColor || point.color || this.color;
-            attr['stroke-width'] = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(options.edgeWidth, 1);
+            attr['stroke-width'] = (options.edgeWidth ?? 1);
         }
         return attr;
     }

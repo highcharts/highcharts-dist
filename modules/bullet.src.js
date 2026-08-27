@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.1 (2026-08-17)
+ * @license Highcharts JS v13.0.2 (2026-08-27)
  * @module highcharts/modules/bullet
  * @requires highcharts
  *
@@ -464,13 +464,20 @@ class BulletSeries extends (highcharts_Series_types_column_commonjs_highcharts_S
                 // Presentational
                 if (!chart.styledMode) {
                     targetGraphic.attr({
-                        fill: (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(targetOptions.color, pointOptions.color, (series.zones.length && (point.getZone.call({
-                            series: series,
-                            x: point.x,
-                            y: targetVal,
-                            options: {}
-                        })?.color || series.color)) || void 0, point.color, series.color),
-                        stroke: (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(targetOptions.borderColor, point.borderColor, series.options.borderColor),
+                        fill: (targetOptions.color ??
+                            pointOptions.color ??
+                            ((series.zones.length &&
+                                (point.getZone?.call({
+                                    series: series,
+                                    x: point.x,
+                                    y: targetVal,
+                                    options: {}
+                                })?.color || series.color)) || void 0) ??
+                            point.color ??
+                            series.color),
+                        stroke: targetOptions.borderColor ??
+                            point.borderColor ??
+                            series.options.borderColor,
                         'stroke-width': targetOptions.borderWidth,
                         r: targetOptions.borderRadius
                     });
@@ -499,10 +506,10 @@ class BulletSeries extends (highcharts_Series_types_column_commonjs_highcharts_S
         if (targetData && targetData.length) {
             const targetExtremes = super.getExtremes.call(this, targetData);
             if ((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.isNumber)(targetExtremes.dataMin)) {
-                dataExtremes.dataMin = Math.min((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(dataExtremes.dataMin, Infinity), targetExtremes.dataMin);
+                dataExtremes.dataMin = Math.min((dataExtremes.dataMin ?? Infinity), targetExtremes.dataMin);
             }
             if ((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.isNumber)(targetExtremes.dataMax)) {
-                dataExtremes.dataMax = Math.max((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(dataExtremes.dataMax, -Infinity), targetExtremes.dataMax);
+                dataExtremes.dataMax = Math.max((dataExtremes.dataMax ?? -Infinity), targetExtremes.dataMax);
             }
         }
         return dataExtremes;

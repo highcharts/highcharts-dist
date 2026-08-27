@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.1 (2026-08-17)
+ * @license Highcharts JS v13.0.2 (2026-08-27)
  * @module highcharts/modules/export-data
  * @requires highcharts
  * @requires highcharts/modules/exporting
@@ -852,11 +852,11 @@ var ExportData;
      */
     function getCSV(useLocalDecimalPoint) {
         let csv = '';
-        const rows = this.getDataRows(), csvOptions = this.options?.csv, decimalPoint = (0,external_highcharts_src_js_default_namespaceObject.pick)(csvOptions?.decimalPoint, csvOptions?.itemDelimiter !== ',' && useLocalDecimalPoint ?
+        const rows = this.getDataRows(), csvOptions = this.options?.csv, decimalPoint = csvOptions?.decimalPoint ?? (csvOptions?.itemDelimiter !== ',' && useLocalDecimalPoint ?
             (1.1).toLocaleString()[1] :
             '.'), 
         // Use ';' for direct to Excel
-        itemDelimiter = (0,external_highcharts_src_js_default_namespaceObject.pick)(csvOptions?.itemDelimiter, decimalPoint === ',' ? ';' : ','), 
+        itemDelimiter = csvOptions?.itemDelimiter ?? (decimalPoint === ',' ? ';' : ','), 
         // '\n' isn't working with the js csv data extraction
         lineDelimiter = csvOptions?.lineDelimiter;
         // Transform the rows to CSV
@@ -1076,15 +1076,13 @@ var ExportData;
                         val =
                             series.pointClass.prototype.getNestedProperty.apply(mockPoint, [prop]);
                         // Allow values from nested properties (#20470)
-                        rows[key][i + j] = (0,external_highcharts_src_js_default_namespaceObject.pick)(
-                        // Y axis category if present
-                        categoryAndDatetimeMap.categoryMap[prop][val], 
-                        // Datetime yAxis
-                        categoryAndDatetimeMap.dateTimeValueAxisMap[prop] ?
-                            time.dateFormat(csvOptions.dateFormat, val) :
-                            null, 
-                        // Linear/log yAxis
-                        val);
+                        rows[key][i + j] =
+                            categoryAndDatetimeMap.categoryMap[prop][val] ??
+                                (categoryAndDatetimeMap
+                                    .dateTimeValueAxisMap[prop] ?
+                                    time.dateFormat(csvOptions.dateFormat, val) :
+                                    null) ??
+                                val;
                         j++;
                     }
                 });
@@ -1131,7 +1129,10 @@ var ExportData;
                         category = time.dateFormat(csvOptions.dateFormat, row.x);
                     }
                     else if (xAxis.categories) {
-                        category = (0,external_highcharts_src_js_default_namespaceObject.pick)(xAxis.names[row.x], xAxis.categories[row.x], row.x);
+                        category =
+                            xAxis.names[row.x] ??
+                                xAxis.categories[row.x] ??
+                                row.x;
                     }
                     else {
                         category = row.x;
@@ -1212,7 +1213,7 @@ var ExportData;
      */
     function getTableAST(useLocalDecimalPoint) {
         let rowLength = 0;
-        const treeChildren = [], exporting = this, chart = exporting.chart, options = chart.options, decimalPoint = useLocalDecimalPoint ? (1.1).toLocaleString()[1] : void 0, useMultiLevelHeaders = (0,external_highcharts_src_js_default_namespaceObject.pick)(exporting.options.useMultiLevelHeaders, true), rows = exporting.getDataRows(useMultiLevelHeaders), topHeaders = useMultiLevelHeaders ? rows.shift() : null, subHeaders = rows.shift(), 
+        const treeChildren = [], exporting = this, chart = exporting.chart, options = chart.options, decimalPoint = useLocalDecimalPoint ? (1.1).toLocaleString()[1] : void 0, useMultiLevelHeaders = exporting.options.useMultiLevelHeaders ?? true, rows = exporting.getDataRows(useMultiLevelHeaders), topHeaders = useMultiLevelHeaders ? rows.shift() : null, subHeaders = rows.shift(), 
         // Compare two rows for equality
         isRowEqual = function (row1, row2) {
             let i = row1.length;
@@ -1231,7 +1232,7 @@ var ExportData;
         // Get table cell HTML from value
         getCellHTMLFromValue = function (tagName, classes, attributes, value) {
             const children = [];
-            let textContent = (0,external_highcharts_src_js_default_namespaceObject.pick)(value, ''), className = 'highcharts-text' + (classes ? ' ' + classes : '');
+            let textContent = (value ?? ''), className = 'highcharts-text' + (classes ? ' ' + classes : '');
             // Convert to string if number
             if (typeof textContent === 'number') {
                 textContent = chart.numberFormatter(textContent, -1, decimalPoint, tagName === 'th' ? '' : void 0);
@@ -1423,7 +1424,7 @@ var ExportData;
     function toggleDataTable(show) {
         const chart = this.chart, 
         // Create the div
-        createContainer = (show = (0,external_highcharts_src_js_default_namespaceObject.pick)(show, !this.isDataTableVisible)) &&
+        createContainer = (show = (show ?? !this.isDataTableVisible)) &&
             !this.dataTableDiv;
         if (createContainer) {
             this.dataTableDiv = ExportData_doc.createElement('div');

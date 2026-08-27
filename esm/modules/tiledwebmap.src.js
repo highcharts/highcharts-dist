@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.1 (2026-08-17)
+ * @license Highcharts JS v13.0.2 (2026-08-27)
  * @module highcharts/modules/tiledwebmap
  * @requires highcharts
  *
@@ -783,8 +783,8 @@ class TiledWebMapSeries extends MapSeries {
         if (!mapView) {
             return;
         }
-        const tiles = (this.tiles = this.tiles || {}), transformGroups = (this.transformGroups = this.transformGroups || []), series = this, options = this.options, provider = options.provider, { zoom } = mapView, lambda = (0,external_highcharts_src_js_default_namespaceObject.pick)((mapView.projection.options.rotation &&
-            mapView.projection.options.rotation[0]), 0), worldSize = 400.979322, tileSize = 256, duration = chart.renderer.forExport ? 0 : 200, animateTiles = (duration) => {
+        const tiles = (this.tiles = this.tiles || {}), transformGroups = (this.transformGroups = this.transformGroups || []), series = this, options = this.options, provider = options.provider, { zoom } = mapView, lambda = ((mapView.projection.options.rotation &&
+            mapView.projection.options.rotation[0]) ?? 0), worldSize = 400.979322, tileSize = 256, duration = chart.renderer.forExport ? 0 : 200, animateTiles = (duration) => {
             for (const zoomKey of Object.keys(tiles)) {
                 if ((parseFloat(zoomKey) === (mapView.zoom < 0 ? 0 :
                     Math.floor(mapView.zoom))) ||
@@ -865,7 +865,7 @@ class TiledWebMapSeries extends MapSeries {
                 else if ((0,external_highcharts_src_js_default_namespaceObject.defined)(def.subdomains) &&
                     // Do not show warning if no subdomain in URL
                     theme.url.indexOf('{s}') !== -1) {
-                    subdomain = (0,external_highcharts_src_js_default_namespaceObject.pick)(def.subdomains && def.subdomains[0], '');
+                    subdomain = ((def.subdomains && def.subdomains[0]) ?? '');
                     (0,external_highcharts_src_js_default_namespaceObject.error)('Highcharts warning: The Tiles Provider\'s Subdomain ' +
                         '\'' + provider.subdomain + '\' is not defined in ' +
                         'the Provider definition - falling back to \'' +
@@ -888,7 +888,9 @@ class TiledWebMapSeries extends MapSeries {
                 this.minZoom = theme.minZoom;
                 this.maxZoom = theme.maxZoom;
                 // Add as credits.text, to prevent changing the default mapText
-                const creditsText = (0,external_highcharts_src_js_default_namespaceObject.pick)(chart.userOptions.credits && chart.userOptions.credits.text, 'Highcharts.com ' + (0,external_highcharts_src_js_default_namespaceObject.pick)(theme.credits, def.defaultCredits));
+                const creditsText = ((chart.userOptions.credits &&
+                    chart.userOptions.credits.text) ??
+                    ('Highcharts.com ' + (theme.credits ?? def.defaultCredits)));
                 if (chart.credits) {
                     chart.credits.update({
                         text: creditsText
@@ -897,7 +899,7 @@ class TiledWebMapSeries extends MapSeries {
                 else {
                     chart.addCredits({
                         text: creditsText,
-                        style: (0,external_highcharts_src_js_default_namespaceObject.pick)(chart.options.credits?.style, {})
+                        style: (chart.options.credits?.style ?? {})
                     });
                 }
                 if (mapView.projection.options.name !== providerProjection) {

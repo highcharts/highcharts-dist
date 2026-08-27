@@ -17,7 +17,7 @@ import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { gauge: GaugeSeries, pie: PieSeries } = SeriesRegistry.seriesTypes;
 import SolidGaugeAxis from '../../Core/Axis/SolidGaugeAxis.js';
 import SolidGaugeSeriesDefaults from './SolidGaugeSeriesDefaults.js';
-import { clamp, extend, isNumber, merge, pick, relativeLength } from '../../Shared/Utilities.js';
+import { clamp, extend, isNumber, merge, relativeLength } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class
@@ -62,7 +62,7 @@ class SolidGaugeSeries extends GaugeSeries {
         if (isNumber(options.threshold)) {
             thresholdAngleRad = yAxis.startAngleRad + yAxis.translate(options.threshold, void 0, void 0, void 0, true);
         }
-        this.thresholdAngleRad = pick(thresholdAngleRad, yAxis.startAngleRad);
+        this.thresholdAngleRad = (thresholdAngleRad ?? yAxis.startAngleRad);
         for (const point of series.points) {
             // #10630 null point should not be draw
             if (!point.isNull) { // Condition like in pie chart

@@ -11,7 +11,7 @@
  * */
 'use strict';
 import { error } from '../Core/Utilities.js';
-import { merge, pick } from '../Shared/Utilities.js';
+import { merge } from '../Shared/Utilities.js';
 /* *
  *
  *  Constants
@@ -68,7 +68,7 @@ function calculateObstacleMargin(obstacles) {
  */
 function distance(a, b, bbMargin) {
     // Count the distance even if we are slightly off
-    const margin = pick(bbMargin, 10), yOverlap = a.yMax + margin > b.yMin - margin &&
+    const margin = (bbMargin ?? 10), yOverlap = a.yMax + margin > b.yMin - margin &&
         a.yMin - margin < b.yMax + margin, xOverlap = a.xMax + margin > b.xMin - margin &&
         a.xMin - margin < b.xMax + margin, xDistance = yOverlap ? (a.xMin > b.xMax ? a.xMin - b.xMax : b.xMin - a.xMax) : Infinity, yDistance = xOverlap ? (a.yMin > b.yMax ? a.yMin - b.yMax : b.yMin - a.yMax) : Infinity;
     // If the rectangles collide, try recomputing with smaller margin.

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.1 (2026-08-17)
+ * @license Highcharts JS v13.0.2 (2026-08-27)
  * @module highcharts/modules/variwide
  * @requires highcharts
  *
@@ -498,7 +498,7 @@ class VariwideSeries extends ColumnSeries {
             (axis.dataMin || 0) :
             (axis.dataMax || 0) + axis.pointRange), len = Math.abs(maxPx - minPx), totalZ = this.totalZ, left = this.chart.inverted ?
             maxPx - (this.chart.plotTop - goRight * axis.minPixelPadding) :
-            minPx - this.chart.plotLeft - goRight * axis.minPixelPadding, linearSlotLeft = i / relZ.length * len, linearSlotRight = (i + goRight) / relZ.length * len, slotLeft = ((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(relZ[i], totalZ) / totalZ) * len, slotRight = ((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(relZ[i + goRight], totalZ) / totalZ) * len, xInsideLinearSlot = (x - (left + linearSlotLeft));
+            minPx - this.chart.plotLeft - goRight * axis.minPixelPadding, linearSlotLeft = i / relZ.length * len, linearSlotRight = (i + goRight) / relZ.length * len, slotLeft = ((relZ[i] ?? totalZ) / totalZ) * len, slotRight = ((relZ[i + goRight] ?? totalZ) / totalZ) * len, xInsideLinearSlot = (x - (left + linearSlotLeft));
         // Set crosshairWidth for every point (#8173)
         if (point) {
             point.crosshairWidth = slotRight - slotLeft;

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.1 (2026-08-17)
+ * @license Highcharts JS v13.0.2 (2026-08-27)
  * @module highcharts/modules/funnel3d
  * @requires highcharts
  * @requires highcharts/highcharts-3d
@@ -193,7 +193,7 @@ class SVGElement3D extends (external_highcharts_src_js_default_SVGElement_defaul
         for (const part of elem3d.parts) {
             // If different props for different parts
             if (partsProps) {
-                props = (0,external_highcharts_src_js_default_namespaceObject.pick)(partsProps[part], false);
+                props = (partsProps[part] ?? false);
             }
             // Only if something to set, but allow undefined
             if (props !== false) {
@@ -918,7 +918,6 @@ class Funnel3DPoint extends ColumnSeries.prototype.pointClass {
  * */
 
 
-
 const { deg2rad } = (external_highcharts_src_js_default_default());
 /* *
  *
@@ -1005,11 +1004,11 @@ function perspective(points, chart, insidePlotArea, useInvertedPersp) {
     /* The useInvertedPersp argument is used for inverted charts with
      * already inverted elements, such as dataLabels or tooltip positions.
      */
-    inverted = (0,external_highcharts_src_js_default_namespaceObject.pick)(useInvertedPersp, insidePlotArea ? chart.inverted : false), origin = {
+    inverted = useInvertedPersp ?? (insidePlotArea ? chart.inverted : false), origin = {
         x: chart.plotWidth / 2,
         y: chart.plotHeight / 2,
         z: options3d.depth / 2,
-        vd: (0,external_highcharts_src_js_default_namespaceObject.pick)(options3d.depth, 1) * (0,external_highcharts_src_js_default_namespaceObject.pick)(options3d.viewDistance, 0)
+        vd: (options3d.depth ?? 1) * (options3d.viewDistance ?? 0)
     }, scale = chart.scale3d || 1, beta = deg2rad * options3d.beta * (inverted ? -1 : 1), alpha = deg2rad * options3d.alpha * (inverted ? -1 : 1), angles = {
         cosA: Math.cos(alpha),
         cosB: Math.cos(-beta),
@@ -1088,13 +1087,13 @@ function pointCameraDistance(coordinates, chart) {
     const options3d = chart.options.chart.options3d, cameraPosition = {
         x: chart.plotWidth / 2,
         y: chart.plotHeight / 2,
-        z: (0,external_highcharts_src_js_default_namespaceObject.pick)(options3d.depth, 1) * (0,external_highcharts_src_js_default_namespaceObject.pick)(options3d.viewDistance, 0) +
+        z: (options3d.depth ?? 1) * (options3d.viewDistance ?? 0) +
             options3d.depth
     }, 
     // Added support for objects with plotX or x coordinates.
-    distance = Math.sqrt(Math.pow(cameraPosition.x - (0,external_highcharts_src_js_default_namespaceObject.pick)(coordinates.plotX, coordinates.x), 2) +
-        Math.pow(cameraPosition.y - (0,external_highcharts_src_js_default_namespaceObject.pick)(coordinates.plotY, coordinates.y), 2) +
-        Math.pow(cameraPosition.z - (0,external_highcharts_src_js_default_namespaceObject.pick)(coordinates.plotZ, coordinates.z), 2));
+    distance = Math.sqrt(Math.pow(cameraPosition.x - (coordinates.plotX ?? coordinates.x), 2) +
+        Math.pow(cameraPosition.y - (coordinates.plotY ?? coordinates.y), 2) +
+        Math.pow(cameraPosition.z - (coordinates.plotZ ?? coordinates.z), 2));
     return distance;
 }
 /**
@@ -1211,13 +1210,14 @@ class Funnel3DSeries extends Funnel3DSeries_ColumnSeries {
      * @private
      */
     alignDataLabel(point, _dataLabel, options) {
-        const series = this, dlBoxRaw = point.dlBoxRaw, inverted = series.chart.inverted, below = point.plotY > (0,external_highcharts_src_js_default_namespaceObject.pick)(series.translatedThreshold, series.yAxis.len), inside = (0,external_highcharts_src_js_default_namespaceObject.pick)(options.inside, !!series.options.stacking), dlBox = {
+        const series = this, dlBoxRaw = point.dlBoxRaw, inverted = series.chart.inverted, below = point.plotY >
+            (series.translatedThreshold ?? series.yAxis.len), inside = (options.inside ?? !!series.options.stacking), dlBox = {
             x: dlBoxRaw.x,
             y: dlBoxRaw.y,
             height: 0
         };
-        options.align = (0,external_highcharts_src_js_default_namespaceObject.pick)(options.align, !inverted || inside ? 'center' : below ? 'right' : 'left');
-        options.verticalAlign = (0,external_highcharts_src_js_default_namespaceObject.pick)(options.verticalAlign, inverted || inside ? 'middle' : below ? 'top' : 'bottom');
+        options.align = options.align ?? (!inverted || inside ? 'center' : below ? 'right' : 'left');
+        options.verticalAlign = options.verticalAlign ?? (inverted || inside ? 'middle' : below ? 'top' : 'bottom');
         if (options.verticalAlign !== 'top') {
             dlBox.y += dlBoxRaw.bottom /
                 (options.verticalAlign === 'bottom' ? 1 : 2);
@@ -1323,7 +1323,8 @@ class Funnel3DSeries extends Funnel3DSeries_ColumnSeries {
             h = y3 - y1;
             shapeArgs = {
                 // For fill setter
-                gradientForSides: (0,external_highcharts_src_js_default_namespaceObject.pick)(point.options.gradientForSides, options.gradientForSides),
+                gradientForSides: point.options.gradientForSides ??
+                    options.gradientForSides,
                 x: centerX,
                 y: y1,
                 height: h,

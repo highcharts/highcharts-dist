@@ -16,7 +16,7 @@
 import Point from '../../Core/Series/Point.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { line: { prototype: { pointClass: LinePoint } }, pie: { prototype: { pointClass: PiePoint } } } = SeriesRegistry.seriesTypes;
-import { defined, isNumber, merge, objectEach, pick } from '../../Shared/Utilities.js';
+import { defined, isNumber, merge, objectEach } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class
@@ -129,7 +129,7 @@ class TimelinePoint extends LinePoint {
     }
     setVisible(visible, redraw) {
         const point = this, series = point.series;
-        redraw = pick(redraw, series.options.ignoreHiddenPoint);
+        redraw = (redraw ?? series.options.ignoreHiddenPoint);
         PiePoint.prototype.setVisible.call(point, visible, false);
         // Process new data
         series.processData();

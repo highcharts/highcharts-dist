@@ -15,7 +15,7 @@
 'use strict';
 import GeometryUtilities from '../Geometry/GeometryUtilities.js';
 const { pointInPolygon } = GeometryUtilities;
-import { addEvent, fireEvent, getAlignFactor, objectEach, pick } from '../../Shared/Utilities.js';
+import { addEvent, fireEvent, getAlignFactor, objectEach } from '../../Shared/Utilities.js';
 /* *
  *
  *  Functions
@@ -219,7 +219,10 @@ function onChartRender() {
                     if (point.visible) {
                         (point.dataLabels || []).forEach((label) => {
                             const options = label.options || {};
-                            label.labelrank = pick(options.labelrank, point.labelrank, point.shapeArgs?.height); // #4118
+                            label.labelrank =
+                                options.labelrank ??
+                                    point.labelrank ??
+                                    point.shapeArgs?.height; // #4118
                             // #21725: Sync target positions for generic overlap
                             // checking. During animations (e.g., toggling a
                             // point), DOM positions may overlap. We force

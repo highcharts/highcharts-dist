@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.1 (2026-08-17)
+ * @license Highcharts JS v13.0.2 (2026-08-27)
  * @module highcharts/modules/geoheatmap
  * @requires highcharts
  *
@@ -205,7 +205,7 @@ const { doc } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highch
 /**
  * Find color of point based on color axis.
  *
- * @function Highcharts.colorFromPoint
+ * @internal
  *
  * @param {number | null} value
  *        Value to find corresponding color on the color axis.
@@ -223,8 +223,8 @@ function colorFromPoint(value, point) {
             .split(')')[0]
             .split('(')[1]
             .split(',')
-            .map((s) => (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(parseFloat(s), parseInt(s, 10))));
-        rgba[3] = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(rgba[3], 1.0) * 255;
+            .map((s) => (parseFloat(s) ?? parseInt(s, 10))));
+        rgba[3] = (rgba[3] ?? 1.0) * 255;
         if (!(0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.defined)(value) || !point.visible) {
             rgba[3] = 0;
         }
@@ -234,7 +234,7 @@ function colorFromPoint(value, point) {
 }
 /**
  * Method responsible for creating a canvas for interpolation image.
- * @private
+ * @internal
  */
 function getContext(series) {
     const { canvas, context } = series;
@@ -377,8 +377,8 @@ class GeoHeatmapSeries extends MapSeries {
         const series = this, chart = series.chart, mapView = chart.mapView, seriesOptions = series.options;
         if (series.getInterpolation().enabled && mapView && series.bounds) {
             const ctx = series.context || GeoHeatmapSeries_getContext(series), { canvas, colorAxis, image, chart, points } = series, [colsize, rowsize] = [
-                (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(seriesOptions.colsize, 1),
-                (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(seriesOptions.rowsize, 1)
+                (seriesOptions.colsize ?? 1),
+                (seriesOptions.rowsize ?? 1)
             ], 
             // Calculate dimensions based on series bounds
             topLeft = mapView.projectedUnitsToPixels({
@@ -499,7 +499,7 @@ class GeoHeatmapSeries extends MapSeries {
      * @private
      */
     getProjectedImageData(mapView, projectedWidth, projectedHeight, cartesianImageData, canvas, horizontalShift, verticalShift) {
-        const projectedPixelData = new Uint8ClampedArray(projectedWidth * projectedHeight * 4), lambda = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(mapView.projection.options.rotation?.[0], 0), widthFactor = canvas.width / 360, heightFactor = -1 * canvas.height / 180;
+        const projectedPixelData = new Uint8ClampedArray(projectedWidth * projectedHeight * 4), lambda = (mapView.projection.options.rotation?.[0] ?? 0), widthFactor = canvas.width / 360, heightFactor = -1 * canvas.height / 180;
         let y = -1;
         // For each pixel on the map plane, find the map
         // coordinate and get the color value

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.1 (2026-08-17)
+ * @license Highcharts JS v13.0.2 (2026-08-27)
  * @module highcharts/modules/mouse-wheel-zoom
  * @requires highcharts
  *
@@ -174,7 +174,7 @@ function getAssignedAxis(coords) {
         const extremes = coord.axis.getExtremes(), axisMin = extremes.min, axisMax = extremes.max, 
         // Correct axis edges when axis has series
         // with pointRange (like column)
-        minPointOffset = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(coord.axis.minPointOffset, 0);
+        minPointOffset = (coord.axis.minPointOffset ?? 0);
         return (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.isNumber)(axisMin) && (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.isNumber)(axisMax) &&
             coord.value >= (axisMin - minPointOffset) &&
             coord.value <= (axisMax + minPointOffset) &&
@@ -287,7 +287,7 @@ const optionsToObject = (options) => {
 };
 /** @internal */
 const zoomBy = function (chart, howMuch, xAxis, yAxis, mouseX, mouseY, options) {
-    const type = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(options.type, chart.zooming.type, '');
+    const type = (options.type ?? chart.zooming.type ?? '');
     let axes = [];
     if (type === 'x') {
         axes = xAxis;

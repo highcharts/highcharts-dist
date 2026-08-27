@@ -18,7 +18,7 @@ const { charts, deg2rad } = H;
 import Math3D from '../../Core/Math3D.js';
 const { perspective } = Math3D;
 import SVGElement3DCylinder from './SVGElement3DCylinder.js';
-import { extend, pick } from '../../Shared/Utilities.js';
+import { extend } from '../../Shared/Utilities.js';
 /* *
  *
  *  Functions
@@ -155,7 +155,7 @@ function rendererGetCylinderEnd(chart, shapeArgs, isBottom) {
     const { width = 0, height = 0, alphaCorrection = 0 } = shapeArgs, 
     // A half of the smaller one out of width or depth (optional, because
     // there's no depth for a funnel that reuses the code)
-    depth = pick(shapeArgs.depth, width, 0), radius = Math.min(width, depth) / 2, 
+    depth = (shapeArgs.depth ?? width ?? 0), radius = Math.min(width, depth) / 2, 
     // Approximated longest diameter
     angleOffset = deg2rad * (chart.options.chart.options3d.beta - 90 +
         alphaCorrection), 

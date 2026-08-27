@@ -26,7 +26,7 @@ const { series: Series, seriesTypes: { column: { prototype: columnProto }, line:
 import D from '../SimulationSeriesUtilities.js';
 const { initDataLabels, initDataLabelsDefer } = D;
 import { composeTextPath } from '../../Extensions/TextPath.js';
-import { addEvent, defined, extend, merge, pick } from '../../Shared/Utilities.js';
+import { addEvent, defined, extend, merge } from '../../Shared/Utilities.js';
 composeTextPath(SVGElement);
 /* *
  *
@@ -161,7 +161,9 @@ class NetworkgraphSeries extends Series {
         for (i = this.nodes.length - 1; i >= 0; i--) {
             node = this.nodes[i];
             node.degree = node.getDegree();
-            node.radius = pick(node.marker && node.marker.radius, this.options.marker && this.options.marker.radius, 0);
+            node.radius = ((node.marker && node.marker.radius) ??
+                (this.options.marker && this.options.marker.radius) ??
+                0);
             node.key = node.name;
             // If node exists, but it's not available in nodeLookup,
             // then it's leftover from previous runs (e.g. setData)

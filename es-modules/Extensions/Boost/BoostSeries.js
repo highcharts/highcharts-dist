@@ -19,7 +19,7 @@ import H from '../../Core/Globals.js';
 const { composed, doc, noop, win } = H;
 import WGLRenderer from './WGLRenderer.js';
 import DataTableCore from '../../Data/DataTableCore.js';
-import { addEvent, defined, destroyObjectProperties, extend, fireEvent, isArray, isNumber, pick, pushUnique, wrap } from '../../Shared/Utilities.js';
+import { addEvent, defined, destroyObjectProperties, extend, fireEvent, isArray, isNumber, pushUnique, wrap } from '../../Shared/Utilities.js';
 import { error } from '../../Core/Utilities.js';
 /* *
  *
@@ -65,10 +65,10 @@ function allocateIfNotSeriesBoosting(renderer, series) {
  * True, if boost is enabled.
  */
 function boostEnabled(chart) {
-    return pick((chart &&
+    return ((chart &&
         chart.options &&
         chart.options.boost &&
-        chart.options.boost.enabled), true);
+        chart.options.boost.enabled) ?? true);
 }
 /** @internal */
 function compose(SeriesClass, seriesTypes, PointClass, wglMode) {
@@ -474,7 +474,7 @@ function exitBoost(series) {
  * @function Highcharts.Series#hasExtremes
  */
 function hasExtremes(series, checkX) {
-    const options = series.options, threshold = pick(options.boostThreshold, Number.MAX_VALUE);
+    const options = series.options, threshold = (options.boostThreshold ?? Number.MAX_VALUE);
     if (threshold === 0) {
         return false;
     }
@@ -493,7 +493,7 @@ function hasExtremes(series, checkX) {
  * @internal
  */
 const getSeriesBoosting = (series, data) => {
-    const { options, forceCrop, chart } = series, threshold = pick(options.boostThreshold, Number.MAX_VALUE);
+    const { options, forceCrop, chart } = series, threshold = (options.boostThreshold ?? Number.MAX_VALUE);
     // Return early if either will be grouped or boost is disabled.
     if (forceCrop || threshold === 0) {
         return false;
@@ -597,10 +597,9 @@ function getPoint(series, boostPoint) {
                 data[pointIndex][keysIndex];
         }
     }
-    point.category = pick(xAxis.categories ?
+    point.category = (xAxis.categories ?
         xAxis.categories[point.x] :
-        point.x, // @todo simplify
-    point.x);
+        point.x ?? point.x);
     point.key = point.name ?? point.category;
     point.dist = boostPoint.dist;
     point.distX = boostPoint.distX;
@@ -734,7 +733,7 @@ function seriesRenderCanvas() {
         this.getColumn('x') :
         void 0) ||
         this.options.xData ||
-        this.getColumn('x', true)), lineWidth = pick(options.lineWidth, 1), nullYSubstitute = options.nullInteraction && yMin, tooltip = chart.tooltip;
+        this.getColumn('x', true)), lineWidth = (options.lineWidth ?? 1), nullYSubstitute = options.nullInteraction && yMin, tooltip = chart.tooltip;
     let renderer = false, lastClientX, yBottom = yAxis.getThreshold(threshold), minVal, maxVal, minI, maxI;
     // Clear mock points and tooltip after zoom (#20330)
     if (!this.boosted) {

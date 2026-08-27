@@ -15,7 +15,7 @@
 import { animObject } from '../Core/Animation/AnimationUtilities.js';
 import D from '../Core/Defaults.js';
 const { getOptions } = D;
-import { addEvent, defined, erase, extend, isObject, merge, pick, removeEvent, wrap } from '../Shared/Utilities.js';
+import { addEvent, defined, erase, extend, isObject, merge, removeEvent, wrap } from '../Shared/Utilities.js';
 /* *
  *
  *  Constants
@@ -284,7 +284,9 @@ function onRendererComplexColor(args) {
         }
         // Add it. This function does nothing if an element with this ID
         // already exists.
-        this.addPattern(pattern, !this.forExport && pick(pattern.animation, this.globalAnimation, { duration: 100 }));
+        this.addPattern(pattern, !this.forExport && (pattern.animation ??
+            this.globalAnimation ??
+            { duration: 100 }));
         value = `url(${this.url}#${pattern.id + (this.forExport ? '-export' : '')})`;
     }
     else {
@@ -448,7 +450,7 @@ function pointCalculatePatternDimensions(pattern) {
  * @requires modules/pattern-fill
  */
 function rendererAddPattern(options, animation) {
-    const animate = pick(animation, true), animationOptions = animObject(animate), color = options.color ||
+    const animate = (animation ?? true), animationOptions = animObject(animate), color = options.color ||
         'var(--highcharts-neutral-color-80)', defaultSize = 32, height = options.height ||
         (typeof options._height === 'number' ? options._height : 0) ||
         defaultSize, width = options.width ||
@@ -516,7 +518,7 @@ function rendererAddPattern(options, animation) {
         };
         if (!this.styledMode) {
             attribs.stroke = path.stroke || color;
-            attribs['stroke-width'] = pick(path.strokeWidth, 2);
+            attribs['stroke-width'] = (path.strokeWidth ?? 2);
             attribs.fill = path.fill || 'none';
         }
         if (path.transform) {
@@ -531,7 +533,7 @@ function rendererAddPattern(options, animation) {
             this.image(options.image, 0, 0, width, height, function () {
                 // Onload
                 this.animate({
-                    opacity: pick(options.opacity, 1)
+                    opacity: (options.opacity ?? 1)
                 }, animationOptions);
                 removeEvent(this.element, 'load');
             }).attr({ opacity: 0 }).add(pattern);

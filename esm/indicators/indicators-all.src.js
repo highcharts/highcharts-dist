@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.0.1 (2026-08-17)
+ * @license Highstock JS v13.0.2 (2026-08-27)
  * @module highcharts/indicators/indicators-all
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -640,7 +640,7 @@ class SMAIndicator extends LineSeries {
         if (!name) {
             (this.nameComponents || []).forEach(function (component, index) {
                 params.push(this.options.params[component] +
-                    (0,external_highcharts_src_js_default_namespaceObject.pick)(this.nameSuffixes[index], ''));
+                    (this.nameSuffixes[index] ?? ''));
             }, this);
             name = (this.nameBase || this.type.toUpperCase()) +
                 (this.nameComponents ? ' (' + params.join(', ') + ')' : '');
@@ -1790,10 +1790,10 @@ class AroonIndicator extends AroonIndicator_SMAIndicator {
         for (i = period - 1; i < yValLen; i++) {
             slicedY = yVal.slice(i - period + 1, i + 2);
             xLow = getExtremeIndexInArray(slicedY.map(function (elem) {
-                return (0,external_highcharts_src_js_default_namespaceObject.pick)(elem[low], elem);
+                return (elem[low] ?? elem);
             }), 'min');
             xHigh = getExtremeIndexInArray(slicedY.map(function (elem) {
-                return (0,external_highcharts_src_js_default_namespaceObject.pick)(elem[high], elem);
+                return (elem[high] ?? elem);
             }), 'max');
             aroonUp = (xHigh / period) * 100;
             aroonDown = (xLow / period) * 100;
@@ -3069,7 +3069,7 @@ const { sma: DPOIndicator_SMAIndicator } = (external_highcharts_src_js_default_S
 // Utils:
 /** @internal */
 function accumulatePoints(sum, yVal, i, index, subtract) {
-    const price = (0,external_highcharts_src_js_default_namespaceObject.pick)(yVal[i][index], yVal[i]);
+    const price = (yVal[i][index] ?? yVal[i]);
     if (subtract) {
         return (0,external_highcharts_src_js_default_namespaceObject.correctFloat)(sum - price);
     }
@@ -3114,7 +3114,8 @@ class DPOIndicator extends DPOIndicator_SMAIndicator {
             rangeIndex = j + range - 1;
             // Adding the last period point
             sum = accumulatePoints(sum, yVal, periodIndex, index);
-            price = (0,external_highcharts_src_js_default_namespaceObject.pick)(yVal[rangeIndex][index], yVal[rangeIndex]);
+            price = yVal[rangeIndex][index] ??
+                yVal[rangeIndex];
             oscillator = price - sum / period;
             // Subtracting the first period point
             sum = accumulatePoints(sum, yVal, j, index, true);
@@ -7654,7 +7655,7 @@ class RSIIndicator extends RSIIndicator_SMAIndicator {
         // Cause we need to calculate change between two points
         RSI = [], xData = [], yData = [];
         let gain = 0, loss = 0, index = params.index, range = 1, RSIPoint, change, avgGain, avgLoss, i, values;
-        if ((xVal.length < period)) {
+        if (xVal.length < period) {
             return;
         }
         if ((0,external_highcharts_src_js_default_namespaceObject.isNumber)(yVal[0])) {

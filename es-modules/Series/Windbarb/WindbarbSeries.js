@@ -20,7 +20,7 @@ import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { column: ColumnSeries } = SeriesRegistry.seriesTypes;
 import WindbarbPoint from './WindbarbPoint.js';
 import WindbarbSeriesDefaults from './WindbarbSeriesDefaults.js';
-import { extend, merge, pick } from '../../Shared/Utilities.js';
+import { extend, merge } from '../../Shared/Utilities.js';
 /* *
  *
  *  Functions
@@ -150,7 +150,7 @@ class WindbarbSeries extends ColumnSeries {
                         .add(this.markerGroup)
                         .addClass('highcharts-point ' +
                         'highcharts-color-' +
-                        pick(point.colorIndex, point.series.colorIndex));
+                        (point.colorIndex ?? point.series.colorIndex));
                 }
                 // Position the graphic
                 point.graphic

@@ -17,7 +17,7 @@ const { column: ColumnSeries } = SeriesRegistry.seriesTypes;
 import VariwideComposition from './VariwideComposition.js';
 import VariwidePoint from './VariwidePoint.js';
 import VariwideSeriesDefaults from './VariwideSeriesDefaults.js';
-import { addEvent, arrayMax, arrayMin, crisp, extend, merge, pick } from '../../Shared/Utilities.js';
+import { addEvent, arrayMax, arrayMin, crisp, extend, merge } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class
@@ -79,7 +79,7 @@ class VariwideSeries extends ColumnSeries {
             (axis.dataMin || 0) :
             (axis.dataMax || 0) + axis.pointRange), len = Math.abs(maxPx - minPx), totalZ = this.totalZ, left = this.chart.inverted ?
             maxPx - (this.chart.plotTop - goRight * axis.minPixelPadding) :
-            minPx - this.chart.plotLeft - goRight * axis.minPixelPadding, linearSlotLeft = i / relZ.length * len, linearSlotRight = (i + goRight) / relZ.length * len, slotLeft = (pick(relZ[i], totalZ) / totalZ) * len, slotRight = (pick(relZ[i + goRight], totalZ) / totalZ) * len, xInsideLinearSlot = (x - (left + linearSlotLeft));
+            minPx - this.chart.plotLeft - goRight * axis.minPixelPadding, linearSlotLeft = i / relZ.length * len, linearSlotRight = (i + goRight) / relZ.length * len, slotLeft = ((relZ[i] ?? totalZ) / totalZ) * len, slotRight = ((relZ[i + goRight] ?? totalZ) / totalZ) * len, xInsideLinearSlot = (x - (left + linearSlotLeft));
         // Set crosshairWidth for every point (#8173)
         if (point) {
             point.crosshairWidth = slotRight - slotLeft;

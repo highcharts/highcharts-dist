@@ -64,7 +64,6 @@
  */
 /* eslint-enable max-len */
 'use strict';
-import { pick } from '../../Shared/Utilities.js';
 import { error } from '../../Core/Utilities.js';
 /* *
  *
@@ -84,7 +83,7 @@ function traverseSetOption(root, optionAsArray, val) {
     let opt = root, prop, i = 0;
     for (; i < optionAsArray.length - 1; ++i) {
         prop = optionAsArray[i];
-        opt = opt[prop] = pick(opt[prop], {});
+        opt = opt[prop] = (opt[prop] ?? {});
     }
     opt[optionAsArray[optionAsArray.length - 1]] = val;
 }

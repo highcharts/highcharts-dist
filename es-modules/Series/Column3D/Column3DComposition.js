@@ -14,7 +14,7 @@ import H from '../../Core/Globals.js';
 const { composed } = H;
 import Math3D from '../../Core/Math3D.js';
 const { perspective } = Math3D;
-import { addEvent, extend, pick, pushUnique, wrap } from '../../Shared/Utilities.js';
+import { addEvent, extend, pushUnique, wrap } from '../../Shared/Utilities.js';
 /* *
  *
  *  Functions
@@ -158,7 +158,8 @@ function retrieveStacks(chart, stacking) {
     const series = chart.series, stacks = { totalStacks: 0 };
     let stackNumber, i = 1;
     series.forEach(function (s) {
-        stackNumber = pick(s.options.stack, (stacking ? 0 : series.length - 1 - s.index)); // #3841, #4532
+        stackNumber = (s.options.stack ??
+            (stacking ? 0 : series.length - 1 - s.index)); // #3841, #4532
         if (!stacks[stackNumber]) {
             stacks[stackNumber] = { series: [s], position: i };
             i++;
@@ -290,7 +291,7 @@ function wrapColumnSeriesPointAttribs(proceed) {
     if (this.chart.is3d && this.chart.is3d()) {
         // Set the fill color to the fill color to provide a smooth edge
         attr.stroke = this.options.edgeColor || attr.fill;
-        attr['stroke-width'] = pick(this.options.edgeWidth, 1); // #4055
+        attr['stroke-width'] = (this.options.edgeWidth ?? 1); // #4055
     }
     return attr;
 }
@@ -320,7 +321,7 @@ function wrapColumnSeriesSetVisible(proceed, vis) {
         for (const point of series.points) {
             point.visible = point.options.visible = vis =
                 typeof vis === 'undefined' ?
-                    !pick(series.visible, point.visible) : vis;
+                    !(series.visible ?? point.visible) : vis;
             if (series.options.data) {
                 series.options.data[series.data.indexOf(point)] = point.options;
             }
@@ -348,7 +349,7 @@ function wrapSeriesAlignDataLabel(proceed, point, _dataLabel, options, alignTo) 
     // Only do this for 3D columns and it's derived series
     if (chart.is3d() &&
         this.is('column')) {
-        const series = this, seriesOptions = series.options, inside = pick(options.inside, !!series.options.stacking), options3d = chart.options.chart.options3d, xOffset = (point.pointWidth || 0) / 2;
+        const series = this, seriesOptions = series.options, inside = (options.inside ?? !!series.options.stacking), options3d = chart.options.chart.options3d, xOffset = (point.pointWidth || 0) / 2;
         let dLPosition = {
             x: alignTo.x + xOffset,
             y: alignTo.y,

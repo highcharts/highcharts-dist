@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.1 (2026-08-17)
+ * @license Highcharts JS v13.0.2 (2026-08-27)
  * @module highcharts/modules/sunburst
  * @requires highcharts
  *
@@ -609,8 +609,9 @@ class Breadcrumbs {
      *         Formatted text.
      */
     getButtonText(breadcrumb) {
-        const breadcrumbs = this, chart = breadcrumbs.chart, breadcrumbsOptions = breadcrumbs.options, lang = chart.options.lang, textFormat = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(breadcrumbsOptions.format, breadcrumbsOptions.showFullPath ?
-            '{level.name}' : '← {level.name}'), defaultText = lang && (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(lang.drillUpText, lang.mainBreadcrumb);
+        const breadcrumbs = this, chart = breadcrumbs.chart, breadcrumbsOptions = breadcrumbs.options, lang = chart.options.lang, textFormat = breadcrumbsOptions.format ?? (breadcrumbsOptions.showFullPath ?
+            '{level.name}' :
+            '← {level.name}'), defaultText = lang && (lang.drillUpText ?? lang.mainBreadcrumb);
         let returnText = breadcrumbsOptions.formatter &&
             breadcrumbsOptions.formatter(breadcrumb) ||
             format(textFormat, { level: breadcrumb.levelOptions }, chart) || '';
@@ -731,7 +732,7 @@ class Breadcrumbs {
             if (breadcrumbs.options.rtl) {
                 newPositions.x += positionOptions.width;
             }
-            newPositions.y = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(newPositions.y, this.yOffset, 0);
+            newPositions.y = (newPositions.y ?? this.yOffset ?? 0);
             breadcrumbs.group.align(newPositions, true, alignTo);
         }
     }
@@ -1460,7 +1461,7 @@ class TreemapPoint extends ScatterPoint {
         else if (!this.node.isGroup &&
             !this.node.isLeaf &&
             !series.nodeMap[series.rootNode].isGroup &&
-            !(0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(options.interactByLeaf, !options.allowTraversingTree)) {
+            !(options.interactByLeaf ?? !options.allowTraversingTree)) {
             className += ' highcharts-internal-node-interactive';
         }
         else if (!this.node.isGroup &&
@@ -2343,9 +2344,17 @@ function getColor(node, options) {
         }
         // Select either point color, level color or inherited color.
         if (!series.chart.styledMode) {
-            color = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(point && point.options.color, level && level.color, colorByPoint, parentColor && variateColor(parentColor), series.color);
+            color = ((point && point.options.color) ??
+                (level && level.color) ??
+                colorByPoint ??
+                (parentColor && variateColor(parentColor)) ??
+                series.color);
         }
-        colorIndex = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(point && point.options.colorIndex, level && level.colorIndex, colorIndexByPoint, parentColorIndex, options.colorIndex);
+        colorIndex = ((point && point.options.colorIndex) ??
+            (level && level.colorIndex) ??
+            colorIndexByPoint ??
+            parentColorIndex ??
+            options.colorIndex);
     }
     return {
         color: color,
@@ -2382,7 +2391,8 @@ function getLevelOptions(params) {
                 let level, levelIsConstant, options;
                 if ((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.isObject)(item) && (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.isNumber)(item.level)) {
                     options = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)({}, item);
-                    levelIsConstant = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(options.levelIsConstant, defaults.levelIsConstant);
+                    levelIsConstant =
+                        options.levelIsConstant ?? defaults.levelIsConstant;
                     // Delete redundant properties.
                     delete options.levelIsConstant;
                     delete options.level;
@@ -2414,7 +2424,7 @@ function setTreeValues(tree, options) {
     const before = options.before, idRoot = options.idRoot, mapIdToNode = options.mapIdToNode, nodeRoot = mapIdToNode[idRoot], levelIsConstant = (options.levelIsConstant !== false), points = options.points, point = points[tree.i], optionsPoint = point && point.options || {}, children = [];
     let childrenTotal = 0;
     tree.levelDynamic = tree.level - (levelIsConstant ? 0 : nodeRoot.level);
-    tree.name = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(point && point.name, '');
+    tree.name = ((point && point.name) ?? '');
     tree.visible = (idRoot === tree.id ||
         options.visible === true);
     if (typeof before === 'function') {
@@ -2435,7 +2445,7 @@ function setTreeValues(tree, options) {
         }
     });
     // Set the values
-    const value = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(optionsPoint.value, childrenTotal);
+    const value = (optionsPoint.value ?? childrenTotal);
     tree.visible = value >= 0 && (childrenTotal > 0 || tree.visible);
     tree.children = children;
     tree.childrenTotal = childrenTotal;
@@ -2461,7 +2471,7 @@ function updateRootId(series) {
         // Get the series options.
         options = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.isObject)(series.options) ? series.options : {};
         // Calculate the rootId.
-        rootId = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(series.rootNode, options.rootId, '');
+        rootId = (series.rootNode ?? options.rootId ?? '');
         // Set rootId on series.userOptions to pick it up in exporting.
         if ((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.isObject)(series.userOptions)) {
             series.userOptions.rootId = rootId;
@@ -2851,9 +2861,9 @@ class TreemapSeries extends ScatterSeries {
      * The rectangular area of the parent.
      */
     calculateChildrenAreas(parent, area) {
-        const series = this, options = series.options, mapOptionsToLevel = series.mapOptionsToLevel, level = mapOptionsToLevel[parent.level + 1], algorithm = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)((level?.layoutAlgorithm &&
+        const series = this, options = series.options, mapOptionsToLevel = series.mapOptionsToLevel, level = mapOptionsToLevel[parent.level + 1], algorithm = ((level?.layoutAlgorithm &&
             series[level?.layoutAlgorithm] &&
-            level.layoutAlgorithm), options.layoutAlgorithm), alternate = options.alternateStartingDirection, 
+            level.layoutAlgorithm) ?? options.layoutAlgorithm), alternate = options.alternateStartingDirection, 
         // Collect all children which should be included
         children = parent.children.filter((n) => parent.isGroup || !n.ignore), groupPadding = level?.groupPadding ?? options.groupPadding ?? 0, rootNode = series.nodeMap[series.rootNode];
         if (!algorithm) {
@@ -3235,7 +3245,7 @@ class TreemapSeries extends ScatterSeries {
      */
     getListOfParents(data, existingIds) {
         const arr = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.isArray)(data) ? data : [], ids = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.isArray)(existingIds) ? existingIds : [], listOfParents = arr.reduce(function (prev, curr, i) {
-            const parent = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(curr.parent, '');
+            const parent = (curr.parent ?? '');
             if (typeof prev[parent] === 'undefined') {
                 prev[parent] = [];
             }
@@ -3388,13 +3398,16 @@ class TreemapSeries extends ScatterSeries {
             series.mapOptionsToLevel :
             {}), level = point?.node && mapOptionsToLevel[point.node.level] || {}, options = this.options, stateOptions = state && options.states && options.states[state] || {}, className = point?.node && point.getClassName() || '', 
         // Set attributes by precedence. Point trumps level trumps series.
-        // Stroke width uses pick because it can be 0.
+        // Stroke width uses nullish coalescing because it can be 0.
         attr = {
             'stroke': (point && point.borderColor) ||
                 level.borderColor ||
                 stateOptions.borderColor ||
                 options.borderColor,
-            'stroke-width': (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(point && point.borderWidth, level.borderWidth, stateOptions.borderWidth, options.borderWidth),
+            'stroke-width': ((point && point.borderWidth) ??
+                level.borderWidth ??
+                stateOptions.borderWidth ??
+                options.borderWidth),
             'dashstyle': point?.borderDashStyle ||
                 level.borderDashStyle ||
                 stateOptions.borderDashStyle ||
@@ -3535,7 +3548,7 @@ class TreemapSeries extends ScatterSeries {
         const series = this, eventArgs = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.extend)({
             newRootId: id,
             previousRootId: series.rootNode,
-            redraw: (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(redraw, true),
+            redraw: (redraw ?? true),
             series: series
         }, eventArguments);
         /**
@@ -3592,7 +3605,7 @@ class TreemapSeries extends ScatterSeries {
         // Sort the children
         (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.stableSort)(children, (a, b) => ((a.sortIndex || 0) - (b.sortIndex || 0)));
         // Set the values
-        let val = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(point?.simulatedValue, point?.options.value, childrenTotal);
+        let val = point?.simulatedValue ?? point?.options.value ?? childrenTotal;
         if (point) {
             point.value = val;
         }
@@ -3606,14 +3619,14 @@ class TreemapSeries extends ScatterSeries {
             children: children,
             childrenTotal: childrenTotal,
             // Ignore this node if point is not visible
-            ignore: !((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(point?.visible, true) && (val > 0)),
+            ignore: !((point?.visible ?? true) && (val > 0)),
             isLeaf: tree.visible && !(series.type === 'treegraph' ?
                 children.length > 0 :
                 childrenTotal),
             isGroup: point?.isGroup,
             levelDynamic: (tree.level - (levelIsConstant ? 0 : nodeRoot.level)),
-            name: (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(point?.name, ''),
-            sortIndex: (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(point?.sortIndex, -val),
+            name: (point?.name ?? ''),
+            sortIndex: (point?.sortIndex ?? -val),
             val: val
         });
         return tree;
@@ -3799,11 +3812,13 @@ var CenteredUtilities;
             innerSize = parseFloat(innerSize);
         }
         const positions = [
-            (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(centerOption?.[0], '50%'),
-            (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(centerOption?.[1], '50%'),
+            (centerOption?.[0] ?? '50%'),
+            (centerOption?.[1] ?? '50%'),
             // Prevent from negative values
-            (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(size && size < 0 ? void 0 : options.size, '100%'),
-            (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(innerSize && innerSize < 0 ? void 0 : options.innerSize || 0, '0%')
+            ((size && size < 0 ? void 0 : options.size) ?? '100%'),
+            ((innerSize && innerSize < 0 ?
+                void 0 :
+                options.innerSize || 0) ?? '0%')
         ];
         for (i = 0; i < 4; ++i) {
             value = positions[i];

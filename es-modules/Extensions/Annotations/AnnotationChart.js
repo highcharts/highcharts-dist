@@ -10,7 +10,7 @@
  *
  * */
 'use strict';
-import { addEvent, erase, find, fireEvent, isArray, isObject, pick, wrap } from '../../Shared/Utilities.js';
+import { addEvent, erase, find, fireEvent, isArray, isObject, wrap } from '../../Shared/Utilities.js';
 /* *
  *
  *  Functions
@@ -35,7 +35,7 @@ import { addEvent, erase, find, fireEvent, isArray, isObject, pick, wrap } from 
 function chartAddAnnotation(options, redraw) {
     const annotation = this.initAnnotation(options);
     this.options.annotations.push(annotation.options);
-    if (pick(redraw, true)) {
+    if (redraw ?? true) {
         annotation.redraw();
         annotation.graphic.attr({
             opacity: 1

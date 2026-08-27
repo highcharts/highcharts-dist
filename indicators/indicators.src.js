@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.0.1 (2026-08-17)
+ * @license Highstock JS v13.0.2 (2026-08-27)
  * @module highcharts/indicators/indicators
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -702,7 +702,7 @@ class SMAIndicator extends LineSeries {
         if (!name) {
             (this.nameComponents || []).forEach(function (component, index) {
                 params.push(this.options.params[component] +
-                    (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(this.nameSuffixes[index], ''));
+                    (this.nameSuffixes[index] ?? ''));
             }, this);
             name = (this.nameBase || this.type.toUpperCase()) +
                 (this.nameComponents ? ' (' + params.join(', ') + ')' : '');

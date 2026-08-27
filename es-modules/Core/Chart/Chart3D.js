@@ -18,7 +18,7 @@ import D from '../Defaults.js';
 const { defaultOptions: genericDefaultOptions } = D;
 import Math3D from '../Math3D.js';
 const { perspective, shapeArea3D } = Math3D;
-import { addEvent, isArray, merge, pick, wrap } from '../../Shared/Utilities.js';
+import { addEvent, isArray, merge, wrap } from '../../Shared/Utilities.js';
 /* *
  *
  *  Composition
@@ -1312,8 +1312,8 @@ var Chart3D;
                     isVisible = faceOrientation > 0;
                 }
                 return {
-                    size: pick(options.size, 1),
-                    color: pick(options.color, 'none'),
+                    size: (options.size ?? 1),
+                    color: (options.color ?? 'none'),
                     frontFacing: faceOrientation > 0,
                     visible: isVisible
                 };

@@ -1,5 +1,5 @@
 /**
- * Highstock JS v13.0.1 (2026-08-17)
+ * Highstock JS v13.0.2 (2026-08-27)
  * @module highcharts/indicators/dmi
  * @requires highcharts
  * @requires highcharts/modules/stock

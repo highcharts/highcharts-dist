@@ -20,7 +20,7 @@ import RangeSelectorDefaults from '../../Stock/RangeSelector/RangeSelectorDefaul
 import ScrollbarDefaults from '../../Stock/Scrollbar/ScrollbarDefaults.js';
 import StockUtilities from '../../Stock/Utilities/StockUtilities.js';
 const { setFixedRange } = StockUtilities;
-import { addEvent, clamp, crisp, defined, extend, find, isNumber, isString, merge, pick, splat } from '../../Shared/Utilities.js';
+import { addEvent, clamp, crisp, defined, extend, find, isNumber, isString, merge, splat } from '../../Shared/Utilities.js';
 /* *
  *
  *  Functions
@@ -68,7 +68,9 @@ function getForcedAxisOptions(type, chartOptions) {
     if (type === 'xAxis') {
         // Always disable startOnTick:true on the main axis when the navigator
         // is enabled (#1090)
-        const navigatorEnabled = pick(chartOptions.navigator?.enabled, NavigatorDefaults.enabled, true);
+        const navigatorEnabled = chartOptions.navigator?.enabled ??
+            NavigatorDefaults.enabled ??
+            true;
         const axisOptions = {
             type: 'datetime',
             categories: void 0
@@ -122,7 +124,9 @@ class StockChart extends Chart {
         const defaultOptions = getOptions(), xAxisOptions = userOptions.xAxis, yAxisOptions = userOptions.yAxis, 
         // Always disable startOnTick:true on the main axis when the
         // navigator is enabled (#1090)
-        navigatorEnabled = pick(userOptions.navigator?.enabled, NavigatorDefaults.enabled, true);
+        navigatorEnabled = userOptions.navigator?.enabled ??
+            NavigatorDefaults.enabled ??
+            true;
         // Avoid doing these twice
         userOptions.xAxis = userOptions.yAxis = void 0;
         const options = merge({
@@ -143,17 +147,17 @@ class StockChart extends Chart {
             },
             scrollbar: {
                 // #4988 - check if setOptions was called
-                enabled: pick(ScrollbarDefaults.enabled, true)
+                enabled: (ScrollbarDefaults.enabled ?? true)
             },
             rangeSelector: {
                 // #4988 - check if setOptions was called
-                enabled: pick(RangeSelectorDefaults.rangeSelector.enabled, true)
+                enabled: RangeSelectorDefaults.rangeSelector.enabled ?? true
             },
             title: {
                 text: null
             },
             tooltip: {
-                split: pick(defaultOptions.tooltip?.split, true),
+                split: (defaultOptions.tooltip?.split ?? true),
                 crosshairs: true
             },
             legend: {
@@ -287,8 +291,8 @@ addEvent(Chart, 'update', function (e) {
                 axis.series[0] && this.series[0].colorIndex))
                 .attr({
                 align: options.align || align,
-                padding: pick(options.padding, 8),
-                r: pick(options.borderRadius, 3),
+                padding: (options.padding ?? 8),
+                r: (options.borderRadius ?? 3),
                 zIndex: 2
             })
                 .add(axis.labelGroup);
@@ -513,7 +517,7 @@ addEvent(Chart, 'update', function (e) {
                     uniqueAxes.push(axis2);
                 }
             }
-            transVal = pick(translatedValue, axis.translate(value || 0, void 0, void 0, e.old));
+            transVal = translatedValue ?? axis.translate(value || 0, void 0, void 0, e.old);
             if (isNumber(transVal)) {
                 let skip, pos = horiz ?
                     transVal + axis.pos :
@@ -592,7 +596,7 @@ addEvent(Chart, 'update', function (e) {
     function seriesForceCropping() {
         const series = this, chart = series.chart, options = series.options, dataGroupingOptions = options.dataGrouping, groupingEnabled = (series.allowDG !== false &&
             dataGroupingOptions &&
-            pick(dataGroupingOptions.enabled, chart.options.isStock));
+            (dataGroupingOptions.enabled ?? chart.options.isStock));
         return groupingEnabled;
     }
     /* eslint-disable jsdoc/check-param-names */
@@ -630,7 +634,7 @@ addEvent(Chart, 'update', function (e) {
      */
     function stockChart(a, b, c) {
         const chart = new StockChart(a, b, c);
-        return chart.promise || chart;
+        return chart.promise ?? chart;
     }
     StockChart.stockChart = stockChart;
     /* eslint-enable jsdoc/check-param-names */

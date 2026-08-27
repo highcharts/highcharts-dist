@@ -13,7 +13,7 @@
 import FlowMapPoint from './FlowMapPoint.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { series: { prototype: { pointClass: Point } }, seriesTypes: { column: ColumnSeries, map: MapSeries, mapline: MapLineSeries } } = SeriesRegistry;
-import { addEvent, arrayMax, arrayMin, defined, extend, isArray, merge, pick, relativeLength } from '../../Shared/Utilities.js';
+import { addEvent, arrayMax, arrayMin, defined, extend, isArray, merge, relativeLength } from '../../Shared/Utilities.js';
 /**
  * The flowmap series type
  *
@@ -182,9 +182,17 @@ class FlowMapSeries extends MapLineSeries {
      */
     pointAttribs(point, state) {
         const attrs = MapSeries.prototype.pointAttribs.call(this, point, state);
-        attrs.fill = pick(point.options.fillColor, point.options.color, this.options.fillColor === 'none' ? null : this.options.fillColor, this.color);
-        attrs['fill-opacity'] = pick(point.options.fillOpacity, this.options.fillOpacity);
-        attrs['stroke-width'] = pick(point.options.lineWidth, this.options.lineWidth, 1);
+        attrs.fill =
+            point.options.fillColor ??
+                point.options.color ??
+                (this.options.fillColor === 'none' ?
+                    void 0 :
+                    this.options.fillColor) ??
+                this.color;
+        attrs['fill-opacity'] =
+            point.options.fillOpacity ?? this.options.fillOpacity;
+        attrs['stroke-width'] =
+            point.options.lineWidth ?? this.options.lineWidth ?? 1;
         if (point.options.opacity) {
             attrs.opacity = point.options.opacity;
         }
@@ -251,8 +259,8 @@ class FlowMapSeries extends MapLineSeries {
                 averageX += (fromPos.x + toPos.x) / 2;
                 averageY += (fromPos.y + toPos.y) / 2;
             }
-            if (pick(point.options.weight, this.options.weight)) {
-                weights.push(pick(point.options.weight, this.options.weight));
+            if (point.options.weight ?? this.options.weight) {
+                weights.push(point.options.weight ?? this.options.weight);
             }
         });
         this.smallestWeight = arrayMin(weights);
@@ -278,7 +286,7 @@ class FlowMapSeries extends MapLineSeries {
             point.shapeArgs = this.getPointShapeArgs(point);
             // When updating point from null to normal value, set a real color
             // (don't keep nullColor).
-            point.color = pick(point.options.color, point.series.color);
+            point.color = (point.options.color ?? point.series.color);
         });
     }
     getPointShapeArgs(point) {
@@ -286,8 +294,8 @@ class FlowMapSeries extends MapLineSeries {
         if (!fromPos || !toPos) {
             return {};
         }
-        const finalWidth = this.getLinkWidth(point) / 2, pointOptions = point.options, markerEndOptions = merge(this.options.markerEnd, pointOptions.markerEnd), growTowards = pick(pointOptions.growTowards, this.options.growTowards), fromX = fromPos.x || 0, fromY = fromPos.y || 0;
-        let toX = toPos.x || 0, toY = toPos.y || 0, curveFactor = pick(pointOptions.curveFactor, this.options.curveFactor), offset = markerEndOptions && markerEndOptions.enabled &&
+        const finalWidth = this.getLinkWidth(point) / 2, pointOptions = point.options, markerEndOptions = merge(this.options.markerEnd, pointOptions.markerEnd), growTowards = pointOptions.growTowards ?? this.options.growTowards, fromX = fromPos.x || 0, fromY = fromPos.y || 0;
+        let toX = toPos.x || 0, toY = toPos.y || 0, curveFactor = pointOptions.curveFactor ?? this.options.curveFactor, offset = markerEndOptions && markerEndOptions.enabled &&
             markerEndOptions.height || 0;
         if (!defined(curveFactor)) { // Automate the curveFactor value.
             curveFactor = this.autoCurve(fromX, fromY, toX, toY, this.centerOfPoints.x, this.centerOfPoints.y);

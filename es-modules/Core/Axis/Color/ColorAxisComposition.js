@@ -12,7 +12,7 @@
 'use strict';
 import Color from '../../Color/Color.js';
 const { parse: color } = Color;
-import { addEvent, extend, merge, pick, splat } from '../../../Shared/Utilities.js';
+import { addEvent, extend, merge, splat } from '../../../Shared/Utilities.js';
 /* *
  *
  *  Composition
@@ -230,7 +230,7 @@ export var ColorAxisComposition;
                 series.bindAxes();
                 series.isDirtyData = true;
             });
-            if (pick(options.redraw, true)) {
+            if (options.redraw ?? true) {
                 chart.redraw(options.animation);
             }
             return axis;

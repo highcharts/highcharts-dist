@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.0.1 (2026-08-17)
+ * @license Highstock JS v13.0.2 (2026-08-27)
  * @module highcharts/indicators/dpo
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -91,7 +91,7 @@ const { sma: SMAIndicator } = (external_highcharts_src_js_default_SeriesRegistry
 // Utils:
 /** @internal */
 function accumulatePoints(sum, yVal, i, index, subtract) {
-    const price = (0,external_highcharts_src_js_default_namespaceObject.pick)(yVal[i][index], yVal[i]);
+    const price = (yVal[i][index] ?? yVal[i]);
     if (subtract) {
         return (0,external_highcharts_src_js_default_namespaceObject.correctFloat)(sum - price);
     }
@@ -136,7 +136,8 @@ class DPOIndicator extends SMAIndicator {
             rangeIndex = j + range - 1;
             // Adding the last period point
             sum = accumulatePoints(sum, yVal, periodIndex, index);
-            price = (0,external_highcharts_src_js_default_namespaceObject.pick)(yVal[rangeIndex][index], yVal[rangeIndex]);
+            price = yVal[rangeIndex][index] ??
+                yVal[rangeIndex];
             oscillator = price - sum / period;
             // Subtracting the first period point
             sum = accumulatePoints(sum, yVal, j, index, true);

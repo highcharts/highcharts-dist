@@ -17,7 +17,7 @@ const { composed, deg2rad } = H;
 import Pie3DPoint from './Pie3DPoint.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { pie: PieSeries } = SeriesRegistry.seriesTypes;
-import { extend, pick, pushUnique } from '../../Shared/Utilities.js';
+import { extend, pushUnique } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class
@@ -65,8 +65,12 @@ class Pie3DSeries extends PieSeries {
             // Initialize the animation
             if (init) {
                 // Scale down the group and place it in the center
-                group.oldtranslateX = pick(group.oldtranslateX, group.translateX);
-                group.oldtranslateY = pick(group.oldtranslateY, group.translateY);
+                group.oldtranslateX =
+                    group.oldtranslateX ??
+                        group.translateX;
+                group.oldtranslateY =
+                    group.oldtranslateY ??
+                        group.translateY;
                 attribs = {
                     translateX: center[0],
                     translateY: center[1],
@@ -124,7 +128,7 @@ class Pie3DSeries extends PieSeries {
         const attr = super.pointAttribs.apply(this, arguments), options = this.options;
         if (this.chart.is3d() && !this.chart.styledMode) {
             attr.stroke = options.edgeColor || point.color || this.color;
-            attr['stroke-width'] = pick(options.edgeWidth, 1);
+            attr['stroke-width'] = (options.edgeWidth ?? 1);
         }
         return attr;
     }

@@ -11,7 +11,7 @@
  * */
 'use strict';
 import PlotLineOrBandAxis from './PlotLineOrBandAxis.js';
-import { addEvent, arrayMax, arrayMin, defined, destroyObjectProperties, erase, fireEvent, merge, objectEach, pick } from '../../../Shared/Utilities.js';
+import { addEvent, arrayMax, arrayMin, defined, destroyObjectProperties, erase, fireEvent, merge, objectEach } from '../../../Shared/Utilities.js';
 /* *
  *
  *  Class
@@ -111,7 +111,8 @@ class PlotLineOrBand {
         if (!chart.styledMode) {
             if (isLine) {
                 attribs.stroke = color || 'var(--highcharts-neutral-color-40)';
-                attribs['stroke-width'] = pick(options.width, 1);
+                attribs['stroke-width'] =
+                    options.width ?? 1;
                 if (options.dashStyle) {
                     attribs.dashstyle = options.dashStyle;
                 }

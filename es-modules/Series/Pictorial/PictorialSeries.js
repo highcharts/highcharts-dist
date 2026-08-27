@@ -25,7 +25,7 @@ import Series from '../../Core/Series/Series.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 import StackItem from '../../Core/Axis/Stacking/StackItem.js';
 import SVGRenderer from '../../Core/Renderer/SVG/SVGRenderer.js';
-import { addEvent, defined, merge, objectEach, pick } from '../../Shared/Utilities.js';
+import { addEvent, defined, merge, objectEach } from '../../Shared/Utilities.js';
 /* *
  *
  *  Composition
@@ -226,7 +226,9 @@ function renderStackShadow(stack) {
         stack.axis.hasData() &&
         series.xAxis.hasData()) {
         const xAxis = series.xAxis, options = stack.axis.options, chart = stack.axis.chart, stackShadow = stack.shadow, xCenter = xAxis.toPixels(stack.x, true), x = chart.inverted ? xAxis.len - xCenter : xCenter, paths = series.options.paths || [], index = stack.x % paths.length, shape = paths[index], width = series.getColumnMetrics &&
-            series.getColumnMetrics().width, { height, y } = getStackMetrics(series.yAxis, shape), shadowOptions = options.stackShadow, strokeWidth = pick(shadowOptions && shadowOptions.borderWidth, series.options.borderWidth, 1);
+            series.getColumnMetrics().width, { height, y } = getStackMetrics(series.yAxis, shape), shadowOptions = options.stackShadow, strokeWidth = ((shadowOptions && shadowOptions.borderWidth) ??
+            series.options.borderWidth ??
+            1);
         if (!stackShadow &&
             shadowOptions &&
             shadowOptions.enabled &&

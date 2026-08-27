@@ -21,7 +21,7 @@ const { getOptions } = D;
 import PopupAnnotations from './PopupAnnotations.js';
 import PopupIndicators from './PopupIndicators.js';
 import PopupTabs from './PopupTabs.js';
-import { addEvent, clamp, createElement, extend, fireEvent, pick } from '../../../Shared/Utilities.js';
+import { addEvent, clamp, createElement, extend, fireEvent } from '../../../Shared/Utilities.js';
 /* *
  *
  *  Functions
@@ -178,7 +178,8 @@ class Popup extends BaseForm {
      *         Return created input element.
      */
     addInput(option, indicatorType, parentDiv, inputAttributes) {
-        const optionParamList = option.split('.'), optionName = optionParamList[optionParamList.length - 1], lang = this.lang, inputName = 'highcharts-' + indicatorType + '-' + pick(inputAttributes.htmlFor, optionName);
+        const optionParamList = option.split('.'), optionName = optionParamList[optionParamList.length - 1], lang = this.lang, inputName = 'highcharts-' + indicatorType + '-' +
+            (inputAttributes.htmlFor ?? optionName);
         if (!optionName.match(/^\d+$/)) {
             // Add label
             createElement('label', {

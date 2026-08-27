@@ -28,7 +28,7 @@ import SVGRenderer from '../Renderer/SVG/SVGRenderer.js';
 import Time from '../Time.js';
 import AST from '../Renderer/HTML/AST.js';
 import Tick from '../Axis/Tick.js';
-import { addEvent, attr, createElement, css, defined, diffObjects, discardElement, erase, extend, find, fireEvent, getAlignFactor, getStyle, internalClearTimeout, isArray, isNumber, isObject, isString, merge, objectEach, pick, pInt, relativeLength, removeEvent, splat, syncTimeout } from '../../Shared/Utilities.js';
+import { addEvent, attr, createElement, css, defined, diffObjects, discardElement, erase, extend, find, fireEvent, getAlignFactor, getStyle, internalClearTimeout, isArray, isNumber, isObject, isString, merge, objectEach, pInt, relativeLength, removeEvent, splat, syncTimeout } from '../../Shared/Utilities.js';
 import { error, uniqueKey } from '../Utilities.js';
 /* *
  *
@@ -101,7 +101,7 @@ class Chart {
      */
     static chart(a, b, c) {
         const chart = new Chart(a, b, c);
-        return chart.promise || chart;
+        return chart.promise ?? chart;
     }
     // Implementation
     constructor(a, 
@@ -142,10 +142,10 @@ class Chart {
         const chart = this, options = chart.options.chart, zooming = options.zooming;
         chart.zooming = {
             ...zooming,
-            type: pick(options.zoomType, zooming.type),
-            key: pick(options.zoomKey, zooming.key),
-            pinchType: pick(options.pinchType, zooming.pinchType),
-            singleTouch: pick(options.zoomBySingleTouch, zooming.singleTouch, false),
+            type: (options.zoomType ?? zooming.type),
+            key: (options.zoomKey ?? zooming.key),
+            pinchType: (options.pinchType ?? zooming.pinchType),
+            singleTouch: options.zoomBySingleTouch ?? zooming.singleTouch ?? false,
             resetButton: merge(zooming.resetButton, options.resetZoomButton)
         };
     }
@@ -697,7 +697,7 @@ class Chart {
             // inspect the generated series.points.
             series.getPointsCollection()
                 .forEach((point) => {
-                if (pick(point.selectedStaging, point.selected)) {
+                if (point.selectedStaging ?? point.selected) {
                     acc.push(point);
                 }
             });
@@ -1135,7 +1135,7 @@ class Chart {
             chartWidth = chart.chartWidth;
             if (!chart.styledMode) {
                 css(container, {
-                    width: pick(optionsChart.style?.width, chartWidth + 'px')
+                    width: (optionsChart.style?.width ?? chartWidth + 'px')
                 });
             }
         }
@@ -1778,7 +1778,7 @@ class Chart {
                 const mockTick = new Tick(axis, 0, '', true), label = mockTick.createLabel('x', labels);
                 mockTick.destroy();
                 if (label &&
-                    pick(labels.reserveSpace, !isNumber(options.crossing))) {
+                    (labels.reserveSpace ?? !isNumber(options.crossing))) {
                     expectedSpace = label.getBBox().height +
                         labels.distance +
                         Math.max(isNumber(offset) ? offset : 0, 0);
@@ -2113,7 +2113,7 @@ class Chart {
         const chart = this;
         let series;
         if (options) { // <- not necessary
-            redraw = pick(redraw, true); // Defaults to true
+            redraw = (redraw ?? true); // Defaults to true
             fireEvent(chart, 'addSeries', { options: options }, function () {
                 series = chart.initSeries(options);
                 chart.isDirtyLegend = true;
@@ -2204,7 +2204,7 @@ class Chart {
      */
     createAxis(coll, options) {
         const axis = new Axis(this, options.axis, coll);
-        if (pick(options.redraw, true)) {
+        if (options.redraw ?? true) {
             this.redraw(options.animation);
         }
         return axis;
@@ -2252,7 +2252,7 @@ class Chart {
         }
         loadingDiv.className = 'highcharts-loading';
         // Update text
-        AST.setElementHTML(loadingSpan, pick(str, options.lang.loading, ''));
+        AST.setElementHTML(loadingSpan, (str ?? options.lang.loading ?? ''));
         if (!chart.styledMode) {
             // Update visuals
             css(loadingDiv, extend(loadingStyle, { zIndex: 10 }));
@@ -2490,7 +2490,7 @@ class Chart {
                     }
                     // No match by id found, match by index instead
                     if (!item && chart[coll]) {
-                        item = chart[coll][pick(newOptions.index, i)];
+                        item = chart[coll][(newOptions.index ?? i)];
                         // Check if we grabbed an item with an existing but
                         // different id (#13541). Check that the item in this
                         // position is not internal (navigator).
@@ -2703,7 +2703,7 @@ class Chart {
         fireEvent(this, 'transform', params);
         let hasZoomed = params.hasZoomed || false, displayButton, isAnyAxisPanning;
         for (const axis of axes) {
-            const { horiz, len, minPointOffset = 0, options, reversed } = axis, wh = horiz ? 'width' : 'height', xy = horiz ? 'x' : 'y', toLength = pick(to[wh], axis.len), fromLength = pick(from[wh], axis.len), 
+            const { horiz, len, minPointOffset = 0, options, reversed } = axis, wh = horiz ? 'width' : 'height', xy = horiz ? 'x' : 'y', toLength = (to[wh] ?? axis.len), fromLength = (from[wh] ?? axis.len), 
             // If fingers pinched very close on this axis, treat as pan
             scale = Math.abs(toLength) < 10 ?
                 1 :

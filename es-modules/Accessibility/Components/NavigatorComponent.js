@@ -28,7 +28,7 @@ import HU from '../Utils/HTMLUtilities.js';
 const { getFakeMouseEvent } = HU;
 import CU from '../Utils/ChartUtilities.js';
 const { getAxisRangeDescription, fireEventOnWrappedOrUnwrappedElement } = CU;
-import { clamp, internalClearTimeout, pick, syncTimeout } from '../../Shared/Utilities.js';
+import { clamp, internalClearTimeout, syncTimeout } from '../../Shared/Utilities.js';
 /**
  * The NavigatorComponent class
  *
@@ -52,7 +52,7 @@ class NavigatorComponent extends AccessibilityComponent {
                     component.proxyProvider
                         .updateGroupProxyElementPositions('navigator');
                     component.updateHandleValues();
-                }, animObject(pick(this.chart.renderer.globalAnimation, true)).duration);
+                }, animObject((this.chart.renderer.globalAnimation ?? true)).duration);
             }
         });
     }

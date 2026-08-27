@@ -11,7 +11,7 @@
  * */
 'use strict';
 import StackItem from './Stacking/StackItem.js';
-import { addEvent, find, fireEvent, isArray, isNumber, pick } from '../../Shared/Utilities.js';
+import { addEvent, find, fireEvent, isArray, isNumber } from '../../Shared/Utilities.js';
 /* *
  *
  *  Composition
@@ -115,7 +115,7 @@ var BrokenAxis;
     /** @internal */
     function onSeriesAfterRender() {
         this.drawBreaks(this.xAxis, ['x']);
-        this.drawBreaks(this.yAxis, pick(this.pointArrayMap, ['y']));
+        this.drawBreaks(this.yAxis, (this.pointArrayMap ?? ['y']));
     }
     /** @internal */
     function seriesDrawBreaks(axis, keys) {
@@ -127,7 +127,7 @@ var BrokenAxis;
                 breaks = brokenAxis?.breakArray || [];
                 threshold = axis.isXAxis ?
                     axis.min :
-                    pick(series.options.threshold, axis.min);
+                    (series.options.threshold ?? axis.min);
                 points.forEach(function (point) {
                     y = point['stack' + key.toUpperCase()] ??
                         point[key];
@@ -420,7 +420,8 @@ var BrokenAxis;
                     if (Additions.isInBreak(breaks[i], val)) {
                         inbrk = true;
                         if (!keep) {
-                            keep = pick(breaks[i].showPoints, !axis.isXAxis);
+                            keep =
+                                breaks[i].showPoints ?? !axis.isXAxis;
                         }
                     }
                 }
@@ -603,7 +604,7 @@ var BrokenAxis;
                     }
                 };
             }
-            if (pick(redraw, true)) {
+            if (redraw ?? true) {
                 axis.chart.redraw();
             }
         }

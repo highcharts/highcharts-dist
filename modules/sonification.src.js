@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.1 (2026-08-17)
+ * @license Highcharts JS v13.0.2 (2026-08-27)
  * @module highcharts/modules/sonification
  * @requires highcharts
  *
@@ -1354,7 +1354,7 @@ class Oscillator {
         }
     }
     setFreqAtTime(time, frequency, glideDuration = 0) {
-        const opts = this.options, f = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.clamp)((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(opts.fixedFrequency, frequency) *
+        const opts = this.options, f = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.clamp)((opts.fixedFrequency ?? frequency) *
             (opts.freqMultiplier || 1), 0, 21000), oscTarget = this.getOscTarget(), timeConstant = glideDuration / 5000;
         if (oscTarget) {
             oscTarget.cancelScheduledValues(time);
@@ -1443,7 +1443,7 @@ class Oscillator {
             opts.releaseEnvelope && opts.releaseEnvelope.length;
         if (needsGainNode) {
             this.gainNode = new GainNode(this.audioContext, {
-                gain: (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(opts.volume, 1)
+                gain: (opts.volume ?? 1)
             });
         }
         // We always need VM gain, so make that
@@ -3120,7 +3120,6 @@ SonificationInstrument.rampTime = Sonification_SynthPatch.stopRampTime / 4;
  *
  * */
 
-
 /**
  * The SonificationSpeaker class. This class represents an announcer using
  * speech synthesis. It allows for scheduling speech announcements, as well
@@ -3167,7 +3166,9 @@ class SonificationSpeaker {
             utterance.rate = options && options.rate || this.options.rate || 1;
             utterance.pitch = options && options.pitch ||
                 this.options.pitch || 1;
-            utterance.volume = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(options && options.volume, this.options.volume, 1) * this.masterVolume;
+            utterance.volume = ((options && options.volume) ??
+                this.options.volume ??
+                1) * this.masterVolume;
             this.synthesis.speak(utterance);
         }
     }
@@ -3395,7 +3396,6 @@ class TimelineChannel {
 /* eslint-disable no-multi-spaces */
 
 
-
 const freqToNote = (f) => Math.round(12 * Math.log(f) / Math.LN2 - 48.37632), b = (byte, n) => n >>> 8 * byte & 0xFF, getHeader = (nTracks) => [
     0x4D, 0x54, 0x68, 0x64, // HD_TYPE
     0, 0, 0, 6, // HD_SIZE
@@ -3430,7 +3430,7 @@ varLenEnc = (n) => {
         res.splice(ix + 1, 0, el);
     };
     events.forEach((e) => {
-        const o = e.instrumentEventOptions || {}, t = e.time, dur = cachedDur = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(o.noteDuration, cachedDur), tNOF = dur && e.time + dur, ctrl = [{
+        const o = e.instrumentEventOptions || {}, t = e.time, dur = cachedDur = (o.noteDuration ?? cachedDur), tNOF = dur && e.time + dur, ctrl = [{
                 valMap: (n) => 64 + 63 * n & 0x7F,
                 data: {
                     0x0A: o.pan, // Use MSB only, no need for fine adjust
@@ -3450,7 +3450,7 @@ varLenEnc = (n) => {
                     0x4C: o.highpassResonance
                 }
             }], v = cachedVel = o.volume === void 0 ?
-            (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(cachedVel, 127) : 127 * o.volume & 0x7F, freq = o.frequency, note = o.note || 0, noteVal = 12 + (freq ? freqToNote(freq) : // MIDI note #0 is C-1
+            (cachedVel ?? 127) : 127 * o.volume & 0x7F, freq = o.frequency, note = o.note || 0, noteVal = 12 + (freq ? freqToNote(freq) : // MIDI note #0 is C-1
             typeof note === 'string' ? Sonification_SonificationInstrument
                 .noteStringToC0Distance(note) : note) & 0x7F;
         // CTRL_CHANGE events
@@ -4438,8 +4438,8 @@ function getMappingParameterValue(context, propMetrics, useSeriesExtremes, defau
     if (typeof mappingOptions === 'object') {
         mapTo = mappingOptions.mapTo;
         mapFunc = mappingOptions.mapFunction || mapFunc;
-        min = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(mappingOptions.min, min);
-        max = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(mappingOptions.max, max);
+        min = (mappingOptions.min ?? min);
+        max = (mappingOptions.max ?? max);
         within = mappingOptions.within || defaultMapping.within;
         scale = mappingOptions.scale;
     }
@@ -4513,9 +4513,9 @@ function getMappingParameterValue(context, propMetrics, useSeriesExtremes, defau
  * @internal
  */
 function getParamValWithDefault(context, propMetrics, useSeriesExtremes, mappingParamOptions, fallback, defaults, contextValueProp) {
-    return (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(getMappingParameterValue(context, propMetrics, useSeriesExtremes, (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.extend)({
+    return (getMappingParameterValue(context, propMetrics, useSeriesExtremes, (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.extend)({
         min: 0, max: 1, mapTo: 'y', mapFunction: 'linear', within: 'chart'
-    }, (defaults || {})), mappingParamOptions, contextValueProp), fallback);
+    }, (defaults || {})), mappingParamOptions, contextValueProp) ?? fallback);
 }
 /**
  * Get time value for a point event.
@@ -4577,7 +4577,7 @@ function addTimelineChannelFromTrack(timeline, audioContext, destinationNode, op
             synthPatch: options.instrument,
             midiTrackName: options.midiName
         });
-    return timeline.addChannel(options.type || 'instrument', engine, (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(options.showPlayMarker, true));
+    return timeline.addChannel(options.type || 'instrument', engine, (options.showPlayMarker ?? true));
 }
 /**
  * Add event from a point to a mapped instrument track.
@@ -4693,8 +4693,8 @@ function addMappedEventForPoint(context, channel, trackOptions, propMetrics) {
         }
     }
     else if (trackOptions.mapping) {
-        eventsAdded = addMappedInstrumentEvent(context, channel, trackOptions.mapping, propMetrics, (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(trackOptions
-            .roundToMusicalNotes, true));
+        eventsAdded = addMappedInstrumentEvent(context, channel, trackOptions.mapping, propMetrics, (trackOptions
+            .roundToMusicalNotes ?? true));
     }
     return eventsAdded;
 }
@@ -4753,7 +4753,7 @@ function isActive(context, activeWhen, lastPropValue) {
         return activeWhen(context);
     }
     if (typeof activeWhen === 'object') {
-        const prop = activeWhen.prop, val = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(context.value, context.point && getPointPropValue(context.point, prop));
+        const prop = activeWhen.prop, val = context.value ?? (context.point && getPointPropValue(context.point, prop));
         if (typeof val !== 'number') {
             return false;
         }
@@ -4770,7 +4770,7 @@ function isActive(context, activeWhen, lastPropValue) {
                 hasLastValue && lastPropValue > crossingDown &&
                     val <= crossingDown);
         }
-        const max = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(activeWhen.max, Infinity), min = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(activeWhen.min, -Infinity);
+        const max = (activeWhen.max ?? Infinity), min = (activeWhen.min ?? -Infinity);
         return val <= max && val >= min && crossingOk;
     }
     return true;
@@ -4922,7 +4922,7 @@ function timelineFromChart(audioContext, destinationNode, chart) {
                         addMappedSpeechEvent({ time, value }, contextChannel, mergedOpts.mapping, propMetrics, valueProp);
                     }
                     else {
-                        addMappedInstrumentEvent({ time, value }, contextChannel, mergedOpts.mapping, propMetrics, (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(mergedOpts.roundToMusicalNotes, true), valueProp);
+                        addMappedInstrumentEvent({ time, value }, contextChannel, mergedOpts.mapping, propMetrics, (mergedOpts.roundToMusicalNotes ?? true), valueProp);
                     }
                 };
                 if (timeInterval) {
@@ -5331,7 +5331,7 @@ class Sonification {
         if (this.audioContext && this.audioDestination) {
             this.timeline = TimelineFromChart(this.audioContext, this.audioDestination, this.chart);
             const sOpts = this.chart.options.sonification;
-            this.timeline.setMasterVolume((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(sOpts && sOpts.masterVolume, 1));
+            this.timeline.setMasterVolume(((sOpts && sOpts.masterVolume) ?? 1));
         }
         if (events.afterUpdate) {
             events.afterUpdate({ chart: this.chart, timeline: this.timeline });

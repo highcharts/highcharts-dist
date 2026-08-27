@@ -14,7 +14,7 @@ import T from '../../Templating.js';
 const { format } = T;
 import SeriesRegistry from '../../Series/SeriesRegistry.js';
 const { series: Series } = SeriesRegistry;
-import { destroyObjectProperties, fireEvent, getAlignFactor, isNumber, pick } from '../../../Shared/Utilities.js';
+import { destroyObjectProperties, fireEvent, getAlignFactor, isNumber } from '../../../Shared/Utilities.js';
 /* *
  *
  *  Class
@@ -99,7 +99,7 @@ class StackItem {
                 r: options.borderRadius || 0,
                 text: str,
                 // Set default padding to 5 as it is in dataLabels #12308
-                padding: pick(options.padding, 5),
+                padding: (options.padding ?? 5),
                 visibility: 'hidden' // Hidden until setOffset is called
             };
             if (!chart.styledMode) {
@@ -133,7 +133,7 @@ class StackItem {
         }), { verticalAlign } = alignOptions;
         if (label && stackBox) {
             const labelBox = label.getBBox(void 0, 0), padding = label.padding;
-            let isJustify = pick(options.overflow, 'justify') === 'justify', visible;
+            let isJustify = (options.overflow ?? 'justify') === 'justify', visible;
             // Reset alignOptions property after justify #12337
             alignOptions.x = options.x || 0;
             alignOptions.y = options.y || 0;
@@ -170,7 +170,7 @@ class StackItem {
                 rotationOriginY: labelBox.height / 2
             });
             // Check if the dataLabel should be visible.
-            if (pick(!isJustify && options.crop, true)) {
+            if (((!isJustify && options.crop) ?? true)) {
                 visible =
                     isNumber(label.x) &&
                         isNumber(label.y) &&
@@ -204,7 +204,7 @@ class StackItem {
     getStackBox(stackBoxProps) {
         const stackItem = this, axis = this.axis, chart = axis.chart, { boxTop, defaultX, xOffset, width, boxBottom } = stackBoxProps, totalStackValue = axis.stacking.usePercentage ?
             100 :
-            pick(boxTop, this.total, 0), y = axis.toPixels(totalStackValue), xAxis = stackBoxProps.xAxis || chart.xAxis[0], x = pick(defaultX, xAxis.translate(this.x)) + xOffset, yZero = axis.toPixels(boxBottom ||
+            (boxTop ?? this.total ?? 0), y = axis.toPixels(totalStackValue), xAxis = stackBoxProps.xAxis || chart.xAxis[0], x = (defaultX ?? xAxis.translate(this.x)) + xOffset, yZero = axis.toPixels(boxBottom ||
             (isNumber(axis.min) &&
                 axis.logarithmic &&
                 axis.logarithmic.lin2log(axis.min)) ||

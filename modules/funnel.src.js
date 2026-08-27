@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.1 (2026-08-17)
+ * @license Highcharts JS v13.0.2 (2026-08-27)
  * @module highcharts/modules/funnel
  * @requires highcharts
  *
@@ -1140,7 +1140,7 @@ class FunnelSeries extends PieSeries {
                 y: y1,
                 topWidth: x2 - x1,
                 bottomWidth: x4 - x3,
-                height: Math.abs((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(y5, y3) - y1),
+                height: Math.abs((y5 ?? y3) - y1),
                 width: NaN
             };
             // Slice is a noop on funnel points

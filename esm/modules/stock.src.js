@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.0.1 (2026-08-17)
+ * @license Highstock JS v13.0.2 (2026-08-27)
  * @module highcharts/modules/stock
  * @requires highcharts
  *
@@ -153,7 +153,7 @@ var DataModifyComposition;
                     series.setCumulative(modeState, false);
                 }
             });
-            if ((0,external_highcharts_src_js_default_namespaceObject.pick)(redraw, true)) {
+            if (redraw ?? true) {
                 this.chart.redraw();
             }
         }
@@ -170,7 +170,7 @@ var DataModifyComposition;
     function tooltipFormatter(pointFormat) {
         const point = this, { numberFormatter } = point.series.chart, replace = function (value) {
             pointFormat = pointFormat.replace('{point.' + value + '}', (point[value] > 0 && value === 'change' ? '+' : '') +
-                numberFormatter(point[value], (0,external_highcharts_src_js_default_namespaceObject.pick)(point.series.tooltipOptions.changeDecimals, 2)));
+                numberFormatter(point[value], (point.series.tooltipOptions.changeDecimals ?? 2)));
         };
         if ((0,external_highcharts_src_js_default_namespaceObject.defined)(point.change)) {
             replace('change');
@@ -198,7 +198,9 @@ var DataModifyComposition;
                 chart.series[this.index - 1] :
                 chart.get(linkedTo);
             if (linkedSeries instanceof (external_highcharts_src_js_default_Series_default())) {
-                this.options.compare = (0,external_highcharts_src_js_default_namespaceObject.pick)(this.userOptions.compare, linkedSeries.options.compare);
+                this.options.compare =
+                    this.userOptions.compare ??
+                        linkedSeries.options.compare;
             }
         }
         const compare = this.options.compare;
@@ -272,7 +274,7 @@ var DataModifyComposition;
         // Survive to export, #5485 (and for options generally)
         this.options.compare = this.userOptions.compare = compare;
         // Fire series.init() that will set or delete series.dataModify
-        this.update({}, (0,external_highcharts_src_js_default_namespaceObject.pick)(redraw, true));
+        this.update({}, (redraw ?? true));
         if (this.dataModify && (compare === 'value' || compare === 'percent')) {
             this.dataModify.initCompare(compare);
         }
@@ -359,11 +361,11 @@ var DataModifyComposition;
      */
     function seriesSetCumulative(cumulative, redraw) {
         // Set default value to false
-        cumulative = (0,external_highcharts_src_js_default_namespaceObject.pick)(cumulative, false);
+        cumulative = (cumulative ?? false);
         // Survive to export, #5485 (and for options generally)
         this.options.cumulative = this.userOptions.cumulative = cumulative;
         // Fire series.init() that will set or delete series.dataModify
-        this.update({}, (0,external_highcharts_src_js_default_namespaceObject.pick)(redraw, true));
+        this.update({}, (redraw ?? true));
         // If should, turn on the Cumulative Sum mode
         if (this.dataModify) {
             this.dataModify.initCumulative();
@@ -712,7 +714,7 @@ function onChartAfterSetChartSize() {
             navigator.top = this.plotTop + scrollButtonSize;
         }
         else {
-            navigator.left = (0,external_highcharts_src_js_default_namespaceObject.pick)(xAxis.left, this.plotLeft + scrollButtonSize);
+            navigator.left = (xAxis.left ?? this.plotLeft + scrollButtonSize);
             navigator.top = navigator.navigatorOptions.top ||
                 this.chartHeight -
                     navigator.height -
@@ -728,7 +730,7 @@ function onChartAfterSetChartSize() {
                         legendOptions.enabled &&
                         !legendOptions.floating) ?
                         legend.legendHeight +
-                            (0,external_highcharts_src_js_default_namespaceObject.pick)(legendOptions.margin, 10) :
+                            (legendOptions.margin ?? 10) :
                         0) -
                     (this.titleOffset ? this.titleOffset[2] : 0);
         }
@@ -753,7 +755,7 @@ function onChartAfterUpdate(event) {
         (this.options.navigator.enabled ||
             this.options.scrollbar.enabled)) {
         this.scroller = this.navigator = new NavigatorConstructor(this);
-        if ((0,external_highcharts_src_js_default_namespaceObject.pick)(event.redraw, true)) {
+        if (event.redraw ?? true) {
             this.redraw(event.animation); // #7067
         }
     }
@@ -931,7 +933,7 @@ class NavigatorAxisAdditions {
      */
     toFixedRange(pxMin, pxMax, fixedMin, fixedMax) {
         const axis = this.axis, halfPointRange = (axis.pointRange || 0) / 2;
-        let newMin = (0,external_highcharts_src_js_default_namespaceObject.pick)(fixedMin, axis.translate(pxMin, true, !axis.horiz)), newMax = (0,external_highcharts_src_js_default_namespaceObject.pick)(fixedMax, axis.translate(pxMax, true, !axis.horiz));
+        let newMin = fixedMin ?? axis.translate(pxMin, true, !axis.horiz), newMax = fixedMax ?? axis.translate(pxMax, true, !axis.horiz);
         // Add/remove half point range to/from the extremes (#1172)
         if (!(0,external_highcharts_src_js_default_namespaceObject.defined)(fixedMin)) {
             newMin = (0,external_highcharts_src_js_default_namespaceObject.correctFloat)(newMin + halfPointRange);
@@ -1928,7 +1930,7 @@ function Symbols_arc(cx, cy, w, h, options) {
     const arc = [];
     if (options) {
         let start = options.start || 0, end = options.end || 0;
-        const rx = (0,external_highcharts_src_js_default_namespaceObject.pick)(options.r, w), ry = (0,external_highcharts_src_js_default_namespaceObject.pick)(options.r, h || w), 
+        const rx = (options.r ?? w), ry = (options.r ?? (h || w)), 
         // Subtract a small number to prevent cos and sin of start and end
         // from becoming equal on 360 arcs (#1561). See "Arc proximity"
         // tests at samples/unit-tests/svgrenderer/symbol/demo.js
@@ -1938,16 +1940,17 @@ function Symbols_arc(cx, cy, w, h, options) {
             start = Math.PI / 2;
             end = Math.PI * 2.5 - proximity;
         }
-        const innerRadius = options.innerR, open = (0,external_highcharts_src_js_default_namespaceObject.pick)(options.open, fullCircle), cosStart = fullCircle ? 0 : Math.cos(start), sinStart = fullCircle ? 1 : Math.sin(start), cosEnd = fullCircle ? 0 : Math.cos(end), sinEnd = fullCircle ? 1 : Math.sin(end), 
+        const innerRadius = options.innerR, open = (options.open ?? fullCircle), cosStart = fullCircle ? 0 : Math.cos(start), sinStart = fullCircle ? 1 : Math.sin(start), cosEnd = fullCircle ? 0 : Math.cos(end), sinEnd = fullCircle ? 1 : Math.sin(end), 
         // Proximity takes care of rounding errors around PI (#6971)
-        longArc = (0,external_highcharts_src_js_default_namespaceObject.pick)(options.longArc, end - start - Math.PI < proximity ? 0 : 1);
+        longArc = options.longArc ??
+            (end - start - Math.PI < proximity ? 0 : 1);
         let arcSegment = [
             'A', // ArcTo
             rx, // X radius
             ry, // Y radius
             0, // Slanting
             longArc, // Long or short arc
-            (0,external_highcharts_src_js_default_namespaceObject.pick)(options.clockwise, 1), // Clockwise
+            (options.clockwise ?? 1), // Clockwise
             // Use a static pixel offset for full circle (#21701)
             cx + (fullCircle ? 0.001 : rx * cosEnd),
             cy + ry * sinEnd
@@ -2644,8 +2647,8 @@ var ScrollbarAxis;
     ScrollbarAxis.compose = compose;
     /** @internal */
     function getExtremes(axis) {
-        const axisMin = (0,external_highcharts_src_js_default_namespaceObject.pick)(axis.options?.min, axis.min);
-        const axisMax = (0,external_highcharts_src_js_default_namespaceObject.pick)(axis.options?.max, axis.max);
+        const axisMin = (axis.options?.min ?? axis.min);
+        const axisMax = (axis.options?.max ?? axis.max);
         return {
             axisMin,
             axisMax,
@@ -3184,7 +3187,7 @@ class Scrollbar {
     buttonToMaxClick(e) {
         const scroller = this;
         const range = ((scroller.to - scroller.from) *
-            (0,external_highcharts_src_js_default_namespaceObject.pick)(scroller.options.step, 0.2));
+            (scroller.options.step ?? 0.2));
         scroller.updatePosition(scroller.from + range, scroller.to + range);
         (0,external_highcharts_src_js_default_namespaceObject.fireEvent)(scroller, 'changed', {
             from: scroller.from,
@@ -3196,7 +3199,7 @@ class Scrollbar {
     buttonToMinClick(e) {
         const scroller = this;
         const range = (0,external_highcharts_src_js_default_namespaceObject.correctFloat)(scroller.to - scroller.from) *
-            (0,external_highcharts_src_js_default_namespaceObject.pick)(scroller.options.step, 0.2);
+            (scroller.options.step ?? 0.2);
         scroller.updatePosition((0,external_highcharts_src_js_default_namespaceObject.correctFloat)(scroller.from - range), (0,external_highcharts_src_js_default_namespaceObject.correctFloat)(scroller.to - range));
         (0,external_highcharts_src_js_default_namespaceObject.fireEvent)(scroller, 'changed', {
             from: scroller.from,
@@ -3328,10 +3331,11 @@ class Scrollbar {
         scroller.renderer = renderer;
         scroller.userOptions = options;
         scroller.options = (0,external_highcharts_src_js_default_namespaceObject.merge)(Scrollbar_ScrollbarDefaults, Scrollbar_defaultOptions.scrollbar, options);
-        scroller.options.margin = (0,external_highcharts_src_js_default_namespaceObject.pick)(scroller.options.margin, 10);
+        scroller.options.margin = (scroller.options.margin ?? 10);
         scroller.chart = chart;
         // Backward compatibility
-        scroller.size = (0,external_highcharts_src_js_default_namespaceObject.pick)(scroller.options.size, scroller.options.height);
+        scroller.size = scroller.options.size ??
+            scroller.options.height;
         // Init
         if (options.enabled) {
             scroller.render();
@@ -3621,9 +3625,9 @@ class Scrollbar {
      * @function Highcharts.Scrollbar#shouldUpdateExtremes
      */
     shouldUpdateExtremes(eventType) {
-        return ((0,external_highcharts_src_js_default_namespaceObject.pick)(this.options.liveRedraw, (external_highcharts_src_js_default_default()).svg &&
+        return ((this.options.liveRedraw ?? ((external_highcharts_src_js_default_default()).svg &&
             !(external_highcharts_src_js_default_default()).isTouchDevice &&
-            !this.chart.boosted) ||
+            !this.chart.boosted)) ||
             // Mouseup always should change extremes
             eventType === 'mouseup' ||
             eventType === 'touchend' ||
@@ -4143,18 +4147,18 @@ class Navigator {
             // it. For example hidden series, but visible navigator (#6022).
             if (rendered) {
                 pxMin = 0;
-                pxMax = (0,external_highcharts_src_js_default_namespaceObject.pick)(xAxis.width, scrollbarXAxis.width);
+                pxMax = (xAxis.width ?? scrollbarXAxis.width);
             }
             else {
                 return;
             }
         }
-        navigator.left = (0,external_highcharts_src_js_default_namespaceObject.pick)(xAxis.left, 
-        // In case of scrollbar only, without navigator
-        chart.plotLeft + scrollButtonSize +
+        navigator.left = (xAxis.left ?? chart.plotLeft + scrollButtonSize +
             (inverted ? chart.plotWidth : 0));
-        let zoomedMax = navigator.size = navigatorSize = (0,external_highcharts_src_js_default_namespaceObject.pick)(xAxis.len, (inverted ? chart.plotHeight : chart.plotWidth) -
-            2 * scrollButtonSize);
+        let zoomedMax = navigator.size = navigatorSize =
+            xAxis.len ??
+                (inverted ? chart.plotHeight : chart.plotWidth) -
+                    2 * scrollButtonSize;
         if (inverted) {
             navigatorWidth = scrollbarHeight;
         }
@@ -4162,8 +4166,8 @@ class Navigator {
             navigatorWidth = navigatorSize + 2 * scrollButtonSize;
         }
         // Get the pixel position of the handles
-        pxMin = (0,external_highcharts_src_js_default_namespaceObject.pick)(pxMin, xAxis.toPixels(min, true));
-        pxMax = (0,external_highcharts_src_js_default_namespaceObject.pick)(pxMax, xAxis.toPixels(max, true));
+        pxMin = (pxMin ?? xAxis.toPixels(min, true));
+        pxMax = (pxMax ?? xAxis.toPixels(max, true));
         // Verify (#1851, #2238)
         if (!(0,external_highcharts_src_js_default_namespaceObject.isNumber)(pxMin) || Math.abs(pxMin) === Infinity) {
             pxMin = 0;
@@ -4442,11 +4446,10 @@ class Navigator {
                 navigator.render(0, 0, chartX - dragOffset, chartX - dragOffset + range);
             }
             if (navigator.hasDragged &&
-                (0,external_highcharts_src_js_default_namespaceObject.pick)(navigator.scrollbarOptions?.liveRedraw, 
+                (navigator.scrollbarOptions?.liveRedraw ?? (
                 // By default, don't run live redraw on touch
                 // devices or if the chart is in boost.
-                !Navigator_isTouchDevice &&
-                    !this.chart.boosted)) {
+                !Navigator_isTouchDevice && !this.chart.boosted))) {
                 e.DOMType = e.type;
                 setTimeout(function () {
                     navigator.onMouseUp(e);
@@ -4635,8 +4638,10 @@ class Navigator {
                 offset: 0,
                 index: yAxisIndex,
                 isInternal: true,
-                reversed: (0,external_highcharts_src_js_default_namespaceObject.pick)((navigatorOptions.yAxis &&
-                    navigatorOptions.yAxis.reversed), (chart.yAxis[0] && chart.yAxis[0].reversed), false), // #14060
+                reversed: ((navigatorOptions.yAxis &&
+                    navigatorOptions.yAxis.reversed) ??
+                    (chart.yAxis[0] && chart.yAxis[0].reversed) ??
+                    false), // #14060
                 zoomEnabled: false
             }, chart.inverted ? {
                 width: height
@@ -4722,7 +4727,9 @@ class Navigator {
      */
     setOpposite() {
         const navigatorOptions = this.navigatorOptions, navigatorEnabled = this.navigatorEnabled, chart = this.chart;
-        this.opposite = (0,external_highcharts_src_js_default_namespaceObject.pick)(navigatorOptions.opposite, Boolean(!navigatorEnabled && chart.inverted)); // #6262
+        this.opposite =
+            navigatorOptions.opposite ??
+                Boolean(!navigatorEnabled && chart.inverted); // #6262
     }
     /**
      * Get the union data extremes of the chart - the outer data extremes of the
@@ -4736,9 +4743,8 @@ class Navigator {
         let ret;
         if (!returnFalseOnNoBaseSeries || baseAxis.dataMin !== null) {
             ret = {
-                dataMin: (0,external_highcharts_src_js_default_namespaceObject.pick)(// #4053
-                time.parse(navAxisOptions?.min), numExt('min', time.parse(baseAxisOptions.min), baseAxis.dataMin, navAxis.dataMin, navAxis.min)),
-                dataMax: (0,external_highcharts_src_js_default_namespaceObject.pick)(time.parse(navAxisOptions?.max), numExt('max', time.parse(baseAxisOptions.max), baseAxis.dataMax, navAxis.dataMax, navAxis.max))
+                dataMin: (time.parse(navAxisOptions?.min) ?? numExt('min', time.parse(baseAxisOptions.min), baseAxis.dataMin, navAxis.dataMin, navAxis.min)),
+                dataMax: (time.parse(navAxisOptions?.max) ?? numExt('max', time.parse(baseAxisOptions.max), baseAxis.dataMax, navAxis.dataMax, navAxis.max))
             };
         }
         return ret;
@@ -4853,11 +4859,9 @@ class Navigator {
                 userNavOptions.dataLabels = (0,external_highcharts_src_js_default_namespaceObject.splat)(userNavOptions.dataLabels);
                 mergedNavSeriesOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(baseOptions, navSeriesMixin, userNavOptions, baseNavigatorOptions);
                 // Once nav series type is resolved, pick correct pointRange
-                mergedNavSeriesOptions.pointRange = (0,external_highcharts_src_js_default_namespaceObject.pick)(
-                // Strictly set pointRange in options
-                userNavOptions.pointRange, baseNavigatorOptions.pointRange, 
-                // Fallback to default values, e.g. `null` for column
-                Navigator_defaultOptions.plotOptions[mergedNavSeriesOptions.type || 'line']?.pointRange);
+                mergedNavSeriesOptions.pointRange = (userNavOptions.pointRange ??
+                    baseNavigatorOptions.pointRange ??
+                    Navigator_defaultOptions.plotOptions[mergedNavSeriesOptions.type || 'line']?.pointRange);
                 // Merge data separately. Do a slice to avoid mutating the
                 // navigator options from base series (#4923).
                 const navigatorSeriesData = baseNavigatorOptions.data || userNavOptions.data, navigatorSeriesDataTable = baseNavigatorOptions.dataTable ||
@@ -5017,7 +5021,7 @@ class Navigator {
      * @function Highcharts.Navigator#modifyBaseAxisExtremes
      */
     modifyBaseAxisExtremes() {
-        const baseXAxis = this, navigator = baseXAxis.chart.navigator, baseExtremes = baseXAxis.getExtremes(), baseMin = baseExtremes.min, baseMax = baseExtremes.max, baseDataMin = baseExtremes.dataMin, baseDataMax = baseExtremes.dataMax, range = baseMax - baseMin, stickToMin = navigator?.stickToMin, stickToMax = navigator?.stickToMax, overscroll = (0,external_highcharts_src_js_default_namespaceObject.pick)(baseXAxis.ordinal?.convertOverscroll(baseXAxis.options.overscroll), 0), navigatorSeries = navigator.series && navigator.series[0], hasSetExtremes = !!baseXAxis.setExtremes, 
+        const baseXAxis = this, navigator = baseXAxis.chart.navigator, baseExtremes = baseXAxis.getExtremes(), baseMin = baseExtremes.min, baseMax = baseExtremes.max, baseDataMin = baseExtremes.dataMin, baseDataMax = baseExtremes.dataMax, range = baseMax - baseMin, stickToMin = navigator?.stickToMin, stickToMax = navigator?.stickToMax, overscroll = (baseXAxis.ordinal?.convertOverscroll(baseXAxis.options.overscroll) ?? 0), navigatorSeries = navigator.series && navigator.series[0], hasSetExtremes = !!baseXAxis.setExtremes, 
         // When the extremes have been set by range selector button, don't
         // stick to min or max. The range selector buttons will handle the
         // extremes. (#5489)
@@ -5069,8 +5073,8 @@ class Navigator {
             Math.round(navigator.zoomedMax) >= Math.round(navigator.size);
         // If the scrollbar is scrolled all the way to the right, keep right as
         // new data comes in, unless user set navigator.stickToMax to false.
-        navigator.stickToMax = (0,external_highcharts_src_js_default_namespaceObject.pick)(this.chart.options.navigator &&
-            this.chart.options.navigator.stickToMax, shouldStickToMax);
+        navigator.stickToMax = (this.chart.options.navigator &&
+            this.chart.options.navigator.stickToMax) ?? shouldStickToMax;
         navigator.stickToMin = navigator.shouldStickToMin(baseSeries, navigator);
         // Set the navigator series data to the new data of the base series
         if (navigatorSeries && !navigator.hasNavigatorData) {
@@ -6302,9 +6306,7 @@ var OrdinalAxis;
                             // Without a custom function it is sorted as strings
                             return a - b;
                         });
-                        overscrollPointsRange = Math.min(overscrollPointsRange, (0,external_highcharts_src_js_default_namespaceObject.pick)(
-                        // Check for a single-point series:
-                        series.closestPointRange, overscrollPointsRange));
+                        overscrollPointsRange = Math.min(overscrollPointsRange, (series.closestPointRange ?? overscrollPointsRange));
                         if (len) {
                             i = 0;
                             while (i < len - 1) {
@@ -6405,7 +6407,9 @@ var OrdinalAxis;
                     ordinal.offset = min - (minIndex * slope);
                 }
                 else {
-                    ordinal.overscrollPointsRange = (0,external_highcharts_src_js_default_namespaceObject.pick)(axis.closestPointRange, ordinal.overscrollPointsRange);
+                    ordinal.overscrollPointsRange =
+                        axis.closestPointRange ??
+                            ordinal.overscrollPointsRange;
                     ordinal.positions = axis.ordinal.slope = ordinal.offset =
                         void 0;
                 }
@@ -6698,8 +6702,10 @@ var OrdinalAxis;
          */
         convertOverscroll(overscroll = 0) {
             const ordinal = this, axis = ordinal.axis, calculateOverscroll = function (overscrollPercentage) {
-                return (0,external_highcharts_src_js_default_namespaceObject.pick)(ordinal.originalOrdinalRange, (0,external_highcharts_src_js_default_namespaceObject.defined)(axis.dataMax) && (0,external_highcharts_src_js_default_namespaceObject.defined)(axis.dataMin) ?
-                    axis.dataMax - axis.dataMin : 0) * overscrollPercentage;
+                return (ordinal.originalOrdinalRange ??
+                    ((0,external_highcharts_src_js_default_namespaceObject.defined)(axis.dataMax) && (0,external_highcharts_src_js_default_namespaceObject.defined)(axis.dataMin) ?
+                        axis.dataMax - axis.dataMin :
+                        0)) * overscrollPercentage;
             };
             if ((0,external_highcharts_src_js_default_namespaceObject.isString)(overscroll)) {
                 const overscrollValue = parseInt(overscroll, 10);
@@ -7386,7 +7392,7 @@ function axisMinFromRange() {
             this.chart.setFixedRange(max - min);
         }
     }
-    const dataMin = (0,external_highcharts_src_js_default_namespaceObject.pick)(this.dataMin, Number.MIN_VALUE);
+    const dataMin = (this.dataMin ?? Number.MIN_VALUE);
     if (!(0,external_highcharts_src_js_default_namespaceObject.isNumber)(min)) {
         min = dataMin;
     }
@@ -7395,7 +7401,7 @@ function axisMinFromRange() {
         if (typeof range === 'undefined') { // #4501
             range = getTrueRange(min, rangeOptions.count);
         }
-        this.newMax = Math.min(min + range, (0,external_highcharts_src_js_default_namespaceObject.pick)(this.dataMax, Number.MAX_VALUE));
+        this.newMax = Math.min(min + range, (this.dataMax ?? Number.MAX_VALUE));
     }
     if (!(0,external_highcharts_src_js_default_namespaceObject.isNumber)(max)) {
         min = void 0;
@@ -7822,7 +7828,7 @@ class RangeSelector {
         }
         else if ((0,external_highcharts_src_js_default_namespaceObject.isNumber)(newMin) || (0,external_highcharts_src_js_default_namespaceObject.isNumber)(newMax)) {
             // Existing axis object. Set extremes after render time.
-            baseAxis.setExtremes(newMin, newMax, (0,external_highcharts_src_js_default_namespaceObject.pick)(redraw, true), void 0, // Auto animation
+            baseAxis.setExtremes(newMin, newMax, (redraw ?? true), void 0, // Auto animation
             {
                 trigger: 'rangeSelectorButton',
                 rangeSelectorButton: rangeOptions
@@ -8057,8 +8063,8 @@ class RangeSelector {
                 year: 365
             }[type] * 24 * 36e5 * count;
         }
-        rangeOptions._offsetMin = (0,external_highcharts_src_js_default_namespaceObject.pick)(rangeOptions.offsetMin, 0);
-        rangeOptions._offsetMax = (0,external_highcharts_src_js_default_namespaceObject.pick)(rangeOptions.offsetMax, 0);
+        rangeOptions._offsetMin = (rangeOptions.offsetMin ?? 0);
+        rangeOptions._offsetMax = (rangeOptions.offsetMax ?? 0);
         rangeOptions._range +=
             rangeOptions._offsetMax - rangeOptions._offsetMin;
     }
@@ -8369,7 +8375,7 @@ class RangeSelector {
         };
     }
     createElements() {
-        const chart = this.chart, renderer = chart.renderer, container = chart.container, chartOptions = chart.options, options = chartOptions.rangeSelector, inputEnabled = options.inputEnabled, inputsZIndex = (0,external_highcharts_src_js_default_namespaceObject.pick)(chartOptions.chart.style?.zIndex, 0) + 1;
+        const chart = this.chart, renderer = chart.renderer, container = chart.container, chartOptions = chart.options, options = chartOptions.rangeSelector, inputEnabled = options.inputEnabled, inputsZIndex = (chartOptions.chart.style?.zIndex ?? 0) + 1;
         if (options.enabled === false) {
             return;
         }
@@ -8510,10 +8516,14 @@ class RangeSelector {
         // Create a label for dropdown select element
         const userButtonTheme = chart.userOptions.rangeSelector?.buttonTheme;
         this.dropdownLabel = renderer.button('', 0, 0, () => { }, (0,external_highcharts_src_js_default_namespaceObject.merge)(buttonTheme, {
-            'stroke-width': (0,external_highcharts_src_js_default_namespaceObject.pick)(buttonTheme['stroke-width'], 0),
+            'stroke-width': (buttonTheme['stroke-width'] ?? 0),
             width: 'auto',
-            paddingLeft: (0,external_highcharts_src_js_default_namespaceObject.pick)(options.buttonTheme.paddingLeft, userButtonTheme?.padding, 8),
-            paddingRight: (0,external_highcharts_src_js_default_namespaceObject.pick)(options.buttonTheme.paddingRight, userButtonTheme?.padding, 8)
+            paddingLeft: options.buttonTheme.paddingLeft ??
+                userButtonTheme?.padding ??
+                8,
+            paddingRight: options.buttonTheme.paddingRight ??
+                userButtonTheme?.padding ??
+                8
         }), states && states.hover, states && states.select, states && states.disabled)
             .hide()
             .add(this.group);
@@ -8694,7 +8704,7 @@ class RangeSelector {
                     legendOptions.enabled &&
                     !legendOptions.floating ?
                     (chart.legend.legendHeight +
-                        (0,external_highcharts_src_js_default_namespaceObject.pick)(legendOptions.margin, 10)) :
+                        (legendOptions.margin ?? 10)) :
                     0);
                 groupHeight = groupHeight + legendHeight - 20;
                 translateY = (alignTranslateY -
@@ -8840,7 +8850,7 @@ class RangeSelector {
             // Align button group
             buttonGroup.align({
                 y: buttonPosition.y,
-                width: (0,external_highcharts_src_js_default_namespaceObject.pick)(width, this.initialButtonGroupWidth),
+                width: (width ?? this.initialButtonGroupWidth),
                 align: buttonPosition.align,
                 x: translateX
             }, true, chart.spacingBox);
@@ -8859,7 +8869,7 @@ class RangeSelector {
         if (zoomText && zoomText.visibility !== 'hidden') {
             // #8769, allow dynamically updating margins
             zoomText[verb]({
-                x: (0,external_highcharts_src_js_default_namespaceObject.pick)(plotLeft + buttonPosition.x, plotLeft)
+                x: plotLeft + (buttonPosition.x ?? 0)
             });
             // Button start position
             buttonLeft += buttonPosition.x +
@@ -9240,7 +9250,9 @@ function getForcedAxisOptions(type, chartOptions) {
     if (type === 'xAxis') {
         // Always disable startOnTick:true on the main axis when the navigator
         // is enabled (#1090)
-        const navigatorEnabled = (0,external_highcharts_src_js_default_namespaceObject.pick)(chartOptions.navigator?.enabled, Navigator_NavigatorDefaults.enabled, true);
+        const navigatorEnabled = chartOptions.navigator?.enabled ??
+            Navigator_NavigatorDefaults.enabled ??
+            true;
         const axisOptions = {
             type: 'datetime',
             categories: void 0
@@ -9294,7 +9306,9 @@ class StockChart extends (external_highcharts_src_js_default_Chart_default()) {
         const defaultOptions = getOptions(), xAxisOptions = userOptions.xAxis, yAxisOptions = userOptions.yAxis, 
         // Always disable startOnTick:true on the main axis when the
         // navigator is enabled (#1090)
-        navigatorEnabled = (0,external_highcharts_src_js_default_namespaceObject.pick)(userOptions.navigator?.enabled, Navigator_NavigatorDefaults.enabled, true);
+        navigatorEnabled = userOptions.navigator?.enabled ??
+            Navigator_NavigatorDefaults.enabled ??
+            true;
         // Avoid doing these twice
         userOptions.xAxis = userOptions.yAxis = void 0;
         const options = (0,external_highcharts_src_js_default_namespaceObject.merge)({
@@ -9315,17 +9329,17 @@ class StockChart extends (external_highcharts_src_js_default_Chart_default()) {
             },
             scrollbar: {
                 // #4988 - check if setOptions was called
-                enabled: (0,external_highcharts_src_js_default_namespaceObject.pick)(Scrollbar_ScrollbarDefaults.enabled, true)
+                enabled: (Scrollbar_ScrollbarDefaults.enabled ?? true)
             },
             rangeSelector: {
                 // #4988 - check if setOptions was called
-                enabled: (0,external_highcharts_src_js_default_namespaceObject.pick)(RangeSelector_RangeSelectorDefaults.rangeSelector.enabled, true)
+                enabled: RangeSelector_RangeSelectorDefaults.rangeSelector.enabled ?? true
             },
             title: {
                 text: null
             },
             tooltip: {
-                split: (0,external_highcharts_src_js_default_namespaceObject.pick)(defaultOptions.tooltip?.split, true),
+                split: (defaultOptions.tooltip?.split ?? true),
                 crosshairs: true
             },
             legend: {
@@ -9459,8 +9473,8 @@ class StockChart extends (external_highcharts_src_js_default_Chart_default()) {
                 axis.series[0] && this.series[0].colorIndex))
                 .attr({
                 align: options.align || align,
-                padding: (0,external_highcharts_src_js_default_namespaceObject.pick)(options.padding, 8),
-                r: (0,external_highcharts_src_js_default_namespaceObject.pick)(options.borderRadius, 3),
+                padding: (options.padding ?? 8),
+                r: (options.borderRadius ?? 3),
                 zIndex: 2
             })
                 .add(axis.labelGroup);
@@ -9685,7 +9699,7 @@ class StockChart extends (external_highcharts_src_js_default_Chart_default()) {
                     uniqueAxes.push(axis2);
                 }
             }
-            transVal = (0,external_highcharts_src_js_default_namespaceObject.pick)(translatedValue, axis.translate(value || 0, void 0, void 0, e.old));
+            transVal = translatedValue ?? axis.translate(value || 0, void 0, void 0, e.old);
             if ((0,external_highcharts_src_js_default_namespaceObject.isNumber)(transVal)) {
                 let skip, pos = horiz ?
                     transVal + axis.pos :
@@ -9764,7 +9778,7 @@ class StockChart extends (external_highcharts_src_js_default_Chart_default()) {
     function seriesForceCropping() {
         const series = this, chart = series.chart, options = series.options, dataGroupingOptions = options.dataGrouping, groupingEnabled = (series.allowDG !== false &&
             dataGroupingOptions &&
-            (0,external_highcharts_src_js_default_namespaceObject.pick)(dataGroupingOptions.enabled, chart.options.isStock));
+            (dataGroupingOptions.enabled ?? chart.options.isStock));
         return groupingEnabled;
     }
     /* eslint-disable jsdoc/check-param-names */
@@ -9802,7 +9816,7 @@ class StockChart extends (external_highcharts_src_js_default_Chart_default()) {
      */
     function stockChart(a, b, c) {
         const chart = new StockChart(a, b, c);
-        return chart.promise || chart;
+        return chart.promise ?? chart;
     }
     StockChart.stockChart = stockChart;
     /* eslint-enable jsdoc/check-param-names */

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.0.1 (2026-08-17)
+ * @license Highstock JS v13.0.2 (2026-08-27)
  * @module highcharts/modules/price-indicator
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -126,7 +126,7 @@ function onSeriesAfterRender() {
         seriesOptions.id !== 'highcharts-navigator-series' &&
         series.visible) {
         const { points, xAxis, yAxis } = series, { cross, crosshair, crossLabel } = yAxis, pLength = points.length, dataLength = series.dataTable.rowCount, x = series.getColumn('x')[dataLength - 1], y = series.getColumn('y')[dataLength - 1] ??
-            series.getColumn('close')[dataLength - 1];
+            series.getColumn('close')[dataLength - 1], modifiedY = series.dataModify?.modifyValue(y) ?? y;
         if (lastPrice?.enabled) {
             yAxis.crosshair = yAxis.options.crosshair = seriesOptions.lastPrice;
             if (!series.chart.styledMode &&
@@ -145,8 +145,9 @@ function onSeriesAfterRender() {
             yAxis.drawCrosshair(void 0, ({
                 x: x,
                 y,
-                plotX: xAxis.toPixels(x, true),
-                plotY: yAxis.toPixels(y, true)
+                series,
+                plotX: (0,external_highcharts_src_js_default_namespaceObject.clamp)(xAxis.toPixels(x, true), 0, xAxis.len),
+                plotY: yAxis.toPixels(modifiedY, true)
             }));
             // Save price
             if (series.yAxis.cross) {

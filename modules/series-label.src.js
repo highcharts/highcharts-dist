@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.1 (2026-08-17)
+ * @license Highcharts JS v13.0.2 (2026-08-27)
  * @module highcharts/modules/series-label
  * @requires highcharts
  *
@@ -387,7 +387,7 @@ const labelDistance = 3;
  * @internal
  */
 function checkClearPoint(series, x, y, bBox, checkDistance) {
-    const chart = series.chart, seriesLabelOptions = series.options.label || {}, onArea = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(seriesLabelOptions.onArea, !!series.area), findDistanceToOthers = (onArea || seriesLabelOptions.connectorAllowed), leastDistance = 16, boxesToAvoid = chart.boxesToAvoid;
+    const chart = series.chart, seriesLabelOptions = series.options.label || {}, onArea = (seriesLabelOptions.onArea ?? !!series.area), findDistanceToOthers = (onArea || seriesLabelOptions.connectorAllowed), leastDistance = 16, boxesToAvoid = chart.boxesToAvoid;
     let distToOthersSquared = Number.MAX_VALUE, // Distance to other graphs
     distToPointSquared = Number.MAX_VALUE, dist, connectorPoint, withinRange, xDist, yDist, i, j;
     /**
@@ -534,7 +534,7 @@ function drawSeriesLabels(chart) {
         if (!labelOptions || (!series.xAxis && !series.yAxis)) {
             return;
         }
-        const colorClass = ('highcharts-color-' + (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(series.colorIndex, 'none')), isNew = !series.labelBySeries, minFontSize = labelOptions.minFontSize, maxFontSize = labelOptions.maxFontSize, inverted = chart.inverted, paneLeft = (inverted ? series.yAxis.pos : series.xAxis.pos), paneTop = (inverted ? series.xAxis.pos : series.yAxis.pos), paneWidth = chart.inverted ? series.yAxis.len : series.xAxis.len, paneHeight = chart.inverted ? series.xAxis.len : series.yAxis.len, points = series.interpolatedPoints, onArea = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(labelOptions.onArea, !!series.area), results = [], xData = series.getColumn('x');
+        const colorClass = ('highcharts-color-' + (series.colorIndex ?? 'none')), isNew = !series.labelBySeries, minFontSize = labelOptions.minFontSize, maxFontSize = labelOptions.maxFontSize, inverted = chart.inverted, paneLeft = (inverted ? series.yAxis.pos : series.xAxis.pos), paneTop = (inverted ? series.xAxis.pos : series.yAxis.pos), paneWidth = chart.inverted ? series.yAxis.len : series.xAxis.len, paneHeight = chart.inverted ? series.xAxis.len : series.yAxis.len, points = series.interpolatedPoints, onArea = (labelOptions.onArea ?? !!series.area), results = [], xData = series.getColumn('x');
         let bBox, x, y, clearPoint, i, best, label = series.labelBySeries, dataExtremes, areaMin, areaMax;
         // Stay within the area data bounds (#10038)
         if (onArea && !inverted) {
@@ -549,7 +549,7 @@ function drawSeriesLabels(chart) {
          * @internal
          */
         function insidePane(x, y, bBox) {
-            const leftBound = Math.max(paneLeft, (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(areaMin, -Infinity)), rightBound = Math.min(paneLeft + paneWidth, (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(areaMax, Infinity));
+            const leftBound = Math.max(paneLeft, (areaMin ?? -Infinity)), rightBound = Math.min(paneLeft + paneWidth, (areaMax ?? Infinity));
             return (x > leftBound &&
                 x <= rightBound - bBox.width &&
                 y >= paneTop &&
@@ -756,7 +756,7 @@ function getPointsOnGraph(series) {
     if (!series.xAxis && !series.yAxis) {
         return;
     }
-    const distance = 16, points = series.points, interpolated = [], graph = series.graph || series.area, node = graph && graph.element, inverted = series.chart.inverted, xAxis = series.xAxis, yAxis = series.yAxis, paneLeft = inverted ? yAxis.pos : xAxis.pos, paneTop = inverted ? xAxis.pos : yAxis.pos, paneHeight = inverted ? xAxis.len : yAxis.len, paneWidth = inverted ? yAxis.len : xAxis.len, seriesLabelOptions = series.options.label || {}, onArea = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(seriesLabelOptions.onArea, !!series.area), translatedThreshold = yAxis.getThreshold(series.options.threshold), grid = {}, chartCenterKey = inverted ? 'chartCenterX' : 'chartCenterY';
+    const distance = 16, points = series.points, interpolated = [], graph = series.graph || series.area, node = graph && graph.element, inverted = series.chart.inverted, xAxis = series.xAxis, yAxis = series.yAxis, paneLeft = inverted ? yAxis.pos : xAxis.pos, paneTop = inverted ? xAxis.pos : yAxis.pos, paneHeight = inverted ? xAxis.len : yAxis.len, paneWidth = inverted ? yAxis.len : xAxis.len, seriesLabelOptions = series.options.label || {}, onArea = (seriesLabelOptions.onArea ?? !!series.area), translatedThreshold = yAxis.getThreshold(series.options.threshold), grid = {}, chartCenterKey = inverted ? 'chartCenterX' : 'chartCenterY';
     let i, deltaX, deltaY, delta, len, n, j;
     /**
      * Push the point to the interpolated points, but only if that position in
@@ -829,11 +829,11 @@ function getPointsOnGraph(series) {
                     }
                     if (inverted) {
                         ctlPoint.chartCenterX = paneLeft + paneWidth - ((plotHigh ? plotHigh : point.plotY || 0) +
-                            (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(point.yBottom, translatedThreshold)) / 2;
+                            (point.yBottom ?? translatedThreshold)) / 2;
                     }
                     else {
                         ctlPoint.chartCenterY = paneTop + ((plotHigh ? plotHigh : plotY) +
-                            (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(point.yBottom, translatedThreshold)) / 2;
+                            (point.yBottom ?? translatedThreshold)) / 2;
                     }
                 }
                 // Add interpolated points

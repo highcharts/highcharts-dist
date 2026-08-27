@@ -10,7 +10,7 @@
  *
  * */
 'use strict';
-import { addEvent, normalizeTickInterval, pick } from '../../Shared/Utilities.js';
+import { addEvent, normalizeTickInterval } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class
@@ -152,8 +152,10 @@ var LogarithmicAxis;
                     tickIntervalOption, tickPixelIntervalOption = options.tickPixelInterval / (minor ? 5 : 1), totalPixelLength = minor ?
                     axisLength / axis.tickPositions.length :
                     axisLength;
-                interval = pick(filteredTickIntervalOption, log.minorAutoInterval, (realMax - realMin) *
-                    tickPixelIntervalOption / (totalPixelLength || 1));
+                interval = filteredTickIntervalOption ??
+                    log.minorAutoInterval ??
+                    (realMax - realMin) * tickPixelIntervalOption /
+                        (totalPixelLength || 1);
                 interval = normalizeTickInterval(interval);
                 positions = axis.getLinearTickPositions(interval, realMin, realMax).map(log.log2lin);
                 if (!minor) {

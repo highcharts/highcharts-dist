@@ -17,7 +17,7 @@ import DateTimeAxis from '../../Core/Axis/DateTimeAxis.js';
 import D from '../../Core/Defaults.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { series: { prototype: seriesProto } } = SeriesRegistry;
-import { addEvent, defined, extend, isNumber, merge, pick, splat } from '../../Shared/Utilities.js';
+import { addEvent, defined, extend, isNumber, merge, splat } from '../../Shared/Utilities.js';
 import { error } from '../../Core/Utilities.js';
 /* *
  *
@@ -123,7 +123,7 @@ function anchorPoints(series, groupedXData, xMax) {
  */
 function applyGrouping(hasExtremesChanged) {
     const series = this, chart = series.chart, options = series.options, dataGroupingOptions = options.dataGrouping, groupingEnabled = series.allowDG !== false && dataGroupingOptions &&
-        pick(dataGroupingOptions.enabled, chart.options.isStock), reserveSpace = series.reserveSpace(), lastDataGrouping = this.currentDataGrouping;
+        (dataGroupingOptions.enabled ?? chart.options.isStock), reserveSpace = series.reserveSpace(), lastDataGrouping = this.currentDataGrouping;
     let currentDataGrouping, croppedData, revertRequireSorting = false;
     // Data needs to be sorted for dataGrouping
     if (groupingEnabled && !series.requireSorting) {

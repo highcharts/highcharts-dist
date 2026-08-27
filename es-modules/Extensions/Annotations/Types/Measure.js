@@ -9,7 +9,7 @@ import D from '../../../Core/Defaults.js';
 const { defaultOptions } = D;
 import NBU from '../NavigationBindingsUtilities.js';
 const { getAxisFromOptions } = NBU;
-import { defined, extend, isNumber, merge, pick } from '../../../Shared/Utilities.js';
+import { defined, extend, isNumber, merge } from '../../../Shared/Utilities.js';
 if (defaultOptions.annotations?.types) {
     /**
      * Options for the measure annotation type.
@@ -618,8 +618,8 @@ class Measure extends Annotation {
                     return {
                         x: annotation.xAxisMin,
                         y: annotation.yAxisMin,
-                        xAxis: pick(typeOptions.xAxis, options.xAxis),
-                        yAxis: pick(typeOptions.yAxis, options.yAxis)
+                        xAxis: (typeOptions.xAxis ?? options.xAxis),
+                        yAxis: (typeOptions.yAxis ?? options.yAxis)
                     };
                 },
                 text: (formatter?.call(this, this) ||

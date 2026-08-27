@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.0.1 (2026-08-17)
+ * @license Highstock JS v13.0.2 (2026-08-27)
  * @module highcharts/modules/datagrouping
  * @requires highcharts
  *
@@ -473,7 +473,8 @@ function getGroupPixelWidth() {
             // same group pixel width (#334)
             groupPixelWidth = Math.max(groupPixelWidth, 
             // Fallback to commonOptions (#9693)
-            (0,external_highcharts_src_js_default_namespaceObject.pick)(dgOptions.groupPixelWidth, DataGrouping_DataGroupingDefaults.common.groupPixelWidth));
+            (dgOptions.groupPixelWidth ??
+                DataGrouping_DataGroupingDefaults.common.groupPixelWidth));
             dataLength = (series[i].dataTable.getModified() ||
                 series[i].dataTable).rowCount;
             // Execute grouping if the amount of points is greater than the
@@ -517,7 +518,7 @@ function onAfterSetScale() {
 function setDataGrouping(dataGrouping, redraw) {
     const axis = this;
     let i;
-    redraw = (0,external_highcharts_src_js_default_namespaceObject.pick)(redraw, true);
+    redraw = (redraw ?? true);
     if (!dataGrouping) {
         dataGrouping = {
             forced: false,
@@ -1379,7 +1380,7 @@ function anchorPoints(series, groupedXData, xMax) {
  */
 function DataGroupingSeriesComposition_applyGrouping(hasExtremesChanged) {
     const series = this, chart = series.chart, options = series.options, dataGroupingOptions = options.dataGrouping, groupingEnabled = series.allowDG !== false && dataGroupingOptions &&
-        (0,external_highcharts_src_js_default_namespaceObject.pick)(dataGroupingOptions.enabled, chart.options.isStock), reserveSpace = series.reserveSpace(), lastDataGrouping = this.currentDataGrouping;
+        (dataGroupingOptions.enabled ?? chart.options.isStock), reserveSpace = series.reserveSpace(), lastDataGrouping = this.currentDataGrouping;
     let currentDataGrouping, croppedData, revertRequireSorting = false;
     // Data needs to be sorted for dataGrouping
     if (groupingEnabled && !series.requireSorting) {
@@ -1826,7 +1827,7 @@ function onTooltipHeaderFormatter(e) {
         else if (!xDateFormat && dateTimeLabelFormats && xAxis.dateTime) {
             xDateFormat = xAxis.dateTime.getXDateFormat(point.x, tooltipOptions.dateTimeLabelFormats);
         }
-        const groupStart = (0,external_highcharts_src_js_default_namespaceObject.pick)(series.groupMap?.[point.index].groupStart, point.key), groupEnd = groupStart + (currentDataGrouping?.totalRange || 0) - 1;
+        const groupStart = series.groupMap?.[point.index].groupStart ?? point.key, groupEnd = groupStart + (currentDataGrouping?.totalRange || 0) - 1;
         formattedKey = time.dateFormat(xDateFormat, groupStart);
         if (xDateFormatEnd) {
             formattedKey += time.dateFormat(xDateFormatEnd, groupEnd);

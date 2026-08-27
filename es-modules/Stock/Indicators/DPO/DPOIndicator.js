@@ -9,7 +9,7 @@
 'use strict';
 import SeriesRegistry from '../../../Core/Series/SeriesRegistry.js';
 const { sma: SMAIndicator } = SeriesRegistry.seriesTypes;
-import { correctFloat, extend, merge, pick } from '../../../Shared/Utilities.js';
+import { correctFloat, extend, merge } from '../../../Shared/Utilities.js';
 /* *
  *
  *  Functions
@@ -18,7 +18,7 @@ import { correctFloat, extend, merge, pick } from '../../../Shared/Utilities.js'
 // Utils:
 /** @internal */
 function accumulatePoints(sum, yVal, i, index, subtract) {
-    const price = pick(yVal[i][index], yVal[i]);
+    const price = (yVal[i][index] ?? yVal[i]);
     if (subtract) {
         return correctFloat(sum - price);
     }
@@ -63,7 +63,8 @@ class DPOIndicator extends SMAIndicator {
             rangeIndex = j + range - 1;
             // Adding the last period point
             sum = accumulatePoints(sum, yVal, periodIndex, index);
-            price = pick(yVal[rangeIndex][index], yVal[rangeIndex]);
+            price = yVal[rangeIndex][index] ??
+                yVal[rangeIndex];
             oscillator = price - sum / period;
             // Subtracting the first period point
             sum = accumulatePoints(sum, yVal, j, index, true);

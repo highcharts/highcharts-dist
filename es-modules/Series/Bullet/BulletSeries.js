@@ -14,7 +14,7 @@ import BulletPoint from './BulletPoint.js';
 import BulletSeriesDefaults from './BulletSeriesDefaults.js';
 import ColumnSeries from '../Column/ColumnSeries.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-import { extend, isNumber, merge, pick, relativeLength } from '../../Shared/Utilities.js';
+import { extend, isNumber, merge, relativeLength } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class
@@ -95,13 +95,20 @@ class BulletSeries extends ColumnSeries {
                 // Presentational
                 if (!chart.styledMode) {
                     targetGraphic.attr({
-                        fill: pick(targetOptions.color, pointOptions.color, (series.zones.length && (point.getZone.call({
-                            series: series,
-                            x: point.x,
-                            y: targetVal,
-                            options: {}
-                        })?.color || series.color)) || void 0, point.color, series.color),
-                        stroke: pick(targetOptions.borderColor, point.borderColor, series.options.borderColor),
+                        fill: (targetOptions.color ??
+                            pointOptions.color ??
+                            ((series.zones.length &&
+                                (point.getZone?.call({
+                                    series: series,
+                                    x: point.x,
+                                    y: targetVal,
+                                    options: {}
+                                })?.color || series.color)) || void 0) ??
+                            point.color ??
+                            series.color),
+                        stroke: targetOptions.borderColor ??
+                            point.borderColor ??
+                            series.options.borderColor,
                         'stroke-width': targetOptions.borderWidth,
                         r: targetOptions.borderRadius
                     });
@@ -130,10 +137,10 @@ class BulletSeries extends ColumnSeries {
         if (targetData && targetData.length) {
             const targetExtremes = super.getExtremes.call(this, targetData);
             if (isNumber(targetExtremes.dataMin)) {
-                dataExtremes.dataMin = Math.min(pick(dataExtremes.dataMin, Infinity), targetExtremes.dataMin);
+                dataExtremes.dataMin = Math.min((dataExtremes.dataMin ?? Infinity), targetExtremes.dataMin);
             }
             if (isNumber(targetExtremes.dataMax)) {
-                dataExtremes.dataMax = Math.max(pick(dataExtremes.dataMax, -Infinity), targetExtremes.dataMax);
+                dataExtremes.dataMax = Math.max((dataExtremes.dataMax ?? -Infinity), targetExtremes.dataMax);
             }
         }
         return dataExtremes;

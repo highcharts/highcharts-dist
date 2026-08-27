@@ -18,7 +18,7 @@ import RangeSelectorComposition from './RangeSelectorComposition.js';
 import SVGElement from '../../Core/Renderer/SVG/SVGElement.js';
 import T from '../../Core/Templating.js';
 const { format } = T;
-import { createElement, defined, extend, isString, isNumber, merge, objectEach, pick, splat, discardElement, destroyObjectProperties, css, addEvent, fireEvent } from '../../Shared/Utilities.js';
+import { createElement, defined, extend, isString, isNumber, merge, objectEach, splat, discardElement, destroyObjectProperties, css, addEvent, fireEvent } from '../../Shared/Utilities.js';
 /* *
  *
  *  Functions
@@ -239,7 +239,7 @@ class RangeSelector {
         }
         else if (isNumber(newMin) || isNumber(newMax)) {
             // Existing axis object. Set extremes after render time.
-            baseAxis.setExtremes(newMin, newMax, pick(redraw, true), void 0, // Auto animation
+            baseAxis.setExtremes(newMin, newMax, (redraw ?? true), void 0, // Auto animation
             {
                 trigger: 'rangeSelectorButton',
                 rangeSelectorButton: rangeOptions
@@ -474,8 +474,8 @@ class RangeSelector {
                 year: 365
             }[type] * 24 * 36e5 * count;
         }
-        rangeOptions._offsetMin = pick(rangeOptions.offsetMin, 0);
-        rangeOptions._offsetMax = pick(rangeOptions.offsetMax, 0);
+        rangeOptions._offsetMin = (rangeOptions.offsetMin ?? 0);
+        rangeOptions._offsetMax = (rangeOptions.offsetMax ?? 0);
         rangeOptions._range +=
             rangeOptions._offsetMax - rangeOptions._offsetMin;
     }
@@ -786,7 +786,7 @@ class RangeSelector {
         };
     }
     createElements() {
-        const chart = this.chart, renderer = chart.renderer, container = chart.container, chartOptions = chart.options, options = chartOptions.rangeSelector, inputEnabled = options.inputEnabled, inputsZIndex = pick(chartOptions.chart.style?.zIndex, 0) + 1;
+        const chart = this.chart, renderer = chart.renderer, container = chart.container, chartOptions = chart.options, options = chartOptions.rangeSelector, inputEnabled = options.inputEnabled, inputsZIndex = (chartOptions.chart.style?.zIndex ?? 0) + 1;
         if (options.enabled === false) {
             return;
         }
@@ -927,10 +927,14 @@ class RangeSelector {
         // Create a label for dropdown select element
         const userButtonTheme = chart.userOptions.rangeSelector?.buttonTheme;
         this.dropdownLabel = renderer.button('', 0, 0, () => { }, merge(buttonTheme, {
-            'stroke-width': pick(buttonTheme['stroke-width'], 0),
+            'stroke-width': (buttonTheme['stroke-width'] ?? 0),
             width: 'auto',
-            paddingLeft: pick(options.buttonTheme.paddingLeft, userButtonTheme?.padding, 8),
-            paddingRight: pick(options.buttonTheme.paddingRight, userButtonTheme?.padding, 8)
+            paddingLeft: options.buttonTheme.paddingLeft ??
+                userButtonTheme?.padding ??
+                8,
+            paddingRight: options.buttonTheme.paddingRight ??
+                userButtonTheme?.padding ??
+                8
         }), states && states.hover, states && states.select, states && states.disabled)
             .hide()
             .add(this.group);
@@ -1111,7 +1115,7 @@ class RangeSelector {
                     legendOptions.enabled &&
                     !legendOptions.floating ?
                     (chart.legend.legendHeight +
-                        pick(legendOptions.margin, 10)) :
+                        (legendOptions.margin ?? 10)) :
                     0);
                 groupHeight = groupHeight + legendHeight - 20;
                 translateY = (alignTranslateY -
@@ -1257,7 +1261,7 @@ class RangeSelector {
             // Align button group
             buttonGroup.align({
                 y: buttonPosition.y,
-                width: pick(width, this.initialButtonGroupWidth),
+                width: (width ?? this.initialButtonGroupWidth),
                 align: buttonPosition.align,
                 x: translateX
             }, true, chart.spacingBox);
@@ -1276,7 +1280,7 @@ class RangeSelector {
         if (zoomText && zoomText.visibility !== 'hidden') {
             // #8769, allow dynamically updating margins
             zoomText[verb]({
-                x: pick(plotLeft + buttonPosition.x, plotLeft)
+                x: plotLeft + (buttonPosition.x ?? 0)
             });
             // Button start position
             buttonLeft += buttonPosition.x +

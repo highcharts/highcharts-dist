@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.0.1 (2026-08-17)
+ * @license Highstock JS v13.0.2 (2026-08-27)
  * @module highcharts/modules/stock-tools
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -291,7 +291,7 @@ function getAssignedAxis(coords) {
         const extremes = coord.axis.getExtremes(), axisMin = extremes.min, axisMax = extremes.max, 
         // Correct axis edges when axis has series
         // with pointRange (like column)
-        minPointOffset = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(coord.axis.minPointOffset, 0);
+        minPointOffset = (coord.axis.minPointOffset ?? 0);
         return (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.isNumber)(axisMin) && (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.isNumber)(axisMax) &&
             coord.value >= (axisMin - minPointOffset) &&
             coord.value <= (axisMax + minPointOffset) &&
@@ -1281,7 +1281,7 @@ class NavigationBindings {
                 let parent = config;
                 path.forEach((name, index) => {
                     if (name !== '__proto__' && name !== 'constructor') {
-                        const nextName = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(path[index + 1], '');
+                        const nextName = (path[index + 1] ?? '');
                         if (pathLength === index) {
                             // Last index, put value:
                             parent[name] = value;
@@ -1327,7 +1327,10 @@ class NavigationBindings {
      *         Annotation options to be displayed in popup box
      */
     annotationToFields(annotation) {
-        const options = annotation.options, editables = NavigationBindings.annotationsEditable, nestedEditables = editables.nestedOptions, type = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(options.type, options.shapes?.[0]?.type, options.labels?.[0]?.type, 'label'), nonEditables = NavigationBindings.annotationsNonEditable[options.langKey] || [], visualOptions = {
+        const options = annotation.options, editables = NavigationBindings.annotationsEditable, nestedEditables = editables.nestedOptions, type = options.type ??
+            options.shapes?.[0]?.type ??
+            options.labels?.[0]?.type ??
+            'label', nonEditables = NavigationBindings.annotationsNonEditable[options.langKey] || [], visualOptions = {
             langKey: options.langKey,
             type: type
         };
@@ -5809,7 +5812,7 @@ function navigationGetYAxisResizers(yAxes) {
                 enabled: true,
                 controlledAxis: {
                     next: [
-                        (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(nextYAxis.options.id, nextYAxis.index)
+                        (nextYAxis.options.id ?? nextYAxis.index)
                     ]
                 }
             };
@@ -5966,7 +5969,7 @@ class Toolbar {
         this.iconsURL = this.getIconsURL();
         this.lang = langOptions;
         this.guiEnabled = options.enabled;
-        this.visible = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(options.visible, true);
+        this.visible = (options.visible ?? true);
         this.guiClassName = options.className;
         this.toolbarClassName = options.toolbarClassName;
         // General events collection which should be removed upon
@@ -6143,7 +6146,7 @@ class Toolbar {
             ?.stockTools.arrowLabel, items = btnOptions.items, classMapping = Toolbar.prototype.classMapping, userClassName = btnOptions.className || '';
         // Main button wrapper
         const buttonWrapper = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.createElement)('li', {
-            className: (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(classMapping[btnName], '') + ' ' + userClassName
+            className: (classMapping[btnName] ?? '') + ' ' + userClassName
         }, void 0, target);
         // Single button
         const elementType = (btnOptions.elementType || 'button');
@@ -6387,13 +6390,13 @@ class Toolbar {
         this.isDirty = !!options.gui.definitions;
         (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(true, this.chart.options.stockTools, options);
         (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(true, this.options, options.gui);
-        this.visible = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(this.options.visible && this.options.enabled, true);
+        this.visible = (this.options.visible && this.options.enabled) ?? true;
         // If Stock Tools are updated, then bindings should be updated too:
         if (this.chart.navigationBindings) {
             this.chart.navigationBindings.update();
         }
         this.chart.isDirtyBox = true;
-        if ((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(redraw, true)) {
+        if (redraw ?? true) {
             this.chart.redraw();
         }
     }
@@ -6640,7 +6643,9 @@ function setOffset(chart) {
         chart.stockTools.width = offsetWidth;
         let dirty = false;
         if (offsetWidth < chart.plotWidth) {
-            const nextX = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(optionsChart.spacingLeft, optionsChart.spacing && optionsChart.spacing[3], 0) + offsetWidth;
+            const nextX = (optionsChart.spacingLeft ??
+                (optionsChart.spacing && optionsChart.spacing[3]) ??
+                0) + offsetWidth;
             const diff = nextX - chart.spacingBox.x;
             chart.spacingBox.x = nextX;
             chart.spacingBox.width -= diff;

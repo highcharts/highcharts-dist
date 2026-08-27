@@ -12,7 +12,7 @@
 'use strict';
 import H from './Globals.js';
 const { charts, composed, isTouchDevice } = H;
-import { addEvent, attr, css, defined, extend, find, fireEvent, isNumber, isObject, objectEach, offset, pick, pushUnique, splat } from '../Shared/Utilities.js';
+import { addEvent, attr, css, defined, extend, find, fireEvent, isNumber, isObject, objectEach, offset, pushUnique, splat } from '../Shared/Utilities.js';
 /**
  *
  *  Functions
@@ -500,7 +500,7 @@ class Pointer {
         const hoverPoints = [], useExisting = !!(isDirectTouch && existingHoverPoint), filter = function (s) {
             return (s.visible &&
                 !(!shared && s.directTouch) && // #3821
-                pick(s.options.enableMouseTracking, true));
+                (s.options.enableMouseTracking ?? true));
         };
         let hoverSeries = existingHoverSeries, 
         // Which series to look in for the hover point
@@ -686,8 +686,8 @@ class Pointer {
         const ePos = (touches ?
             touches.length ?
                 touches.item(0) :
-                (pick(// #13534
-                touches.changedTouches, e.changedTouches))[0] :
+                (touches.changedTouches ??
+                    e.changedTouches)[0] :
             e);
         // Get mouse position
         if (!chartPosition) {
@@ -761,7 +761,7 @@ class Pointer {
      * @function Highcharts.Pointer#onContainerMouseLeave
      */
     onContainerMouseLeave(e) {
-        const { pointer } = charts[pick(Pointer.hoverChartIndex, -1)] || {};
+        const { pointer } = charts[(Pointer.hoverChartIndex ?? -1)] || {};
         e = this.normalize(e);
         this.onContainerMouseMove(e);
         // #4886, MS Touch end fires mouseleave but with no related target
@@ -861,7 +861,7 @@ class Pointer {
         if (e?.touches && this.hasPinchMoved) {
             e?.preventDefault?.();
         }
-        charts[pick(Pointer.hoverChartIndex, -1)]
+        charts[(Pointer.hoverChartIndex ?? -1)]
             ?.pointer
             ?.drop(e);
     }
@@ -1368,7 +1368,7 @@ class Pointer {
      */
     setHoverChartIndex(e) {
         const chart = this.chart;
-        const hoverChart = H.charts[pick(Pointer.hoverChartIndex, -1)];
+        const hoverChart = H.charts[(Pointer.hoverChartIndex ?? -1)];
         if (hoverChart &&
             hoverChart !== chart) {
             const relatedTargetObj = { relatedTarget: chart.container };
@@ -1414,7 +1414,7 @@ class Pointer {
                             Math.pow(pinchDown[0].chartY - e.chartY, 2)) >= 16 :
                         false;
                 }
-                if (pick(hasMoved, true)) {
+                if (hasMoved ?? true) {
                     this.pinch(e);
                 }
             }
@@ -1457,7 +1457,7 @@ class Pointer {
         let zoomType = chart.zooming.type || '', zoomX, zoomY;
         // Look for the pinchType option
         if (/touch/.test(e.type)) {
-            zoomType = pick(chart.zooming.pinchType, zoomType);
+            zoomType = (chart.zooming.pinchType ?? zoomType);
         }
         this.zoomX = zoomX = /x/.test(zoomType);
         this.zoomY = zoomY = /y/.test(zoomType);

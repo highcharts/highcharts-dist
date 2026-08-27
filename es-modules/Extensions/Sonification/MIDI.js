@@ -14,7 +14,6 @@
 /* eslint-disable no-multi-spaces */
 'use strict';
 import SonificationInstrument from './SonificationInstrument.js';
-import { pick } from '../../Shared/Utilities.js';
 const freqToNote = (f) => Math.round(12 * Math.log(f) / Math.LN2 - 48.37632), b = (byte, n) => n >>> 8 * byte & 0xFF, getHeader = (nTracks) => [
     0x4D, 0x54, 0x68, 0x64, // HD_TYPE
     0, 0, 0, 6, // HD_SIZE
@@ -49,7 +48,7 @@ varLenEnc = (n) => {
         res.splice(ix + 1, 0, el);
     };
     events.forEach((e) => {
-        const o = e.instrumentEventOptions || {}, t = e.time, dur = cachedDur = pick(o.noteDuration, cachedDur), tNOF = dur && e.time + dur, ctrl = [{
+        const o = e.instrumentEventOptions || {}, t = e.time, dur = cachedDur = (o.noteDuration ?? cachedDur), tNOF = dur && e.time + dur, ctrl = [{
                 valMap: (n) => 64 + 63 * n & 0x7F,
                 data: {
                     0x0A: o.pan, // Use MSB only, no need for fine adjust
@@ -69,7 +68,7 @@ varLenEnc = (n) => {
                     0x4C: o.highpassResonance
                 }
             }], v = cachedVel = o.volume === void 0 ?
-            pick(cachedVel, 127) : 127 * o.volume & 0x7F, freq = o.frequency, note = o.note || 0, noteVal = 12 + (freq ? freqToNote(freq) : // MIDI note #0 is C-1
+            (cachedVel ?? 127) : 127 * o.volume & 0x7F, freq = o.frequency, note = o.note || 0, noteVal = 12 + (freq ? freqToNote(freq) : // MIDI note #0 is C-1
             typeof note === 'string' ? SonificationInstrument
                 .noteStringToC0Distance(note) : note) & 0x7F;
         // CTRL_CHANGE events

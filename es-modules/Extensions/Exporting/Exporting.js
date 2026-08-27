@@ -24,7 +24,7 @@ import Fullscreen from './Fullscreen.js';
 import G from '../../Core/Globals.js';
 const { composed, doc, isFirefox, isMS, isSafari, SVG_NS, win } = G;
 import HU from '../../Core/HttpUtilities.js';
-import { addEvent, createElement, css, discardElement, extend, find, fireEvent, internalClearTimeout, isObject, merge, objectEach, pick, pushUnique, removeEvent, splat } from '../../Shared/Utilities.js';
+import { addEvent, createElement, css, discardElement, extend, find, fireEvent, internalClearTimeout, isObject, merge, objectEach, pushUnique, removeEvent, splat } from '../../Shared/Utilities.js';
 import { error, uniqueKey } from '../../Core/Utilities.js';
 AST.allowedAttributes.push('data-z-index', 'fill-opacity', 'filter', 'preserveAspectRatio', 'rx', 'ry', 'stroke-dasharray', 'stroke-linejoin', 'stroke-opacity', 'text-anchor', 'transform', 'transform-origin', 'version', 'viewBox', 'visibility', 'xmlns', 'xmlns:xlink');
 AST.allowedTags.push('desc', 'clippath', 'fedropshadow', 'femorphology', 'g', 'image');
@@ -532,7 +532,7 @@ export class Exporting {
             };
         }
         if (btnOptions.text && btnOptions.symbol) {
-            theme.paddingLeft = pick(theme.paddingLeft, 30);
+            theme.paddingLeft = (theme.paddingLeft ?? 30);
         }
         else if (!btnOptions.text) {
             extend(theme, {
@@ -545,8 +545,8 @@ export class Exporting {
             .button(btnOptions.text || '', 0, 0, callback, theme, void 0, void 0, void 0, void 0, btnOptions.useHTML)
             .addClass(options.className || '')
             .attr({
-            title: pick(chart.options.lang[(btnOptions._titleKey ||
-                btnOptions.titleKey)], '')
+            title: (chart.options.lang[(btnOptions._titleKey ||
+                btnOptions.titleKey)] ?? '')
         });
         button.menuClassName = (options.menuClassName ||
             'highcharts-menu-' + exporting.btnCount++);
@@ -575,7 +575,7 @@ export class Exporting {
             .add(exporting.group)
             .align(extend(btnOptions, {
             width: button.width,
-            x: pick(btnOptions.x, exporting.buttonOffset) // #1654
+            x: (btnOptions.x ?? exporting.buttonOffset) // #1654
         }), true, 'spacingBox');
         exporting.buttonOffset += (((button.width || 0) + (btnOptions.buttonSpacing || 0)) *
             (btnOptions.align === 'right' ? -1 : 1));
@@ -1829,7 +1829,7 @@ export class Exporting {
     update(exportingOptions, redraw) {
         this.isDirty = true;
         merge(true, this.options, exportingOptions);
-        if (pick(redraw, true)) {
+        if (redraw ?? true) {
             this.chart.redraw();
         }
     }
@@ -2051,7 +2051,7 @@ Exporting.unstyledElements = [
                 if (chart.exporting) {
                     chart.exporting.isDirty = true;
                     merge(true, chart.options.navigation, options);
-                    if (pick(redraw, true)) {
+                    if (redraw ?? true) {
                         chart.redraw();
                     }
                 }

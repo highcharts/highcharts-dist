@@ -16,7 +16,7 @@ import ItemPoint from './ItemPoint.js';
 import ItemSeriesDefaults from './ItemSeriesDefaults.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { pie: PieSeries } = SeriesRegistry.seriesTypes;
-import { defined, extend, fireEvent, isNumber, merge, pick } from '../../Shared/Utilities.js';
+import { defined, extend, fireEvent, isNumber, merge } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class
@@ -29,7 +29,7 @@ import { defined, extend, fireEvent, isNumber, merge, pick } from '../../Shared/
  *
  * @requires modules/item-series
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.item
  *
@@ -43,7 +43,7 @@ class ItemSeries extends PieSeries {
      * */
     /**
      * Fade in the whole chart.
-     * @private
+     * @internal
      */
     animate(init) {
         const group = this.group;
@@ -60,6 +60,9 @@ class ItemSeries extends PieSeries {
             }
         }
     }
+    /**
+     * @internal
+     */
     drawDataLabels() {
         if (this.center && this.slots) {
             super.drawDataLabels();
@@ -71,6 +74,9 @@ class ItemSeries extends PieSeries {
             }
         }
     }
+    /**
+     * @internal
+     */
     drawPoints() {
         const series = this, options = this.options, renderer = series.chart.renderer, seriesMarkerOptions = options.marker, borderWidth = this.borderWidth, crisp = borderWidth % 2 ? 0.5 : 1, rows = this.getRows(), cols = Math.ceil(this.total / rows), cellWidth = this.chart.plotWidth / cols, cellHeight = this.chart.plotHeight / rows, itemSize = this.itemSize || Math.min(cellWidth, cellHeight);
         let i = 0;
@@ -85,7 +91,7 @@ class ItemSeries extends PieSeries {
         //*/
         for (const point of series.points) {
             const pointMarkerOptions = point.marker || {}, symbol = (pointMarkerOptions.symbol ||
-                seriesMarkerOptions.symbol), r = pick(pointMarkerOptions.radius, seriesMarkerOptions.radius), size = defined(r) ? 2 * r : itemSize, padding = size * options.itemPadding;
+                seriesMarkerOptions.symbol), r = (pointMarkerOptions.radius ?? seriesMarkerOptions.radius), size = defined(r) ? 2 * r : itemSize, padding = size * options.itemPadding;
             let attr, graphics, pointAttr, x, y, width, height;
             point.graphics = graphics = point.graphics || [];
             if (!series.chart.styledMode) {
@@ -166,6 +172,9 @@ class ItemSeries extends PieSeries {
             }
         }
     }
+    /**
+     * @internal
+     */
     getRows() {
         const chart = this.chart, total = this.total || 0;
         let rows = this.options.rows, cols, ratio;
@@ -198,7 +207,7 @@ class ItemSeries extends PieSeries {
     }
     /**
      * Get the semi-circular slots.
-     * @private
+     * @internal
      */
     getSlots() {
         const series = this, center = series.center, diameter = center[2], slots = series.slots = series.slots || [], fullAngle = (series.endAngleRad - series.startAngleRad), rowsOption = series.options.rows, isCircle = fullAngle % (2 * Math.PI) === 0, total = series.total || 0;
@@ -257,7 +266,7 @@ class ItemSeries extends PieSeries {
         let overshoot = finalItemCount - series.total -
             (isCircle ? rows.length : 0);
         /**
-         * @private
+         * @internal
          * @param {Highcharts.ItemRowContainerObject} item
          * Wrapped object with angle and row
          */
@@ -298,6 +307,9 @@ class ItemSeries extends PieSeries {
         series.itemSize = itemSize;
         return slots;
     }
+    /**
+     * @internal
+     */
     translate(positions) {
         // Initialize chart without setting data, #13379.
         if (this.total === 0 && // Check if that is a (semi-)circle

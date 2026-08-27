@@ -13,7 +13,7 @@
 import F from '../Templating.js';
 import H from '../Globals.js';
 const { deg2rad } = H;
-import { correctFloat, clamp, defined, extend, isNumber, merge, pick, destroyObjectProperties, getAlignFactor, fireEvent } from '../../Shared/Utilities.js';
+import { correctFloat, clamp, defined, extend, isNumber, merge, destroyObjectProperties, getAlignFactor, fireEvent } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class
@@ -96,11 +96,11 @@ class Tick {
      * @function Highcharts.Tick#addLabel
      */
     addLabel() {
-        const tick = this, axis = tick.axis, options = axis.options, chart = axis.chart, categories = axis.categories, log = axis.logarithmic, names = axis.names, pos = tick.pos, labelOptions = pick(tick.options?.labels, options.labels), tickPositions = axis.tickPositions, isFirst = pos === tickPositions[0], isLast = pos === tickPositions[tickPositions.length - 1], tickPositionInfo = tickPositions.info, boundary = tickPositionInfo?.boundaryTicks[pos], DTLFormats = options.dateTimeLabelFormats;
+        const tick = this, axis = tick.axis, options = axis.options, chart = axis.chart, categories = axis.categories, log = axis.logarithmic, names = axis.names, pos = tick.pos, labelOptions = (tick.options?.labels ?? options.labels), tickPositions = axis.tickPositions, isFirst = pos === tickPositions[0], isLast = pos === tickPositions[tickPositions.length - 1], tickPositionInfo = tickPositions.info, boundary = tickPositionInfo?.boundaryTicks[pos], DTLFormats = options.dateTimeLabelFormats;
         let label = tick.label, dateTimeLabelFormat, dateTimeLabelFormats, i;
         // The context value
         let value = this.parameters.category || (categories ?
-            pick(categories[pos], names[pos], pos) :
+            (categories[pos] ?? names[pos] ?? pos) :
             pos);
         if (log && isNumber(value)) {
             value = correctFloat(log.lin2log(value));
@@ -347,7 +347,7 @@ class Tick {
                 labelOptions.y;
         }
         x = x +
-            pick(labelOptions.x, [0, 1, 0, -1][axis.side] * distance) +
+            (labelOptions.x ?? [0, 1, 0, -1][axis.side] * distance) +
             labelOffsetCorrection +
             rotCorr.x -
             (tickmarkOffset && horiz ?
@@ -402,7 +402,7 @@ class Tick {
      * @function Highcharts.Tick#handleOverflow
      */
     handleOverflow(xy) {
-        const tick = this, axis = this.axis, labelOptions = axis.options.labels, pxPos = xy.x, chartWidth = axis.chart.chartWidth, spacing = axis.chart.spacing, leftBound = pick(axis.labelLeft, Math.min(axis.pos, spacing[3])), rightBound = pick(axis.labelRight, Math.max(!axis.isRadial ? axis.pos + axis.len : 0, chartWidth - spacing[1])), label = this.label, rotation = this.rotation, factor = getAlignFactor(axis.labelAlign || label.attr('align')), labelWidth = label.getBBox().width, slotWidth = axis.getSlotWidth(tick), xCorrection = factor, css = {};
+        const tick = this, axis = this.axis, labelOptions = axis.options.labels, pxPos = xy.x, chartWidth = axis.chart.chartWidth, spacing = axis.chart.spacing, leftBound = axis.labelLeft ?? Math.min(axis.pos, spacing[3]), rightBound = (axis.labelRight ?? Math.max(!axis.isRadial ? axis.pos + axis.len : 0, chartWidth - spacing[1])), label = this.label, rotation = this.rotation, factor = getAlignFactor(axis.labelAlign || label.attr('align')), labelWidth = label.getBBox().width, slotWidth = axis.getSlotWidth(tick), xCorrection = factor, css = {};
         let modifiedSlotWidth = slotWidth, goRight = 1, leftPos, rightPos, textWidth;
         // Check if the label overshoots the chart spacing box. If it does, move
         // it. If it now overshoots the slotWidth, add ellipsis.
@@ -469,9 +469,8 @@ class Tick {
      * @param {number} [opacity]
      */
     render(index, old, opacity) {
-        const tick = this, axis = tick.axis, horiz = axis.horiz, pos = tick.pos, tickmarkOffset = pick(tick.tickmarkOffset, axis.tickmarkOffset), xy = tick.getPosition(horiz, pos, tickmarkOffset, old), x = xy.x, y = xy.y, axisStart = axis.pos, axisEnd = axisStart + axis.len, pxPos = horiz ? x : y;
-        const labelOpacity = pick(opacity, tick.label?.newOpacity, // #15528
-        1);
+        const tick = this, axis = tick.axis, horiz = axis.horiz, pos = tick.pos, tickmarkOffset = (tick.tickmarkOffset ?? axis.tickmarkOffset), xy = tick.getPosition(horiz, pos, tickmarkOffset, old), x = xy.x, y = xy.y, axisStart = axis.pos, axisEnd = axisStart + axis.len, pxPos = horiz ? x : y;
+        const labelOpacity = (opacity ?? tick.label?.newOpacity ?? 1);
         // Anything that is not between `axis.pos` and `axis.pos + axis.length`
         // should not be visible (#20166). The `correctFloat` is for reversed
         // axes in Safari.
@@ -499,7 +498,7 @@ class Tick {
      * @param {number} opacity  The opacity of the grid line
      */
     renderGridLine(old, opacity) {
-        const tick = this, axis = tick.axis, options = axis.options, attribs = {}, pos = tick.pos, type = tick.type, tickmarkOffset = pick(tick.tickmarkOffset, axis.tickmarkOffset), renderer = axis.chart.renderer;
+        const tick = this, axis = tick.axis, options = axis.options, attribs = {}, pos = tick.pos, type = tick.type, tickmarkOffset = (tick.tickmarkOffset ?? axis.tickmarkOffset), renderer = axis.chart.renderer;
         let gridLine = tick.gridLine, gridLinePath, gridLineWidth = options.gridLineWidth, gridLineColor = options.gridLineColor, dashStyle = options.gridLineDashStyle;
         if (tick.type === 'minor') {
             gridLineWidth = options.minorGridLineWidth;
@@ -555,7 +554,7 @@ class Tick {
      * @param {number} opacity  The opacity of the mark
      */
     renderMark(xy, opacity) {
-        const tick = this, axis = tick.axis, options = axis.options, renderer = axis.chart.renderer, type = tick.type, tickSize = axis.tickSize(type ? type + 'Tick' : 'tick'), x = xy.x, y = xy.y, tickWidth = pick(options[type !== 'minor' ? 'tickWidth' : 'minorTickWidth'], !type && axis.isXAxis ? 1 : 0), // X axis defaults to 1
+        const tick = this, axis = tick.axis, options = axis.options, renderer = axis.chart.renderer, type = tick.type, tickSize = axis.tickSize(type ? type + 'Tick' : 'tick'), x = xy.x, y = xy.y, tickWidth = options[type !== 'minor' ? 'tickWidth' : 'minorTickWidth'] ?? (!type && axis.isXAxis ? 1 : 0), // X axis defaults to 1
         tickColor = options[type !== 'minor' ? 'tickColor' : 'minorTickColor'];
         let mark = tick.mark;
         const isNewMark = !mark;
@@ -600,7 +599,7 @@ class Tick {
      * @param {number} index  The index of the tick
      */
     renderLabel(xy, old, opacity, index) {
-        const tick = this, axis = tick.axis, horiz = axis.horiz, options = axis.options, label = tick.label, labelOptions = options.labels, step = labelOptions.step, tickmarkOffset = pick(tick.tickmarkOffset, axis.tickmarkOffset), x = xy.x, y = xy.y;
+        const tick = this, axis = tick.axis, horiz = axis.horiz, options = axis.options, label = tick.label, labelOptions = options.labels, step = labelOptions.step, tickmarkOffset = (tick.tickmarkOffset ?? axis.tickmarkOffset), x = xy.x, y = xy.y;
         let show = true;
         if (label && isNumber(x)) {
             label.xy = xy = tick.getLabelPosition(x, y, label, horiz, labelOptions, tickmarkOffset, index, step);

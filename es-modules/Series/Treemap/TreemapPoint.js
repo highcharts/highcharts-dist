@@ -14,7 +14,7 @@
 import DPU from '../DrawPointUtilities.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { pie: { prototype: { pointClass: PiePoint } }, scatter: { prototype: { pointClass: ScatterPoint } } } = SeriesRegistry.seriesTypes;
-import { extend, isNumber, pick } from '../../Shared/Utilities.js';
+import { extend, isNumber } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class
@@ -50,7 +50,7 @@ class TreemapPoint extends ScatterPoint {
         else if (!this.node.isGroup &&
             !this.node.isLeaf &&
             !series.nodeMap[series.rootNode].isGroup &&
-            !pick(options.interactByLeaf, !options.allowTraversingTree)) {
+            !(options.interactByLeaf ?? !options.allowTraversingTree)) {
             className += ' highcharts-internal-node-interactive';
         }
         else if (!this.node.isGroup &&

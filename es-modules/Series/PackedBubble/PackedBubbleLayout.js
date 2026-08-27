@@ -13,7 +13,7 @@
 import GraphLayout from '../GraphLayoutComposition.js';
 import PackedBubbleIntegration from './PackedBubbleIntegration.js';
 import ReingoldFruchtermanLayout from '../Networkgraph/ReingoldFruchtermanLayout.js';
-import { addEvent, defined, pick } from '../../Shared/Utilities.js';
+import { addEvent, defined } from '../../Shared/Utilities.js';
 /* *
  *
  *  Functions
@@ -111,9 +111,9 @@ class PackedBubbleLayout extends ReingoldFruchtermanLayout {
                 centerX = box.width / 2;
                 centerY = box.height / 2;
             }
-            node.plotX = node.prevX = pick(node.plotX, centerX +
+            node.plotX = node.prevX = (node.plotX ?? centerX +
                 radius * Math.cos(node.index || index * angle));
-            node.plotY = node.prevY = pick(node.plotY, centerY +
+            node.plotY = node.prevY = (node.plotY ?? centerY +
                 radius * Math.sin(node.index || index * angle));
             node.dispX = 0;
             node.dispY = 0;

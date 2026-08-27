@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.1 (2026-08-17)
+ * @license Highcharts JS v13.0.2 (2026-08-27)
  * @module highcharts/modules/draggable-points
  * @requires highcharts
  *
@@ -1436,8 +1436,7 @@ const column = {
             // We flip whether or not we update the top or bottom of the guide
             // box at threshold, but if we drag the mouse fast, the top has not
             // reached threshold before we cross over and update the bottom.
-            const plotThreshold = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(point.yBottom, // Added support for stacked series. (#18741)
-            point.series.translatedThreshold), plotY = guideBox.attr('y'), threshold = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.isNumber)(point.stackY) ? (point.stackY - (point.y || 0)) : point.series.options.threshold || 0, y = threshold + pointVals.y;
+            const plotThreshold = point.yBottom ?? point.series.translatedThreshold, plotY = guideBox.attr('y'), threshold = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.isNumber)(point.stackY) ? (point.stackY - (point.y || 0)) : point.series.options.threshold || 0, y = threshold + pointVals.y;
             let height, diff;
             if (point.series.yAxis.reversed ? y < threshold : y >= threshold) {
                 // Above threshold - always set height to hit the threshold

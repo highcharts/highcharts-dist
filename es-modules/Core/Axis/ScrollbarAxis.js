@@ -12,7 +12,7 @@
 'use strict';
 import H from '../Globals.js';
 const { composed } = H;
-import { addEvent, correctFloat, defined, pick, pushUnique } from '../../Shared/Utilities.js';
+import { addEvent, correctFloat, defined, pushUnique } from '../../Shared/Utilities.js';
 /* *
  *
  *  Composition
@@ -54,8 +54,8 @@ var ScrollbarAxis;
     ScrollbarAxis.compose = compose;
     /** @internal */
     function getExtremes(axis) {
-        const axisMin = pick(axis.options?.min, axis.min);
-        const axisMax = pick(axis.options?.max, axis.max);
+        const axisMin = (axis.options?.min ?? axis.min);
+        const axisMax = (axis.options?.max ?? axis.max);
         return {
             axisMin,
             axisMax,

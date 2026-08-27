@@ -25,7 +25,7 @@ import D from '../SimulationSeriesUtilities.js';
 const { initDataLabels, initDataLabelsDefer } = D;
 import SVGElement from '../../Core/Renderer/SVG/SVGElement.js';
 import { composeTextPath } from '../../Extensions/TextPath.js';
-import { addEvent, clamp, defined, extend, fireEvent, isArray, isNumber, merge, pick } from '../../Shared/Utilities.js';
+import { addEvent, clamp, defined, extend, fireEvent, isArray, isNumber, merge } from '../../Shared/Utilities.js';
 composeTextPath(SVGElement);
 /* *
  *
@@ -185,8 +185,8 @@ class PackedBubbleSeries extends BubbleSeries {
                 }
             });
         });
-        zMin = pick(zMin, valMin);
-        zMax = pick(zMax, valMax);
+        zMin = (zMin ?? valMin);
+        zMax = (zMax ?? valMax);
         return [zMin, zMax];
     }
     /**
@@ -325,7 +325,7 @@ class PackedBubbleSeries extends BubbleSeries {
                 color(this.color).brighten(0.4).get()),
             opacity: nodeMarker.fillOpacity,
             stroke: nodeMarker.lineColor || this.color,
-            'stroke-width': pick(nodeMarker.lineWidth, this.options.lineWidth)
+            'stroke-width': (nodeMarker.lineWidth ?? this.options.lineWidth)
         };
         let parentAttribs = {};
         // Create the group for parent Nodes if doesn't exist
@@ -780,7 +780,7 @@ class PackedBubbleSeries extends BubbleSeries {
                 // Update the series points with the val from positions
                 // array
                 point = data[position[4]];
-                radius = pick(position[2], void 0);
+                radius = (position[2] ?? void 0);
                 if (!useSimulation) {
                     point.plotX = (position[0] - chart.plotLeft +
                         chart.diffX);

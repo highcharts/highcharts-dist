@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highmaps JS v13.0.1 (2026-08-17)
+ * @license Highmaps JS v13.0.2 (2026-08-27)
  * @module highcharts/modules/heatmap
  * @requires highcharts
  *
@@ -235,7 +235,7 @@ class HeatmapPoint extends ScatterPoint {
      *  Functions
      *
      * */
-    /** @private */
+    /** @internal */
     applyOptions(options, x) {
         // #17970, if point is null remove its color, because it may be updated
         if (this.isNull || this.value === null) {
@@ -246,10 +246,10 @@ class HeatmapPoint extends ScatterPoint {
             'null' : 'point';
         return this;
     }
-    /** @private */
+    /** @internal */
     getCellAttributes() {
         const point = this, series = point.series, seriesOptions = series.options, xPad = (seriesOptions.colsize || 1) / 2, yPad = (seriesOptions.rowsize || 1) / 2, xAxis = series.xAxis, yAxis = series.yAxis, markerOptions = point.options.marker || series.options.marker, pointPlacement = series.pointPlacementToXValue(), // #7860
-        pointPadding = (0,external_highcharts_src_js_default_namespaceObject.pick)(point.pointPadding, seriesOptions.pointPadding, 0), cellAttr = {
+        pointPadding = point.pointPadding ?? seriesOptions.pointPadding ?? 0, cellAttr = {
             x1: (0,external_highcharts_src_js_default_namespaceObject.clamp)(Math.round(xAxis.len -
                 xAxis.translate(point.x - xPad, false, true, false, true, -pointPlacement)), -xAxis.len, 2 * xAxis.len),
             x2: (0,external_highcharts_src_js_default_namespaceObject.clamp)(Math.round(xAxis.len -
@@ -284,7 +284,7 @@ class HeatmapPoint extends ScatterPoint {
         return cellAttr;
     }
     /**
-     * @private
+     * @internal
      */
     haloPath(size) {
         if (!size) {
@@ -302,7 +302,7 @@ class HeatmapPoint extends ScatterPoint {
     /**
      * Color points have a value option that determines whether or not it is
      * a null point
-     * @private
+     * @internal
      */
     isValid() {
         // Undefined is allowed
@@ -992,7 +992,7 @@ const { doc } = (external_highcharts_src_js_default_default());
 /**
  * Find color of point based on color axis.
  *
- * @function Highcharts.colorFromPoint
+ * @internal
  *
  * @param {number | null} value
  *        Value to find corresponding color on the color axis.
@@ -1010,8 +1010,8 @@ function colorFromPoint(value, point) {
             .split(')')[0]
             .split('(')[1]
             .split(',')
-            .map((s) => (0,external_highcharts_src_js_default_namespaceObject.pick)(parseFloat(s), parseInt(s, 10))));
-        rgba[3] = (0,external_highcharts_src_js_default_namespaceObject.pick)(rgba[3], 1.0) * 255;
+            .map((s) => (parseFloat(s) ?? parseInt(s, 10))));
+        rgba[3] = (rgba[3] ?? 1.0) * 255;
         if (!(0,external_highcharts_src_js_default_namespaceObject.defined)(value) || !point.visible) {
             rgba[3] = 0;
         }
@@ -1021,7 +1021,7 @@ function colorFromPoint(value, point) {
 }
 /**
  * Method responsible for creating a canvas for interpolation image.
- * @private
+ * @internal
  */
 function getContext(series) {
     const { canvas, context } = series;
@@ -1074,7 +1074,7 @@ const { colorFromPoint: HeatmapSeries_colorFromPoint, getContext: HeatmapSeries_
  *
  * */
 /**
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.heatmap
  *
@@ -1098,7 +1098,7 @@ class HeatmapSeries extends ScatterSeries {
      *
      * */
     /**
-     * @private
+     * @internal
      */
     drawPoints() {
         const series = this, seriesOptions = series.options, interpolation = seriesOptions.interpolation, seriesMarkerOptions = seriesOptions.marker || {};
@@ -1157,13 +1157,13 @@ class HeatmapSeries extends ScatterSeries {
     }
     /**
      * Override to use rectangle by default
-     * @private
+     * @internal
      */
     getSymbol() {
         this.symbol = this.options.marker?.symbol || 'rect';
     }
     /**
-     * @private
+     * @internal
      */
     getExtremes() {
         // Get the extremes from the value data
@@ -1181,7 +1181,7 @@ class HeatmapSeries extends ScatterSeries {
     /**
      * Override to also allow null points, used when building the k-d-tree for
      * tooltips in boost mode.
-     * @private
+     * @internal
      */
     getValidPoints(points, insideOnly) {
         return Series.prototype.getValidPoints.call(this, points, insideOnly, true);
@@ -1189,20 +1189,20 @@ class HeatmapSeries extends ScatterSeries {
     /**
      * Define hasData function for non-cartesian series. Returns true if the
      * series has points at all.
-     * @private
+     * @internal
      */
     hasData() {
         return !!this.dataTable.rowCount;
     }
     /**
      * Override the init method to add point ranges on both axes.
-     * @private
+     * @internal
      */
     init() {
         super.init.apply(this, arguments);
         const options = this.options;
         // #3758, prevent resetting in setData
-        options.pointRange = (0,external_highcharts_src_js_default_namespaceObject.pick)(options.pointRange, options.colsize || 1);
+        options.pointRange = options.pointRange ?? (options.colsize || 1);
         // General point range
         this.yAxis.axisPointRange = options.rowsize || 1;
         // Bind new symbol names
@@ -1225,7 +1225,7 @@ class HeatmapSeries extends ScatterSeries {
         }
     }
     /**
-     * @private
+     * @internal
      */
     markerAttribs(point, state) {
         const shapeArgs = point.shapeArgs || {};
@@ -1259,7 +1259,7 @@ class HeatmapSeries extends ScatterSeries {
         return shapeArgs;
     }
     /**
-     * @private
+     * @internal
      */
     pointAttribs(point, state) {
         const series = this, attr = Series.prototype.pointAttribs.call(series, point, state), seriesOptions = series.options || {}, plotOptions = series.chart.options.plotOptions || {}, seriesPlotOptions = plotOptions.series || {}, heatmapPlotOptions = plotOptions.heatmap || {}, 
@@ -1289,7 +1289,7 @@ class HeatmapSeries extends ScatterSeries {
         return attr;
     }
     /**
-     * @private
+     * @internal
      */
     translate() {
         const series = this, options = series.options, { borderRadius, marker } = options, symbol = marker?.symbol || 'rect', shape = symbols[symbol] ? symbol : 'rect', hasRegularShape = ['circle', 'square'].indexOf(shape) !== -1;
@@ -1341,7 +1341,7 @@ HeatmapSeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceOb
     specialGroup: 'group',
     trackerGroups: Series_ColorMapComposition.seriesMembers.trackerGroups,
     /**
-     * @private
+     * @internal
      */
     alignDataLabel: ColumnSeries.prototype.alignDataLabel,
     colorAttribs: Series_ColorMapComposition.seriesMembers.colorAttribs

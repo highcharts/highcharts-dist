@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.1 (2026-08-17)
+ * @license Highcharts JS v13.0.2 (2026-08-27)
  * Treegraph chart series type
  * @module highcharts/modules/treegraph
  * @requires highcharts
@@ -639,9 +639,17 @@ function getColor(node, options) {
         }
         // Select either point color, level color or inherited color.
         if (!series.chart.styledMode) {
-            color = (0,external_highcharts_src_js_default_namespaceObject.pick)(point && point.options.color, level && level.color, colorByPoint, parentColor && variateColor(parentColor), series.color);
+            color = ((point && point.options.color) ??
+                (level && level.color) ??
+                colorByPoint ??
+                (parentColor && variateColor(parentColor)) ??
+                series.color);
         }
-        colorIndex = (0,external_highcharts_src_js_default_namespaceObject.pick)(point && point.options.colorIndex, level && level.colorIndex, colorIndexByPoint, parentColorIndex, options.colorIndex);
+        colorIndex = ((point && point.options.colorIndex) ??
+            (level && level.colorIndex) ??
+            colorIndexByPoint ??
+            parentColorIndex ??
+            options.colorIndex);
     }
     return {
         color: color,
@@ -678,7 +686,8 @@ function getLevelOptions(params) {
                 let level, levelIsConstant, options;
                 if ((0,external_highcharts_src_js_default_namespaceObject.isObject)(item) && (0,external_highcharts_src_js_default_namespaceObject.isNumber)(item.level)) {
                     options = (0,external_highcharts_src_js_default_namespaceObject.merge)({}, item);
-                    levelIsConstant = (0,external_highcharts_src_js_default_namespaceObject.pick)(options.levelIsConstant, defaults.levelIsConstant);
+                    levelIsConstant =
+                        options.levelIsConstant ?? defaults.levelIsConstant;
                     // Delete redundant properties.
                     delete options.levelIsConstant;
                     delete options.level;
@@ -710,7 +719,7 @@ function setTreeValues(tree, options) {
     const before = options.before, idRoot = options.idRoot, mapIdToNode = options.mapIdToNode, nodeRoot = mapIdToNode[idRoot], levelIsConstant = (options.levelIsConstant !== false), points = options.points, point = points[tree.i], optionsPoint = point && point.options || {}, children = [];
     let childrenTotal = 0;
     tree.levelDynamic = tree.level - (levelIsConstant ? 0 : nodeRoot.level);
-    tree.name = (0,external_highcharts_src_js_default_namespaceObject.pick)(point && point.name, '');
+    tree.name = ((point && point.name) ?? '');
     tree.visible = (idRoot === tree.id ||
         options.visible === true);
     if (typeof before === 'function') {
@@ -731,7 +740,7 @@ function setTreeValues(tree, options) {
         }
     });
     // Set the values
-    const value = (0,external_highcharts_src_js_default_namespaceObject.pick)(optionsPoint.value, childrenTotal);
+    const value = (optionsPoint.value ?? childrenTotal);
     tree.visible = value >= 0 && (childrenTotal > 0 || tree.visible);
     tree.children = children;
     tree.childrenTotal = childrenTotal;
@@ -757,7 +766,7 @@ function updateRootId(series) {
         // Get the series options.
         options = (0,external_highcharts_src_js_default_namespaceObject.isObject)(series.options) ? series.options : {};
         // Calculate the rootId.
-        rootId = (0,external_highcharts_src_js_default_namespaceObject.pick)(series.rootNode, options.rootId, '');
+        rootId = (series.rootNode ?? options.rootId ?? '');
         // Set rootId on series.userOptions to pick it up in exporting.
         if ((0,external_highcharts_src_js_default_namespaceObject.isObject)(series.userOptions)) {
             series.userOptions.rootId = rootId;
@@ -868,7 +877,7 @@ class LinkPoint extends ColumnPoint {
         animation, runEvent);
         this.visible = this.toNode.visible;
         (0,external_highcharts_src_js_default_namespaceObject.extend)(this, oldOptions);
-        if ((0,external_highcharts_src_js_default_namespaceObject.pick)(redraw, true)) {
+        if (redraw ?? true) {
             this.series.chart.redraw(animation);
         }
     }

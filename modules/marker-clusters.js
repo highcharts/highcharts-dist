@@ -1,5 +1,5 @@
 !/**
- * Highcharts JS v13.0.1 (2026-08-17)
+ * Highcharts JS v13.0.2 (2026-08-27)
  * @module highcharts/modules/marker-clusters
  * @requires highcharts
  *

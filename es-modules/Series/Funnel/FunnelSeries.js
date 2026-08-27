@@ -18,7 +18,7 @@ const { composed, noop } = H;
 import { borderRadiusObject } from '../../Extensions/BorderRadius.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { column: ColumnSeries, pie: PieSeries } = SeriesRegistry.seriesTypes;
-import { addEvent, correctFloat, extend, fireEvent, isArray, merge, pick, pushUnique, relativeLength, splat } from '../../Shared/Utilities.js';
+import { addEvent, correctFloat, extend, fireEvent, isArray, merge, pushUnique, relativeLength, splat } from '../../Shared/Utilities.js';
 /* *
  *
  *  Constants
@@ -398,7 +398,7 @@ class FunnelSeries extends PieSeries {
                 y: y1,
                 topWidth: x2 - x1,
                 bottomWidth: x4 - x3,
-                height: Math.abs(pick(y5, y3) - y1),
+                height: Math.abs((y5 ?? y3) - y1),
                 width: NaN
             };
             // Slice is a noop on funnel points

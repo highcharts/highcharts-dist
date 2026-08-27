@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.1 (2026-08-17)
+ * @license Highcharts JS v13.0.2 (2026-08-27)
  * @module highcharts/modules/flowmap
  * @requires highcharts
  * @requires highcharts/modules/map
@@ -102,8 +102,10 @@ class FlowMapPoint extends MapLinePoint {
         [this.options.to, this.options.from]
             .forEach(function (toOrFrom) {
             valid = !!(valid && (toOrFrom && ((0,external_highcharts_src_js_default_namespaceObject.isString)(toOrFrom) || ( // Point id or has lat/lon coords
-            (0,external_highcharts_src_js_default_namespaceObject.isNumber)((0,external_highcharts_src_js_default_namespaceObject.pick)(toOrFrom[0], toOrFrom.lat)) &&
-                (0,external_highcharts_src_js_default_namespaceObject.isNumber)((0,external_highcharts_src_js_default_namespaceObject.pick)(toOrFrom[1], toOrFrom.lon))))));
+            (0,external_highcharts_src_js_default_namespaceObject.isNumber)(toOrFrom[0] ??
+                toOrFrom.lat) &&
+                (0,external_highcharts_src_js_default_namespaceObject.isNumber)(toOrFrom[1] ??
+                    toOrFrom.lon)))));
         });
         return valid;
     }
@@ -300,9 +302,17 @@ class FlowMapSeries extends MapLineSeries {
      */
     pointAttribs(point, state) {
         const attrs = MapSeries.prototype.pointAttribs.call(this, point, state);
-        attrs.fill = (0,external_highcharts_src_js_default_namespaceObject.pick)(point.options.fillColor, point.options.color, this.options.fillColor === 'none' ? null : this.options.fillColor, this.color);
-        attrs['fill-opacity'] = (0,external_highcharts_src_js_default_namespaceObject.pick)(point.options.fillOpacity, this.options.fillOpacity);
-        attrs['stroke-width'] = (0,external_highcharts_src_js_default_namespaceObject.pick)(point.options.lineWidth, this.options.lineWidth, 1);
+        attrs.fill =
+            point.options.fillColor ??
+                point.options.color ??
+                (this.options.fillColor === 'none' ?
+                    void 0 :
+                    this.options.fillColor) ??
+                this.color;
+        attrs['fill-opacity'] =
+            point.options.fillOpacity ?? this.options.fillOpacity;
+        attrs['stroke-width'] =
+            point.options.lineWidth ?? this.options.lineWidth ?? 1;
         if (point.options.opacity) {
             attrs.opacity = point.options.opacity;
         }
@@ -369,8 +379,8 @@ class FlowMapSeries extends MapLineSeries {
                 averageX += (fromPos.x + toPos.x) / 2;
                 averageY += (fromPos.y + toPos.y) / 2;
             }
-            if ((0,external_highcharts_src_js_default_namespaceObject.pick)(point.options.weight, this.options.weight)) {
-                weights.push((0,external_highcharts_src_js_default_namespaceObject.pick)(point.options.weight, this.options.weight));
+            if (point.options.weight ?? this.options.weight) {
+                weights.push(point.options.weight ?? this.options.weight);
             }
         });
         this.smallestWeight = (0,external_highcharts_src_js_default_namespaceObject.arrayMin)(weights);
@@ -396,7 +406,7 @@ class FlowMapSeries extends MapLineSeries {
             point.shapeArgs = this.getPointShapeArgs(point);
             // When updating point from null to normal value, set a real color
             // (don't keep nullColor).
-            point.color = (0,external_highcharts_src_js_default_namespaceObject.pick)(point.options.color, point.series.color);
+            point.color = (point.options.color ?? point.series.color);
         });
     }
     getPointShapeArgs(point) {
@@ -404,8 +414,8 @@ class FlowMapSeries extends MapLineSeries {
         if (!fromPos || !toPos) {
             return {};
         }
-        const finalWidth = this.getLinkWidth(point) / 2, pointOptions = point.options, markerEndOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(this.options.markerEnd, pointOptions.markerEnd), growTowards = (0,external_highcharts_src_js_default_namespaceObject.pick)(pointOptions.growTowards, this.options.growTowards), fromX = fromPos.x || 0, fromY = fromPos.y || 0;
-        let toX = toPos.x || 0, toY = toPos.y || 0, curveFactor = (0,external_highcharts_src_js_default_namespaceObject.pick)(pointOptions.curveFactor, this.options.curveFactor), offset = markerEndOptions && markerEndOptions.enabled &&
+        const finalWidth = this.getLinkWidth(point) / 2, pointOptions = point.options, markerEndOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(this.options.markerEnd, pointOptions.markerEnd), growTowards = pointOptions.growTowards ?? this.options.growTowards, fromX = fromPos.x || 0, fromY = fromPos.y || 0;
+        let toX = toPos.x || 0, toY = toPos.y || 0, curveFactor = pointOptions.curveFactor ?? this.options.curveFactor, offset = markerEndOptions && markerEndOptions.enabled &&
             markerEndOptions.height || 0;
         if (!(0,external_highcharts_src_js_default_namespaceObject.defined)(curveFactor)) { // Automate the curveFactor value.
             curveFactor = this.autoCurve(fromX, fromY, toX, toY, this.centerOfPoints.x, this.centerOfPoints.y);

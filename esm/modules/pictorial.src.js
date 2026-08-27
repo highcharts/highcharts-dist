@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.1 (2026-08-17)
+ * @license Highcharts JS v13.0.2 (2026-08-27)
  * @module highcharts/modules/pictorial
  * @requires highcharts
  *
@@ -359,7 +359,9 @@ function onRendererComplexColor(args) {
         }
         // Add it. This function does nothing if an element with this ID
         // already exists.
-        this.addPattern(pattern, !this.forExport && (0,external_highcharts_src_js_default_namespaceObject.pick)(pattern.animation, this.globalAnimation, { duration: 100 }));
+        this.addPattern(pattern, !this.forExport && (pattern.animation ??
+            this.globalAnimation ??
+            { duration: 100 }));
         value = `url(${this.url}#${pattern.id + (this.forExport ? '-export' : '')})`;
     }
     else {
@@ -523,7 +525,7 @@ function pointCalculatePatternDimensions(pattern) {
  * @requires modules/pattern-fill
  */
 function rendererAddPattern(options, animation) {
-    const animate = (0,external_highcharts_src_js_default_namespaceObject.pick)(animation, true), animationOptions = (0,external_highcharts_src_js_default_namespaceObject.animObject)(animate), color = options.color ||
+    const animate = (animation ?? true), animationOptions = (0,external_highcharts_src_js_default_namespaceObject.animObject)(animate), color = options.color ||
         'var(--highcharts-neutral-color-80)', defaultSize = 32, height = options.height ||
         (typeof options._height === 'number' ? options._height : 0) ||
         defaultSize, width = options.width ||
@@ -591,7 +593,7 @@ function rendererAddPattern(options, animation) {
         };
         if (!this.styledMode) {
             attribs.stroke = path.stroke || color;
-            attribs['stroke-width'] = (0,external_highcharts_src_js_default_namespaceObject.pick)(path.strokeWidth, 2);
+            attribs['stroke-width'] = (path.strokeWidth ?? 2);
             attribs.fill = path.fill || 'none';
         }
         if (path.transform) {
@@ -606,7 +608,7 @@ function rendererAddPattern(options, animation) {
             this.image(options.image, 0, 0, width, height, function () {
                 // Onload
                 this.animate({
-                    opacity: (0,external_highcharts_src_js_default_namespaceObject.pick)(options.opacity, 1)
+                    opacity: (options.opacity ?? 1)
                 }, animationOptions);
                 (0,external_highcharts_src_js_default_namespaceObject.removeEvent)(this.element, 'load');
             }).attr({ opacity: 0 }).add(pattern);
@@ -1198,7 +1200,9 @@ function renderStackShadow(stack) {
         stack.axis.hasData() &&
         series.xAxis.hasData()) {
         const xAxis = series.xAxis, options = stack.axis.options, chart = stack.axis.chart, stackShadow = stack.shadow, xCenter = xAxis.toPixels(stack.x, true), x = chart.inverted ? xAxis.len - xCenter : xCenter, paths = series.options.paths || [], index = stack.x % paths.length, shape = paths[index], width = series.getColumnMetrics &&
-            series.getColumnMetrics().width, { height, y } = PictorialSeries_getStackMetrics(series.yAxis, shape), shadowOptions = options.stackShadow, strokeWidth = (0,external_highcharts_src_js_default_namespaceObject.pick)(shadowOptions && shadowOptions.borderWidth, series.options.borderWidth, 1);
+            series.getColumnMetrics().width, { height, y } = PictorialSeries_getStackMetrics(series.yAxis, shape), shadowOptions = options.stackShadow, strokeWidth = ((shadowOptions && shadowOptions.borderWidth) ??
+            series.options.borderWidth ??
+            1);
         if (!stackShadow &&
             shadowOptions &&
             shadowOptions.enabled &&

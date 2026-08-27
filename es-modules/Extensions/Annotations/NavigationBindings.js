@@ -20,7 +20,7 @@ const { composed, doc, win } = H;
 import NavigationBindingDefaults from './NavigationBindingsDefaults.js';
 import NBU from './NavigationBindingsUtilities.js';
 const { getAssignedAxis, getFieldType } = NBU;
-import { addEvent, attr, defined, fireEvent, isArray, isFunction, isNumber, isObject, merge, objectEach, pick, pushUnique } from '../../Shared/Utilities.js';
+import { addEvent, attr, defined, fireEvent, isArray, isFunction, isNumber, isObject, merge, objectEach, pushUnique } from '../../Shared/Utilities.js';
 /* *
  *
  *  Functions
@@ -491,7 +491,7 @@ class NavigationBindings {
                 let parent = config;
                 path.forEach((name, index) => {
                     if (name !== '__proto__' && name !== 'constructor') {
-                        const nextName = pick(path[index + 1], '');
+                        const nextName = (path[index + 1] ?? '');
                         if (pathLength === index) {
                             // Last index, put value:
                             parent[name] = value;
@@ -537,7 +537,10 @@ class NavigationBindings {
      *         Annotation options to be displayed in popup box
      */
     annotationToFields(annotation) {
-        const options = annotation.options, editables = NavigationBindings.annotationsEditable, nestedEditables = editables.nestedOptions, type = pick(options.type, options.shapes?.[0]?.type, options.labels?.[0]?.type, 'label'), nonEditables = NavigationBindings.annotationsNonEditable[options.langKey] || [], visualOptions = {
+        const options = annotation.options, editables = NavigationBindings.annotationsEditable, nestedEditables = editables.nestedOptions, type = options.type ??
+            options.shapes?.[0]?.type ??
+            options.labels?.[0]?.type ??
+            'label', nonEditables = NavigationBindings.annotationsNonEditable[options.langKey] || [], visualOptions = {
             langKey: options.langKey,
             type: type
         };

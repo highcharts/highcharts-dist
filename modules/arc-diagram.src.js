@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.1 (2026-08-17)
+ * @license Highcharts JS v13.0.2 (2026-08-27)
  * @module modules/arc-diagram
  * @requires highcharts/modules/sankey
  *
@@ -261,13 +261,10 @@ var NodesComposition;
         // For use in formats
         node.name = node.name || node.options.id || '';
         // Mass is used in networkgraph:
-        node.mass = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(
-        // Node:
-        node.options.mass, node.options.marker && node.options.marker.radius, 
-        // Series:
-        this.options.marker && this.options.marker.radius, 
-        // Default:
-        4);
+        node.mass = (node.options.mass ??
+            (node.options.marker && node.options.marker.radius) ??
+            (this.options.marker && this.options.marker.radius) ??
+            4);
         return node;
     }
     NodesComposition.createNode = createNode;
@@ -310,7 +307,9 @@ var NodesComposition;
                 point.fromNode = nodeLookup[point.from];
                 // Point color defaults to the fromNode's color
                 if (chart.styledMode) {
-                    point.colorIndex = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(point.options.colorIndex, nodeLookup[point.from].colorIndex);
+                    point.colorIndex =
+                        point.options.colorIndex ??
+                            nodeLookup[point.from].colorIndex;
                 }
                 else {
                     point.color =
@@ -408,7 +407,7 @@ var NodesComposition;
             else {
                 this.series.options.nodes = [nodeConfig];
             }
-            if ((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(redraw, true)) {
+            if (redraw ?? true) {
                 this.series.chart.redraw(animation);
             }
         }
@@ -1374,9 +1373,11 @@ class ArcDiagramSeries extends SankeySeries {
      * @internal
      */
     translateLink(point) {
-        const series = this, fromNode = point.fromNode, toNode = point.toNode, chart = this.chart, translationFactor = series.translationFactor, pointOptions = point.options, seriesOptions = series.options, linkWeight = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(pointOptions.linkWeight, seriesOptions.linkWeight, Math.max((point.weight || 0) *
-            translationFactor *
-            fromNode.scale, (series.options.minLinkWidth || 0))), centeredLinks = point.series.options.centeredLinks, nodeTop = fromNode.nodeY;
+        const series = this, fromNode = point.fromNode, toNode = point.toNode, chart = this.chart, translationFactor = series.translationFactor, pointOptions = point.options, seriesOptions = series.options, linkWeight = (pointOptions.linkWeight ??
+            seriesOptions.linkWeight ??
+            Math.max((point.weight || 0) *
+                translationFactor *
+                fromNode.scale, series.options.minLinkWidth || 0)), centeredLinks = point.series.options.centeredLinks, nodeTop = fromNode.nodeY;
         const getX = (node, fromOrTo) => {
             const linkLeft = ((node.offset(point, fromOrTo) || 0) *
                 translationFactor);
@@ -1405,7 +1406,7 @@ class ArcDiagramSeries extends SankeySeries {
             toX,
             toX + linkWeight
         ];
-        const linkRadius = ((toX + linkWeight - fromX) / Math.abs(toX + linkWeight - fromX)) * (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(seriesOptions.linkRadius, Math.min(Math.abs(toX + linkWeight - fromX) / 2, fromNode.nodeY - Math.abs(linkWeight)));
+        const linkRadius = ((toX + linkWeight - fromX) / Math.abs(toX + linkWeight - fromX)) * (seriesOptions.linkRadius ?? Math.min(Math.abs(toX + linkWeight - fromX) / 2, fromNode.nodeY - Math.abs(linkWeight)));
         point.shapeArgs = {
             d: [
                 ['M', fromX, bottom],
@@ -1462,7 +1463,7 @@ class ArcDiagramSeries extends SankeySeries {
         const series = this, translationFactor = series.translationFactor, chart = series.chart, maxNodesLength = chart.inverted ?
             chart.plotWidth : chart.plotHeight, options = series.options, maxRadius = Math.min(chart.plotWidth, chart.plotHeight, maxNodesLength / node.series.nodes.length - this.nodePadding), sum = node.getSum() * (column.sankeyColumn.scale || 0), equalNodes = options.equalNodes, nodeHeight = equalNodes ?
             maxRadius :
-            Math.max(sum * translationFactor, this.options.minLinkWidth || 0), lineWidth = options.marker?.lineWidth || 0, nodeOffset = column.sankeyColumn.offset(node, translationFactor), fromNodeLeft = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.crisp)((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(nodeOffset && nodeOffset.absoluteLeft, ((column.sankeyColumn.left(translationFactor) || 0) +
+            Math.max(sum * translationFactor, this.options.minLinkWidth || 0), lineWidth = options.marker?.lineWidth || 0, nodeOffset = column.sankeyColumn.offset(node, translationFactor), fromNodeLeft = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.crisp)(((nodeOffset && nodeOffset.absoluteLeft) ?? ((column.sankeyColumn.left(translationFactor) || 0) +
             (nodeOffset && nodeOffset.relativeLeft || 0))), lineWidth), markerOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(options.marker, node.options.marker), symbol = markerOptions.symbol, markerRadius = markerOptions.radius, top = parseInt(options.offset ?? '100', 10) *
             ((chart.inverted ?
                 chart.plotWidth : chart.plotHeight) - ((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.crisp)(this.colDistance * (node.column || 0) +

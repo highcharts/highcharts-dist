@@ -14,7 +14,7 @@
 'use strict';
 import F from '../Core/Templating.js';
 const { format } = F;
-import { getNestedProperty, pick } from '../Shared/Utilities.js';
+import { getNestedProperty } from '../Shared/Utilities.js';
 /* *
  *
  *  Composition
@@ -80,13 +80,13 @@ var A11yI18nComposition;
             const pluralEnd = (statement.slice(pluralStart).indexOf(')') + pluralStart), pluralStatement = statement.substring(pluralStart + 8, pluralEnd), pluralArguments = pluralStatement.split(','), num = Number(getNestedProperty(pluralArguments[0], ctx));
             switch (num) {
                 case 0:
-                    result = pick(pluralArguments[4], pluralArguments[1]);
+                    result = (pluralArguments[4] ?? pluralArguments[1]);
                     break;
                 case 1:
-                    result = pick(pluralArguments[2], pluralArguments[1]);
+                    result = (pluralArguments[2] ?? pluralArguments[1]);
                     break;
                 case 2:
-                    result = pick(pluralArguments[3], pluralArguments[1]);
+                    result = (pluralArguments[3] ?? pluralArguments[1]);
                     break;
                 default:
                     result = pluralArguments[1];

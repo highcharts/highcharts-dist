@@ -287,6 +287,18 @@ export type ChartClickCallbackFunction = (this: Chart, event: PointerEventObject
  */
 export type ChartLoadCallbackFunction = (this: Chart, event: Event) => void;
 /**
+ * Gets fired while the chart is panned by mouse drag. Calling
+ * `event.preventDefault()` or returning `false` prevents the default panning of
+ * the axes.
+ *
+ * @param this
+ *        The chart on which the event occurred.
+ *
+ * @param event
+ *        The event that occurred.
+ */
+export type ChartPanCallbackFunction = (this: Chart, event: ChartPanEventObject) => void;
+/**
  * Fires when the chart is redrawn, either after a call to `chart.redraw()` or
  * after an axis, series or point is modified with the `redraw` option set to
  * `true`.
@@ -339,7 +351,8 @@ export type ColorAxisTypeValue = ("linear"|"logarithmic");
 export type ColorString = string;
 /**
  * A valid color type than can be parsed and handled by Highcharts. It can be a
- * color string, a gradient object, or a pattern object.
+ * color string (including CSS expressions), a gradient object, or a pattern
+ * object. Read more about colors in the Highcharts documentation.
  */
 export type ColorType = (ColorString|GradientColorObject|PatternObject);
 /**
@@ -6140,6 +6153,24 @@ export interface ChartEventsOptions {
      */
     load?: ChartLoadCallbackFunction;
     /**
+     * (Highcharts, Highstock, Highmaps, Gantt) Fires while the chart is panned
+     * by mouse drag. Panning must be enabled through chart.panning. One
+     * parameter, `event`, is passed to the function, containing common event
+     * information as well as `event.originalEvent`, the underlying pointer
+     * event. Note that the event fires for every mouse move during the drag,
+     * not once per gesture.
+     *
+     * Calling `event.preventDefault()` or returning false prevents the default
+     * panning of the axes. In Highcharts Maps, and on ordinal axes in
+     * Highcharts Stock, the panning is applied outside the default action and
+     * is not prevented.
+     *
+     * Panning by touch does not fire this event, unless
+     * chart.zooming.singleTouch is enabled and no zoom type is set.
+     * Single-finger drags are then handled as mouse drags and fire this event.
+     */
+    pan?: ChartPanCallbackFunction;
+    /**
      * (Highcharts, Highstock, Highmaps, Gantt) Fires when the chart is redrawn,
      * either after a call to `chart.redraw()` or after an axis, series or point
      * is modified with the `redraw` option set to `true`. One parameter,
@@ -6680,6 +6711,28 @@ export interface ChartOptions {
      * @deprecated 10.2.1
      */
     zoomType?: OptionsZoomTypeValue;
+}
+/**
+ * Contains common event information. Through the `originalEvent` property you
+ * can access the pointer event that triggered the panning.
+ */
+export interface ChartPanEventObject {
+    /**
+     * The pointer event that triggered the panning.
+     */
+    originalEvent: PointerEventObject;
+    /**
+     * Prevents the default behavior of the event.
+     */
+    preventDefault: Function;
+    /**
+     * The event target.
+     */
+    target: Chart;
+    /**
+     * The event type.
+     */
+    type: "pan";
 }
 /**
  * (Highcharts, Highstock, Highmaps, Gantt) Allow panning in a chart. Best used
@@ -193675,8 +193728,12 @@ export class Time {
      *
      * @param options
      *        Time options as defined in chart.options.time.
+     *
+     * @param lang
+     *        Language options. When `options.locale` is not set, `lang.locale`
+     *        is used as the locale fallback for locale-aware date formatting.
      */
-    constructor(options?: TimeOptions);
+    constructor(options?: TimeOptions, lang?: LangOptions);
     /**
      * Formats a JavaScript date timestamp (milliseconds since January 1 1970)
      * into a human readable date string.
@@ -194561,12 +194618,12 @@ export function pad(number: number, length?: number, padder?: string): string;
 /**
  * Return the first value that is not null or undefined.
  *
- * @param items
+ * @param args
  *        Variable number of arguments to inspect.
  *
  * @return The value of the first argument that is not null or undefined.
  */
-export function pick<T>(...items: Array<(T|null|undefined)>): T;
+export function pick<T>(...args: Array<(T|null|undefined)>): T;
 /**
  * Return a length based on either the integer value, or a percentage of a base.
  *

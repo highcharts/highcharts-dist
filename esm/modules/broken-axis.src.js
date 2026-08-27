@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.1 (2026-08-17)
+ * @license Highcharts JS v13.0.2 (2026-08-27)
  * @module highcharts/modules/broken-axis
  * @requires highcharts
  *
@@ -185,7 +185,7 @@ var BrokenAxis;
     /** @internal */
     function onSeriesAfterRender() {
         this.drawBreaks(this.xAxis, ['x']);
-        this.drawBreaks(this.yAxis, (0,external_highcharts_src_js_default_namespaceObject.pick)(this.pointArrayMap, ['y']));
+        this.drawBreaks(this.yAxis, (this.pointArrayMap ?? ['y']));
     }
     /** @internal */
     function seriesDrawBreaks(axis, keys) {
@@ -197,7 +197,7 @@ var BrokenAxis;
                 breaks = brokenAxis?.breakArray || [];
                 threshold = axis.isXAxis ?
                     axis.min :
-                    (0,external_highcharts_src_js_default_namespaceObject.pick)(series.options.threshold, axis.min);
+                    (series.options.threshold ?? axis.min);
                 points.forEach(function (point) {
                     y = point['stack' + key.toUpperCase()] ??
                         point[key];
@@ -490,7 +490,8 @@ var BrokenAxis;
                     if (Additions.isInBreak(breaks[i], val)) {
                         inbrk = true;
                         if (!keep) {
-                            keep = (0,external_highcharts_src_js_default_namespaceObject.pick)(breaks[i].showPoints, !axis.isXAxis);
+                            keep =
+                                breaks[i].showPoints ?? !axis.isXAxis;
                         }
                     }
                 }
@@ -673,7 +674,7 @@ var BrokenAxis;
                     }
                 };
             }
-            if ((0,external_highcharts_src_js_default_namespaceObject.pick)(redraw, true)) {
+            if (redraw ?? true) {
                 axis.chart.redraw();
             }
         }

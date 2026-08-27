@@ -12,7 +12,7 @@
 'use strict';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { seriesTypes: { mapline: { prototype: { pointClass: MapLinePoint } } } } = SeriesRegistry;
-import { isNumber, isString, pick } from '../../Shared/Utilities.js';
+import { isNumber, isString } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class
@@ -32,8 +32,10 @@ class FlowMapPoint extends MapLinePoint {
         [this.options.to, this.options.from]
             .forEach(function (toOrFrom) {
             valid = !!(valid && (toOrFrom && (isString(toOrFrom) || ( // Point id or has lat/lon coords
-            isNumber(pick(toOrFrom[0], toOrFrom.lat)) &&
-                isNumber(pick(toOrFrom[1], toOrFrom.lon))))));
+            isNumber(toOrFrom[0] ??
+                toOrFrom.lat) &&
+                isNumber(toOrFrom[1] ??
+                    toOrFrom.lon)))));
         });
         return valid;
     }

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.0.1 (2026-08-17)
+ * @license Highstock JS v13.0.2 (2026-08-27)
  * @module highcharts/indicators/rsi
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -119,7 +119,7 @@ class RSIIndicator extends SMAIndicator {
         // Cause we need to calculate change between two points
         RSI = [], xData = [], yData = [];
         let gain = 0, loss = 0, index = params.index, range = 1, RSIPoint, change, avgGain, avgLoss, i, values;
-        if ((xVal.length < period)) {
+        if (xVal.length < period) {
             return;
         }
         if ((0,external_highcharts_src_js_default_namespaceObject.isNumber)(yVal[0])) {

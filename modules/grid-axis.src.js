@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Gantt JS v13.0.1 (2026-08-17)
+ * @license Highcharts Gantt JS v13.0.2 (2026-08-27)
  * @module highcharts/modules/grid-axis
  * @requires highcharts
  *
@@ -182,7 +182,7 @@ function applyGridOptions(axis) {
         options.labels = {};
     }
     */
-    options.labels.align = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(options.labels.align, 'center');
+    options.labels.align = (options.labels.align ?? 'center');
     // @todo: Check against tickLabelPlacement between/on etc
     /* Prevents adding the last tick label if the axis is not a category
        axis.
@@ -726,8 +726,8 @@ function onAfterSetOptions(e) {
                             _________________________
             Into this:    |_____|_____|_____|_____|
                                 ^                 ^    */
-            options.minPadding = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(userOptions.minPadding, 0);
-            options.maxPadding = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(userOptions.maxPadding, 0);
+            options.minPadding = (userOptions.minPadding ?? 0);
+            options.maxPadding = (userOptions.maxPadding ?? 0);
         }
         // If borderWidth is set, then use its value for tick and
         // line width.

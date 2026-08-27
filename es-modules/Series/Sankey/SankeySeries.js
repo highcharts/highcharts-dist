@@ -25,7 +25,7 @@ import TU from '../TreeUtilities.js';
 const { getLevelOptions, getNodeWidth } = TU;
 import SVGElement from '../../Core/Renderer/SVG/SVGElement.js';
 import { composeTextPath } from '../../Extensions/TextPath.js';
-import { clamp, crisp, extend, isObject, merge, pick, relativeLength, stableSort } from '../../Shared/Utilities.js';
+import { clamp, crisp, extend, isObject, merge, relativeLength, stableSort } from '../../Shared/Utilities.js';
 composeTextPath(SVGElement);
 /* *
  *
@@ -174,9 +174,15 @@ class SankeySeries extends ColumnSeries {
             'linkOpacity',
             'opacity'
         ].reduce((obj, key) => {
-            obj[key] = pick(stateOptions[key], options[key], levelOptions[key], series.options[key]);
+            obj[key] =
+                stateOptions[key] ??
+                    options[key] ??
+                    levelOptions[key] ??
+                    series.options[key];
             return obj;
-        }, {}), color = pick(stateOptions.color, options.color, values.colorByPoint ? point.color : levelOptions.color);
+        }, {}), color = stateOptions.color ??
+            options.color ??
+            (values.colorByPoint ? point.color : levelOptions.color);
         // Node attributes
         if (point.isNode) {
             return {
@@ -277,7 +283,7 @@ class SankeySeries extends ColumnSeries {
      * @internal
      */
     translateLink(point, linkToY) {
-        const fromNode = point.fromNode, toNode = point.toNode, chart = this.chart, { inverted } = chart, translationFactor = this.translationFactor, options = this.options, linkColorMode = pick(point.linkColorMode, options.linkColorMode), curvy = ((chart.inverted ? -this.colDistance : this.colDistance) *
+        const fromNode = point.fromNode, toNode = point.toNode, chart = this.chart, { inverted } = chart, translationFactor = this.translationFactor, options = this.options, linkColorMode = (point.linkColorMode ?? options.linkColorMode), curvy = ((chart.inverted ? -this.colDistance : this.colDistance) *
             options.curveFactor), nodeLeft = fromNode.nodeX, right = toNode.nodeX, outgoing = point.outgoing;
         let linkHeight = Math.max((point.weight || 0) * translationFactor, this.options.minLinkWidth || 0), fromY = this.getY(point, fromNode, 'linksFrom', linkHeight), toY = linkToY || this.getY(point, toNode, 'linksTo', linkHeight), nodeW = this.nodeWidth, straight = right > nodeLeft + nodeW;
         if (chart.inverted) {
@@ -401,7 +407,7 @@ class SankeySeries extends ColumnSeries {
      * @internal
      */
     translateNode(node, column) {
-        const translationFactor = this.translationFactor, chart = this.chart, options = this.options, { borderRadius, borderWidth = 0 } = options, sum = node.getSum(), nodeHeight = Math.max(Math.round(sum * translationFactor), this.options.minLinkWidth), nodeWidth = Math.round(this.nodeWidth), nodeOffset = column.sankeyColumn.offset(node, translationFactor), fromNodeTop = crisp(pick(nodeOffset.absoluteTop, (column.sankeyColumn.top(translationFactor) +
+        const translationFactor = this.translationFactor, chart = this.chart, options = this.options, { borderRadius, borderWidth = 0 } = options, sum = node.getSum(), nodeHeight = Math.max(Math.round(sum * translationFactor), this.options.minLinkWidth), nodeWidth = Math.round(this.nodeWidth), nodeOffset = column.sankeyColumn.offset(node, translationFactor), fromNodeTop = crisp((nodeOffset.absoluteTop ?? (column.sankeyColumn.top(translationFactor) +
             nodeOffset.relativeTop)), borderWidth), left = crisp(this.colDistance * node.column +
             borderWidth / 2, borderWidth) + relativeLength(node.options[chart.inverted ?
             'offsetVertical' :

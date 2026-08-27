@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highmaps JS v13.0.1 (2026-08-17)
+ * @license Highmaps JS v13.0.2 (2026-08-27)
  * @module highcharts/modules/tilemap
  * @requires highcharts
  * @requires highcharts/modules/map
@@ -305,7 +305,7 @@ var ColorAxisComposition;
                 series.bindAxes();
                 series.isDirtyData = true;
             });
-            if ((0,external_highcharts_src_js_default_namespaceObject.pick)(options.redraw, true)) {
+            if (options.redraw ?? true) {
                 chart.redraw(options.animation);
             }
             return axis;
@@ -760,7 +760,7 @@ const TilemapShapes = {
                     xAxis.translate(point.x - xPad, 0, 1, 0, 0)), -xAxis.len, 2 * xAxis.len), x3 = (0,external_highcharts_src_js_default_namespaceObject.clamp)(Math.round(xAxis.len -
                     xAxis.translate(point.x + xPad, 0, 1, 0, 0)), -xAxis.len, 2 * xAxis.len), y1 = (0,external_highcharts_src_js_default_namespaceObject.clamp)(Math.round(yAxis.translate(point.y - yPad, 0, 1, 0, 0)), -yAxis.len, 2 * yAxis.len), y2 = (0,external_highcharts_src_js_default_namespaceObject.clamp)(Math.round(yAxis.translate(point.y, 0, 1, 0, 0)), -yAxis.len, 2 * yAxis.len), y3 = (0,external_highcharts_src_js_default_namespaceObject.clamp)(Math.round(yAxis.translate(point.y + yPad, 0, 1, 0, 0)), -yAxis.len, 2 * yAxis.len);
                 const x2 = (0,external_highcharts_src_js_default_namespaceObject.clamp)(Math.round(xAxis.len -
-                    xAxis.translate(point.x, 0, 1, 0, 0)), -xAxis.len, 2 * xAxis.len), pointPadding = (0,external_highcharts_src_js_default_namespaceObject.pick)(point.pointPadding, seriesPointPadding), 
+                    xAxis.translate(point.x, 0, 1, 0, 0)), -xAxis.len, 2 * xAxis.len), pointPadding = (point.pointPadding ?? seriesPointPadding), 
                 // We calculate the point padding of the midpoints to
                 // preserve the angles of the shape.
                 midPointPadding = pointPadding *

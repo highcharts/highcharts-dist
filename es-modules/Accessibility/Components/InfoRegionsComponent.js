@@ -26,7 +26,7 @@ import H from '../../Core/Globals.js';
 const { doc } = H;
 import HU from '../Utils/HTMLUtilities.js';
 const { addClass, getElement, getHeadingTagNameForElement, stripHTMLTagsFromString, visuallyHideElement } = HU;
-import { attr, pick, replaceNested } from '../../Shared/Utilities.js';
+import { attr, replaceNested } from '../../Shared/Utilities.js';
 /* *
  *
  *  Functions
@@ -506,9 +506,11 @@ class InfoRegionsComponent extends AccessibilityComponent {
     getAxesDescription() {
         const chart = this.chart, shouldDescribeColl = function (collectionKey, defaultCondition) {
             const axes = chart[collectionKey];
-            return axes.length > 1 || axes[0] &&
-                pick(axes[0].options.accessibility &&
-                    axes[0].options.accessibility.enabled, defaultCondition);
+            const axisA11yEnabled = axes[0] ?
+                (axes[0].options.accessibility &&
+                    axes[0].options.accessibility.enabled) :
+                void 0;
+            return axes.length > 1 || (axisA11yEnabled ?? defaultCondition);
         }, hasNoMap = !!chart.types &&
             chart.types.indexOf('map') < 0 &&
             chart.types.indexOf('treemap') < 0 &&

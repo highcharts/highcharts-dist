@@ -1,6 +1,6 @@
 {
   "name": "highcharts",
-  "version": "13.0.1",
+  "version": "13.0.2",
   "main": "highcharts.js",
   "license": "https://www.highcharts.com/license",
   "types": "highcharts.d.ts",
@@ -15,6 +15,5 @@
     "svg2pdf.js": {
       "optional": true
     }
-  },
-  "module": "esm/highcharts.js"
+  }
 }

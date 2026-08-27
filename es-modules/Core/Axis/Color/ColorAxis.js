@@ -18,7 +18,7 @@ import D from '../../Defaults.js';
 const { defaultOptions } = D;
 import SeriesRegistry from '../../Series/SeriesRegistry.js';
 const { series: Series } = SeriesRegistry;
-import { defined, extend, fireEvent, isArray, isNumber, merge, pick, relativeLength } from '../../../Shared/Utilities.js';
+import { defined, extend, fireEvent, isArray, isNumber, merge, relativeLength } from '../../../Shared/Utilities.js';
 defaultOptions.colorAxis = merge(defaultOptions.xAxis, ColorAxisDefaults);
 /* *
  *
@@ -224,10 +224,8 @@ class ColorAxis extends Axis {
      * @internal
      */
     drawLegendSymbol(legend, item) {
-        const axis = this, legendItem = item.legendItem || {}, padding = legend.padding, legendOptions = legend.options, labelOptions = axis.options.labels, itemDistance = pick(legendOptions.itemDistance, 10), horiz = axis.horiz, { width, height } = axis.getSize(), labelPadding = pick(
-        // @todo: This option is not documented, nor implemented when
-        // vertical
-        legendOptions.labelPadding, horiz ? 16 : 30);
+        const axis = this, legendItem = item.legendItem || {}, padding = legend.padding, legendOptions = legend.options, labelOptions = axis.options.labels, itemDistance = (legendOptions.itemDistance ?? 10), horiz = axis.horiz, { width, height } = axis.getSize(), labelPadding = legendOptions.labelPadding ??
+            (horiz ? 16 : 30);
         this.setLegendColor();
         let titleHeight = 0;
         let titleWidth = 0;
@@ -329,7 +327,12 @@ class ColorAxis extends Axis {
         this.dataMax = -Infinity;
         while (i--) { // X, y, value, other
             cSeries = series[i];
-            colorKey = cSeries.colorKey = pick(cSeries.options.colorKey, cSeries.colorKey, cSeries.pointValKey, cSeries.zoneAxis, 'y');
+            colorKey = cSeries.colorKey =
+                cSeries.options.colorKey ??
+                    cSeries.colorKey ??
+                    cSeries.pointValKey ??
+                    cSeries.zoneAxis ??
+                    'y';
             calculatedExtremes = cSeries[colorKey + 'Min'] &&
                 cSeries[colorKey + 'Max'];
             // Find the first column that has values
@@ -516,7 +519,7 @@ class ColorAxis extends Axis {
     getDataClassLegendSymbols() {
         const axis = this, chart = axis.chart, legendItems = (axis.legendItem &&
             axis.legendItem.labels ||
-            []), legendOptions = chart.options.legend, valueDecimals = pick(legendOptions.valueDecimals, -1), valueSuffix = pick(legendOptions.valueSuffix, '');
+            []), legendOptions = chart.options.legend, valueDecimals = (legendOptions.valueDecimals ?? -1), valueSuffix = (legendOptions.valueSuffix ?? '');
         const getPointsInDataClass = (i) => axis.series.reduce((points, s) => {
             points.push(...s.points.filter((point) => point.dataClass === i));
             return points;
@@ -586,9 +589,13 @@ class ColorAxis extends Axis {
      * @internal
      */
     getSize() {
-        const axis = this, { chart, horiz } = axis, { height: colorAxisHeight, width: colorAxisWidth } = axis.options, { legend: legendOptions } = chart.options, width = pick(defined(colorAxisWidth) ?
-            relativeLength(colorAxisWidth, chart.chartWidth) : void 0, legendOptions?.symbolWidth, horiz ? ColorAxis.defaultLegendLength : 12), height = pick(defined(colorAxisHeight) ?
-            relativeLength(colorAxisHeight, chart.chartHeight) : void 0, legendOptions?.symbolHeight, horiz ? 12 : ColorAxis.defaultLegendLength);
+        const axis = this, { chart, horiz } = axis, { height: colorAxisHeight, width: colorAxisWidth } = axis.options, { legend: legendOptions } = chart.options, width = defined(colorAxisWidth) ?
+            relativeLength(colorAxisWidth, chart.chartWidth) :
+            (legendOptions?.symbolWidth ??
+                (horiz ? ColorAxis.defaultLegendLength : 12)), height = defined(colorAxisHeight) ?
+            relativeLength(colorAxisHeight, chart.chartHeight) :
+            (legendOptions?.symbolHeight ??
+                (horiz ? 12 : ColorAxis.defaultLegendLength));
         return {
             width,
             height

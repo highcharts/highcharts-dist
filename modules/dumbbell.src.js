@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.1 (2026-08-17)
+ * @license Highcharts JS v13.0.2 (2026-08-27)
  * @module highcharts/modules/dumbbell
  * @requires highcharts
  *
@@ -284,7 +284,13 @@ class DumbbellPoint extends AreaRange_AreaRangePoint {
      * @internal
      */
     setState() {
-        const point = this, series = point.series, chart = series.chart, seriesLowColor = series.options.lowColor, seriesMarker = series.options.marker, seriesLowMarker = series.options.lowMarker, pointOptions = point.options, pointLowColor = pointOptions.lowColor, zoneColor = point.zone && point.zone.color, lowerGraphicColor = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(pointLowColor, seriesLowMarker?.fillColor, seriesLowColor, pointOptions.color, zoneColor, point.color, series.color);
+        const point = this, series = point.series, chart = series.chart, seriesLowColor = series.options.lowColor, seriesMarker = series.options.marker, seriesLowMarker = series.options.lowMarker, pointOptions = point.options, pointLowColor = pointOptions.lowColor, zoneColor = point.zone && point.zone.color, lowerGraphicColor = pointLowColor ??
+            seriesLowMarker?.fillColor ??
+            seriesLowColor ??
+            pointOptions.color ??
+            zoneColor ??
+            point.color ??
+            series.color;
         let verb = 'attr', upperGraphicColor, origProps;
         this.pointSetState.apply(point, arguments);
         if (!point.state) {
@@ -301,7 +307,12 @@ class DumbbellPoint extends AreaRange_AreaRangePoint {
                     };
                     point.y = point.high;
                     point.zone = point.zone ? point.getZone() : void 0;
-                    upperGraphicColor = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(point.marker ? point.marker.fillColor : void 0, seriesMarker ? seriesMarker.fillColor : void 0, pointOptions.color, point.zone ? point.zone.color : void 0, point.color);
+                    upperGraphicColor =
+                        (point.marker ? point.marker.fillColor : void 0) ??
+                            (seriesMarker ? seriesMarker.fillColor : void 0) ??
+                            pointOptions.color ??
+                            (point.zone ? point.zone.color : void 0) ??
+                            point.color;
                     upperGraphic.attr({
                         fill: upperGraphicColor
                     });
@@ -622,11 +633,16 @@ class DumbbellSeries extends AreaRangeSeries {
      * @return {Highcharts.SVGAttributes} attribs The path and styles.
      */
     getConnectorAttribs(point) {
-        const series = this, chart = series.chart, pointOptions = point.options, seriesOptions = series.options, xAxis = series.xAxis, yAxis = series.yAxis, connectorWidthPlus = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(seriesOptions.states &&
+        const series = this, chart = series.chart, pointOptions = point.options, seriesOptions = series.options, xAxis = series.xAxis, yAxis = series.yAxis, connectorWidthPlus = (seriesOptions.states &&
             seriesOptions.states.hover &&
-            seriesOptions.states.hover.connectorWidthPlus, 1), dashStyle = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(pointOptions.dashStyle, seriesOptions.dashStyle), pxThreshold = yAxis.toPixels(seriesOptions.threshold || 0, true), pointHeight = chart.inverted ?
+            seriesOptions.states.hover.connectorWidthPlus) ?? 1, dashStyle = (pointOptions.dashStyle ?? seriesOptions.dashStyle), pxThreshold = yAxis.toPixels(seriesOptions.threshold || 0, true), pointHeight = chart.inverted ?
             yAxis.len - pxThreshold : pxThreshold;
-        let connectorWidth = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(pointOptions.connectorWidth, seriesOptions.connectorWidth), connectorColor = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(pointOptions.connectorColor, seriesOptions.connectorColor, pointOptions.color, point.zone ? point.zone.color : void 0, point.color), pointTop = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(point.plotLow, point.plotY), pointBottom = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(point.plotHigh, pointHeight), origProps;
+        let connectorWidth = pointOptions.connectorWidth ??
+            seriesOptions.connectorWidth, connectorColor = pointOptions.connectorColor ??
+            seriesOptions.connectorColor ??
+            pointOptions.color ??
+            (point.zone ? point.zone.color : void 0) ??
+            point.color, pointTop = (point.plotLow ?? point.plotY), pointBottom = (point.plotHigh ?? pointHeight), origProps;
         if (typeof pointTop !== 'number') {
             return {};
         }
@@ -656,7 +672,12 @@ class DumbbellSeries extends AreaRangeSeries {
             };
             point.y = point.high;
             point.zone = point.zone ? point.getZone() : void 0;
-            connectorColor = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(pointOptions.connectorColor, seriesOptions.connectorColor, pointOptions.color, point.zone ? point.zone.color : void 0, point.color);
+            connectorColor =
+                pointOptions.connectorColor ??
+                    seriesOptions.connectorColor ??
+                    pointOptions.color ??
+                    (point.zone ? point.zone.color : void 0) ??
+                    point.color;
             (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.extend)(point, origProps);
         }
         const attribs = {
@@ -686,7 +707,7 @@ class DumbbellSeries extends AreaRangeSeries {
      *        The point to inspect.
      */
     drawConnector(point) {
-        const series = this, animationLimit = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(series.options.animationLimit, 250), verb = point.connector && series.chart.pointCount < animationLimit ?
+        const series = this, animationLimit = (series.options.animationLimit ?? 250), verb = point.connector && series.chart.pointCount < animationLimit ?
             'animate' : 'attr';
         if (!point.connector) {
             point.connector = series.chart.renderer.path()
@@ -759,7 +780,14 @@ class DumbbellSeries extends AreaRangeSeries {
             }
             if (lowerGraphic) {
                 zoneColor = point.zone && point.zone.color;
-                lowerGraphicColor = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(point.options.lowColor, seriesLowMarker?.fillColor, seriesLowColor, point.options.color, zoneColor, point.color, series.color);
+                lowerGraphicColor =
+                    point.options.lowColor ??
+                        seriesLowMarker?.fillColor ??
+                        seriesLowColor ??
+                        point.options.color ??
+                        zoneColor ??
+                        point.color ??
+                        series.color;
                 if (!chart.styledMode) {
                     lowerGraphic.attr({
                         fill: lowerGraphicColor

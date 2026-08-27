@@ -10,7 +10,7 @@
 import MultipleLinesComposition from '../MultipleLinesComposition.js';
 import SeriesRegistry from '../../../Core/Series/SeriesRegistry.js';
 const { sma: SMAIndicator } = SeriesRegistry.seriesTypes;
-import { extend, merge, pick } from '../../../Shared/Utilities.js';
+import { extend, merge } from '../../../Shared/Utilities.js';
 /* *
  *
  *  Functions
@@ -61,10 +61,10 @@ class AroonIndicator extends SMAIndicator {
         for (i = period - 1; i < yValLen; i++) {
             slicedY = yVal.slice(i - period + 1, i + 2);
             xLow = getExtremeIndexInArray(slicedY.map(function (elem) {
-                return pick(elem[low], elem);
+                return (elem[low] ?? elem);
             }), 'min');
             xHigh = getExtremeIndexInArray(slicedY.map(function (elem) {
-                return pick(elem[high], elem);
+                return (elem[high] ?? elem);
             }), 'max');
             aroonUp = (xHigh / period) * 100;
             aroonDown = (xLow / period) * 100;

@@ -15,7 +15,7 @@
  *  Imports
  *
  * */
-import { clamp, pick, pushUnique, stableSort } from '../../Shared/Utilities.js';
+import { clamp, pushUnique, stableSort } from '../../Shared/Utilities.js';
 /* *
  *
  *  Namespace
@@ -104,7 +104,7 @@ var RendererUtilities;
         boxes = boxes.map((box) => ({
             size: box.size,
             targets: [box.target],
-            align: pick(box.align, 0.5)
+            align: (box.align ?? 0.5)
         }));
         while (overlapping) {
             // Initial positions: target centered in box

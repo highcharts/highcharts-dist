@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.1 (2026-08-17)
+ * @license Highcharts JS v13.0.2 (2026-08-27)
  * @module highcharts/modules/boost
  * @requires highcharts
  *
@@ -275,6 +275,13 @@ function getBoostClipRect(chart, target) {
     }
     if (target === chart) {
         const verticalAxes = chart.inverted ? chart.xAxis : chart.yAxis; // #14444
+        // Use chart.clipBox dimensions to match what createAndAttachRenderer
+        // compares against. Fractional clipOffset shrinks chart.clipBox below
+        // plotWidth/Height, breaking that check. #22949
+        if (!chart.inverted && !navigator && chart.clipBox) {
+            clipBox.width = chart.clipBox.width;
+            clipBox.height = chart.clipBox.height;
+        }
         if (verticalAxes.length <= 1) {
             clipBox.y = Math.min(verticalAxes[0].pos, clipBox.y);
             clipBox.height = (verticalAxes[0].pos -
@@ -294,7 +301,7 @@ function getBoostClipRect(chart, target) {
  * `true` if the chart is in series boost mode.
  */
 function isChartSeriesBoosting(chart) {
-    const allSeries = chart.series, boost = chart.boost = chart.boost || {}, boostOptions = chart.options.boost || {}, threshold = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(boostOptions.seriesThreshold, 50);
+    const allSeries = chart.series, boost = chart.boost = chart.boost || {}, boostOptions = chart.options.boost || {}, threshold = (boostOptions.seriesThreshold ?? 50);
     if (allSeries.length >= threshold) {
         return true;
     }
@@ -305,8 +312,8 @@ function isChartSeriesBoosting(chart) {
     if (typeof allowBoostForce === 'undefined') {
         allowBoostForce = true;
         for (const axis of chart.xAxis) {
-            if ((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(axis.min, -Infinity) > (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(axis.dataMin, -Infinity) ||
-                (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(axis.max, Infinity) < (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(axis.dataMax, Infinity)) {
+            if ((axis.min ?? -Infinity) > (axis.dataMin ?? -Infinity) ||
+                (axis.max ?? Infinity) < (axis.dataMax ?? Infinity)) {
                 allowBoostForce = false;
                 break;
             }
@@ -883,9 +890,9 @@ class WGLShader {
         let zMin = Number.MAX_VALUE, zMax = -Number.MAX_VALUE;
         if (this.gl && this.shaderProgram && series.is('bubble')) {
             const pxSizes = series.getPxExtremes();
-            zMin = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(seriesOptions.zMin, (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.clamp)(zCalcMin, seriesOptions.displayNegative === false ?
+            zMin = (seriesOptions.zMin ?? (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.clamp)(zCalcMin, seriesOptions.displayNegative === false ?
                 seriesOptions.zThreshold : -Number.MAX_VALUE, zMin));
-            zMax = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(seriesOptions.zMax, Math.max(zMax, zCalcMax));
+            zMax = (seriesOptions.zMax ?? Math.max(zMax, zCalcMax));
             this.gl.uniform1i(this.isBubbleUniform, 1);
             this.gl.uniform1i(this.isCircleUniform, 1);
             this.gl.uniform1i(this.bubbleSizeAreaUniform, (series.options.sizeBy !== 'width'));
@@ -2117,8 +2124,9 @@ class WGLRenderer {
         this.series.forEach((s, si) => {
             const options = s.series.options, shapeOptions = options.marker, lineWidth = (typeof options.lineWidth !== 'undefined' ?
                 options.lineWidth :
-                1), threshold = options.threshold, hasThreshold = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.isNumber)(threshold), yBottom = s.series.yAxis.getThreshold(threshold), translatedThreshold = yBottom, showMarkers = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(options.marker ? options.marker.enabled : null, s.series.xAxis.isRadial ? true : null, s.series.closestPointRangePx >
-                2 * ((options.marker ?
+                1), threshold = options.threshold, hasThreshold = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.isNumber)(threshold), yBottom = s.series.yAxis.getThreshold(threshold), translatedThreshold = yBottom, showMarkers = ((options.marker ? options.marker.enabled : null) ??
+                (s.series.xAxis.isRadial ? true : null) ??
+                s.series.closestPointRangePx > 2 * ((options.marker ?
                     options.marker.radius :
                     10) || 10)), shapeTexture = this.textureHandles[(shapeOptions && shapeOptions.symbol) ||
                 s.series.symbol] || this.textureHandles.circle;
@@ -2157,7 +2165,7 @@ class WGLRenderer {
             if (s.series.fillOpacity &&
                 options.fillOpacity &&
                 fillColor) {
-                fillColor = new (highcharts_Color_commonjs_highcharts_Color_commonjs2_highcharts_Color_root_Highcharts_Color_default())(fillColor).setOpacity((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(options.fillOpacity, 1.0)).get();
+                fillColor = new (highcharts_Color_commonjs_highcharts_Color_commonjs2_highcharts_Color_root_Highcharts_Color_default())(fillColor).setOpacity((options.fillOpacity ?? 1.0)).get();
             }
             if (typeof fillColor === 'string') {
                 fillColor = resolveColorExpression(chart.boost?.cssVars || {}, fillColor);
@@ -2210,7 +2218,8 @@ class WGLRenderer {
             this.setYAxis(s.series.yAxis);
             this.setThreshold(hasThreshold, translatedThreshold);
             if (s.drawMode === 'POINTS') {
-                shader.setPointSize((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(options.marker && options.marker.radius, 0.5) * 2 * pixelRatio);
+                shader.setPointSize(((options.marker && options.marker.radius) ?? 0.5) *
+                    2 * pixelRatio);
             }
             // If set to true, the toPixels translations in the shader
             // is skipped, i.e it's assumed that the value is a pixel coord.
@@ -2234,7 +2243,8 @@ class WGLRenderer {
                 gl.disable(gl.SCISSOR_TEST);
             }
             if (s.hasMarkers && showMarkers) {
-                shader.setPointSize((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(options.marker && options.marker.radius, 5) * 2 * pixelRatio);
+                shader.setPointSize(((options.marker && options.marker.radius) ?? 5) *
+                    2 * pixelRatio);
                 shader.setDrawAsCircle(true);
                 for (sindex = 0; sindex < s.segments.length; sindex++) {
                     vbuffer.render(s.segments[sindex].from, s.segments[sindex].to, 'POINTS');
@@ -3005,10 +3015,10 @@ function allocateIfNotSeriesBoosting(renderer, series) {
  * True, if boost is enabled.
  */
 function boostEnabled(chart) {
-    return (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)((chart &&
+    return ((chart &&
         chart.options &&
         chart.options.boost &&
-        chart.options.boost.enabled), true);
+        chart.options.boost.enabled) ?? true);
 }
 /** @internal */
 function BoostSeries_compose(SeriesClass, seriesTypes, PointClass, wglMode) {
@@ -3414,7 +3424,7 @@ function exitBoost(series) {
  * @function Highcharts.Series#hasExtremes
  */
 function hasExtremes(series, checkX) {
-    const options = series.options, threshold = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(options.boostThreshold, Number.MAX_VALUE);
+    const options = series.options, threshold = (options.boostThreshold ?? Number.MAX_VALUE);
     if (threshold === 0) {
         return false;
     }
@@ -3433,7 +3443,7 @@ function hasExtremes(series, checkX) {
  * @internal
  */
 const getSeriesBoosting = (series, data) => {
-    const { options, forceCrop, chart } = series, threshold = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(options.boostThreshold, Number.MAX_VALUE);
+    const { options, forceCrop, chart } = series, threshold = (options.boostThreshold ?? Number.MAX_VALUE);
     // Return early if either will be grouped or boost is disabled.
     if (forceCrop || threshold === 0) {
         return false;
@@ -3537,10 +3547,9 @@ function getPoint(series, boostPoint) {
                 data[pointIndex][keysIndex];
         }
     }
-    point.category = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(xAxis.categories ?
+    point.category = (xAxis.categories ?
         xAxis.categories[point.x] :
-        point.x, // @todo simplify
-    point.x);
+        point.x ?? point.x);
     point.key = point.name ?? point.category;
     point.dist = boostPoint.dist;
     point.distX = boostPoint.distX;
@@ -3674,7 +3683,7 @@ function seriesRenderCanvas() {
         this.getColumn('x') :
         void 0) ||
         this.options.xData ||
-        this.getColumn('x', true)), lineWidth = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(options.lineWidth, 1), nullYSubstitute = options.nullInteraction && yMin, tooltip = chart.tooltip;
+        this.getColumn('x', true)), lineWidth = (options.lineWidth ?? 1), nullYSubstitute = options.nullInteraction && yMin, tooltip = chart.tooltip;
     let renderer = false, lastClientX, yBottom = yAxis.getThreshold(threshold), minVal, maxVal, minI, maxI;
     // Clear mock points and tooltip after zoom (#20330)
     if (!this.boosted) {

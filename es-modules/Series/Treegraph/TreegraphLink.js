@@ -12,7 +12,7 @@
 'use strict';
 import Point from '../../Core/Series/Point.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-import { extend, pick } from '../../Shared/Utilities.js';
+import { extend } from '../../Shared/Utilities.js';
 const { seriesTypes: { column: { prototype: { pointClass: ColumnPoint } } } } = SeriesRegistry;
 /* *
  *
@@ -63,7 +63,7 @@ class LinkPoint extends ColumnPoint {
         animation, runEvent);
         this.visible = this.toNode.visible;
         extend(this, oldOptions);
-        if (pick(redraw, true)) {
+        if (redraw ?? true) {
             this.series.chart.redraw(animation);
         }
     }

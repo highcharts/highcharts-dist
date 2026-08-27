@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.1 (2026-08-17)
+ * @license Highcharts JS v13.0.2 (2026-08-27)
  * @module highcharts/modules/cylinder
  * @requires highcharts
  * @requires highcharts/highcharts-3d
@@ -82,7 +82,6 @@ var external_highcharts_src_js_default_SVGRenderer_default = /*#__PURE__*/__webp
  *
  *
  * */
-
 
 
 const { deg2rad } = (external_highcharts_src_js_default_default());
@@ -171,11 +170,11 @@ function perspective(points, chart, insidePlotArea, useInvertedPersp) {
     /* The useInvertedPersp argument is used for inverted charts with
      * already inverted elements, such as dataLabels or tooltip positions.
      */
-    inverted = (0,external_highcharts_src_js_default_namespaceObject.pick)(useInvertedPersp, insidePlotArea ? chart.inverted : false), origin = {
+    inverted = useInvertedPersp ?? (insidePlotArea ? chart.inverted : false), origin = {
         x: chart.plotWidth / 2,
         y: chart.plotHeight / 2,
         z: options3d.depth / 2,
-        vd: (0,external_highcharts_src_js_default_namespaceObject.pick)(options3d.depth, 1) * (0,external_highcharts_src_js_default_namespaceObject.pick)(options3d.viewDistance, 0)
+        vd: (options3d.depth ?? 1) * (options3d.viewDistance ?? 0)
     }, scale = chart.scale3d || 1, beta = deg2rad * options3d.beta * (inverted ? -1 : 1), alpha = deg2rad * options3d.alpha * (inverted ? -1 : 1), angles = {
         cosA: Math.cos(alpha),
         cosB: Math.cos(-beta),
@@ -254,13 +253,13 @@ function pointCameraDistance(coordinates, chart) {
     const options3d = chart.options.chart.options3d, cameraPosition = {
         x: chart.plotWidth / 2,
         y: chart.plotHeight / 2,
-        z: (0,external_highcharts_src_js_default_namespaceObject.pick)(options3d.depth, 1) * (0,external_highcharts_src_js_default_namespaceObject.pick)(options3d.viewDistance, 0) +
+        z: (options3d.depth ?? 1) * (options3d.viewDistance ?? 0) +
             options3d.depth
     }, 
     // Added support for objects with plotX or x coordinates.
-    distance = Math.sqrt(Math.pow(cameraPosition.x - (0,external_highcharts_src_js_default_namespaceObject.pick)(coordinates.plotX, coordinates.x), 2) +
-        Math.pow(cameraPosition.y - (0,external_highcharts_src_js_default_namespaceObject.pick)(coordinates.plotY, coordinates.y), 2) +
-        Math.pow(cameraPosition.z - (0,external_highcharts_src_js_default_namespaceObject.pick)(coordinates.plotZ, coordinates.z), 2));
+    distance = Math.sqrt(Math.pow(cameraPosition.x - (coordinates.plotX ?? coordinates.x), 2) +
+        Math.pow(cameraPosition.y - (coordinates.plotY ?? coordinates.y), 2) +
+        Math.pow(cameraPosition.z - (coordinates.plotZ ?? coordinates.z), 2));
     return distance;
 }
 /**
@@ -447,7 +446,7 @@ class SVGElement3D extends (external_highcharts_src_js_default_SVGElement_defaul
         for (const part of elem3d.parts) {
             // If different props for different parts
             if (partsProps) {
-                props = (0,external_highcharts_src_js_default_namespaceObject.pick)(partsProps[part], false);
+                props = (partsProps[part] ?? false);
             }
             // Only if something to set, but allow undefined
             if (props !== false) {
@@ -745,7 +744,7 @@ function rendererGetCylinderEnd(chart, shapeArgs, isBottom) {
     const { width = 0, height = 0, alphaCorrection = 0 } = shapeArgs, 
     // A half of the smaller one out of width or depth (optional, because
     // there's no depth for a funnel that reuses the code)
-    depth = (0,external_highcharts_src_js_default_namespaceObject.pick)(shapeArgs.depth, width, 0), radius = Math.min(width, depth) / 2, 
+    depth = (shapeArgs.depth ?? width ?? 0), radius = Math.min(width, depth) / 2, 
     // Approximated longest diameter
     angleOffset = CylinderComposition_deg2rad * (chart.options.chart.options3d.beta - 90 +
         alphaCorrection), 

@@ -16,7 +16,7 @@ import H from '../../Core/Globals.js';
 const { composed, noop } = H;
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { series: Series, seriesTypes: { column: { prototype: columnProto }, scatter: ScatterSeries } } = SeriesRegistry;
-import { addEvent, arrayMax, arrayMin, clamp, defined, extend, isNumber, merge, pick, pushUnique } from '../../Shared/Utilities.js';
+import { addEvent, arrayMax, arrayMin, clamp, defined, extend, isNumber, merge, pushUnique } from '../../Shared/Utilities.js';
 /* *
  *
  *  Functions
@@ -69,7 +69,8 @@ function onAxisFoundExtremes() {
             ['min', 'userMin', pxMin],
             ['max', 'userMax', pxMax]
         ].forEach((keys) => {
-            if (typeof pick(this.options[keys[0]], this[keys[1]]) === 'undefined') {
+            if (typeof (this.options[keys[0]] ??
+                this[keys[1]]) === 'undefined') {
                 this[keys[0]] += keys[2] / transA;
             }
         });
@@ -166,10 +167,10 @@ class BubbleSeries extends ScatterSeries {
                 if (otherSeries.bubblePadding && otherSeries.reserveSpace()) {
                     const zExtremes = (otherSeries.onPoint || otherSeries).getZExtremes();
                     if (zExtremes) {
-                        // Changed '||' to 'pick' because min or max can be 0.
+                        // Use nullish coalescing because min or max can be 0.
                         // #17280
-                        zMin = Math.min(pick(zMin, zExtremes.zMin), zExtremes.zMin);
-                        zMax = Math.max(pick(zMax, zExtremes.zMax), zExtremes.zMax);
+                        zMin = Math.min((zMin ?? zExtremes.zMin), zExtremes.zMin);
+                        zMax = Math.max((zMax ?? zExtremes.zMax), zExtremes.zMax);
                         valid = true;
                     }
                 }
@@ -307,19 +308,19 @@ class BubbleSeries extends ScatterSeries {
             }
             return isPercent ? smallestSize * length / 100 : length;
         };
-        const minPxSize = getPxSize(pick(this.options.minSize, 8));
+        const minPxSize = getPxSize(this.options.minSize ?? 8);
         // Prioritize min size if conflict to make sure bubbles are
         // always visible. #5873
-        const maxPxSize = Math.max(getPxSize(pick(this.options.maxSize, '20%')), minPxSize);
+        const maxPxSize = Math.max(getPxSize(this.options.maxSize ?? '20%'), minPxSize);
         return { minPxSize, maxPxSize };
     }
     getZExtremes() {
         const options = this.options, zData = this.getColumn('z').filter(isNumber);
         if (zData.length) {
-            const zMin = pick(options.zMin, clamp(arrayMin(zData), options.displayNegative === false ?
+            const zMin = (options.zMin ?? clamp(arrayMin(zData), options.displayNegative === false ?
                 (options.zThreshold || 0) :
                 -Number.MAX_VALUE, Number.MAX_VALUE));
-            const zMax = pick(options.zMax, arrayMax(zData));
+            const zMax = (options.zMax ?? arrayMax(zData));
             if (isNumber(zMin) && isNumber(zMax)) {
                 return { zMin, zMax };
             }

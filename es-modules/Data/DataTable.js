@@ -958,6 +958,23 @@ class DataTable extends DataTableCore {
         });
     }
 }
+/**
+ * Type guard narrowing an arbitrary value to a valid table cell value.
+ *
+ * @param {*} value
+ * Candidate value.
+ *
+ * @return {boolean}
+ * `true` when the value is a valid `CellType`.
+ */
+export function isCellValue(value) {
+    const valueType = typeof value;
+    return (value === null ||
+        valueType === 'undefined' ||
+        valueType === 'boolean' ||
+        valueType === 'number' ||
+        valueType === 'string');
+}
 /* *
  *
  *  Default Export

@@ -17,7 +17,7 @@ import H from '../../Core/Globals.js';
 const { noop } = H;
 import RangeDataLabel from '../RangeDataLabel.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-import { crisp, extend, merge, pick, relativeLength } from '../../Shared/Utilities.js';
+import { crisp, extend, merge, relativeLength } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class
@@ -127,7 +127,10 @@ class BoxPlotSeries extends ColumnSeries {
                     // Stem attributes
                     stemAttr.stroke =
                         point.stemColor || options.stemColor || color;
-                    stemAttr['stroke-width'] = pick(point.stemWidth, options.stemWidth, options.lineWidth);
+                    stemAttr['stroke-width'] =
+                        point.stemWidth ??
+                            options.stemWidth ??
+                            options.lineWidth;
                     stemAttr.dashstyle = (point.stemDashStyle ||
                         options.stemDashStyle ||
                         options.dashStyle);
@@ -137,7 +140,10 @@ class BoxPlotSeries extends ColumnSeries {
                         whiskersAttr.stroke = (point.whiskerColor ||
                             options.whiskerColor ||
                             color);
-                        whiskersAttr['stroke-width'] = pick(point.whiskerWidth, options.whiskerWidth, options.lineWidth);
+                        whiskersAttr['stroke-width'] =
+                            point.whiskerWidth ??
+                                options.whiskerWidth ??
+                                options.lineWidth;
                         whiskersAttr.dashstyle = (point.whiskerDashStyle ||
                             options.whiskerDashStyle ||
                             options.dashStyle);
@@ -158,7 +164,10 @@ class BoxPlotSeries extends ColumnSeries {
                     medianAttr.stroke = (point.medianColor ||
                         options.medianColor ||
                         color);
-                    medianAttr['stroke-width'] = pick(point.medianWidth, options.medianWidth, options.lineWidth);
+                    medianAttr['stroke-width'] =
+                        point.medianWidth ??
+                            options.medianWidth ??
+                            options.lineWidth;
                     medianAttr.dashstyle = (point.medianDashStyle ||
                         options.medianDashStyle ||
                         options.dashStyle);

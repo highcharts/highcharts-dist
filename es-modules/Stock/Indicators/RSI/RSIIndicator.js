@@ -46,7 +46,7 @@ class RSIIndicator extends SMAIndicator {
         // Cause we need to calculate change between two points
         RSI = [], xData = [], yData = [];
         let gain = 0, loss = 0, index = params.index, range = 1, RSIPoint, change, avgGain, avgLoss, i, values;
-        if ((xVal.length < period)) {
+        if (xVal.length < period) {
             return;
         }
         if (isNumber(yVal[0])) {

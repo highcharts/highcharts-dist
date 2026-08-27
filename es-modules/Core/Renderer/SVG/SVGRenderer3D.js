@@ -20,7 +20,7 @@ const { charts, deg2rad } = H;
 import Math3D from '../../Math3D.js';
 const { perspective, shapeArea } = Math3D;
 import SVGElement3D from './SVGElement3D.js';
-import { defined, extend, merge, pick } from '../../../Shared/Utilities.js';
+import { defined, extend, merge } from '../../../Shared/Utilities.js';
 /* *
  *
  *  Constants
@@ -151,9 +151,10 @@ var SVGRenderer3D;
                 (defined(hash.enabled) ||
                     defined(hash.vertexes) ||
                     defined(hash.insidePlotArea))) {
-                this.enabled = pick(hash.enabled, this.enabled);
-                this.vertexes = pick(hash.vertexes, this.vertexes);
-                this.insidePlotArea = pick(hash.insidePlotArea, this.insidePlotArea);
+                this.enabled = (hash.enabled ?? this.enabled);
+                this.vertexes = (hash.vertexes ?? this.vertexes);
+                this.insidePlotArea =
+                    hash.insidePlotArea ?? this.insidePlotArea;
                 delete hash.enabled;
                 delete hash.vertexes;
                 delete hash.insidePlotArea;
@@ -169,9 +170,10 @@ var SVGRenderer3D;
                 (defined(params.enabled) ||
                     defined(params.vertexes) ||
                     defined(params.insidePlotArea))) {
-                this.enabled = pick(params.enabled, this.enabled);
-                this.vertexes = pick(params.vertexes, this.vertexes);
-                this.insidePlotArea = pick(params.insidePlotArea, this.insidePlotArea);
+                this.enabled = (params.enabled ?? this.enabled);
+                this.vertexes = (params.vertexes ?? this.vertexes);
+                this.insidePlotArea =
+                    params.insidePlotArea ?? this.insidePlotArea;
                 delete params.enabled;
                 delete params.vertexes;
                 delete params.insidePlotArea;
@@ -585,7 +587,7 @@ var SVGRenderer3D;
             // been in the attribs collection in the first place.
             delete params.center;
             delete params.z;
-            const anim = animObject(pick(animation, this.renderer.globalAnimation));
+            const anim = animObject((animation ?? this.renderer.globalAnimation));
             if (anim.duration) {
                 const paramArr = extractCustom(params);
                 // Params need to have a property in order for the step to run
@@ -595,7 +597,7 @@ var SVGRenderer3D;
                 wrapper[randomProp + 'Setter'] = H.noop;
                 if (paramArr) {
                     const to = paramArr[0], // Custom attr
-                    interpolate = (key, pos) => (from[key] + (pick(to[key], from[key]) -
+                    interpolate = (key, pos) => (from[key] + ((to[key] ?? from[key]) -
                         from[key]) * pos);
                     anim.step = function (a, fx) {
                         if (fx.prop === randomProp && fx.elem) {

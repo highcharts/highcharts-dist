@@ -19,7 +19,7 @@ const { composed } = H;
 import Series from '../Core/Series/Series.js';
 import Pane from '../Extensions/Pane/Pane.js';
 import RadialAxis from '../Core/Axis/RadialAxis.js';
-import { addEvent, clamp, defined, find, isNumber, isObject, merge, pick, pushUnique, relativeLength, splat, wrap } from '../Shared/Utilities.js';
+import { addEvent, clamp, defined, find, isNumber, isObject, merge, pushUnique, relativeLength, splat, wrap } from '../Shared/Utilities.js';
 import { uniqueKey } from '../Core/Utilities.js';
 /* *
  *
@@ -385,7 +385,7 @@ function onSeriesAfterTranslate() {
             // Treat points below Y axis min as null (#10082)
             if (!chart.hasParallelCoordinates &&
                 !series.yAxis.reversed) {
-                if (pick(points[i].y, Number.MIN_VALUE) < yAxis.min ||
+                if ((points[i].y ?? Number.MIN_VALUE) < yAxis.min ||
                     points[i].x < xAxis.min ||
                     points[i].x > xAxis.max) {
                     // Destroy markers
@@ -478,7 +478,7 @@ function wrapChartGet(proceed, id) {
  * @private
  */
 function wrapColumnSeriesAlignDataLabel(proceed, point, dataLabel, options, alignTo, isNew) {
-    const chart = this.chart, inside = pick(options.inside, !!this.options.stacking);
+    const chart = this.chart, inside = (options.inside ?? !!this.options.stacking);
     let angle, shapeArgs, labelPos;
     if (chart.polar) {
         angle = point.rectPlotX / Math.PI * 180;
@@ -515,9 +515,9 @@ function wrapColumnSeriesAlignDataLabel(proceed, point, dataLabel, options, alig
                     y: point.tooltipPos[1]
                 });
             }
-            options.align = pick(options.align, 'center');
+            options.align = (options.align ?? 'center');
             options.verticalAlign =
-                pick(options.verticalAlign, 'middle');
+                (options.verticalAlign ?? 'middle');
         }
         Series.prototype.alignDataLabel.call(this, point, dataLabel, options, alignTo, isNew);
         // Hide label of a point (only inverted) that is outside the
@@ -795,7 +795,8 @@ function wrapSeriesAnimate(proceed, init) {
         if (series.isRadialBar) {
             if (!init) {
                 // Run the pie animation for radial bars
-                series.startAngleRad = pick(series.translatedThreshold, series.xAxis.startAngleRad);
+                series.startAngleRad =
+                    series.translatedThreshold ?? series.xAxis.startAngleRad;
                 H.seriesTypes.pie.prototype.animate.call(series, init);
             }
         }
@@ -990,7 +991,7 @@ class PolarAdditions {
      * */
     arc(low, high, start, end) {
         const series = this.series, center = series.xAxis.center, len = series.yAxis.len, paneInnerR = center[3] / 2;
-        let r = len - high + paneInnerR, innerR = len - pick(low, len) + paneInnerR;
+        let r = len - high + paneInnerR, innerR = len - (low ?? len) + paneInnerR;
         // Prevent columns from shooting through the pane's center
         if (series.yAxis.reversed) {
             if (r < 0) {

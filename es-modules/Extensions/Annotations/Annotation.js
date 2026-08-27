@@ -26,7 +26,7 @@ const { defaultOptions } = D;
 import EventEmitter from './EventEmitter.js';
 import MockPoint from './MockPoint.js';
 import PopupComposition from './Popup/PopupComposition.js';
-import { destroyObjectProperties, erase, fireEvent, merge, pick, splat } from '../../Shared/Utilities.js';
+import { destroyObjectProperties, erase, fireEvent, merge, splat } from '../../Shared/Utilities.js';
 /* *
  *
  *  Functions
@@ -354,7 +354,7 @@ class Annotation extends EventEmitter {
             if (!item.graphic) {
                 this.renderItem(item);
             }
-            item.redraw(pick(animation, true) && item.graphic.placed);
+            item.redraw((animation ?? true) && item.graphic.placed);
             if (item.points.length) {
                 adjustVisibility(item);
             }
@@ -497,7 +497,7 @@ class Annotation extends EventEmitter {
      * annotation's visibility is toggled.
      */
     setVisibility(visible) {
-        const options = this.options, navigation = this.chart.navigationBindings, visibility = pick(visible, !options.visible);
+        const options = this.options, navigation = this.chart.navigationBindings, visibility = (visible ?? !options.visible);
         this.graphic.attr('visibility', visibility ? 'inherit' : 'hidden');
         if (!visibility) {
             const setItemControlPointsVisibility = function (item) {
@@ -533,7 +533,7 @@ class Annotation extends EventEmitter {
         // Update options in chart options, used in exporting (#9767, #21507):
         chart.options.annotations[userOptionsIndex] = this.options;
         this.isUpdating = true;
-        if (pick(redraw, true)) {
+        if (redraw ?? true) {
             chart.drawAnnotations();
         }
         fireEvent(this, 'afterUpdate');

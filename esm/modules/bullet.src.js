@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.1 (2026-08-17)
+ * @license Highcharts JS v13.0.2 (2026-08-27)
  * @module highcharts/modules/bullet
  * @requires highcharts
  *
@@ -401,13 +401,20 @@ class BulletSeries extends (external_highcharts_src_js_default_Series_types_colu
                 // Presentational
                 if (!chart.styledMode) {
                     targetGraphic.attr({
-                        fill: (0,external_highcharts_src_js_default_namespaceObject.pick)(targetOptions.color, pointOptions.color, (series.zones.length && (point.getZone.call({
-                            series: series,
-                            x: point.x,
-                            y: targetVal,
-                            options: {}
-                        })?.color || series.color)) || void 0, point.color, series.color),
-                        stroke: (0,external_highcharts_src_js_default_namespaceObject.pick)(targetOptions.borderColor, point.borderColor, series.options.borderColor),
+                        fill: (targetOptions.color ??
+                            pointOptions.color ??
+                            ((series.zones.length &&
+                                (point.getZone?.call({
+                                    series: series,
+                                    x: point.x,
+                                    y: targetVal,
+                                    options: {}
+                                })?.color || series.color)) || void 0) ??
+                            point.color ??
+                            series.color),
+                        stroke: targetOptions.borderColor ??
+                            point.borderColor ??
+                            series.options.borderColor,
                         'stroke-width': targetOptions.borderWidth,
                         r: targetOptions.borderRadius
                     });
@@ -436,10 +443,10 @@ class BulletSeries extends (external_highcharts_src_js_default_Series_types_colu
         if (targetData && targetData.length) {
             const targetExtremes = super.getExtremes.call(this, targetData);
             if ((0,external_highcharts_src_js_default_namespaceObject.isNumber)(targetExtremes.dataMin)) {
-                dataExtremes.dataMin = Math.min((0,external_highcharts_src_js_default_namespaceObject.pick)(dataExtremes.dataMin, Infinity), targetExtremes.dataMin);
+                dataExtremes.dataMin = Math.min((dataExtremes.dataMin ?? Infinity), targetExtremes.dataMin);
             }
             if ((0,external_highcharts_src_js_default_namespaceObject.isNumber)(targetExtremes.dataMax)) {
-                dataExtremes.dataMax = Math.max((0,external_highcharts_src_js_default_namespaceObject.pick)(dataExtremes.dataMax, -Infinity), targetExtremes.dataMax);
+                dataExtremes.dataMax = Math.max((dataExtremes.dataMax ?? -Infinity), targetExtremes.dataMax);
             }
         }
         return dataExtremes;

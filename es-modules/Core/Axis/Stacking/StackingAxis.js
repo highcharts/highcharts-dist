@@ -14,7 +14,7 @@ import { getDeferredAnimation } from '../../Animation/AnimationUtilities.js';
 import SeriesRegistry from '../../Series/SeriesRegistry.js';
 const { series: { prototype: seriesProto } } = SeriesRegistry;
 import StackItem from './StackItem.js';
-import { addEvent, correctFloat, defined, destroyObjectProperties, fireEvent, isNumber, objectEach, pick } from '../../../Shared/Utilities.js';
+import { addEvent, correctFloat, defined, destroyObjectProperties, fireEvent, isNumber, objectEach } from '../../../Shared/Utilities.js';
 /* *
  *
  *  Functions
@@ -39,7 +39,7 @@ function chartGetStacks() {
         if (series.options.stacking && series.reserveSpace()) {
             series.stackKey = [
                 series.type,
-                pick(series.options.stack, ''),
+                (series.options.stack ?? ''),
                 inverted ? xAxisOptions.top : xAxisOptions.left,
                 inverted ? xAxisOptions.height : xAxisOptions.width
             ].join(',');
@@ -202,7 +202,7 @@ function seriesSetStackedPoints(axis, stackingParam) {
         stack = stacks[key][x];
         if (y !== null) {
             stack.points[pointKey] = stack.points[series.index] = [
-                pick(stack.cumulative, stackThreshold)
+                (stack.cumulative ?? stackThreshold)
             ];
             // Record the base of the stack
             if (!defined(stack.cumulative)) {
@@ -250,7 +250,7 @@ function seriesSetStackedPoints(axis, stackingParam) {
             stack.cumulative = (total || 1) - 1;
         }
         else {
-            stack.cumulative = correctFloat(pick(stack.cumulative, stackThreshold) + yNumber);
+            stack.cumulative = correctFloat((stack.cumulative ?? stackThreshold) + yNumber);
         }
         stack.total = total;
         if (y !== null) {

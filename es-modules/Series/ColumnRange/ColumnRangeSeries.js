@@ -16,7 +16,7 @@ import H from '../../Core/Globals.js';
 const { noop } = H;
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { seriesTypes: { arearange: AreaRangeSeries, column: ColumnSeries, column: { prototype: columnProto } } } = SeriesRegistry;
-import { addEvent, clamp, extend, isNumber, merge, pick } from '../../Shared/Utilities.js';
+import { addEvent, clamp, extend, isNumber, merge } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class
@@ -97,7 +97,9 @@ class ColumnRangeSeries extends AreaRangeSeries {
                 point.plotLow = safeBounds(plotY);
                 // Adjust shape
                 y = point.plotHigh;
-                height = pick(point.rectPlotY, point.plotY) - point.plotHigh;
+                height =
+                    (point.rectPlotY ?? point.plotY) -
+                        point.plotHigh;
                 // Adjust for minPointLength
                 if (Math.abs(height) < minPointLength) {
                     heightDifference = (minPointLength - height);

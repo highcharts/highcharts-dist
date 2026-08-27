@@ -15,7 +15,7 @@
 import NodesComposition from '../NodesComposition.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { series: { prototype: seriesProto, prototype: { pointClass: Point } } } = SeriesRegistry;
-import { addEvent, css, defined, extend, pick } from '../../Shared/Utilities.js';
+import { addEvent, css, defined, extend } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class
@@ -63,10 +63,10 @@ class NetworkgraphPoint extends Point {
     getLinkAttributes() {
         const linkOptions = this.series.options.link, pointOptions = this.options;
         return {
-            'stroke-width': pick(pointOptions.width, linkOptions.width),
+            'stroke-width': (pointOptions.width ?? linkOptions.width),
             stroke: (pointOptions.color || linkOptions.color),
             dashstyle: (pointOptions.dashStyle || linkOptions.dashStyle),
-            opacity: pick(pointOptions.opacity, linkOptions.opacity, 1)
+            opacity: (pointOptions.opacity ?? linkOptions.opacity ?? 1)
         };
     }
     /**

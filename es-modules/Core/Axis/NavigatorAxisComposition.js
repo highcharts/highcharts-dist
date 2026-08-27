@@ -12,7 +12,7 @@
 'use strict';
 import H from '../Globals.js';
 const { isTouchDevice } = H;
-import { addEvent, correctFloat, defined, isNumber, pick } from '../../Shared/Utilities.js';
+import { addEvent, correctFloat, defined, isNumber } from '../../Shared/Utilities.js';
 /* *
  *
  *  Functions
@@ -108,7 +108,7 @@ class NavigatorAxisAdditions {
      */
     toFixedRange(pxMin, pxMax, fixedMin, fixedMax) {
         const axis = this.axis, halfPointRange = (axis.pointRange || 0) / 2;
-        let newMin = pick(fixedMin, axis.translate(pxMin, true, !axis.horiz)), newMax = pick(fixedMax, axis.translate(pxMax, true, !axis.horiz));
+        let newMin = fixedMin ?? axis.translate(pxMin, true, !axis.horiz), newMax = fixedMax ?? axis.translate(pxMax, true, !axis.horiz);
         // Add/remove half point range to/from the extremes (#1172)
         if (!defined(fixedMin)) {
             newMin = correctFloat(newMin + halfPointRange);

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.0.1 (2026-08-17)
+ * @license Highstock JS v13.0.2 (2026-08-27)
  * @module highcharts/indicators/aroon
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -474,10 +474,10 @@ class AroonIndicator extends SMAIndicator {
         for (i = period - 1; i < yValLen; i++) {
             slicedY = yVal.slice(i - period + 1, i + 2);
             xLow = getExtremeIndexInArray(slicedY.map(function (elem) {
-                return (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(elem[low], elem);
+                return (elem[low] ?? elem);
             }), 'min');
             xHigh = getExtremeIndexInArray(slicedY.map(function (elem) {
-                return (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(elem[high], elem);
+                return (elem[high] ?? elem);
             }), 'max');
             aroonUp = (xHigh / period) * 100;
             aroonDown = (xLow / period) * 100;

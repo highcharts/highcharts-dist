@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.1 (2026-08-17)
+ * @license Highcharts JS v13.0.2 (2026-08-27)
  * @module highcharts/modules/color-axis
  * @requires highcharts
  *
@@ -453,7 +453,7 @@ var ColorAxisComposition;
                 series.bindAxes();
                 series.isDirtyData = true;
             });
-            if ((0,external_highcharts_src_js_default_namespaceObject.pick)(options.redraw, true)) {
+            if (options.redraw ?? true) {
                 chart.redraw(options.animation);
             }
             return axis;
@@ -1231,10 +1231,8 @@ class ColorAxis extends (external_highcharts_src_js_default_Axis_default()) {
      * @internal
      */
     drawLegendSymbol(legend, item) {
-        const axis = this, legendItem = item.legendItem || {}, padding = legend.padding, legendOptions = legend.options, labelOptions = axis.options.labels, itemDistance = (0,external_highcharts_src_js_default_namespaceObject.pick)(legendOptions.itemDistance, 10), horiz = axis.horiz, { width, height } = axis.getSize(), labelPadding = (0,external_highcharts_src_js_default_namespaceObject.pick)(
-        // @todo: This option is not documented, nor implemented when
-        // vertical
-        legendOptions.labelPadding, horiz ? 16 : 30);
+        const axis = this, legendItem = item.legendItem || {}, padding = legend.padding, legendOptions = legend.options, labelOptions = axis.options.labels, itemDistance = (legendOptions.itemDistance ?? 10), horiz = axis.horiz, { width, height } = axis.getSize(), labelPadding = legendOptions.labelPadding ??
+            (horiz ? 16 : 30);
         this.setLegendColor();
         let titleHeight = 0;
         let titleWidth = 0;
@@ -1336,7 +1334,12 @@ class ColorAxis extends (external_highcharts_src_js_default_Axis_default()) {
         this.dataMax = -Infinity;
         while (i--) { // X, y, value, other
             cSeries = series[i];
-            colorKey = cSeries.colorKey = (0,external_highcharts_src_js_default_namespaceObject.pick)(cSeries.options.colorKey, cSeries.colorKey, cSeries.pointValKey, cSeries.zoneAxis, 'y');
+            colorKey = cSeries.colorKey =
+                cSeries.options.colorKey ??
+                    cSeries.colorKey ??
+                    cSeries.pointValKey ??
+                    cSeries.zoneAxis ??
+                    'y';
             calculatedExtremes = cSeries[colorKey + 'Min'] &&
                 cSeries[colorKey + 'Max'];
             // Find the first column that has values
@@ -1523,7 +1526,7 @@ class ColorAxis extends (external_highcharts_src_js_default_Axis_default()) {
     getDataClassLegendSymbols() {
         const axis = this, chart = axis.chart, legendItems = (axis.legendItem &&
             axis.legendItem.labels ||
-            []), legendOptions = chart.options.legend, valueDecimals = (0,external_highcharts_src_js_default_namespaceObject.pick)(legendOptions.valueDecimals, -1), valueSuffix = (0,external_highcharts_src_js_default_namespaceObject.pick)(legendOptions.valueSuffix, '');
+            []), legendOptions = chart.options.legend, valueDecimals = (legendOptions.valueDecimals ?? -1), valueSuffix = (legendOptions.valueSuffix ?? '');
         const getPointsInDataClass = (i) => axis.series.reduce((points, s) => {
             points.push(...s.points.filter((point) => point.dataClass === i));
             return points;
@@ -1593,9 +1596,13 @@ class ColorAxis extends (external_highcharts_src_js_default_Axis_default()) {
      * @internal
      */
     getSize() {
-        const axis = this, { chart, horiz } = axis, { height: colorAxisHeight, width: colorAxisWidth } = axis.options, { legend: legendOptions } = chart.options, width = (0,external_highcharts_src_js_default_namespaceObject.pick)((0,external_highcharts_src_js_default_namespaceObject.defined)(colorAxisWidth) ?
-            (0,external_highcharts_src_js_default_namespaceObject.relativeLength)(colorAxisWidth, chart.chartWidth) : void 0, legendOptions?.symbolWidth, horiz ? ColorAxis.defaultLegendLength : 12), height = (0,external_highcharts_src_js_default_namespaceObject.pick)((0,external_highcharts_src_js_default_namespaceObject.defined)(colorAxisHeight) ?
-            (0,external_highcharts_src_js_default_namespaceObject.relativeLength)(colorAxisHeight, chart.chartHeight) : void 0, legendOptions?.symbolHeight, horiz ? 12 : ColorAxis.defaultLegendLength);
+        const axis = this, { chart, horiz } = axis, { height: colorAxisHeight, width: colorAxisWidth } = axis.options, { legend: legendOptions } = chart.options, width = (0,external_highcharts_src_js_default_namespaceObject.defined)(colorAxisWidth) ?
+            (0,external_highcharts_src_js_default_namespaceObject.relativeLength)(colorAxisWidth, chart.chartWidth) :
+            (legendOptions?.symbolWidth ??
+                (horiz ? ColorAxis.defaultLegendLength : 12)), height = (0,external_highcharts_src_js_default_namespaceObject.defined)(colorAxisHeight) ?
+            (0,external_highcharts_src_js_default_namespaceObject.relativeLength)(colorAxisHeight, chart.chartHeight) :
+            (legendOptions?.symbolHeight ??
+                (horiz ? 12 : ColorAxis.defaultLegendLength));
         return {
             width,
             height

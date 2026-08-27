@@ -12,7 +12,7 @@
 'use strict';
 import DataTableCore from '../../Data/DataTableCore.js';
 import H from '../Globals.js';
-import { correctFloat, defined, isString, isNumber, pick, css, addEvent } from '../../Shared/Utilities.js';
+import { correctFloat, defined, isString, isNumber, css, addEvent } from '../../Shared/Utilities.js';
 import { error, timeUnits } from '../Utilities.js';
 /* *
  *
@@ -601,9 +601,7 @@ var OrdinalAxis;
                             // Without a custom function it is sorted as strings
                             return a - b;
                         });
-                        overscrollPointsRange = Math.min(overscrollPointsRange, pick(
-                        // Check for a single-point series:
-                        series.closestPointRange, overscrollPointsRange));
+                        overscrollPointsRange = Math.min(overscrollPointsRange, (series.closestPointRange ?? overscrollPointsRange));
                         if (len) {
                             i = 0;
                             while (i < len - 1) {
@@ -704,7 +702,9 @@ var OrdinalAxis;
                     ordinal.offset = min - (minIndex * slope);
                 }
                 else {
-                    ordinal.overscrollPointsRange = pick(axis.closestPointRange, ordinal.overscrollPointsRange);
+                    ordinal.overscrollPointsRange =
+                        axis.closestPointRange ??
+                            ordinal.overscrollPointsRange;
                     ordinal.positions = axis.ordinal.slope = ordinal.offset =
                         void 0;
                 }
@@ -997,8 +997,10 @@ var OrdinalAxis;
          */
         convertOverscroll(overscroll = 0) {
             const ordinal = this, axis = ordinal.axis, calculateOverscroll = function (overscrollPercentage) {
-                return pick(ordinal.originalOrdinalRange, defined(axis.dataMax) && defined(axis.dataMin) ?
-                    axis.dataMax - axis.dataMin : 0) * overscrollPercentage;
+                return (ordinal.originalOrdinalRange ??
+                    (defined(axis.dataMax) && defined(axis.dataMin) ?
+                        axis.dataMax - axis.dataMin :
+                        0)) * overscrollPercentage;
             };
             if (isString(overscroll)) {
                 const overscrollValue = parseInt(overscroll, 10);

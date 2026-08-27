@@ -15,7 +15,7 @@ import MU from '../../Maps/MapUtilities.js';
 const { boundsFromPath } = MU;
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const ScatterPoint = SeriesRegistry.seriesTypes.scatter.prototype.pointClass;
-import { extend, internalClearTimeout, isNumber, pick } from '../../Shared/Utilities.js';
+import { extend, internalClearTimeout, isNumber } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class
@@ -90,8 +90,10 @@ class MapPoint extends ScatterPoint {
             }
             else {
                 const propMiddleX = properties?.['hc-middle-x'], propMiddleY = properties?.['hc-middle-y'];
-                bounds.midX = (bounds.x1 + (bounds.x2 - bounds.x1) * pick(this.middleX, isNumber(propMiddleX) ? propMiddleX : 0.5));
-                let middleYFraction = pick(this.middleY, isNumber(propMiddleY) ? propMiddleY : 0.5);
+                bounds.midX = (bounds.x1 + (bounds.x2 - bounds.x1) * (this.middleX ??
+                    (isNumber(propMiddleX) ? propMiddleX : 0.5)));
+                let middleYFraction = this.middleY ??
+                    (isNumber(propMiddleY) ? propMiddleY : 0.5);
                 // No geographic geometry, only path given => flip
                 if (!this.geometry) {
                     middleYFraction = 1 - middleYFraction;

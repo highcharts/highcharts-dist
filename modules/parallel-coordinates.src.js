@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.1 (2026-08-17)
+ * @license Highcharts JS v13.0.2 (2026-08-27)
  * @module highcharts/modules/parallel-coordinates
  * @requires highcharts
  *
@@ -387,7 +387,7 @@ var ParallelAxis;
             else {
                 const axisIndex = chart.yAxis.indexOf(axis); // #13608
                 axis.options = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(axis.options, axis.chart.options.chart.parallelAxes, e.userOptions);
-                parallelCoordinates.position = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(parallelCoordinates.position, axisIndex >= 0 ? axisIndex : chart.yAxis.length);
+                parallelCoordinates.position = parallelCoordinates.position ?? (axisIndex >= 0 ? axisIndex : chart.yAxis.length);
                 parallelCoordinates.setPosition(axisPosition, axis.options);
             }
         }

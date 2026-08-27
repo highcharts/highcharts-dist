@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.1 (2026-08-17)
+ * @license Highcharts JS v13.0.2 (2026-08-27)
  * @module highcharts/modules/variable-pie
  * @requires highcharts
  *
@@ -370,8 +370,10 @@ class VariablePieSeries extends PieSeries {
         series.minPxSize = positions[3] + extremes.minPointSize;
         series.maxPxSize = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.clamp)(positions[2], positions[3] + extremes.minPointSize, extremes.maxPointSize);
         if (zData.length) {
-            zMin = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(seriesOptions.zMin, (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.arrayMin)(zData.filter(series.zValEval)));
-            zMax = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(seriesOptions.zMax, (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.arrayMax)(zData.filter(series.zValEval)));
+            zMin =
+                seriesOptions.zMin ?? (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.arrayMin)(zData.filter(series.zValEval));
+            zMax =
+                seriesOptions.zMax ?? (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.arrayMax)(zData.filter(series.zValEval));
             this.getRadii(zMin, zMax, series.minPxSize, series.maxPxSize);
         }
     }
@@ -474,7 +476,7 @@ class VariablePieSeries extends PieSeries {
     translate(positions) {
         this.generatePoints();
         const series = this, precision = 1000, // Issue #172
-        options = series.options, slicedOffset = options.slicedOffset, startAngle = options.startAngle || 0, startAngleRad = Math.PI / 180 * (startAngle - 90), endAngleRad = Math.PI / 180 * ((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(options.endAngle, startAngle + 360) - 90), circ = endAngleRad - startAngleRad, // 2 * Math.PI,
+        options = series.options, slicedOffset = options.slicedOffset, startAngle = options.startAngle || 0, startAngleRad = Math.PI / 180 * (startAngle - 90), endAngleRad = Math.PI / 180 * ((options.endAngle ?? startAngle + 360) - 90), circ = endAngleRad - startAngleRad, // 2 * Math.PI,
         points = series.points, ignoreHiddenPoint = options.ignoreHiddenPoint;
         let cumulative = 0, start, end, angle, 
         // The x component of the radius vector for a given point

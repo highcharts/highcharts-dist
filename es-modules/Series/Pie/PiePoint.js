@@ -12,7 +12,7 @@
 'use strict';
 import { setAnimation } from '../../Core/Animation/AnimationUtilities.js';
 import Point from '../../Core/Series/Point.js';
-import { addEvent, extend, isNumber, pick, relativeLength } from '../../Shared/Utilities.js';
+import { addEvent, extend, isNumber, relativeLength } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class
@@ -120,7 +120,7 @@ class PiePoint extends Point {
         const series = this.series, chart = series.chart;
         setAnimation(animation, chart);
         // Redraw is true by default
-        redraw = pick(redraw, true);
+        redraw = (redraw ?? true);
         this.sliced = this.options.sliced = sliced ?? !this.sliced;
         // Update options.data
         if (series.options.data) {

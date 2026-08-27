@@ -10,7 +10,7 @@
  *
  * */
 'use strict';
-import { defined, extend, internalClearTimeout, pick, wrap } from '../Shared/Utilities.js';
+import { defined, extend, internalClearTimeout, wrap } from '../Shared/Utilities.js';
 /* *
  *
  *  Composition
@@ -124,7 +124,7 @@ var MapPointer;
         const mapNavigation = this.chart.options.mapNavigation;
         // Pinch status
         if (mapNavigation &&
-            pick(mapNavigation.enableTouchZoom, mapNavigation.enabled)) {
+            (mapNavigation.enableTouchZoom ?? mapNavigation.enabled)) {
             this.chart.zooming.pinchType = 'xy';
         }
         proceed.apply(this, [].slice.call(arguments, 1));

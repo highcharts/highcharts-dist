@@ -22,7 +22,7 @@ import Math3D from '../../Core/Math3D.js';
 const { perspective } = Math3D;
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { series: Series, seriesTypes: { column: ColumnSeries } } = SeriesRegistry;
-import { extend, merge, pick, relativeLength } from '../../Shared/Utilities.js';
+import { extend, merge, relativeLength } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class
@@ -49,13 +49,14 @@ class Funnel3DSeries extends ColumnSeries {
      * @private
      */
     alignDataLabel(point, _dataLabel, options) {
-        const series = this, dlBoxRaw = point.dlBoxRaw, inverted = series.chart.inverted, below = point.plotY > pick(series.translatedThreshold, series.yAxis.len), inside = pick(options.inside, !!series.options.stacking), dlBox = {
+        const series = this, dlBoxRaw = point.dlBoxRaw, inverted = series.chart.inverted, below = point.plotY >
+            (series.translatedThreshold ?? series.yAxis.len), inside = (options.inside ?? !!series.options.stacking), dlBox = {
             x: dlBoxRaw.x,
             y: dlBoxRaw.y,
             height: 0
         };
-        options.align = pick(options.align, !inverted || inside ? 'center' : below ? 'right' : 'left');
-        options.verticalAlign = pick(options.verticalAlign, inverted || inside ? 'middle' : below ? 'top' : 'bottom');
+        options.align = options.align ?? (!inverted || inside ? 'center' : below ? 'right' : 'left');
+        options.verticalAlign = options.verticalAlign ?? (inverted || inside ? 'middle' : below ? 'top' : 'bottom');
         if (options.verticalAlign !== 'top') {
             dlBox.y += dlBoxRaw.bottom /
                 (options.verticalAlign === 'bottom' ? 1 : 2);
@@ -161,7 +162,8 @@ class Funnel3DSeries extends ColumnSeries {
             h = y3 - y1;
             shapeArgs = {
                 // For fill setter
-                gradientForSides: pick(point.options.gradientForSides, options.gradientForSides),
+                gradientForSides: point.options.gradientForSides ??
+                    options.gradientForSides,
                 x: centerX,
                 y: y1,
                 height: h,

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.1 (2026-08-17)
+ * @license Highcharts JS v13.0.2 (2026-08-27)
  * @module highcharts/modules/windbarb
  * @requires highcharts
  *
@@ -768,7 +768,7 @@ class WindbarbSeries extends ColumnSeries {
                         .add(this.markerGroup)
                         .addClass('highcharts-point ' +
                         'highcharts-color-' +
-                        (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(point.colorIndex, point.series.colorIndex));
+                        (point.colorIndex ?? point.series.colorIndex));
                 }
                 // Position the graphic
                 point.graphic

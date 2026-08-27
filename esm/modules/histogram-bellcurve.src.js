@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.1 (2026-08-17)
+ * @license Highcharts JS v13.0.2 (2026-08-27)
  * @module highcharts/modules/histogram-bellcurve
  * @requires highcharts
  *
@@ -330,7 +330,7 @@ const binsNumberFormulas = {
 };
 /**
  * Returns a function for mapping number to the closed (right opened) bins
- * @private
+ * @internal
  * @param {Array<number>} bins
  * Width of the bins
  */
@@ -350,7 +350,7 @@ function fitToBinLeftClosed(bins) {
  * */
 /**
  * Histogram class
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.histogram
  * @augments Highcharts.Series
@@ -361,6 +361,9 @@ class HistogramSeries extends ColumnSeries {
      *  Functions
      *
      * */
+    /**
+     * @internal
+     */
     binsNumber(data) {
         const binsNumberOption = this.options.binsNumber;
         const binsNumber = binsNumberFormulas[binsNumberOption] ||
@@ -371,6 +374,9 @@ class HistogramSeries extends ColumnSeries {
                 binsNumberOption :
                 binsNumberFormulas['square-root'](data)));
     }
+    /**
+     * @internal
+     */
     setData(data, redraw = true, animation, updatePoints) {
         let alteredData = [];
         if (typeof data !== 'undefined' && data.length > 0) {
@@ -382,6 +388,9 @@ class HistogramSeries extends ColumnSeries {
         }
         super.setData.call(this, alteredData, redraw, animation, updatePoints);
     }
+    /**
+     * @internal
+     */
     derivedData(baseData, binsNumber, binWidth) {
         const series = this, max = (0,external_highcharts_src_js_default_namespaceObject.correctFloat)((0,external_highcharts_src_js_default_namespaceObject.arrayMax)(baseData)), 
         // Float correction needed, because first frequency value is not
@@ -431,6 +440,9 @@ class HistogramSeries extends ColumnSeries {
         data[data.length - 1].x2 = max;
         return data;
     }
+    /**
+     * @internal
+     */
     setDerivedData() {
         const yData = this.baseSeries?.getColumn('y');
         if (!yData?.length) {

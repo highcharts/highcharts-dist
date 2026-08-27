@@ -13,7 +13,7 @@
 import { getDeferredAnimation } from '../Animation/AnimationUtilities.js';
 import F from '../Templating.js';
 const { format } = F;
-import { defined, extend, fireEvent, getAlignFactor, isArray, isNumber, isString, merge, objectEach, pick, pInt, splat } from '../../Shared/Utilities.js';
+import { defined, extend, fireEvent, getAlignFactor, isArray, isNumber, isString, merge, objectEach, pInt, splat } from '../../Shared/Utilities.js';
 /* *
  *
  *  Composition
@@ -66,7 +66,7 @@ var DataLabel;
                 // that parts of the align box is inside the plot area
                 // (#12370). When stacking, it is always inside regardless
                 // of the option (#15148).
-                pick(options.inside, !!this.options.stacking) &&
+                (options.inside ?? !!this.options.stacking) &&
                     alignTo &&
                     chart.isInsidePlot(plotX, inverted ?
                         alignTo.x + 1 :
@@ -169,8 +169,8 @@ var DataLabel;
             //     zIndex: 20
             // }).add();
             // chart.renderer.circle(
-            //     chart.plotLeft + pick(dataLabel.alignAttr.x, 0),
-            //     chart.plotTop + pick(dataLabel.alignAttr.y, 0),
+            //     chart.plotLeft + (dataLabel.alignAttr.x ?? 0),
+            //     chart.plotTop + (dataLabel.alignAttr.y ?? 0),
             //     2
             // ).attr({
             //     fill: 'red',
@@ -353,7 +353,7 @@ var DataLabel;
                     if (labelEnabled) {
                         // Create individual options structure that can be
                         // extended without affecting others
-                        formatString = pick(labelOptions[point.formatPrefix + 'Format'], labelOptions.format);
+                        formatString = (labelOptions[point.formatPrefix + 'Format'] ?? labelOptions.format);
                         labelText = defined(formatString) ?
                             format(formatString, point, chart) :
                             (labelOptions[point.formatPrefix + 'Formatter'] ||
@@ -361,7 +361,9 @@ var DataLabel;
                         rotation = labelOptions.rotation;
                         if (!chart.styledMode) {
                             // Determine the color
-                            style.color = pick(labelOptions.color, style.color, isString(series.color) ? series.color : void 0, 'var(--highcharts-neutral-color-100)');
+                            style.color = (isString(labelOptions.color) ?
+                                labelOptions.color :
+                                void 0) ?? style.color ?? (isString(series.color) ? series.color : void 0) ?? 'var(--highcharts-neutral-color-100)';
                             // Get automated contrast color
                             if (style.color === 'contrast') {
                                 if (backgroundColor !== 'none') {

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.1 (2026-08-17)
+ * @license Highcharts JS v13.0.2 (2026-08-27)
  * @module highcharts/modules/data-tools
  * @requires highcharts
  *
@@ -1711,6 +1711,23 @@ class DataTable extends Data_DataTableCore {
         });
     }
 }
+/**
+ * Type guard narrowing an arbitrary value to a valid table cell value.
+ *
+ * @param {*} value
+ * Candidate value.
+ *
+ * @return {boolean}
+ * `true` when the value is a valid `CellType`.
+ */
+function isCellValue(value) {
+    const valueType = typeof value;
+    return (value === null ||
+        valueType === 'undefined' ||
+        valueType === 'boolean' ||
+        valueType === 'number' ||
+        valueType === 'string');
+}
 /* *
  *
  *  Default Export
@@ -1884,7 +1901,7 @@ class DataConnector {
     getColumnOrder() {
         const connector = this, columns = connector.metadata.columns, names = Object.keys(columns || {});
         if (names.length) {
-            return names.sort((a, b) => ((0,external_highcharts_src_js_default_namespaceObject.pick)(columns[a].index, 0) - (0,external_highcharts_src_js_default_namespaceObject.pick)(columns[b].index, 0)));
+            return names.sort((a, b) => ((columns[a].index ?? 0) - (columns[b].index ?? 0)));
         }
     }
     /**
@@ -7111,7 +7128,7 @@ function buildQueryRange(options = {}) {
     return googleSpreadsheetRange || ((alphabet[startColumn || 0] || 'A') +
         (Math.max((startRow || 0), 0) + 1) +
         ':' +
-        (alphabet[(0,external_highcharts_src_js_default_namespaceObject.pick)(endColumn, 25)] || 'Z') +
+        (alphabet[(endColumn ?? 25)] || 'Z') +
         (endRow ?
             Math.max(endRow, 0) :
             'Z'));

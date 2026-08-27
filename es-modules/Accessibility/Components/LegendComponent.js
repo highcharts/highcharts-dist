@@ -21,7 +21,7 @@ import KeyboardNavigationHandler from '../KeyboardNavigationHandler.js';
 import CU from '../Utils/ChartUtilities.js';
 const { getChartTitle } = CU;
 import HU from '../Utils/HTMLUtilities.js';
-import { addEvent, fireEvent, isNumber, pick, syncTimeout } from '../../Shared/Utilities.js';
+import { addEvent, fireEvent, isNumber, syncTimeout } from '../../Shared/Utilities.js';
 const { stripHTMLTagsFromString: stripHTMLTags, addClass, removeClass } = HU;
 /* *
  *
@@ -118,7 +118,7 @@ class LegendComponent extends AccessibilityComponent {
                 this.chart.renderer &&
                 component.recreateProxies()) {
                 syncTimeout(() => component.proxyProvider
-                    .updateGroupProxyElementPositions('legend'), animObject(pick(this.chart.renderer.globalAnimation, true)).duration);
+                    .updateGroupProxyElementPositions('legend'), animObject((this.chart.renderer.globalAnimation ?? true)).duration);
             }
         });
     }

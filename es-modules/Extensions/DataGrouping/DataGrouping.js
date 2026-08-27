@@ -17,7 +17,7 @@ import F from '../../Core/Templating.js';
 const { format } = F;
 import H from '../../Core/Globals.js';
 const { composed } = H;
-import { addEvent, extend, isNumber, pick, pushUnique } from '../../Shared/Utilities.js';
+import { addEvent, extend, isNumber, pushUnique } from '../../Shared/Utilities.js';
 /* *
  *
  *  Functions
@@ -67,7 +67,7 @@ function onTooltipHeaderFormatter(e) {
         else if (!xDateFormat && dateTimeLabelFormats && xAxis.dateTime) {
             xDateFormat = xAxis.dateTime.getXDateFormat(point.x, tooltipOptions.dateTimeLabelFormats);
         }
-        const groupStart = pick(series.groupMap?.[point.index].groupStart, point.key), groupEnd = groupStart + (currentDataGrouping?.totalRange || 0) - 1;
+        const groupStart = series.groupMap?.[point.index].groupStart ?? point.key, groupEnd = groupStart + (currentDataGrouping?.totalRange || 0) - 1;
         formattedKey = time.dateFormat(xDateFormat, groupStart);
         if (xDateFormatEnd) {
             formattedKey += time.dateFormat(xDateFormatEnd, groupEnd);

@@ -18,7 +18,7 @@ const { doc, win } = H;
 import WGLDrawMode from './WGLDrawMode.js';
 import WGLShader from './WGLShader.js';
 import WGLVertexBuffer from './WGLVertexBuffer.js';
-import { isNumber, isObject, objectEach, merge, pick } from '../../Shared/Utilities.js';
+import { isNumber, isObject, objectEach, merge } from '../../Shared/Utilities.js';
 /* *
  *
  *  Constants
@@ -919,8 +919,9 @@ class WGLRenderer {
         this.series.forEach((s, si) => {
             const options = s.series.options, shapeOptions = options.marker, lineWidth = (typeof options.lineWidth !== 'undefined' ?
                 options.lineWidth :
-                1), threshold = options.threshold, hasThreshold = isNumber(threshold), yBottom = s.series.yAxis.getThreshold(threshold), translatedThreshold = yBottom, showMarkers = pick(options.marker ? options.marker.enabled : null, s.series.xAxis.isRadial ? true : null, s.series.closestPointRangePx >
-                2 * ((options.marker ?
+                1), threshold = options.threshold, hasThreshold = isNumber(threshold), yBottom = s.series.yAxis.getThreshold(threshold), translatedThreshold = yBottom, showMarkers = ((options.marker ? options.marker.enabled : null) ??
+                (s.series.xAxis.isRadial ? true : null) ??
+                s.series.closestPointRangePx > 2 * ((options.marker ?
                     options.marker.radius :
                     10) || 10)), shapeTexture = this.textureHandles[(shapeOptions && shapeOptions.symbol) ||
                 s.series.symbol] || this.textureHandles.circle;
@@ -959,7 +960,7 @@ class WGLRenderer {
             if (s.series.fillOpacity &&
                 options.fillOpacity &&
                 fillColor) {
-                fillColor = new Color(fillColor).setOpacity(pick(options.fillOpacity, 1.0)).get();
+                fillColor = new Color(fillColor).setOpacity((options.fillOpacity ?? 1.0)).get();
             }
             if (typeof fillColor === 'string') {
                 fillColor = resolveColorExpression(chart.boost?.cssVars || {}, fillColor);
@@ -1012,7 +1013,8 @@ class WGLRenderer {
             this.setYAxis(s.series.yAxis);
             this.setThreshold(hasThreshold, translatedThreshold);
             if (s.drawMode === 'POINTS') {
-                shader.setPointSize(pick(options.marker && options.marker.radius, 0.5) * 2 * pixelRatio);
+                shader.setPointSize(((options.marker && options.marker.radius) ?? 0.5) *
+                    2 * pixelRatio);
             }
             // If set to true, the toPixels translations in the shader
             // is skipped, i.e it's assumed that the value is a pixel coord.
@@ -1036,7 +1038,8 @@ class WGLRenderer {
                 gl.disable(gl.SCISSOR_TEST);
             }
             if (s.hasMarkers && showMarkers) {
-                shader.setPointSize(pick(options.marker && options.marker.radius, 5) * 2 * pixelRatio);
+                shader.setPointSize(((options.marker && options.marker.radius) ?? 5) *
+                    2 * pixelRatio);
                 shader.setDrawAsCircle(true);
                 for (sindex = 0; sindex < s.segments.length; sindex++) {
                     vbuffer.render(s.segments[sindex].from, s.segments[sindex].to, 'POINTS');

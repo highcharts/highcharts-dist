@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.1 (2026-08-17)
+ * @license Highcharts JS v13.0.2 (2026-08-27)
  * @module highcharts/modules/annotations
  * @requires highcharts
  *
@@ -181,7 +181,7 @@ var highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default 
 function chartAddAnnotation(options, redraw) {
     const annotation = this.initAnnotation(options);
     this.options.annotations.push(annotation.options);
-    if ((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(redraw, true)) {
+    if (redraw ?? true) {
         annotation.redraw();
         annotation.graphic.attr({
             opacity: 1
@@ -1379,7 +1379,8 @@ class EventEmitter {
         emitter.removeMouseUp = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.addEvent)(doc, isTouchDevice || firesTouchEvents ? 'touchend' : 'mouseup', function () {
             // Sometimes the target is the annotation and sometimes its the
             // controllable
-            const annotation = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(emitter.target && emitter.target.annotation, emitter.target);
+            const annotation = ((emitter.target && emitter.target.annotation) ??
+                emitter.target);
             if (annotation) {
                 // Keep annotation selected after dragging control point
                 annotation.cancelClick = emitter.hasDragged;
@@ -1388,8 +1389,7 @@ class EventEmitter {
             emitter.chart.hasDraggedAnnotation = false;
             if (emitter.hasDragged) {
                 // ControlPoints vs Annotation:
-                (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.fireEvent)((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(annotation, // #15952
-                emitter), 'afterUpdate');
+                (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.fireEvent)((annotation ?? emitter), 'afterUpdate');
             }
             emitter.hasDragged = false;
             emitter.onMouseUp();
@@ -1478,7 +1478,7 @@ class ControlPoint extends Annotations_EventEmitter {
         this.chart = chart;
         this.target = target;
         this.options = options;
-        this.index = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(options.index, index);
+        this.index = (options.index ?? index);
     }
     /* *
      *
@@ -1630,7 +1630,7 @@ function getAssignedAxis(coords) {
         const extremes = coord.axis.getExtremes(), axisMin = extremes.min, axisMax = extremes.max, 
         // Correct axis edges when axis has series
         // with pointRange (like column)
-        minPointOffset = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(coord.axis.minPointOffset, 0);
+        minPointOffset = (coord.axis.minPointOffset ?? 0);
         return (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.isNumber)(axisMin) && (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.isNumber)(axisMax) &&
             coord.value >= (axisMin - minPointOffset) &&
             coord.value <= (axisMax + minPointOffset) &&
@@ -3870,7 +3870,7 @@ class ControllableLabel extends Controllables_Controllable {
             if (itemOptions.distance && tooltip) {
                 itemPosition = tooltip.getPosition.call({
                     chart,
-                    distance: (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(itemOptions.distance, 16),
+                    distance: (itemOptions.distance ?? 16),
                     getPlayingField: tooltip.getPlayingField,
                     pointer: tooltip.pointer
                 }, width, height, {
@@ -4366,11 +4366,9 @@ function addToolbar(chart, options, callback) {
         className: 'highcharts-annotation-label'
     }, void 0, popupDiv);
     label.setAttribute('aria-label', 'Annotation type');
-    label.appendChild(PopupAnnotations_doc.createTextNode((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(
-    // Advanced annotations:
-    lang[options.langKey] || options.langKey, 
-    // Basic shapes:
-    options.shapes && options.shapes[0].type, '')));
+    label.appendChild(PopupAnnotations_doc.createTextNode(((lang[options.langKey] || options.langKey) ??
+        (options.shapes && options.shapes[0].type) ??
+        '')));
     // Add buttons
     let button = this.addButton(popupDiv, lang.editButton || 'Edit', 'edit', popupDiv, () => {
         showForm.call(this, 'annotation-edit', chart, options, callback);
@@ -5423,7 +5421,8 @@ class Popup extends Shared_BaseForm {
      *         Return created input element.
      */
     addInput(option, indicatorType, parentDiv, inputAttributes) {
-        const optionParamList = option.split('.'), optionName = optionParamList[optionParamList.length - 1], lang = this.lang, inputName = 'highcharts-' + indicatorType + '-' + (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(inputAttributes.htmlFor, optionName);
+        const optionParamList = option.split('.'), optionName = optionParamList[optionParamList.length - 1], lang = this.lang, inputName = 'highcharts-' + indicatorType + '-' +
+            (inputAttributes.htmlFor ?? optionName);
         if (!optionName.match(/^\d+$/)) {
             // Add label
             (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.createElement)('label', {
@@ -6046,7 +6045,7 @@ class Annotation extends Annotations_EventEmitter {
             if (!item.graphic) {
                 this.renderItem(item);
             }
-            item.redraw((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(animation, true) && item.graphic.placed);
+            item.redraw((animation ?? true) && item.graphic.placed);
             if (item.points.length) {
                 adjustVisibility(item);
             }
@@ -6189,7 +6188,7 @@ class Annotation extends Annotations_EventEmitter {
      * annotation's visibility is toggled.
      */
     setVisibility(visible) {
-        const options = this.options, navigation = this.chart.navigationBindings, visibility = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(visible, !options.visible);
+        const options = this.options, navigation = this.chart.navigationBindings, visibility = (visible ?? !options.visible);
         this.graphic.attr('visibility', visibility ? 'inherit' : 'hidden');
         if (!visibility) {
             const setItemControlPointsVisibility = function (item) {
@@ -6225,7 +6224,7 @@ class Annotation extends Annotations_EventEmitter {
         // Update options in chart options, used in exporting (#9767, #21507):
         chart.options.annotations[userOptionsIndex] = this.options;
         this.isUpdating = true;
-        if ((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(redraw, true)) {
+        if (redraw ?? true) {
             chart.drawAnnotations();
         }
         (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.fireEvent)(this, 'afterUpdate');
@@ -7334,7 +7333,7 @@ class NavigationBindings {
                 let parent = config;
                 path.forEach((name, index) => {
                     if (name !== '__proto__' && name !== 'constructor') {
-                        const nextName = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(path[index + 1], '');
+                        const nextName = (path[index + 1] ?? '');
                         if (pathLength === index) {
                             // Last index, put value:
                             parent[name] = value;
@@ -7380,7 +7379,10 @@ class NavigationBindings {
      *         Annotation options to be displayed in popup box
      */
     annotationToFields(annotation) {
-        const options = annotation.options, editables = NavigationBindings.annotationsEditable, nestedEditables = editables.nestedOptions, type = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(options.type, options.shapes?.[0]?.type, options.labels?.[0]?.type, 'label'), nonEditables = NavigationBindings.annotationsNonEditable[options.langKey] || [], visualOptions = {
+        const options = annotation.options, editables = NavigationBindings.annotationsEditable, nestedEditables = editables.nestedOptions, type = options.type ??
+            options.shapes?.[0]?.type ??
+            options.labels?.[0]?.type ??
+            'label', nonEditables = NavigationBindings.annotationsNonEditable[options.langKey] || [], visualOptions = {
             langKey: options.langKey,
             type: type
         };

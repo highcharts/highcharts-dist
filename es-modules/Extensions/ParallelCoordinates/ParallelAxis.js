@@ -13,7 +13,7 @@
  * */
 'use strict';
 import ParallelCoordinatesDefaults from './ParallelCoordinatesDefaults.js';
-import { addEvent, arrayMax, arrayMin, isNumber, merge, pick } from '../../Shared/Utilities.js';
+import { addEvent, arrayMax, arrayMin, isNumber, merge } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class
@@ -118,7 +118,7 @@ var ParallelAxis;
             else {
                 const axisIndex = chart.yAxis.indexOf(axis); // #13608
                 axis.options = merge(axis.options, axis.chart.options.chart.parallelAxes, e.userOptions);
-                parallelCoordinates.position = pick(parallelCoordinates.position, axisIndex >= 0 ? axisIndex : chart.yAxis.length);
+                parallelCoordinates.position = parallelCoordinates.position ?? (axisIndex >= 0 ? axisIndex : chart.yAxis.length);
                 parallelCoordinates.setPosition(axisPosition, axis.options);
             }
         }

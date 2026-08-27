@@ -16,7 +16,7 @@ import H from '../../../Core/Globals.js';
 const { doc, isFirefox } = H;
 import BaseFormIcons from '../../../Shared/BaseFormIcons.js';
 import getIcon from '../../../Shared/BaseFormUtils.js';
-import { createElement, isArray, isObject, objectEach, pick, stableSort } from '../../../Shared/Utilities.js';
+import { createElement, isArray, isObject, objectEach, stableSort } from '../../../Shared/Utilities.js';
 /* *
  *
  *  Functions
@@ -85,11 +85,9 @@ function addToolbar(chart, options, callback) {
         className: 'highcharts-annotation-label'
     }, void 0, popupDiv);
     label.setAttribute('aria-label', 'Annotation type');
-    label.appendChild(doc.createTextNode(pick(
-    // Advanced annotations:
-    lang[options.langKey] || options.langKey, 
-    // Basic shapes:
-    options.shapes && options.shapes[0].type, '')));
+    label.appendChild(doc.createTextNode(((lang[options.langKey] || options.langKey) ??
+        (options.shapes && options.shapes[0].type) ??
+        '')));
     // Add buttons
     let button = this.addButton(popupDiv, lang.editButton || 'Edit', 'edit', popupDiv, () => {
         showForm.call(this, 'annotation-edit', chart, options, callback);

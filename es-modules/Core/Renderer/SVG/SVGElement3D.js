@@ -15,7 +15,7 @@
 import Color from '../../Color/Color.js';
 const { parse: color } = Color;
 import SVGElement from './SVGElement.js';
-import { defined, pick } from '../../../Shared/Utilities.js';
+import { defined } from '../../../Shared/Utilities.js';
 /* *
  *
  *  Class
@@ -113,7 +113,7 @@ class SVGElement3D extends SVGElement {
         for (const part of elem3d.parts) {
             // If different props for different parts
             if (partsProps) {
-                props = pick(partsProps[part], false);
+                props = (partsProps[part] ?? false);
             }
             // Only if something to set, but allow undefined
             if (props !== false) {

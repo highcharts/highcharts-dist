@@ -13,7 +13,7 @@
 import Axis from './Axis.js';
 import H from '../Globals.js';
 const { dateFormats } = H;
-import { defined, find, erase, isArray, isNumber, isObject as isObjectUtils, merge, pick, wrap, addEvent } from '../../Shared/Utilities.js';
+import { defined, find, erase, isArray, isNumber, isObject as isObjectUtils, merge, wrap, addEvent } from '../../Shared/Utilities.js';
 import { timeUnits } from '../Utilities.js';
 /* *
  *
@@ -54,7 +54,7 @@ function applyGridOptions(axis) {
         options.labels = {};
     }
     */
-    options.labels.align = pick(options.labels.align, 'center');
+    options.labels.align = (options.labels.align ?? 'center');
     // @todo: Check against tickLabelPlacement between/on etc
     /* Prevents adding the last tick label if the axis is not a category
        axis.
@@ -598,8 +598,8 @@ function onAfterSetOptions(e) {
                             _________________________
             Into this:    |_____|_____|_____|_____|
                                 ^                 ^    */
-            options.minPadding = pick(userOptions.minPadding, 0);
-            options.maxPadding = pick(userOptions.maxPadding, 0);
+            options.minPadding = (userOptions.minPadding ?? 0);
+            options.maxPadding = (userOptions.maxPadding ?? 0);
         }
         // If borderWidth is set, then use its value for tick and
         // line width.

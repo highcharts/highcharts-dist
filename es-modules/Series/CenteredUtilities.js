@@ -12,7 +12,7 @@
 'use strict';
 import H from '../Core/Globals.js';
 const { deg2rad } = H;
-import { fireEvent, isNumber, pick, relativeLength } from '../Shared/Utilities.js';
+import { fireEvent, isNumber, relativeLength } from '../Shared/Utilities.js';
 /**
  * @internal
  */
@@ -45,11 +45,13 @@ var CenteredUtilities;
             innerSize = parseFloat(innerSize);
         }
         const positions = [
-            pick(centerOption?.[0], '50%'),
-            pick(centerOption?.[1], '50%'),
+            (centerOption?.[0] ?? '50%'),
+            (centerOption?.[1] ?? '50%'),
             // Prevent from negative values
-            pick(size && size < 0 ? void 0 : options.size, '100%'),
-            pick(innerSize && innerSize < 0 ? void 0 : options.innerSize || 0, '0%')
+            ((size && size < 0 ? void 0 : options.size) ?? '100%'),
+            ((innerSize && innerSize < 0 ?
+                void 0 :
+                options.innerSize || 0) ?? '0%')
         ];
         for (i = 0; i < 4; ++i) {
             value = positions[i];

@@ -16,7 +16,7 @@ import D from '../Defaults.js';
 const { defaultOptions } = D;
 import F from '../Templating.js';
 const { format } = F;
-import { addEvent, crisp, erase, extend, fireEvent, getNestedProperty, isArray, isFunction, isNumber, isObject, isString, merge, pick, removeEvent } from '../../Shared/Utilities.js';
+import { addEvent, crisp, erase, extend, fireEvent, getNestedProperty, isArray, isFunction, isNumber, isObject, isString, merge, removeEvent } from '../../Shared/Utilities.js';
 import { uniqueKey } from '../Utilities.js';
 /* eslint-disable no-invalid-this, valid-jsdoc */
 /* *
@@ -940,7 +940,7 @@ class Point {
      */
     select(selected, accumulate) {
         const point = this, series = point.series, chart = series.chart;
-        selected = pick(selected, !point.selected);
+        selected = (selected ?? !point.selected);
         this.selectedStaging = selected;
         // Fire the event with the default handler
         point.firePointEvent(selected ? 'select' : 'unselect', { accumulate: accumulate }, function () {
@@ -1191,7 +1191,7 @@ class Point {
             });
             halo.attr({
                 'class': 'highcharts-halo highcharts-color-' +
-                    pick(point.colorIndex, series.colorIndex) +
+                    (point.colorIndex ?? series.colorIndex) +
                     (point.className ? ' ' + point.className : ''),
                 'visibility': markerVisibility,
                 'zIndex': -1 // #4929, #8276

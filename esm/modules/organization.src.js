@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.1 (2026-08-17)
+ * @license Highcharts JS v13.0.2 (2026-08-27)
  * Organization chart series type
  * @module highcharts/modules/organization
  * @requires highcharts
@@ -155,7 +155,8 @@ class OrganizationPoint extends SankeyPointClass {
             let i = -1, link;
             // Default all children of the hanging node
             // to have hanging layout
-            node.options.layout = (0,external_highcharts_src_js_default_namespaceObject.pick)(node.options.layout, 'hanging');
+            node.options.layout =
+                node.options.layout ?? 'hanging';
             node.hangsFrom = fromNode;
             (0,external_highcharts_src_js_default_namespaceObject.find)(fromNode.linksFrom, (link, index) => {
                 const found = link.toNode === node;

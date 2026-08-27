@@ -15,7 +15,7 @@ const { defaultOptions } = D;
 import H from '../../Core/Globals.js';
 const { composed } = H;
 import RangeSelectorDefaults from './RangeSelectorDefaults.js';
-import { addEvent, defined, extend, isNumber, merge, pick, pushUnique } from '../../Shared/Utilities.js';
+import { addEvent, defined, extend, isNumber, merge, pushUnique } from '../../Shared/Utilities.js';
 /* *
  *
  *  Constants
@@ -83,7 +83,7 @@ function axisMinFromRange() {
             this.chart.setFixedRange(max - min);
         }
     }
-    const dataMin = pick(this.dataMin, Number.MIN_VALUE);
+    const dataMin = (this.dataMin ?? Number.MIN_VALUE);
     if (!isNumber(min)) {
         min = dataMin;
     }
@@ -92,7 +92,7 @@ function axisMinFromRange() {
         if (typeof range === 'undefined') { // #4501
             range = getTrueRange(min, rangeOptions.count);
         }
-        this.newMax = Math.min(min + range, pick(this.dataMax, Number.MAX_VALUE));
+        this.newMax = Math.min(min + range, (this.dataMax ?? Number.MAX_VALUE));
     }
     if (!isNumber(max)) {
         min = void 0;

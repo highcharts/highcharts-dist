@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.1 (2026-08-17)
+ * @license Highcharts JS v13.0.2 (2026-08-27)
  * @module highcharts/modules/drilldown
  * @requires highcharts
  *
@@ -584,8 +584,9 @@ class Breadcrumbs {
      *         Formatted text.
      */
     getButtonText(breadcrumb) {
-        const breadcrumbs = this, chart = breadcrumbs.chart, breadcrumbsOptions = breadcrumbs.options, lang = chart.options.lang, textFormat = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(breadcrumbsOptions.format, breadcrumbsOptions.showFullPath ?
-            '{level.name}' : '← {level.name}'), defaultText = lang && (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(lang.drillUpText, lang.mainBreadcrumb);
+        const breadcrumbs = this, chart = breadcrumbs.chart, breadcrumbsOptions = breadcrumbs.options, lang = chart.options.lang, textFormat = breadcrumbsOptions.format ?? (breadcrumbsOptions.showFullPath ?
+            '{level.name}' :
+            '← {level.name}'), defaultText = lang && (lang.drillUpText ?? lang.mainBreadcrumb);
         let returnText = breadcrumbsOptions.formatter &&
             breadcrumbsOptions.formatter(breadcrumb) ||
             format(textFormat, { level: breadcrumb.levelOptions }, chart) || '';
@@ -706,7 +707,7 @@ class Breadcrumbs {
             if (breadcrumbs.options.rtl) {
                 newPositions.x += positionOptions.width;
             }
-            newPositions.y = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(newPositions.y, this.yOffset, 0);
+            newPositions.y = (newPositions.y ?? this.yOffset ?? 0);
             breadcrumbs.group.align(newPositions, true, alignTo);
         }
     }

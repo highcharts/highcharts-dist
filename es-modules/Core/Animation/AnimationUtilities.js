@@ -11,7 +11,7 @@
  * */
 'use strict';
 import Fx from './Fx.js';
-import { defined, getStyle, isArray, isNumber, isObject, merge, objectEach, pick } from '../../Shared/Utilities.js';
+import { defined, getStyle, isArray, isNumber, isObject, merge, objectEach } from '../../Shared/Utilities.js';
 /* *
  *
  *  Functions
@@ -34,7 +34,8 @@ import { defined, getStyle, isArray, isNumber, isObject, merge, objectEach, pick
  * so it should be moved to the SVGRenderer.
  */
 export function setAnimation(animation, chart) {
-    chart.renderer.globalAnimation = pick(animation, chart.options.chart.animation, true);
+    chart.renderer.globalAnimation =
+        animation ?? chart.options.chart.animation ?? true;
 }
 /**
  * Get the animation in object form, where a disabled animation is always

@@ -18,7 +18,7 @@ const { composed, dateFormats, doc, isSafari } = H;
 import R from './Renderer/RendererUtilities.js';
 const { distribute } = R;
 import SVGRenderer from './Renderer/SVG/SVGRenderer.js';
-import { addEvent, clamp, css, discardElement, extend, fireEvent, getAlignFactor, internalClearTimeout, isArray, isNumber, isObject, isString, merge, pick, pushUnique, splat, syncTimeout } from '../Shared/Utilities.js';
+import { addEvent, clamp, css, discardElement, extend, fireEvent, getAlignFactor, internalClearTimeout, isArray, isNumber, isObject, isString, merge, pushUnique, splat, syncTimeout } from '../Shared/Utilities.js';
 /**
  * Clear all timeouts for showing and hiding the tooltip.
  *
@@ -274,7 +274,8 @@ class Tooltip {
             'highcharts-label',
             isHeader && 'highcharts-tooltip-header',
             isSplit ? 'highcharts-tooltip-box' : 'highcharts-tooltip',
-            !isHeader && 'highcharts-color-' + pick(point.colorIndex, series.colorIndex),
+            !isHeader &&
+                'highcharts-color-' + (point.colorIndex ?? series.colorIndex),
             seriesOptions?.className
         ].filter(isString).join(' ');
     }
@@ -459,7 +460,8 @@ class Tooltip {
         }
         // The far side is right or bottom
         const preferFarSide = !this.followPointer &&
-            pick(point.ttBelow, polar ? false : !inverted === flipped), // #4984
+            (point.ttBelow ??
+                (polar ? false : !inverted === flipped)), // #4984
         /*
          * Handle the preferred dimension. When the preferred dimension is
          * tooltip on top or bottom of the point, it will look for space
@@ -586,7 +588,7 @@ class Tooltip {
         const tooltip = this;
         // Disallow duplicate timers (#1728, #1766)
         clearTimeouts(this);
-        delay = pick(delay, this.options.hideDelay);
+        delay = (delay ?? this.options.hideDelay);
         if (!this.isHidden) {
             this.hideTimer = syncTimeout(function () {
                 const label = tooltip.getLabel();
@@ -689,7 +691,9 @@ class Tooltip {
          * Split tooltip does not support outside in the first iteration. Should
          * not be too complicated to implement.
          */
-        this.outside = pick(options.outside, Boolean(chart.scrollablePixelsX || chart.scrollablePixelsY));
+        this.outside =
+            options.outside ??
+                Boolean(chart.scrollablePixelsX || chart.scrollablePixelsY);
     }
     shouldStickOnContact(pointerEvent) {
         return !!(!this.followPointer &&
@@ -769,7 +773,7 @@ class Tooltip {
         point.points = void 0;
         // Register the current series
         const currentSeries = point.series;
-        this.distance = pick(currentSeries.tooltipOptions.distance, 16);
+        this.distance = (currentSeries.tooltipOptions.distance ?? 16);
         // Update the inner HTML
         if (text === false) {
             this.hide();
@@ -1042,7 +1046,7 @@ class Tooltip {
                         anchorY,
                         boxWidth,
                         point,
-                        rank: pick(boxPosition.rank, isHeader ? 1 : 0),
+                        rank: boxPosition.rank ?? (isHeader ? 1 : 0),
                         size,
                         target: boxPosition.y,
                         tt,

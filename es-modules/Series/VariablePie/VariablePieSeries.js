@@ -15,7 +15,7 @@
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { pie: PieSeries } = SeriesRegistry.seriesTypes;
 import VariablePieSeriesDefaults from './VariablePieSeriesDefaults.js';
-import { arrayMax, arrayMin, clamp, extend, fireEvent, merge, pick } from '../../Shared/Utilities.js';
+import { arrayMax, arrayMin, clamp, extend, fireEvent, merge } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class
@@ -60,8 +60,10 @@ class VariablePieSeries extends PieSeries {
         series.minPxSize = positions[3] + extremes.minPointSize;
         series.maxPxSize = clamp(positions[2], positions[3] + extremes.minPointSize, extremes.maxPointSize);
         if (zData.length) {
-            zMin = pick(seriesOptions.zMin, arrayMin(zData.filter(series.zValEval)));
-            zMax = pick(seriesOptions.zMax, arrayMax(zData.filter(series.zValEval)));
+            zMin =
+                seriesOptions.zMin ?? arrayMin(zData.filter(series.zValEval));
+            zMax =
+                seriesOptions.zMax ?? arrayMax(zData.filter(series.zValEval));
             this.getRadii(zMin, zMax, series.minPxSize, series.maxPxSize);
         }
     }
@@ -164,7 +166,7 @@ class VariablePieSeries extends PieSeries {
     translate(positions) {
         this.generatePoints();
         const series = this, precision = 1000, // Issue #172
-        options = series.options, slicedOffset = options.slicedOffset, startAngle = options.startAngle || 0, startAngleRad = Math.PI / 180 * (startAngle - 90), endAngleRad = Math.PI / 180 * (pick(options.endAngle, startAngle + 360) - 90), circ = endAngleRad - startAngleRad, // 2 * Math.PI,
+        options = series.options, slicedOffset = options.slicedOffset, startAngle = options.startAngle || 0, startAngleRad = Math.PI / 180 * (startAngle - 90), endAngleRad = Math.PI / 180 * ((options.endAngle ?? startAngle + 360) - 90), circ = endAngleRad - startAngleRad, // 2 * Math.PI,
         points = series.points, ignoreHiddenPoint = options.ignoreHiddenPoint;
         let cumulative = 0, start, end, angle, 
         // The x component of the radius vector for a given point
