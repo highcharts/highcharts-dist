@@ -14,7 +14,6 @@ on:
 
 permissions:
   contents: write
-  pull-requests: write
 
 concurrency:
   group: nightly-build
@@ -91,7 +90,7 @@ jobs:
           {
             echo "branch=${branch}"
             echo "changed=true"
-            echo "head=$(git rev-parse HEAD)"
+            echo "tree=$(git rev-parse 'HEAD^{tree}')"
             echo "parent=${parent}"
           } >> "${GITHUB_OUTPUT}"
 
@@ -116,7 +115,7 @@ jobs:
         if: steps.distribution.outputs.changed == 'true'
         uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8
         env:
-          HEAD_SHA: ${{ steps.distribution.outputs.head }}
+          TREE_SHA: ${{ steps.distribution.outputs.tree }}
           PARENT_SHA: ${{ steps.distribution.outputs.parent }}
           SOURCE_RUN_ID: ${{ inputs.source_run_id }}
           TEMP_BRANCH: ${{ steps.distribution.outputs.branch }}
@@ -124,72 +123,42 @@ jobs:
           github-token: ${{ github.token }}
           script: |
             const { owner, repo } = context.repo;
+            const parent = process.env.PARENT_SHA;
             const tempRef = `heads/${process.env.TEMP_BRANCH}`;
-            let merged = false;
-            let pullNumber;
 
             try {
               await github.rest.git.updateRef({
                 owner,
                 repo,
                 ref: 'heads/nightly',
-                sha: process.env.PARENT_SHA,
+                sha: parent,
                 force: true
               });
 
-              const { data: pull } = await github.rest.pulls.create({
+              const { data: commit } = await github.rest.git.createCommit({
                 owner,
                 repo,
-                base: 'nightly',
-                head: process.env.TEMP_BRANCH,
-                title: `Nightly build - ${process.env.SOURCE_RUN_ID}`
+                message: `Nightly build - ${process.env.SOURCE_RUN_ID}`,
+                tree: process.env.TREE_SHA,
+                parents: [parent]
               });
-              pullNumber = pull.number;
 
-              const { data: merge } = await github.rest.pulls.merge({
-                owner,
-                repo,
-                pull_number: pull.number,
-                merge_method: 'squash',
-                sha: process.env.HEAD_SHA
-              });
-              if (!merge.merged) {
-                throw new Error(`GitHub did not merge the nightly pull request: ${
-                  merge.message
-                }`);
-              }
-              merged = true;
-
-              const { data: commit } = await github.rest.repos.getCommit({
-                owner,
-                repo,
-                ref: merge.sha
-              });
-              const verification = commit.commit.verification;
-              if (!verification?.verified) {
-                await github.rest.git.updateRef({
-                  owner,
-                  repo,
-                  ref: 'heads/nightly',
-                  sha: process.env.PARENT_SHA,
-                  force: true
-                });
+              if (!commit.verification?.verified) {
                 throw new Error(
-                  `GitHub did not verify the squash commit: ${
-                    verification?.reason || 'unknown reason'
+                  `GitHub did not verify the nightly commit: ${
+                    commit.verification?.reason || 'unknown reason'
                   }`
                 );
               }
-            } finally {
-              if (pullNumber && !merged) {
-                await github.rest.pulls.update({
-                  owner,
-                  repo,
-                  pull_number: pullNumber,
-                  state: 'closed'
-                });
-              }
 
+              await github.rest.git.updateRef({
+                owner,
+                repo,
+                ref: 'heads/nightly',
+                sha: commit.sha,
+                force: true
+              });
+            } finally {
               try {
                 await github.rest.git.deleteRef({
                   owner,
