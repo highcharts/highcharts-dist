@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Gantt JS v13.0.2 (2026-08-27)
+ * @license Highcharts Gantt JS v13.1.0 (2026-09-18)
  * @module highcharts/modules/treegrid
  * @requires highcharts
  *
@@ -18,48 +18,27 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 /******/ 
 /************************************************************************/
 /******/ /* webpack/runtime/compat get default export */
-/******/ (() => {
-/******/ 	// getDefaultExport function for compatibility with non-harmony modules
-/******/ 	__webpack_require__.n = (module) => {
-/******/ 		const getter = module && module.__esModule ?
-/******/ 			() => (module['default']) :
-/******/ 			() => (module);
-/******/ 		__webpack_require__.d(getter, { a: getter });
-/******/ 		return getter;
-/******/ 	};
-/******/ })();
+/******/ // getDefaultExport function for compatibility with non-harmony modules
+/******/ __webpack_require__.n = (module) => {
+/******/ 	const getter = module && module.__esModule ?
+/******/ 		() => (module['default']) :
+/******/ 		() => (module);
+/******/ 	__webpack_require__.d(getter, { a: getter });
+/******/ 	return getter;
+/******/ };
 /******/ 
 /******/ /* webpack/runtime/define property getters */
-/******/ (() => {
-/******/ 	// define getter/value functions for harmony exports
-/******/ 	__webpack_require__.d = (exports, definition) => {
-/******/ 		if(Array.isArray(definition)) {
-/******/ 			var i = 0;
-/******/ 			while(i < definition.length) {
-/******/ 				var key = definition[i++];
-/******/ 				var binding = definition[i++];
-/******/ 				if(!__webpack_require__.o(exports, key)) {
-/******/ 					if(binding === 0) {
-/******/ 						Object.defineProperty(exports, key, { enumerable: true, value: definition[i++] });
-/******/ 					} else {
-/******/ 						Object.defineProperty(exports, key, { enumerable: true, get: binding });
-/******/ 					}
-/******/ 				} else if(binding === 0) { i++; }
-/******/ 			}
-/******/ 		} else {
-/******/ 			for(var key in definition) {
-/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
-/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
-/******/ 				}
-/******/ 			}
+/******/ // define getter/value functions for harmony exports
+/******/ __webpack_require__.d = (exports, definition) => {
+/******/ 	for(var key in definition) {
+/******/ 		if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 			Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
 /******/ 		}
-/******/ 	};
-/******/ })();
+/******/ 	}
+/******/ };
 /******/ 
 /******/ /* webpack/runtime/hasOwnProperty shorthand */
-/******/ (() => {
-/******/ 	__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
-/******/ })();
+/******/ __webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop));
 /******/ 
 /************************************************************************/
 
@@ -82,6 +61,8 @@ var external_highcharts_src_js_default_StackItem_default = /*#__PURE__*/__webpac
  *
  * */
 
+
+const { composed } = (external_highcharts_src_js_default_default());
 
 
 /* *
@@ -110,8 +91,7 @@ var BrokenAxis;
      * @internal
      */
     function compose(AxisClass, SeriesClass) {
-        if (!AxisClass.keepProps.includes('brokenAxis')) {
-            AxisClass.keepProps.push('brokenAxis');
+        if ((0,external_highcharts_src_js_default_namespaceObject.pushUnique)(composed, 'Axis.Broken')) {
             (0,external_highcharts_src_js_default_namespaceObject.addEvent)(AxisClass, 'init', onAxisInit);
             (0,external_highcharts_src_js_default_namespaceObject.addEvent)(AxisClass, 'afterInit', onAxisAfterInit);
             (0,external_highcharts_src_js_default_namespaceObject.addEvent)(AxisClass, 'afterSetTickPositions', onAxisAfterSetTickPositions);
@@ -329,7 +309,7 @@ var BrokenAxis;
                     });
                     // For stacked chart generate empty stack items, #6546
                     if (yAxis.stacking && this.options.stacking) {
-                        stack = yAxis.stacking.stacks[this.stackKey][xRange] = new (external_highcharts_src_js_default_StackItem_default())(yAxis, yAxis.options.stackLabels, false, xRange, this.stack ?? '');
+                        stack = yAxis.stacking.stacks[this.stackKey][xRange] = new (external_highcharts_src_js_default_StackItem_default())(yAxis, false, xRange, this.stack ?? '');
                         stack.total = 0;
                     }
                 }
@@ -709,7 +689,7 @@ var external_highcharts_src_js_default_Axis_default = /*#__PURE__*/__webpack_req
 
 
 
-const { dateFormats } = (external_highcharts_src_js_default_default());
+const { composed: GridAxis_composed, dateFormats } = (external_highcharts_src_js_default_default());
 
 
 /* *
@@ -773,8 +753,7 @@ function applyGridOptions(axis) {
  * @internal
  */
 function compose(AxisClass, ChartClass, TickClass) {
-    if (!AxisClass.keepProps.includes('grid')) {
-        AxisClass.keepProps.push('grid');
+    if ((0,external_highcharts_src_js_default_namespaceObject.pushUnique)(GridAxis_composed, 'Axis.Grid')) {
         AxisClass.prototype.getMaxLabelDimensions = getMaxLabelDimensions;
         (0,external_highcharts_src_js_default_namespaceObject.wrap)(AxisClass.prototype, 'unsquish', wrapUnsquish);
         (0,external_highcharts_src_js_default_namespaceObject.wrap)(AxisClass.prototype, 'getOffset', wrapGetOffset);
@@ -914,13 +893,19 @@ function onAfterGetTitlePosition(e) {
 }
 /** @internal */
 function onAfterInit() {
+    var _a;
     const axis = this;
     const { chart, options: { grid: gridOptions = {} }, userOptions } = axis;
     if (gridOptions.enabled) {
         applyGridOptions(axis);
     }
     if (gridOptions.columns) {
-        const columns = axis.grid.columns = [];
+        (_a = axis.grid).columns || (_a.columns = []);
+        const columns = axis.grid.columns;
+        // Destroy existing columns. In a future update we could consider
+        // matching and updating existing columns instead of recreating all.
+        columns.forEach((column) => column.destroy());
+        columns.length = 0;
         let columnIndex = axis.grid.columnIndex = 0;
         // Handle columns, each column is a grid axis
         while (++columnIndex < gridOptions.columns.length) {
@@ -1287,7 +1272,7 @@ function onAfterSetOptions(e) {
             }
         }
         // Now merge the combined options into the axis options
-        (0,external_highcharts_src_js_default_namespaceObject.merge)(true, this.options, gridAxisOptions);
+        ;(0,external_highcharts_src_js_default_namespaceObject.merge)(true, this.options, gridAxisOptions);
         if (this.horiz) {
             /*               _________________________
             Make this:    ___|_____|_____|_____|__|
@@ -1332,11 +1317,10 @@ function onAfterSetScale() {
  * @internal
  */
 function onAfterTickSize(e) {
-    const { horiz, maxLabelDimensions, options: { grid: gridOptions = {} } } = this;
-    if (gridOptions.enabled && maxLabelDimensions) {
-        const labelPadding = this.options.labels.distance * 2;
-        const distance = horiz ?
-            (gridOptions.cellHeight ||
+    const { horiz, maxLabelDimensions, options } = this, { labels, grid = {} } = options;
+    if (grid.enabled && maxLabelDimensions) {
+        const labelPadding = (labels.distance ?? 15) * 2, distance = horiz ?
+            (grid.cellHeight ||
                 labelPadding + maxLabelDimensions.height) :
             labelPadding + maxLabelDimensions.width;
         if ((0,external_highcharts_src_js_default_namespaceObject.isArray)(e.tickSize)) {
@@ -1357,14 +1341,14 @@ function onChartAfterSetChartSize() {
     });
 }
 /** @internal */
-function onDestroy(e) {
+function onDestroy() {
     const { grid } = this;
     // Axes created before the Gantt module was loaded have no grid
     // additions to be destroyed (#24644).
     if (!grid) {
         return;
     }
-    (grid.columns || []).forEach((column) => column.destroy(e.keepEvents));
+    (grid.columns || []).forEach((column) => column.destroy());
     grid.columns = void 0;
 }
 /**
@@ -1532,7 +1516,7 @@ function onTrimTicks() {
         max > beforeLastPos);
     if (gridOptions.enabled === true &&
         !categoryAxis &&
-        (axis.isXAxis || axis.isLinked)) {
+        (axis.isXAxis || axis.linkedParent)) {
         if ((endMoreThanMin || startLessThanMin) && !options.startOnTick) {
             tickPositions[0] = min;
         }
@@ -1838,7 +1822,7 @@ function getNode(id, parent, level, data, mapOfIdToChildren, options) {
         data.start ?? (data.start = start);
         data.end ?? (data.end = end);
     }
-    (0,external_highcharts_src_js_default_namespaceObject.extend)(node, {
+    ;(0,external_highcharts_src_js_default_namespaceObject.extend)(node, {
         children: children,
         descendants: descendants,
         height: height
@@ -2419,6 +2403,8 @@ const TreeUtilities = {
 
 
 
+const { composed: TreeGridAxis_composed } = (external_highcharts_src_js_default_default());
+
 
 
 const { getLevelOptions: TreeGridAxis_getLevelOptions } = Series_TreeUtilities;
@@ -2708,19 +2694,16 @@ function onBeforeRender(e) {
  * The tick position in axis values.
  */
 function wrapGenerateTick(proceed, pos) {
-    const axis = this, mapOptionsToLevel = axis.treeGrid.mapOptionsToLevel || {}, isTreeGrid = axis.type === 'treegrid', ticks = axis.ticks;
-    let tick = ticks[pos], levelOptions, options, gridNode;
-    if (isTreeGrid &&
-        axis.treeGrid.mapOfPosToGridNode) {
-        gridNode = axis.treeGrid.mapOfPosToGridNode[pos];
+    const axis = this, mapOptionsToLevel = axis.treeGrid.mapOptionsToLevel || {}, isTreeGrid = axis.type === 'treegrid', ticks = axis.ticks, gridNode = axis.treeGrid.mapOfPosToGridNode?.[pos];
+    let tick = ticks[pos], levelOptions, options;
+    if (isTreeGrid && gridNode) {
         levelOptions = mapOptionsToLevel[gridNode.depth];
         if (levelOptions) {
             options = {
                 labels: levelOptions
             };
         }
-        if (!tick &&
-            TickConstructor) {
+        if (!tick && TickConstructor) {
             ticks[pos] = tick =
                 new TickConstructor(axis, pos, void 0, void 0, {
                     category: gridNode.name,
@@ -2877,9 +2860,7 @@ function wrapInit(proceed, chart, userOptions, coll) {
  * The original setTickInterval function.
  */
 function wrapSetTickInterval(proceed) {
-    const axis = this, options = axis.options, time = axis.chart.time, linkedParent = typeof options.linkedTo === 'number' ?
-        this.chart[axis.coll]?.[options.linkedTo] :
-        void 0, isTreeGrid = axis.type === 'treegrid';
+    const axis = this, options = axis.options, time = axis.chart.time, linkedParent = axis.linkedParent, isTreeGrid = axis.type === 'treegrid';
     if (isTreeGrid) {
         axis.min = axis.userMin ?? time.parse(options.min) ?? axis.dataMin;
         axis.max = axis.userMax ?? time.parse(options.max) ?? axis.dataMax;
@@ -2943,9 +2924,8 @@ class TreeGridAxisAdditions {
      * */
     /** @internal */
     static compose(AxisClass, ChartClass, SeriesClass, TickClass) {
-        if (!AxisClass.keepProps.includes('treeGrid')) {
+        if ((0,external_highcharts_src_js_default_namespaceObject.pushUnique)(TreeGridAxis_composed, 'Axis.TreeGrid')) {
             const axisProps = AxisClass.prototype;
-            AxisClass.keepProps.push('treeGrid');
             (0,external_highcharts_src_js_default_namespaceObject.wrap)(axisProps, 'generateTick', wrapGenerateTick);
             (0,external_highcharts_src_js_default_namespaceObject.wrap)(axisProps, 'init', wrapInit);
             (0,external_highcharts_src_js_default_namespaceObject.wrap)(axisProps, 'setTickInterval', wrapSetTickInterval);

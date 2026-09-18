@@ -195,7 +195,7 @@ function seriesSetStackedPoints(axis, stackingParam) {
                 stacks[key][x].total = null;
             }
             else {
-                stacks[key][x] = new StackItem(axis, axis.options.stackLabels, !!isNegative, x, stackOption);
+                stacks[key][x] = new StackItem(axis, !!isNegative, x, stackOption);
             }
         }
         // If the StackItem doesn't exist, create it first
@@ -352,29 +352,41 @@ class AxisAdditions {
             });
         });
     }
-    /** @internal */
+    /**
+     * Create the stack totals group and render the individual labels into it
+     * @internal
+     */
     renderStackTotals() {
-        const stacking = this, axis = stacking.axis, chart = axis.chart, renderer = chart.renderer, stacks = stacking.stacks, stackLabelsAnim = axis.options.stackLabels?.animation, animationConfig = getDeferredAnimation(chart, stackLabelsAnim || false), stackTotalGroup = stacking.stackTotalGroup = (stacking.stackTotalGroup ||
-            renderer
-                .g('stack-labels')
-                .attr({
-                zIndex: 6,
-                opacity: 0
-            })
-                .add());
-        // The plotLeft/Top will change when y axis gets wider so we need to
-        // translate the stackTotalGroup at every render call. See bug #506
-        // and #516
-        stackTotalGroup.translate(chart.plotLeft, chart.plotTop);
-        // Render each stack total
-        objectEach(stacks, (type) => {
-            objectEach(type, (stack) => {
-                stack.render(stackTotalGroup);
+        const stacking = this, axis = stacking.axis, chart = axis.chart, renderer = chart.renderer, stacks = stacking.stacks, { animation, enabled } = axis.options.stackLabels || {}, animationConfig = getDeferredAnimation(chart, animation || false), stackTotalGroup = stacking.stackTotalGroup = (stacking.stackTotalGroup ||
+            (enabled ?
+                renderer
+                    .g('stack-labels')
+                    .attr({
+                    zIndex: 6,
+                    opacity: 0
+                })
+                    .add() :
+                void 0));
+        if (stackTotalGroup) {
+            // The plotLeft/Top will change when y axis gets wider so we need to
+            // translate the stackTotalGroup at every render call. See bug #506
+            // and #516
+            stackTotalGroup.translate(chart.plotLeft, chart.plotTop);
+            // Render each stack total
+            objectEach(stacks, (type) => {
+                objectEach(type, (stack) => {
+                    if (enabled) {
+                        stack.render(stackTotalGroup);
+                    }
+                    else {
+                        stack.label = stack.label?.destroy();
+                    }
+                });
             });
-        });
-        stackTotalGroup.animate({
-            opacity: 1
-        }, animationConfig);
+            stackTotalGroup.animate({
+                opacity: 1
+            }, animationConfig);
+        }
     }
 }
 /* *

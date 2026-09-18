@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.2 (2026-08-27)
+ * @license Highcharts JS v13.1.0 (2026-09-18)
  * @module highcharts/modules/navigator
  * @requires highcharts
  *
@@ -18,48 +18,27 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 /******/ 
 /************************************************************************/
 /******/ /* webpack/runtime/compat get default export */
-/******/ (() => {
-/******/ 	// getDefaultExport function for compatibility with non-harmony modules
-/******/ 	__webpack_require__.n = (module) => {
-/******/ 		const getter = module && module.__esModule ?
-/******/ 			() => (module['default']) :
-/******/ 			() => (module);
-/******/ 		__webpack_require__.d(getter, { a: getter });
-/******/ 		return getter;
-/******/ 	};
-/******/ })();
+/******/ // getDefaultExport function for compatibility with non-harmony modules
+/******/ __webpack_require__.n = (module) => {
+/******/ 	const getter = module && module.__esModule ?
+/******/ 		() => (module['default']) :
+/******/ 		() => (module);
+/******/ 	__webpack_require__.d(getter, { a: getter });
+/******/ 	return getter;
+/******/ };
 /******/ 
 /******/ /* webpack/runtime/define property getters */
-/******/ (() => {
-/******/ 	// define getter/value functions for harmony exports
-/******/ 	__webpack_require__.d = (exports, definition) => {
-/******/ 		if(Array.isArray(definition)) {
-/******/ 			var i = 0;
-/******/ 			while(i < definition.length) {
-/******/ 				var key = definition[i++];
-/******/ 				var binding = definition[i++];
-/******/ 				if(!__webpack_require__.o(exports, key)) {
-/******/ 					if(binding === 0) {
-/******/ 						Object.defineProperty(exports, key, { enumerable: true, value: definition[i++] });
-/******/ 					} else {
-/******/ 						Object.defineProperty(exports, key, { enumerable: true, get: binding });
-/******/ 					}
-/******/ 				} else if(binding === 0) { i++; }
-/******/ 			}
-/******/ 		} else {
-/******/ 			for(var key in definition) {
-/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
-/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
-/******/ 				}
-/******/ 			}
+/******/ // define getter/value functions for harmony exports
+/******/ __webpack_require__.d = (exports, definition) => {
+/******/ 	for(var key in definition) {
+/******/ 		if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 			Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
 /******/ 		}
-/******/ 	};
-/******/ })();
+/******/ 	}
+/******/ };
 /******/ 
 /******/ /* webpack/runtime/hasOwnProperty shorthand */
-/******/ (() => {
-/******/ 	__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
-/******/ })();
+/******/ __webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop));
 /******/ 
 /************************************************************************/
 
@@ -111,7 +90,8 @@ function compose(ChartClass, NavigatorClass) {
         const chartProto = ChartClass.prototype;
         NavigatorConstructor = NavigatorClass;
         chartProto.callbacks.push(onChartCallback);
-        (0,external_highcharts_src_js_default_namespaceObject.addEvent)(ChartClass, 'afterAddSeries', onChartAfterAddSeries);
+        (0,external_highcharts_src_js_default_namespaceObject.addEvent)(ChartClass, 'afterAddSeries', resetBaseSeries);
+        (0,external_highcharts_src_js_default_namespaceObject.addEvent)(ChartClass, 'afterDrillUp', resetBaseSeries);
         (0,external_highcharts_src_js_default_namespaceObject.addEvent)(ChartClass, 'afterSetChartSize', onChartAfterSetChartSize);
         (0,external_highcharts_src_js_default_namespaceObject.addEvent)(ChartClass, 'afterUpdate', onChartAfterUpdate);
         (0,external_highcharts_src_js_default_namespaceObject.addEvent)(ChartClass, 'beforeRender', onChartBeforeRender);
@@ -120,13 +100,12 @@ function compose(ChartClass, NavigatorClass) {
     }
 }
 /**
- * Handle adding new series.
+ * Reset the base series.
  * @internal
  */
-function onChartAfterAddSeries() {
+function resetBaseSeries() {
     if (this.navigator) {
-        // Recompute which series should be shown in navigator, and add them
-        this.navigator.setBaseSeries(null, false);
+        this.navigator.setBaseSeries(void 0, false);
     }
 }
 /**
@@ -275,7 +254,7 @@ const ChartNavigatorComposition = {
  * */
 
 
-const { isTouchDevice: NavigatorAxisComposition_isTouchDevice } = (external_highcharts_src_js_default_default());
+const { composed, isTouchDevice: NavigatorAxisComposition_isTouchDevice } = (external_highcharts_src_js_default_default());
 
 /* *
  *
@@ -341,8 +320,7 @@ class NavigatorAxisAdditions {
      *
      * */
     static compose(AxisClass) {
-        if (!AxisClass.keepProps.includes('navigatorAxis')) {
-            AxisClass.keepProps.push('navigatorAxis');
+        if ((0,external_highcharts_src_js_default_namespaceObject.pushUnique)(composed, 'Axis.Navigator')) {
             (0,external_highcharts_src_js_default_namespaceObject.addEvent)(AxisClass, 'init', onAxisInit);
             (0,external_highcharts_src_js_default_namespaceObject.addEvent)(AxisClass, 'setExtremes', onAxisSetExtremes);
         }
@@ -1453,7 +1431,7 @@ function Symbols_arc(cx, cy, w, h, options) {
  * Path
  */
 function callout(x, y, w, h, options) {
-    const arrowLength = 6, halfDistance = 6, r = Math.min((options?.r) || 0, w, h), safeDistance = r + halfDistance, anchorX = options?.anchorX, anchorY = options?.anchorY || 0;
+    const arrowLength = options?.arrowLength ?? 6, halfDistance = 6, r = Math.min((options?.r) || 0, w, h), safeDistance = r + halfDistance, anchorX = options?.anchorX, anchorY = options?.anchorY || 0;
     const path = Symbols_roundedRect(x, y, w, h, { r });
     if (!(0,external_highcharts_src_js_default_namespaceObject.isNumber)(anchorX)) {
         return path;
@@ -1980,7 +1958,7 @@ const StockUtilities = {
 
 const { defaultOptions: NavigatorComposition_defaultOptions } = (external_highcharts_src_js_default_default());
 
-const { composed } = (external_highcharts_src_js_default_default());
+const { composed: NavigatorComposition_composed } = (external_highcharts_src_js_default_default());
 
 
 
@@ -2001,7 +1979,7 @@ const { setFixedRange: NavigatorComposition_setFixedRange } = Utilities_StockUti
 /** @internal */
 function NavigatorComposition_compose(ChartClass, AxisClass, SeriesClass) {
     NavigatorAxisComposition.compose(AxisClass);
-    if ((0,external_highcharts_src_js_default_namespaceObject.pushUnique)(composed, 'Navigator')) {
+    if ((0,external_highcharts_src_js_default_namespaceObject.pushUnique)(NavigatorComposition_composed, 'Navigator')) {
         ChartClass.prototype.setFixedRange = NavigatorComposition_setFixedRange;
         (0,external_highcharts_src_js_default_namespaceObject.extend)((external_highcharts_src_js_default_SVGRenderer_default()).prototype.symbols, Navigator_NavigatorSymbols);
         (0,external_highcharts_src_js_default_namespaceObject.extend)(NavigatorComposition_defaultOptions, { navigator: Navigator_NavigatorDefaults });
@@ -2153,6 +2131,9 @@ var ScrollbarAxis;
                 }
             });
         }
+        else if (axis.scrollbar) {
+            axis.scrollbar = axis.scrollbar.destroy();
+        }
     }
     /**
      * Wrap rendering axis, and update scrollbar if one is created.
@@ -2290,14 +2271,12 @@ var ScrollbarAxis;
  */
 const ScrollbarDefaults = {
     /**
-     * The height of the scrollbar. If `buttonsEnabled` is true , the height
+     * The height of the scrollbar. If `buttonsEnabled` is true, the height
      * also applies to the width of the scroll arrows so that they are always
      * squares.
      *
      * @sample stock/scrollbar/style/
      *         Non-default height
-     *
-     * @type    {number}
      */
     height: 10,
     /**
@@ -3085,7 +3064,7 @@ class Scrollbar {
             // On the bottom or the right side of the track:
             scroller.updatePosition(scroller.from - range, scroller.to - range);
         }
-        (0,external_highcharts_src_js_default_namespaceObject.fireEvent)(scroller, 'changed', {
+        ;(0,external_highcharts_src_js_default_namespaceObject.fireEvent)(scroller, 'changed', {
             from: scroller.from,
             to: scroller.to,
             trigger: 'scrollbar',
@@ -4604,11 +4583,7 @@ class Navigator {
             (0,external_highcharts_src_js_default_namespaceObject.erase)(this.chart.axes, this.yAxis);
         }
         // Destroy series
-        (this.series || []).forEach((s) => {
-            if (s.destroy) {
-                s.destroy();
-            }
-        });
+        ;(0,external_highcharts_src_js_default_namespaceObject.destroyObjectProperties)(this.series || []);
         // Destroy properties
         [
             'series', 'xAxis', 'yAxis', 'shades', 'outline', 'scrollbarTrack',
@@ -4728,6 +4703,27 @@ const standaloneNavigatorDefaults = {
 
 
 
+
+/* *
+ *
+ *  Functions
+ *
+ * */
+/**
+ * Support for the deprecated `chart` option, renamed to `chartOptions`.
+ * The new option takes precedence. #24715
+ *
+ * @internal
+ */
+function compatChartOptions(options, chart) {
+    if (options.chart) {
+        (0,external_highcharts_src_js_default_namespaceObject.error)(32, false, chart, {
+            'standaloneNavigator.chart': 'use standaloneNavigator.chartOptions'
+        });
+        return (0,external_highcharts_src_js_default_namespaceObject.merge)({ chartOptions: options.chart }, options);
+    }
+    return options;
+}
 /* *
  *
  *  Class
@@ -4784,9 +4780,15 @@ class StandaloneNavigator {
      * */
     constructor(element, userOptions) {
         this.boundAxes = [];
-        this.userOptions = userOptions;
-        this.chartOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(external_highcharts_src_js_default_default().getOptions(), StandaloneNavigatorDefaults, userOptions.chart, { navigator: userOptions });
-        if (this.chartOptions.chart && userOptions.height) {
+        this.userOptions = userOptions = compatChartOptions(userOptions);
+        this.chartOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(external_highcharts_src_js_default_default().getOptions(), StandaloneNavigatorDefaults, userOptions.chartOptions, { navigator: userOptions });
+        // For a non-inverted navigator, the height option sets the chart
+        // height unless it is set explicitly in chart options (#21268,
+        // #24715).
+        if (this.chartOptions.chart &&
+            !this.chartOptions.chart.inverted &&
+            !userOptions.chartOptions?.chart?.height &&
+            userOptions.height) {
             this.chartOptions.chart.height = userOptions.height;
         }
         const chart = new (external_highcharts_src_js_default_Chart_default())(element, this.chartOptions);
@@ -4874,10 +4876,8 @@ class StandaloneNavigator {
         // Set extremes to match the navigator's extremes
         axis.setExtremes(min, max);
         // Unbind the axis before it's destroyed
-        (0,external_highcharts_src_js_default_namespaceObject.addEvent)(axis, 'destroy', (e) => {
-            if (!e.keepEvents) {
-                this.unbind(axis);
-            }
+        (0,external_highcharts_src_js_default_namespaceObject.addEvent)(axis, 'destroy', () => {
+            this.unbind(axis);
         });
     }
     /**
@@ -4971,7 +4971,12 @@ class StandaloneNavigator {
      *         specified, the standalone navigator will be redrawn.
      */
     update(newOptions, redraw) {
-        this.chartOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(this.chartOptions, newOptions.height && { chart: { height: newOptions.height } }, newOptions.chart, { navigator: newOptions });
+        newOptions = compatChartOptions(newOptions, this.navigator.chart);
+        this.userOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(this.userOptions, newOptions);
+        const chartUserOptions = this.userOptions.chartOptions?.chart;
+        this.chartOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(this.chartOptions, (newOptions.height &&
+            !chartUserOptions?.inverted &&
+            !chartUserOptions?.height) ? { chart: { height: newOptions.height } } : void 0, newOptions.chartOptions, { navigator: newOptions });
         this.navigator.chart.update(this.chartOptions, redraw);
     }
     /**
@@ -5055,7 +5060,7 @@ class StandaloneNavigator {
      * @emits Highcharts.StandaloneNavigator#event:setRange
      */
     setRange(min, max, redraw, animation, eventArguments) {
-        (0,external_highcharts_src_js_default_namespaceObject.fireEvent)(this.navigator, 'setRange', {
+        ;(0,external_highcharts_src_js_default_namespaceObject.fireEvent)(this.navigator, 'setRange', {
             min,
             max,
             redraw,

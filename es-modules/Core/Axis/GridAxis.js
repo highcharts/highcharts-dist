@@ -12,8 +12,8 @@
 'use strict';
 import Axis from './Axis.js';
 import H from '../Globals.js';
-const { dateFormats } = H;
-import { defined, find, erase, isArray, isNumber, isObject as isObjectUtils, merge, wrap, addEvent } from '../../Shared/Utilities.js';
+const { composed, dateFormats } = H;
+import { defined, find, erase, isArray, isNumber, isObject as isObjectUtils, merge, wrap, addEvent, pushUnique } from '../../Shared/Utilities.js';
 import { timeUnits } from '../Utilities.js';
 /* *
  *
@@ -76,8 +76,7 @@ function applyGridOptions(axis) {
  * @internal
  */
 function compose(AxisClass, ChartClass, TickClass) {
-    if (!AxisClass.keepProps.includes('grid')) {
-        AxisClass.keepProps.push('grid');
+    if (pushUnique(composed, 'Axis.Grid')) {
         AxisClass.prototype.getMaxLabelDimensions = getMaxLabelDimensions;
         wrap(AxisClass.prototype, 'unsquish', wrapUnsquish);
         wrap(AxisClass.prototype, 'getOffset', wrapGetOffset);
@@ -217,13 +216,19 @@ function onAfterGetTitlePosition(e) {
 }
 /** @internal */
 function onAfterInit() {
+    var _a;
     const axis = this;
     const { chart, options: { grid: gridOptions = {} }, userOptions } = axis;
     if (gridOptions.enabled) {
         applyGridOptions(axis);
     }
     if (gridOptions.columns) {
-        const columns = axis.grid.columns = [];
+        (_a = axis.grid).columns || (_a.columns = []);
+        const columns = axis.grid.columns;
+        // Destroy existing columns. In a future update we could consider
+        // matching and updating existing columns instead of recreating all.
+        columns.forEach((column) => column.destroy());
+        columns.length = 0;
         let columnIndex = axis.grid.columnIndex = 0;
         // Handle columns, each column is a grid axis
         while (++columnIndex < gridOptions.columns.length) {
@@ -635,11 +640,10 @@ function onAfterSetScale() {
  * @internal
  */
 function onAfterTickSize(e) {
-    const { horiz, maxLabelDimensions, options: { grid: gridOptions = {} } } = this;
-    if (gridOptions.enabled && maxLabelDimensions) {
-        const labelPadding = this.options.labels.distance * 2;
-        const distance = horiz ?
-            (gridOptions.cellHeight ||
+    const { horiz, maxLabelDimensions, options } = this, { labels, grid = {} } = options;
+    if (grid.enabled && maxLabelDimensions) {
+        const labelPadding = (labels.distance ?? 15) * 2, distance = horiz ?
+            (grid.cellHeight ||
                 labelPadding + maxLabelDimensions.height) :
             labelPadding + maxLabelDimensions.width;
         if (isArray(e.tickSize)) {
@@ -660,14 +664,14 @@ function onChartAfterSetChartSize() {
     });
 }
 /** @internal */
-function onDestroy(e) {
+function onDestroy() {
     const { grid } = this;
     // Axes created before the Gantt module was loaded have no grid
     // additions to be destroyed (#24644).
     if (!grid) {
         return;
     }
-    (grid.columns || []).forEach((column) => column.destroy(e.keepEvents));
+    (grid.columns || []).forEach((column) => column.destroy());
     grid.columns = void 0;
 }
 /**
@@ -835,7 +839,7 @@ function onTrimTicks() {
         max > beforeLastPos);
     if (gridOptions.enabled === true &&
         !categoryAxis &&
-        (axis.isXAxis || axis.isLinked)) {
+        (axis.isXAxis || axis.linkedParent)) {
         if ((endMoreThanMin || startLessThanMin) && !options.startOnTick) {
             tickPositions[0] = min;
         }

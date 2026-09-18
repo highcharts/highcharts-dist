@@ -18,14 +18,37 @@ import ChartUtilities from '../../Utils/ChartUtilities.js';
 const { getAxisDescription, getSeriesFirstPointElement, getSeriesA11yElement, unhideChartElementFromAT } = ChartUtilities;
 import F from '../../../Core/Templating.js';
 const { format, numberFormat } = F;
+import H from '../../../Core/Globals.js';
+const { composed } = H;
 import HTMLUtilities from '../../Utils/HTMLUtilities.js';
 const { reverseChildNodes, stripHTMLTagsFromString: stripHTMLTags } = HTMLUtilities;
-import { defined, find, isString, isNumber } from '../../../Shared/Utilities.js';
+import { defined, find, isString, isNumber, pushUnique, wrap } from '../../../Shared/Utilities.js';
 /* *
  *
  *  Functions
  *
  * */
+/**
+ * @private
+ */
+function compose(PointClass) {
+    if (pushUnique(composed, 'A11y.SD')) {
+        wrap(PointClass.prototype, 'applyOptions', pointApplyOptions);
+    }
+}
+/**
+ * Discard the mock graphic once the point is no longer null, so that the
+ * series can draw a real marker for it, #25299.
+ * @private
+ */
+function pointApplyOptions(proceed, ...args) {
+    const point = proceed.apply(this, args);
+    if (point.hasMockGraphic && !point.isNull) {
+        point.graphic = point.graphic?.destroy();
+        delete point.hasMockGraphic;
+    }
+    return point;
+}
 /**
  * @private
  */
@@ -411,6 +434,7 @@ function describeSeries(series) {
  *
  * */
 const SeriesDescriber = {
+    compose,
     defaultPointDescriptionFormatter,
     defaultSeriesDescriptionFormatter,
     describeSeries

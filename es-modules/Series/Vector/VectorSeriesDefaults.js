@@ -78,7 +78,7 @@ const VectorSeriesDefaults = {
  * specified, it is inherited from [chart.type](#chart.type).
  *
  * @extends   series,plotOptions.vector
- * @excluding dataParser, dataURL, boostThreshold, boostBlending
+ * @excluding boostThreshold, boostBlending
  * @product   highcharts highstock
  * @requires  modules/vector
  * @apioption series.vector

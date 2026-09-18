@@ -359,7 +359,6 @@ declare module "./highcharts" {
         alignOptions: AlignObject;
         axis: Axis;
         cumulative: number;
-        isNegative: boolean;
         label: SVGElement;
         options: YAxisStackLabelsOptions;
         total: number;

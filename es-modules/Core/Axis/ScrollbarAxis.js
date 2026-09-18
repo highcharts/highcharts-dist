@@ -121,6 +121,9 @@ var ScrollbarAxis;
                 }
             });
         }
+        else if (axis.scrollbar) {
+            axis.scrollbar = axis.scrollbar.destroy();
+        }
     }
     /**
      * Wrap rendering axis, and update scrollbar if one is created.

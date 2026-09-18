@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.2 (2026-08-27)
+ * @license Highcharts JS v13.1.0 (2026-09-18)
  * @module highcharts/highcharts-3d
  * @requires highcharts
  *
@@ -17,48 +17,27 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_c57973fa__ from "./high
 /******/ 
 /************************************************************************/
 /******/ /* webpack/runtime/compat get default export */
-/******/ (() => {
-/******/ 	// getDefaultExport function for compatibility with non-harmony modules
-/******/ 	__webpack_require__.n = (module) => {
-/******/ 		const getter = module && module.__esModule ?
-/******/ 			() => (module['default']) :
-/******/ 			() => (module);
-/******/ 		__webpack_require__.d(getter, { a: getter });
-/******/ 		return getter;
-/******/ 	};
-/******/ })();
+/******/ // getDefaultExport function for compatibility with non-harmony modules
+/******/ __webpack_require__.n = (module) => {
+/******/ 	const getter = module && module.__esModule ?
+/******/ 		() => (module['default']) :
+/******/ 		() => (module);
+/******/ 	__webpack_require__.d(getter, { a: getter });
+/******/ 	return getter;
+/******/ };
 /******/ 
 /******/ /* webpack/runtime/define property getters */
-/******/ (() => {
-/******/ 	// define getter/value functions for harmony exports
-/******/ 	__webpack_require__.d = (exports, definition) => {
-/******/ 		if(Array.isArray(definition)) {
-/******/ 			var i = 0;
-/******/ 			while(i < definition.length) {
-/******/ 				var key = definition[i++];
-/******/ 				var binding = definition[i++];
-/******/ 				if(!__webpack_require__.o(exports, key)) {
-/******/ 					if(binding === 0) {
-/******/ 						Object.defineProperty(exports, key, { enumerable: true, value: definition[i++] });
-/******/ 					} else {
-/******/ 						Object.defineProperty(exports, key, { enumerable: true, get: binding });
-/******/ 					}
-/******/ 				} else if(binding === 0) { i++; }
-/******/ 			}
-/******/ 		} else {
-/******/ 			for(var key in definition) {
-/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
-/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
-/******/ 				}
-/******/ 			}
+/******/ // define getter/value functions for harmony exports
+/******/ __webpack_require__.d = (exports, definition) => {
+/******/ 	for(var key in definition) {
+/******/ 		if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 			Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
 /******/ 		}
-/******/ 	};
-/******/ })();
+/******/ 	}
+/******/ };
 /******/ 
 /******/ /* webpack/runtime/hasOwnProperty shorthand */
-/******/ (() => {
-/******/ 	__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
-/******/ })();
+/******/ __webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop));
 /******/ 
 /************************************************************************/
 
@@ -2317,7 +2296,7 @@ const Tick3DAdditions = {
 
 const { defaultOptions } = (external_highcharts_src_js_default_default());
 
-const { deg2rad: Axis3DComposition_deg2rad } = (external_highcharts_src_js_default_default());
+const { composed: Axis3DComposition_composed, deg2rad: Axis3DComposition_deg2rad } = (external_highcharts_src_js_default_default());
 
 const { perspective: Axis3DComposition_perspective, perspective3D: Axis3DComposition_perspective3D, shapeArea: Axis3DComposition_shapeArea } = Core_Math3D;
 
@@ -2467,9 +2446,8 @@ function wrapAxisGetSlotWidth(proceed, tick) {
         chart.frameShapes &&
         chart.is3d() &&
         gridGroup &&
-        tick &&
-        tick.label) {
-        const firstGridLine = (gridGroup.element.childNodes[0].getBBox()), frame3DLeft = chart.frameShapes.left.getBBox(), options3d = chart.options.chart.options3d, origin = {
+        tick?.label) {
+        const options3d = chart.options.chart.options3d, origin = {
             x: chart.plotWidth / 2,
             y: chart.plotHeight / 2,
             z: options3d.depth / 2,
@@ -2501,15 +2479,15 @@ function wrapAxisGetSlotWidth(proceed, tick) {
             z: null
         };
         labelPos = Axis3DComposition_perspective3D(labelPos, origin, origin.vd);
-        // If tick is first one, check whether next label position is
-        // already calculated, then return difference between the first and
-        // the second label. If there is no next label position calculated,
-        // return the difference between the first grid line and left 3d
-        // frame.
+        // If the tick is the first one, check whether the next label position
+        // is already calculated, then return the difference between the first
+        // and the second label. If there is no next label position calculated,
+        // return the difference between the first grid line and left 3d frame.
         return Math.abs(prevLabelPos ?
-            labelPos.x - prevLabelPos.x : nextLabelPos ?
-            nextLabelPos.x - labelPos.x :
-            firstGridLine.x - frame3DLeft.x);
+            labelPos.x - prevLabelPos.x :
+            nextLabelPos ?
+                nextLabelPos.x - labelPos.x :
+                axis.len / (tickPositions.length + 1));
     }
     return proceed.apply(axis, [].slice.call(arguments, 1));
 }
@@ -2542,9 +2520,8 @@ class Axis3DAdditions {
      */
     static compose(AxisClass, TickClass) {
         Tick3DComposition.compose(TickClass);
-        if (!AxisClass.keepProps.includes('axis3D')) {
+        if ((0,external_highcharts_src_js_default_namespaceObject.pushUnique)(Axis3DComposition_composed, 'Axis.3D')) {
             (0,external_highcharts_src_js_default_namespaceObject.merge)(true, defaultOptions.xAxis, Axis_Axis3DDefaults);
-            AxisClass.keepProps.push('axis3D');
             (0,external_highcharts_src_js_default_namespaceObject.addEvent)(AxisClass, 'init', onAxisInit);
             (0,external_highcharts_src_js_default_namespaceObject.addEvent)(AxisClass, 'afterSetOptions', onAxisAfterSetOptions);
             (0,external_highcharts_src_js_default_namespaceObject.addEvent)(AxisClass, 'drawCrosshair', onAxisDrawCrosshair);
@@ -3664,7 +3641,7 @@ var SVGRenderer3D;
                     if (ca.beta !== void 0) {
                         ca.beta *= SVGRenderer3D_deg2rad;
                     }
-                    (0,external_highcharts_src_js_default_namespaceObject.extend)(wrapper.attribs, ca);
+                    ;(0,external_highcharts_src_js_default_namespaceObject.extend)(wrapper.attribs, ca);
                     if (wrapper.attribs) {
                         wrapper.setPaths(wrapper.attribs);
                     }
@@ -4574,7 +4551,7 @@ class Pie3DPoint extends PiePoint {
      *
      * */
     /**
-     * @private
+     * @internal
      */
     haloPath() {
         return this.series?.chart.is3d() ?
@@ -4631,7 +4608,7 @@ class Pie3DSeries extends PieSeries {
      *
      * */
     /**
-     * @private
+     * @internal
      */
     addPoint() {
         super.addPoint.apply(this, arguments);
@@ -4641,7 +4618,7 @@ class Pie3DSeries extends PieSeries {
         }
     }
     /**
-     * @private
+     * @internal
      */
     animate(init) {
         if (!this.chart.is3d()) {
@@ -4690,7 +4667,7 @@ class Pie3DSeries extends PieSeries {
         }
     }
     /**
-     * @private
+     * @internal
      */
     getDataLabelPosition(point, distance) {
         const labelPosition = super.getDataLabelPosition(point, distance);
@@ -4713,7 +4690,7 @@ class Pie3DSeries extends PieSeries {
         return labelPosition;
     }
     /**
-     * @private
+     * @internal
      */
     pointAttribs(point) {
         const attr = super.pointAttribs.apply(this, arguments), options = this.options;
@@ -4724,7 +4701,7 @@ class Pie3DSeries extends PieSeries {
         return attr;
     }
     /**
-     * @private
+     * @internal
      */
     translate() {
         super.translate.apply(this, arguments);
@@ -4760,7 +4737,7 @@ class Pie3DSeries extends PieSeries {
         }
     }
     /**
-     * @private
+     * @internal
      */
     drawTracker() {
         super.drawTracker.apply(this, arguments);
@@ -4779,7 +4756,7 @@ class Pie3DSeries extends PieSeries {
         }
     }
 }
-(0,external_highcharts_src_js_default_namespaceObject.extend)(Pie3DSeries.prototype, {
+;(0,external_highcharts_src_js_default_namespaceObject.extend)(Pie3DSeries.prototype, {
     pointClass: Pie3D_Pie3DPoint
 });
 /* *

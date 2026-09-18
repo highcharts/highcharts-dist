@@ -82,6 +82,25 @@ declare module "../highcharts" {
         valueSuffix?: string;
     }
     /**
+     * (Highcharts, Highstock, Highmaps, Gantt) Enable or disable the initial
+     * animation when a series is displayed for the `dataLabels`. The animation
+     * can also be set as a configuration object. Please note that this option
+     * only applies to the initial animation.
+     *
+     * For other animations, see chart.animation and the animation parameter
+     * under the API methods. The following properties are supported:
+     *
+     * - `defer`: The animation delay time in milliseconds.
+     */
+    interface PlotGeoheatmapDataLabelsAnimationOptions {
+        /**
+         * (Highcharts, Highstock, Highmaps, Gantt) The animation delay time in
+         * milliseconds. Set to `0` to render the data labels immediately. As
+         * `undefined` inherits defer time from the series.animation.defer.
+         */
+        defer?: number;
+    }
+    /**
      * (Highcharts, Highstock, Highmaps, Gantt) Options for the series data
      * labels, appearing next to each data point.
      *
@@ -379,6 +398,422 @@ declare module "../highcharts" {
         zIndex?: number;
     }
     /**
+     * (Highmaps) A `geoheatmap` series is a variety of heatmap series, composed
+     * into the map projection, where the units are expressed in the latitude
+     * and longitude, and individual values contained in a matrix are
+     * represented as colors.
+     *
+     * Configuration options for the series are given in three levels:
+     *
+     * 1. Options for all series in a chart are defined in the
+     * plotOptions.series object.
+     *
+     * 2. Options for all `geoheatmap` series are defined in
+     * plotOptions.geoheatmap.
+     *
+     * 3. Options for one single series are given in the series instance array.
+     * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - type option should always be set, otherwise a broad set of unsupported
+     * options is allowed.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
+     */
+    interface PlotGeoheatmapOptions {
+        /**
+         * (Highmaps) Accessibility options for a series.
+         */
+        accessibility?: Highcharts.SeriesAccessibilityOptionsObject;
+        /**
+         * (Highmaps) Whether the MapView takes this series into account when
+         * computing the default zoom and center of the map.
+         */
+        affectsMapView?: boolean;
+        /**
+         * (Highmaps) Allow this series' points to be selected by clicking on
+         * the graphic (columns, point markers, pie slices, map areas etc).
+         *
+         * The selected points can be handled by point select and unselect
+         * events, or collectively by the getSelectedPoints function.
+         *
+         * And alternative way of selecting points is through dragging.
+         */
+        allowPointSelect?: boolean;
+        /**
+         * (Highmaps) Enable or disable the initial animation when a series is
+         * displayed. The animation can also be set as a configuration object.
+         * Please note that this option only applies to the initial animation of
+         * the series itself. For other animations, see chart.animation and the
+         * animation parameter under the API methods. The following properties
+         * are supported:
+         *
+         * - `defer`: The animation delay time in milliseconds.
+         *
+         * - `duration`: The duration of the animation in milliseconds.
+         * (Defaults to `1000`)
+         *
+         * - `easing`: Can be a string reference to an easing function set on
+         * the `Math` object or a function. See the _Custom easing function_
+         * demo below. (Defaults to `easeInOutSine`)
+         *
+         * Due to poor performance, animation is disabled in old IE browsers for
+         * several chart types.
+         */
+        animation?: boolean;
+        /**
+         * (Highmaps) For some series, there is a limit that shuts down
+         * animation by default when the total number of points in the chart is
+         * too high. For example, for a column chart and its derivatives,
+         * animation does not run if there is more than 250 points totally. To
+         * disable this cap, set `animationLimit` to `Infinity`. This option
+         * works if animation is fired on individual points, not on a group of
+         * points like e.g. during the initial animation.
+         */
+        animationLimit?: number;
+        /**
+         * (Highmaps) The border color of the map areas.
+         *
+         * In styled mode, the border stroke is given in the `.highcharts-point`
+         * class.
+         */
+        borderColor?: Highcharts.ColorType;
+        /**
+         * (Highmaps) The border width of each geoheatmap tile.
+         *
+         * In styled mode, the border stroke width is given in the
+         * `.highcharts-point` class.
+         */
+        borderWidth?: (number|null);
+        /**
+         * (Highmaps) An additional class name to apply to the series' graphical
+         * elements. This option does not replace default class names of the
+         * graphical element. Changes to the series' color will also be
+         * reflected in a chart's legend and tooltip.
+         */
+        className?: string;
+        /**
+         * (Highmaps) Disable this option to allow series rendering in the whole
+         * plotting area.
+         *
+         * **Note:** Clipping should be always enabled when chart.zoomType is
+         * set
+         */
+        clip?: boolean;
+        /**
+         * (Highmaps) The main color of the series. In heat maps this color is
+         * rarely used, as we mostly use the color to denote the value of each
+         * point. Unless options are set in the colorAxis, the default value is
+         * pulled from the options.colors array.
+         */
+        color?: Highcharts.ColorType;
+        /**
+         * (Highcharts, Highstock, Highmaps) When using dual or multiple color
+         * axes, this number defines which colorAxis the particular series is
+         * connected to. It refers to either the axis id or the index of the
+         * axis in the colorAxis array, with 0 being the first. Set this option
+         * to false to prevent a series from connecting to the default color
+         * axis.
+         *
+         * Since v7.2.0 the option can also be an axis id or an axis index
+         * instead of a boolean flag.
+         */
+        colorAxis?: (boolean|number|string);
+        /**
+         * (Highmaps) When using automatic point colors pulled from the global
+         * colors or series-specific plotOptions.map.colors collections, this
+         * option determines whether the chart should receive one color per
+         * series or one color per point.
+         *
+         * In styled mode, the `colors` or `series.colors` arrays are not
+         * supported, and instead this option gives the points individual color
+         * class names on the form `highcharts-color-{n}`.
+         */
+        colorByPoint?: boolean;
+        /**
+         * (Highmaps) Styled mode only. A specific color index to use for the
+         * series, so its graphic representations are given the class name
+         * `highcharts-color-{n}`.
+         *
+         * Since v11, CSS variables on the form `--highcharts-color-{n}` make
+         * changing the color scheme very convenient.
+         */
+        colorIndex?: number;
+        /**
+         * (Highcharts, Highstock, Highmaps) Determines what data value should
+         * be used to calculate point color if `colorAxis` is used. Requires to
+         * set `min` and `max` if some custom point property is used or if
+         * approximation for data grouping is set to `'sum'`.
+         */
+        colorKey?: string;
+        /**
+         * (Highmaps) A series specific or series type specific color set to
+         * apply instead of the global colors when colorByPoint is true.
+         */
+        colors?: Array<Highcharts.ColorType>;
+        /**
+         * (Highmaps) The column size - how many longitude units each column in
+         * the geoheatmap should span.
+         */
+        colsize?: number;
+        /**
+         * (Highmaps) You can set the cursor to "pointer" if you have click
+         * events attached to the series, to signal to the user that the points
+         * and lines can be clicked.
+         *
+         * In styled mode, the series cursor can be set with the same classes as
+         * listed under series.color.
+         */
+        cursor?: (string|Highcharts.CursorValue);
+        /**
+         * (Highmaps) A reserved subspace to store options and values for
+         * customized functionality. Here you can add additional data for your
+         * own event callbacks and formatter callbacks.
+         */
+        custom?: Highcharts.Dictionary<any>;
+        /**
+         * (Highmaps) Name of the dash style to use for the graph, or for some
+         * series types the outline of each shape.
+         *
+         * In styled mode, the stroke dash-array can be set with the same
+         * classes as listed under series.color.
+         */
+        dashStyle?: Highcharts.DashStyleValue;
+        /**
+         * (Highcharts, Highstock, Highmaps, Gantt) Options for the series data
+         * labels, appearing next to each data point.
+         *
+         * Since v6.2.0, multiple data labels can be applied to each single
+         * point by defining them as an array of configs.
+         *
+         * In styled mode, the data labels can be styled with the
+         * `.highcharts-data-label-box` and `.highcharts-data-label` class names
+         * (see example).
+         */
+        dataLabels?: (Highcharts.PlotGeoheatmapDataLabelsOptions|Array<Highcharts.PlotGeoheatmapDataLabelsOptions>);
+        /**
+         * (Highmaps) The mapping between the data table and the series data
+         * points. This is used in conjunction with the `dataTable` option (on
+         * chart or series level) to map columns from the data table to the
+         * properties of the data points. The keys of the `dataMapping` object
+         * correspond to the properties of the data points (e.g. `x`, `y`,
+         * `name`), and the values are objects that specify which column from
+         * which data table to use for that property.
+         *
+         * The keys can also be nested paths, for example `dataLabel.format`, to
+         * map to nested properties of the data points.
+         *
+         * The values can also be strings, in which case they are interpreted as
+         * column id's from the first data table.
+         *
+         * A typical use case is that multiple series share a common column,
+         * like `name` or `x`. In this case, to avoid repetition, the common
+         * column can be applied in `plotOptions.series.dataMapping` and the
+         * individual series can specify only the columns that are unique to
+         * them.
+         *
+         * The series name defaults to the column ID of the main data column in
+         * the mapping. The main data column is typically the `y` data for
+         * cartesian series, or `value` for map series. For example, if the
+         * mapping is `{ y: 'Cost' }`, the series name will be `Cost`. (see
+         * online documentation for example)
+         *
+         * If the columns of the DataTable have keys matching the series keys,
+         * the data mapping is not necessary. For example, this DataTable will
+         * connect directly to the series' `x` and `y` keys: (see online
+         * documentation for example)
+         */
+        dataMapping?: Highcharts.DataMappingOptionsObject;
+        /**
+         * (Highmaps) Options for a specific series-level data table or an array
+         * of data tables. The `dataTable` option can be either a configuration
+         * object or an instance of the `DataTable` class. If a `DataTable`
+         * instance is passed, it will be used directly. If a configuration
+         * object or an array is passed, a new `DataTable` instance will be
+         * created based on the provided configuration.
+         */
+        dataTable?: (Highcharts.DataTable|Highcharts.DataTableOptionsObject|Array<(Highcharts.DataTable|Highcharts.DataTableOptionsObject)>);
+        /**
+         * (Highmaps) Deprecated. Use
+         * plotOptions.series.accessibility.description instead.
+         *
+         * A description of the series to add to the screen reader information
+         * about the series.
+         *
+         * @deprecated 8.0.0
+         */
+        description?: string;
+        /**
+         * (Highmaps) Enable or disable the mouse tracking for a specific
+         * series. This includes point tooltips and click events on graphs and
+         * points. For large datasets it improves performance.
+         */
+        enableMouseTracking?: boolean;
+        /**
+         * (Highmaps) General event handlers for the series items. These event
+         * hooks can also be attached to the series at run time using the
+         * `Highcharts.addEvent` function.
+         */
+        events?: Highcharts.SeriesEventsOptionsObject;
+        /**
+         * (Highmaps) Highlight only the hovered point and fade the remaining
+         * points.
+         *
+         * Scatter-type series require enabling the 'inactive' marker state and
+         * adjusting opacity. Note that this approach could affect performance
+         * with large datasets.
+         */
+        inactiveOtherPoints?: boolean;
+        /**
+         * (Highmaps) When set to `false` will prevent the series data from
+         * being included in any form of data export.
+         *
+         * Since version 6.0.0 until 7.1.0 the option was existing undocumented
+         * as `includeInCSVExport`.
+         */
+        includeInDataExport?: boolean;
+        /**
+         * (Highmaps) Make the geoheatmap render its data points as an
+         * interpolated image. It can be used to show a Temperature Map-like
+         * charts.
+         */
+        interpolation?: (boolean|Highcharts.InterpolationOptionsObject);
+        /**
+         * (Highmaps) An array specifying which option maps to which key in the
+         * data point array. This makes it convenient to work with unstructured
+         * data arrays from different sources.
+         */
+        keys?: Array<string>;
+        /**
+         * (Highmaps) What type of legend symbol to render for this series. Can
+         * be one of `areaMarker`, `lineMarker` or `rectangle`.
+         */
+        legendSymbol?: Highcharts.OptionsLegendSymbolValue;
+        /**
+         * (Highmaps) The line cap used for line ends and line joins on the
+         * graph.
+         */
+        linecap?: string;
+        /**
+         * (Highmaps) The color to apply to null points.
+         *
+         * In styled mode, the null point fill is set in the
+         * `.highcharts-null-point` class.
+         */
+        nullColor?: string;
+        /**
+         * (Highmaps) Opacity of a series parts: line, fill (e.g. area) and
+         * dataLabels.
+         */
+        opacity?: number;
+        /**
+         * (Highmaps) Properties for each single point.
+         */
+        point?: Highcharts.PlotSeriesPointOptions;
+        /**
+         * (Highmaps) Deprecated. Use
+         * series.accessibility.point.descriptionFormat instead.
+         *
+         * Same as accessibility.point.descriptionFormat, but for an individual
+         * series. Overrides the chart wide configuration.
+         *
+         * @deprecated 12.6.0
+         */
+        pointDescriptionFormat?: Function;
+        /**
+         * (Highmaps) Deprecated. Use
+         * series.accessibility.point.descriptionFormatter instead.
+         *
+         * Same as accessibility.series.descriptionFormatter, but for an
+         * individual series. Overrides the chart wide configuration.
+         *
+         * @deprecated 8.0.0
+         */
+        pointDescriptionFormatter?: Function;
+        /**
+         * (Highmaps) The rowsize size - how many latitude units each row in the
+         * geoheatmap should span.
+         */
+        rowsize?: number;
+        /**
+         * (Highmaps) Whether to select the series initially. If `showCheckbox`
+         * is true, the checkbox next to the series name in the legend will be
+         * checked for a selected series.
+         */
+        selected?: boolean;
+        /**
+         * (Highmaps) Whether to apply a drop shadow to the map shapes. The
+         * shadow can be an object configuration containing `color`, `offsetX`,
+         * `offsetY`, `opacity` and `width`.
+         */
+        shadow?: (boolean|Highcharts.ShadowOptionsObject);
+        /**
+         * (Highmaps) If true, a checkbox is displayed next to the legend item
+         * to allow selecting the series. The state of the checkbox is
+         * determined by the `selected` option.
+         */
+        showCheckbox?: boolean;
+        /**
+         * (Highmaps) Whether to display this particular series or series type
+         * in the legend. Standalone series are shown in legend by default, and
+         * linked series are not. Since v7.2.0 it is possible to show series
+         * that use colorAxis by setting this option to `true`.
+         */
+        showInLegend?: boolean;
+        /**
+         * (Highmaps) Deprecated. Use series.accessibility.keyboardNavigation
+         * instead.
+         *
+         * If set to `true`, the accessibility module will skip past the points
+         * in this series for keyboard navigation.
+         *
+         * @deprecated 8.0.0
+         */
+        skipKeyboardNavigation?: boolean;
+        /**
+         * (Highmaps) Sonification/audio chart options for a series.
+         */
+        sonification?: Highcharts.SeriesSonificationOptions;
+        /**
+         * (Highmaps) A collection of options for different series states.
+         *
+         * In addition to the options documented under each state, any option
+         * from the parent series type can be set, with exception of `data` and
+         * `states`.
+         */
+        states?: Highcharts.SeriesStatesOptionsObject;
+        stickyTracking?: boolean;
+        /**
+         * (Highcharts, Highstock, Highmaps) A configuration object for the
+         * tooltip rendering of each single series. Properties are inherited
+         * from tooltip. Overridable properties are `headerFormat`,
+         * `pointFormat`, `yDecimals`, `xDateFormat`, `yPrefix` and `ySuffix`.
+         * Unlike other series, in a scatter plot the series.name by default
+         * shows in the headerFormat and point.x and point.y in the pointFormat.
+         */
+        tooltip?: Highcharts.SeriesTooltipOptionsObject;
+        /**
+         * (Highmaps) Set the initial visibility of the series.
+         */
+        visible?: boolean;
+        /**
+         * (Highmaps) Define the z index of the series.
+         */
+        zIndex?: number;
+        /**
+         * (Highmaps) Whether to zoom non-cartesian series. If `chart.zooming`
+         * is set, the option allows to disable zooming on an individual
+         * non-cartesian series. By default zooming is enabled for all series.
+         *
+         * **Note**: This option works only for non-cartesian series.
+         */
+        zoomEnabled?: boolean;
+    }
+    /**
      * (Highcharts, Highstock, Gantt) For series on datetime axes, the date
      * format in the tooltip's header will by default be guessed based on the
      * closest data points. This member gives the default string representations
@@ -394,6 +829,50 @@ declare module "../highcharts" {
         second?: string;
         week?: string;
         year?: string;
+    }
+    /**
+     * (Highcharts, Highstock, Highmaps) Options for the tooltip header when
+     * tooltip.split is enabled. The header is the box containing the X value in
+     * a split tooltip.
+     */
+    interface PlotGeoheatmapTooltipHeaderOptions {
+        /**
+         * (Highcharts, Highstock, Highmaps) Background color for the tooltip
+         * header when tooltip.split is enabled.
+         */
+        backgroundColor?: Highcharts.ColorType;
+        /**
+         * (Highcharts, Highstock, Highmaps) Border color for the tooltip header
+         * when tooltip.split is enabled.
+         */
+        borderColor?: Highcharts.ColorType;
+        /**
+         * (Highcharts, Highstock, Highmaps) The width of the border for the
+         * tooltip header when tooltip.split is enabled.
+         */
+        borderWidth?: number;
+        /**
+         * (Highcharts, Highstock, Highmaps) Distance between the plot area and
+         * the header (except the chevron) in a split tooltip, in pixels. The
+         * default value makes the header text align with the axis labels.
+         */
+        distance?: number;
+        /**
+         * (Highcharts, Highstock, Highmaps) The name of a symbol to use for the
+         * border around the tooltip header. Applies only when tooltip.split is
+         * enabled.
+         *
+         * Custom callbacks for symbol path generation can also be added to
+         * `Highcharts.SVGRenderer.prototype.symbols` the same way as for
+         * series.marker.symbol.
+         */
+        shape?: string;
+        /**
+         * (Highcharts, Highstock, Highmaps) CSS styles for the tooltip header.
+         * The default is `{ fontSize: '1em' }`, ensuring that the header text
+         * is the same size as the axis labels.
+         */
+        style?: object;
     }
     /**
      * (Highcharts, Highstock, Highmaps) Positioning options for fixed tooltip,
@@ -461,6 +940,112 @@ declare module "../highcharts" {
         type?: Highcharts.MapGeometryTypeValue;
     }
     /**
+     * (Highmaps) An array of data points for the series. For the `geoheatmap`
+     * series type, points can be given in the following ways:
+     *
+     * 1. An array of arrays with 3 or 2 values. In this case, the values
+     * correspond to `lon,lat,value`. The `value` refers to the color on the
+     * `colorAxis`. (see online documentation for example)
+     *
+     * 2. An array of objects with named values. The following snippet shows
+     * only a few settings, see the complete options set below. If the total
+     * number of data points exceeds the series' turboThreshold, this option is
+     * not available. (see online documentation for example)
+     */
+    interface SeriesGeoheatmapDataOptions {
+        /**
+         * (Highmaps) Individual color for the point. By default the color is
+         * either used to denote the value, or pulled from the global `colors`
+         * array.
+         */
+        color?: Highcharts.ColorType;
+        /**
+         * (Highmaps) Individual data label for each point. The options are the
+         * same as the ones for plotOptions.series.dataLabels.
+         */
+        dataLabels?: Highcharts.DataLabelsOptions;
+        /**
+         * (Highmaps) The `id` of a series in the drilldown.series array to use
+         * for a drilldown for this point.
+         */
+        drilldown?: string;
+        /**
+         * (Highmaps) Individual point events
+         */
+        events?: Highcharts.PointEventsOptionsObject;
+        /**
+         * (Highmaps) For map and mapline series types, the geometry of a point.
+         *
+         * To achieve a better separation between the structure and the data, it
+         * is recommended to use `mapData` to define the geometry instead of
+         * defining it on the data points themselves.
+         *
+         * The geometry object is compatible to that of a `feature` in GeoJSON,
+         * so features of GeoJSON can be passed directly into the `data`,
+         * optionally after first filtering and processing it.
+         *
+         * For pre-projected maps (like GeoJSON maps from our map collection),
+         * user has to specify coordinates in `projectedUnits` for geometry type
+         * other than `Point`, instead of `[longitude, latitude]`.
+         */
+        geometry?: (object|Highcharts.SeriesGeoheatmapDataGeometryOptions);
+        /**
+         * (Highmaps) An id for the point. This can be used after render time to
+         * get a pointer to the point object through `chart.get()`.
+         */
+        id?: string;
+        /**
+         * (Highmaps) When data labels are laid out on a map, Highmaps runs a
+         * simplified algorithm to detect collision. When two labels collide,
+         * the one with the lowest rank is hidden. By default the rank is
+         * computed from the area.
+         */
+        labelrank?: number;
+        /**
+         * (Highmaps) The relative mid point of an area, used to place the data
+         * label. Ranges from 0 to 1\. When `mapData` is used, middleX can be
+         * defined there.
+         */
+        middleX?: number;
+        /**
+         * (Highmaps) The relative mid point of an area, used to place the data
+         * label. Ranges from 0 to 1\. When `mapData` is used, middleY can be
+         * defined there.
+         */
+        middleY?: number;
+        /**
+         * (Highmaps) The name of the point as shown in the legend, tooltip,
+         * dataLabel etc.
+         */
+        name?: string;
+        /**
+         * (Highmaps) For map and mapline series types, the SVG path for the
+         * shape. For compatibility with old IE, not all SVG path definitions
+         * are supported, but M, L and C operators are safe.
+         *
+         * To achieve a better separation between the structure and the data, it
+         * is recommended to use `mapData` to define that paths instead of
+         * defining them on the data points themselves.
+         *
+         * For providing true geographical shapes based on longitude and
+         * latitude, use the `geometry` option instead.
+         */
+        path?: string;
+        /**
+         * (Highmaps) A collection of options for different series states.
+         *
+         * In addition to the options documented under each state, any option
+         * from the parent series type can be set, with exception of `data` and
+         * `states`.
+         */
+        states?: Highcharts.SeriesStatesOptionsObject;
+        /**
+         * (Highmaps) The value of the point, resulting in a color controlled by
+         * options as set in the colorAxis configuration.
+         */
+        value?: (number|null);
+    }
+    /**
      * (Highmaps) A `geoheatmap` series. If the type option is not specified, it
      * is inherited from chart.type.
      *
@@ -509,14 +1094,6 @@ declare module "../highcharts" {
          * is not available. (see online documentation for example)
          */
         data?: Array<(Array<number>|Highcharts.SeriesGeoheatmapDataOptions)>;
-        /**
-         * Not available
-         */
-        dataParser?: undefined;
-        /**
-         * Not available
-         */
-        dataURL?: undefined;
         /**
          * Not available
          */

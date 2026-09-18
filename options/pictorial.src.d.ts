@@ -83,6 +83,25 @@ declare module "../highcharts.src" {
         valueSuffix?: string;
     }
     /**
+     * (Highcharts, Highstock, Highmaps, Gantt) Enable or disable the initial
+     * animation when a series is displayed for the `dataLabels`. The animation
+     * can also be set as a configuration object. Please note that this option
+     * only applies to the initial animation.
+     *
+     * For other animations, see chart.animation and the animation parameter
+     * under the API methods. The following properties are supported:
+     *
+     * - `defer`: The animation delay time in milliseconds.
+     */
+    interface PlotPictorialDataLabelsAnimationOptions {
+        /**
+         * (Highcharts, Highstock, Highmaps, Gantt) The animation delay time in
+         * milliseconds. Set to `0` to render the data labels immediately. As
+         * `undefined` inherits defer time from the series.animation.defer.
+         */
+        defer?: number;
+    }
+    /**
      * (Highcharts, Highstock, Highmaps, Gantt) Options for the series data
      * labels, appearing next to each data point.
      *
@@ -378,6 +397,14 @@ declare module "../highcharts.src" {
          * of 2 to display it behind the series.
          */
         zIndex?: number;
+    }
+    /**
+     * (Highcharts, Highstock, Gantt) Styles for the series label. The color
+     * defaults to the series color, or a contrast color if `onArea`.
+     */
+    interface PlotPictorialLabelStyleOptions {
+        fontSize?: number;
+        fontWeight?: string;
     }
     /**
      * (Highcharts) A pictorial chart uses vector images to represents the data.
@@ -770,8 +797,10 @@ declare module "../highcharts.src" {
          * (Highcharts, Highstock, Gantt) The minimal height for a column or
          * width for a bar. By default, 0 values are not shown. To visualize a 0
          * (or close to zero) point, set the minimal point length to a pixel
-         * value like 3\. In stacked column charts, minPointLength might not be
-         * respected for tightly packed values.
+         * value like 3\. In stacked column charts, the length is applied to
+         * each point in isolation, so tightly packed values may overlap. See
+         * the stacked sample below for a plugin that lays out the stack as a
+         * whole instead.
          */
         minPointLength?: number;
         /**
@@ -1072,9 +1101,33 @@ declare module "../highcharts.src" {
         zoomEnabled?: boolean;
     }
     /**
+     * (Highcharts, Highstock) Animation setting for hovering the graph in
+     * line-type series.
+     */
+    interface PlotPictorialStatesHoverAnimationOptions {
+        /**
+         * (Highcharts, Highstock) The duration of the hover animation in
+         * milliseconds. By default the hover state animates quickly in, and
+         * slowly back to normal.
+         */
+        duration?: number;
+    }
+    /**
      * (Highcharts, Highstock) Animation when not hovering over the marker.
      */
     interface PlotPictorialStatesInactiveAnimationOptions {
+        /**
+         * (Highcharts, Highstock) The duration of the hover animation in
+         * milliseconds. By default the hover state animates quickly in, and
+         * slowly back to normal.
+         */
+        duration?: number;
+    }
+    /**
+     * (Highcharts, Highstock) Animation setting for hovering the graph in
+     * line-type series.
+     */
+    interface PlotPictorialStatesSelectAnimationOptions {
         /**
          * (Highcharts, Highstock) The duration of the hover animation in
          * milliseconds. By default the hover state animates quickly in, and
@@ -1098,6 +1151,48 @@ declare module "../highcharts.src" {
         second?: string;
         week?: string;
         year?: string;
+    }
+    /**
+     * (Highcharts) Options for the tooltip header when tooltip.split is
+     * enabled. The header is the box containing the X value in a split tooltip.
+     */
+    interface PlotPictorialTooltipHeaderOptions {
+        /**
+         * (Highcharts) Background color for the tooltip header when
+         * tooltip.split is enabled.
+         */
+        backgroundColor?: Highcharts.ColorType;
+        /**
+         * (Highcharts) Border color for the tooltip header when tooltip.split
+         * is enabled.
+         */
+        borderColor?: Highcharts.ColorType;
+        /**
+         * (Highcharts) The width of the border for the tooltip header when
+         * tooltip.split is enabled.
+         */
+        borderWidth?: number;
+        /**
+         * (Highcharts) Distance between the plot area and the header (except
+         * the chevron) in a split tooltip, in pixels. The default value makes
+         * the header text align with the axis labels.
+         */
+        distance?: number;
+        /**
+         * (Highcharts) The name of a symbol to use for the border around the
+         * tooltip header. Applies only when tooltip.split is enabled.
+         *
+         * Custom callbacks for symbol path generation can also be added to
+         * `Highcharts.SVGRenderer.prototype.symbols` the same way as for
+         * series.marker.symbol.
+         */
+        shape?: string;
+        /**
+         * (Highcharts) CSS styles for the tooltip header. The default is `{
+         * fontSize: '1em' }`, ensuring that the header text is the same size as
+         * the axis labels.
+         */
+        style?: object;
     }
     /**
      * (Highcharts) Positioning options for fixed tooltip, taking effect only
@@ -1134,10 +1229,40 @@ declare module "../highcharts.src" {
         y?: number;
     }
     /**
+     * (Highcharts, Highstock, Gantt) Enable or disable the initial animation
+     * when a series is displayed for the `dataLabels`. The animation can also
+     * be set as a configuration object. Please note that this option only
+     * applies to the initial animation.
+     *
+     * For other animations, see chart.animation and the animation parameter
+     * under the API methods. The following properties are supported:
+     *
+     * - `defer`: The animation delay time in milliseconds.
+     */
+    interface SeriesPictorialDataDataLabelsAnimationOptions {
+        /**
+         * (Highcharts, Highstock, Gantt) The animation delay time in
+         * milliseconds. Set to `0` to render the data labels immediately. As
+         * `undefined` inherits defer time from the series.animation.defer.
+         */
+        defer?: number;
+    }
+    /**
      * (Highcharts, Highstock) Animation setting for hovering the graph in
      * line-type series.
      */
     interface SeriesPictorialDataStatesHoverAnimationOptions {
+        /**
+         * (Highcharts, Highstock) The duration of the hover animation in
+         * milliseconds. By default the hover state animates quickly in, and
+         * slowly back to normal.
+         */
+        duration?: number;
+    }
+    /**
+     * (Highcharts, Highstock) Animation when not hovering over the marker.
+     */
+    interface SeriesPictorialDataStatesInactiveAnimationOptions {
         /**
          * (Highcharts, Highstock) The duration of the hover animation in
          * milliseconds. By default the hover state animates quickly in, and
@@ -1156,5 +1281,80 @@ declare module "../highcharts.src" {
          * slowly back to normal.
          */
         duration?: number;
+    }
+    /**
+     * (Highcharts) A `pictorial` series. If the type option is not specified,
+     * it is inherited from chart.type.
+     *
+     * Configuration options for the series are given in three levels:
+     *
+     * 1. Options for all series in a chart are defined in the
+     * plotOptions.series object.
+     *
+     * 2. Options for all `pictorial` series are defined in
+     * plotOptions.pictorial.
+     *
+     * 3. Options for one single series are given in the series instance array.
+     * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - type option should always be set, otherwise a broad set of unsupported
+     * options is allowed.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
+     *
+     * You have to extend the `SeriesPictorialOptions` via an interface to allow
+     * custom properties: ``` declare interface SeriesPictorialOptions {
+     * customProperty: string; }
+     *
+     */
+    interface SeriesPictorialOptions extends Highcharts.PlotPictorialOptions, Highcharts.SeriesOptions {
+        /**
+         * Not available
+         */
+        borderRadius?: undefined;
+        /**
+         * Not available
+         */
+        centerInCategory?: undefined;
+        /**
+         * (Highcharts) An array of data points for the series. For the
+         * `pictorial` series type, points can be given in the following ways:
+         *
+         * 1. An array of arrays with 2 values. In this case, the values
+         * correspond to `x,y`. If the first value is a string, it is applied as
+         * the name of the point, and the `x` value is inferred. The `x` value
+         * can also be omitted, in which case the inner arrays should be of
+         * length 2. Then the `x` value is automatically calculated, either
+         * starting at 0 and incremented by 1, or from `pointStart` and
+         * `pointInterval` given in the series options. (see online
+         * documentation for example)
+         *
+         * 2. An array of objects with named values. The following snippet shows
+         * only a few settings, see the complete options set below. If the total
+         * number of data points exceeds the series' turboThreshold, this option
+         * is not available. (see online documentation for example)
+         */
+        data?: Array<([(number|string), number]|[(number|string), number, number]|Highcharts.PointOptionsObject)>;
+        /**
+         * Not available
+         */
+        dataAsColumns?: undefined;
+        /**
+         * (Highcharts) The paths include options describing the series image.
+         * For further details on preparing the SVG image, please refer to the
+         * pictorial documentation.
+         */
+        paths?: Array<Highcharts.SeriesPictorialPathsOptionsObject>;
+        /**
+         * (Highcharts, Highstock, Highmaps, Gantt) This property is only in
+         * TypeScript non-optional and might be `undefined` in series objects
+         * from unknown sources.
+         */
+        type: "pictorial";
     }
 }

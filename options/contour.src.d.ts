@@ -6,6 +6,83 @@
 import * as Highcharts from "../highcharts.src";
 declare module "../highcharts.src" {
     /**
+     * (Highcharts, Highmaps) Point accessibility options for a series.
+     */
+    interface PlotContourAccessibilityPointOptions {
+        /**
+         * (Highcharts, Highmaps) Date format to use for points on datetime axes
+         * when describing them to screen reader users.
+         *
+         * Defaults to the same format as in tooltip.
+         *
+         * For an overview of the replacement codes, see dateFormat.
+         */
+        dateFormat?: string;
+        /**
+         * (Highcharts, Highmaps) Formatter function to determine the date/time
+         * format used with points on datetime axes when describing them to
+         * screen reader users. Receives one argument, `point`, referring to the
+         * point to describe. Should return a date format string compatible with
+         * dateFormat.
+         */
+        dateFormatter?: Highcharts.ScreenReaderFormatterCallbackFunction<Highcharts.Point>;
+        /**
+         * (Highcharts, Highmaps) Whether or not to describe points with the
+         * value `null` to assistive technology, such as screen readers.
+         */
+        describeNull?: boolean;
+        /**
+         * (Highcharts, Highmaps) A format string to use instead of the default
+         * for point descriptions.
+         *
+         * The context of the format string is the point instance.
+         *
+         * As opposed to accessibility.point.valueDescriptionFormat, this option
+         * replaces the whole description.
+         */
+        descriptionFormat?: string;
+        /**
+         * (Highcharts, Highmaps) Formatter function to use instead of the
+         * default for point descriptions. Same as
+         * `accessibility.point.descriptionFormatter`, but applies to a series
+         * instead of the whole chart.
+         *
+         * Note: Prefer using accessibility.point.valueDescriptionFormat instead
+         * if possible, as default functionality such as describing annotations
+         * will be preserved.
+         */
+        descriptionFormatter?: Highcharts.ScreenReaderFormatterCallbackFunction<Highcharts.Point>;
+        /**
+         * (Highcharts, Highmaps) Decimals to use for the values in the point
+         * descriptions. Uses tooltip.valueDecimals if not defined.
+         */
+        valueDecimals?: number;
+        /**
+         * (Highcharts, Highmaps) Format to use for describing the values of
+         * data points to assistive technology - including screen readers. The
+         * point context is available as `{point}`.
+         *
+         * Other available context variables include `{index}`, `{value}`, and
+         * `{xDescription}`.
+         *
+         * Additionally, the series name, annotation info, and description added
+         * in `point.accessibility.description` is added by default if relevant.
+         * To override this, use the accessibility.point.descriptionFormatter
+         * option.
+         */
+        valueDescriptionFormat?: string;
+        /**
+         * (Highcharts, Highmaps) Prefix to add to the values in the point
+         * descriptions. Uses tooltip.valuePrefix if not defined.
+         */
+        valuePrefix?: string;
+        /**
+         * (Highcharts, Highmaps) Suffix to add to the values in the point
+         * descriptions. Uses tooltip.valueSuffix if not defined.
+         */
+        valueSuffix?: string;
+    }
+    /**
      * (Highcharts, Highstock, Highmaps, Gantt) Enable or disable the initial
      * animation when a series is displayed for the `dataLabels`. The animation
      * can also be set as a configuration object. Please note that this option
@@ -23,6 +100,303 @@ declare module "../highcharts.src" {
          * `undefined` inherits defer time from the series.animation.defer.
          */
         defer?: number;
+    }
+    /**
+     * (Highcharts, Highstock, Highmaps, Gantt) Options for the series data
+     * labels, appearing next to each data point.
+     *
+     * Since v6.2.0, multiple data labels can be applied to each single point by
+     * defining them as an array of configs.
+     *
+     * In styled mode, the data labels can be styled with the
+     * `.highcharts-data-label-box` and `.highcharts-data-label` class names
+     * (see example).
+     */
+    interface PlotContourDataLabelsOptions {
+        /**
+         * (Highcharts, Highstock, Highmaps, Gantt) The alignment of the data
+         * label compared to the point. If `right`, the right side of the label
+         * should be touching the point. For points with an extent, like
+         * columns, the alignments also dictates how to align it inside the box,
+         * as given with the inside option. Can be one of `left`, `center` or
+         * `right`.
+         */
+        align?: (Highcharts.AlignValue|null);
+        /**
+         * (Highcharts, Highstock, Highmaps, Gantt) Alignment method for data
+         * labels. If set to `plotEdges`, the labels are aligned within the plot
+         * area in the direction of the y-axis. So in a regular column chart,
+         * the labels are aligned vertically according to the `verticalAlign`
+         * setting. In a bar chart, which is inverted, the labels are aligned
+         * horizontally according to the `align` setting. Applies to cartesian
+         * series only.
+         */
+        alignTo?: string;
+        /**
+         * (Highcharts, Highstock, Highmaps, Gantt) Whether to allow data labels
+         * to overlap. To make the labels less sensitive for overlapping, the
+         * dataLabels.padding can be set to 0.
+         */
+        allowOverlap?: boolean;
+        /**
+         * (Highcharts, Highstock, Highmaps, Gantt) Enable or disable the
+         * initial animation when a series is displayed for the `dataLabels`.
+         * The animation can also be set as a configuration object. Please note
+         * that this option only applies to the initial animation.
+         *
+         * For other animations, see chart.animation and the animation parameter
+         * under the API methods. The following properties are supported:
+         *
+         * - `defer`: The animation delay time in milliseconds.
+         */
+        animation?: (boolean|Highcharts.PlotContourDataLabelsAnimationOptions|Partial<Highcharts.AnimationOptionsObject>);
+        /**
+         * (Highcharts, Highstock, Highmaps, Gantt) The background color or
+         * gradient for the data label. In addition to regular colors, there are
+         * two special setting for this option:
+         *
+         * - `auto` will set the background color the point's color.
+         *
+         * - `contrast` will set it to a contrast against the text color, with
+         * an opacity allowing to see the underlying content. The contrast is
+         * great enough to ensure readability for the text according to
+         * accessibility standards.
+         */
+        backgroundColor?: Highcharts.ColorType;
+        /**
+         * (Highcharts, Highstock, Highmaps, Gantt) The border color for the
+         * data label. Setting it to `auto` will use the point's color. Defaults
+         * to `undefined`.
+         */
+        borderColor?: Highcharts.ColorType;
+        /**
+         * (Highcharts, Highstock, Highmaps, Gantt) The border radius in pixels
+         * for the data label.
+         */
+        borderRadius?: number;
+        /**
+         * (Highcharts, Highstock, Highmaps, Gantt) The border width in pixels
+         * for the data label.
+         */
+        borderWidth?: number;
+        /**
+         * (Highcharts, Highstock, Highmaps, Gantt) A class name for the data
+         * label. Particularly in styled mode, this can be used to give each
+         * series' or point's data label unique styling. In addition to this
+         * option, a default color class name is added so that we can give the
+         * labels a contrast text shadow.
+         */
+        className?: string;
+        /**
+         * (Highcharts, Highstock, Highmaps, Gantt) This options is deprecated.
+         * Use style.color instead.
+         *
+         * The text color for the data labels. Defaults to `undefined`. For
+         * certain series types, like column or map, the data labels can be
+         * drawn inside the points. In this case the data label will be drawn
+         * with maximum contrast by default. Additionally, it will be given a
+         * `text-outline` style with the opposite color, to further increase the
+         * contrast. This can be overridden by setting the `text-outline` style
+         * to `none` in the `dataLabels.style` option.
+         *
+         * @deprecated 10.3.0
+         */
+        color?: Highcharts.ColorType;
+        /**
+         * (Highcharts, Highstock, Highmaps, Gantt) Whether to hide data labels
+         * that are outside the plot area. By default, the data label is moved
+         * inside the plot area according to the overflow option.
+         */
+        crop?: boolean;
+        /**
+         * (Highcharts, Highstock, Gantt) Whether to defer displaying the data
+         * labels until the initial series animation has finished. Setting to
+         * `false` renders the data label immediately. If set to `true` inherits
+         * the defer time set in plotOptions.series.animation.
+         */
+        defer?: boolean;
+        /**
+         * (Highcharts, Highstock, Gantt) The distance of the data label from
+         * the data point. Note that the `padding` setting also affects the
+         * rendered distance, but is not visible unless the data label has a
+         * border or background.
+         */
+        distance?: number;
+        /**
+         * (Highcharts, Highstock, Highmaps, Gantt) Enable or disable the data
+         * labels.
+         */
+        enabled?: boolean;
+        /**
+         * (Highcharts, Highstock, Highmaps, Gantt) A declarative filter to
+         * control of which data labels to display. The declarative filter is
+         * designed for use when callback functions are not available, like when
+         * the chart options require a pure JSON structure or for use with
+         * graphical editors. For programmatic control, use the `formatter`
+         * instead, and return `undefined` to disable a single data label. (see
+         * online documentation for example)
+         */
+        filter?: Highcharts.DataLabelsFilterOptionsObject;
+        /**
+         * (Highcharts, Highstock, Highmaps, Gantt) A format string for the data
+         * label. Available variables are the same as for `formatter`.
+         */
+        format?: string;
+        /**
+         * (Highcharts, Highstock, Highmaps, Gantt) Callback JavaScript function
+         * to format the data label. Note that if a `format` is defined, the
+         * format takes precedence and the formatter is ignored.
+         */
+        formatter?: Highcharts.DataLabelsFormatterCallbackFunction;
+        /**
+         * (Highcharts, Highstock, Highmaps, Gantt) For points with an extent,
+         * like columns or map areas, whether to align the data label inside the
+         * box or to the actual value point. Defaults to `false` in most cases,
+         * `true` in stacked columns.
+         */
+        inside?: boolean;
+        /**
+         * (Highcharts, Highstock, Highmaps, Gantt) The rank for this point's
+         * data label in case of collision. If two data labels are about to
+         * overlap, only the one with the highest `labelrank` will be drawn.
+         */
+        labelrank?: number;
+        /**
+         * (Highcharts, Highstock, Highmaps, Gantt) Format for points with the
+         * value of null. Works analogously to format. `nullFormat` can be
+         * applied only to series which support displaying null points.
+         * `heatmap` and `tilemap` supports `nullFormat` by default while the
+         * following series requires [#series.nullInteraction] set to `true`:
+         * `line`, `spline`, `area`, `area-spline`, `column`, `bar`, and
+         * `timeline`. Does not work with series that don't display null points,
+         * like `pie`.
+         */
+        nullFormat?: (boolean|string);
+        /**
+         * (Highcharts, Highstock, Highmaps, Gantt) Callback JavaScript function
+         * that defines formatting for points with the value of null. Works
+         * analogously to formatter. `nullFormatter` can be applied only to
+         * series which support displaying null points. `heatmap` and `tilemap`
+         * supports `nullFormatter` by default while the following series
+         * requires (series.nullInteraction)[#series.nullInteraction] set to
+         * `true`: `line`, `spline`, `area`, `area-spline`, `column`, `bar`, and
+         * `timeline`. Does not work with series that don't display null points,
+         * like `pie`.
+         */
+        nullFormatter?: Highcharts.DataLabelsFormatterCallbackFunction;
+        /**
+         * (Highcharts, Highstock, Highmaps, Gantt) How to handle data labels
+         * that flow outside the plot area. The default is `"justify"`, which
+         * aligns them inside the plot area. For columns and bars, this means it
+         * will be moved inside the bar. To display data labels outside the plot
+         * area, set `crop` to `false` and `overflow` to `"allow"`.
+         */
+        overflow?: Highcharts.DataLabelsOverflowValue;
+        /**
+         * (Highcharts, Highstock, Highmaps, Gantt) When either the
+         * `borderWidth` or the `backgroundColor` is set, this is the padding
+         * within the box.
+         *
+         * An array of numbers sets padding for the respective sides. An array
+         * of two numbers repeats the values for the horizontal and vertical
+         * sides.
+         */
+        padding?: (number|Array<number>);
+        /**
+         * (Highcharts, Highstock, Highmaps, Gantt) Aligns data labels relative
+         * to points. If `center` alignment is not possible, it defaults to
+         * `right`.
+         */
+        position?: Highcharts.AlignValue;
+        /**
+         * (Highcharts, Highstock, Highmaps, Gantt) Text rotation in degrees.
+         * Note that due to a more complex structure, backgrounds, borders and
+         * padding will be lost on a rotated data label.
+         */
+        rotation?: number;
+        /**
+         * (Highcharts, Highstock, Highmaps, Gantt) The shadow of the box. Works
+         * best with `borderWidth` or `backgroundColor`. Since 2.3 the shadow
+         * can be an object configuration containing `color`, `offsetX`,
+         * `offsetY`, `opacity` and `width`.
+         */
+        shadow?: (boolean|Highcharts.ShadowOptionsObject);
+        /**
+         * (Highcharts, Highstock, Highmaps, Gantt) The name of a symbol to use
+         * for the border around the label. Symbols are predefined functions on
+         * the Renderer object.
+         */
+        shape?: string;
+        /**
+         * (Highcharts, Highstock, Highmaps, Gantt) Styles for the label. The
+         * default `color` setting is `"contrast"`, which is a pseudo color that
+         * Highcharts picks up and applies the maximum contrast to the
+         * underlying point item, for example the bar in a bar chart.
+         *
+         * The `textOutline` is a pseudo property that applies an outline of the
+         * given width with the given color, which by default is the maximum
+         * contrast to the text. So a bright text color will result in a black
+         * text outline for maximum readability on a mixed background. In some
+         * cases, especially with grayscale text, the text outline doesn't work
+         * well, in which cases it can be disabled by setting it to `"none"`.
+         * When `useHTML` is true, the `textOutline` will not be picked up. In
+         * this, case, the same effect can be achieved through the `text-shadow`
+         * CSS property. As a complementary or alternative to the `textOutline`,
+         * a `dataLabels.backgroundColor` can be used. It provides a more calm
+         * impression and ensures readable text label, at the cost of a risk of
+         * overshadowing the underlying chart elements.
+         *
+         * For some series types, where each point has an extent, like for
+         * example tree maps, the data label may overflow the point. There are
+         * two strategies for handling overflow. By default, the text will wrap
+         * to multiple lines. The other strategy is to set `style.textOverflow`
+         * to `ellipsis`, which will keep the text on one line plus it will
+         * break inside long words.
+         */
+        style?: Highcharts.CSSObject;
+        /**
+         * (Highcharts, Highstock, Highmaps, Gantt) Options for a label text
+         * which should follow marker's shape. Border and background are
+         * disabled for a label that follows a path.
+         *
+         * **Note:** Only SVG-based renderer supports this option. Setting
+         * `useHTML` to true will disable this option.
+         *
+         * Text path support is not bundled into `highcharts.js`, and requires
+         * the `modules/textpath.js` file. However, it is included in the script
+         * files of those series types that use it by default.
+         */
+        textPath?: Highcharts.DataLabelsTextPathOptionsObject;
+        /**
+         * (Highcharts, Highstock, Highmaps, Gantt) Whether to use HTML to
+         * render the labels.
+         */
+        useHTML?: boolean;
+        /**
+         * (Highcharts, Highstock, Highmaps, Gantt) The vertical alignment of a
+         * data label. Can be one of `top`, `middle` or `bottom`. The default
+         * value depends on the data, for instance in a column chart, the label
+         * is above positive values and below negative values.
+         */
+        verticalAlign?: (Highcharts.VerticalAlignValue|null);
+        /**
+         * (Highcharts, Highstock, Highmaps, Gantt) The x position offset of the
+         * label relative to the point in pixels.
+         */
+        x?: number;
+        /**
+         * (Highcharts, Highstock, Highmaps, Gantt) The y position offset of the
+         * label relative to the point in pixels.
+         */
+        y?: number;
+        /**
+         * (Highcharts, Highstock, Highmaps, Gantt) The z index of the data
+         * labels group. Does not apply below series level options.
+         *
+         * Use a `zIndex` of 6 to display it above the series, or use a `zIndex`
+         * of 2 to display it behind the series.
+         */
+        zIndex?: number;
     }
     /**
      * (Highcharts, Highstock) Options for series data sorting.
@@ -46,9 +420,23 @@ declare module "../highcharts.src" {
         sortKey?: string;
     }
     /**
+     * (Highcharts, Highstock, Gantt) Styles for the series label. The color
+     * defaults to the series color, or a contrast color if `onArea`.
+     */
+    interface PlotContourLabelStyleOptions {
+        fontSize?: number;
+        fontWeight?: string;
+    }
+    /**
      * (Highcharts, Highmaps) Animation when hovering over the marker.
      */
     interface PlotContourMarkerStatesHoverAnimationOptions {
+        duration?: number;
+    }
+    /**
+     * (Highcharts, Highmaps) Animation when hovering over the marker.
+     */
+    interface PlotContourMarkerStatesSelectAnimationOptions {
         duration?: number;
     }
     /**
@@ -73,6 +461,31 @@ declare module "../highcharts.src" {
          * (Highcharts, Highmaps) Pixel width of the connector line.
          */
         width?: number;
+    }
+    /**
+     * (Highcharts, Highmaps) Options for the _Series on point_ feature. Only
+     * `pie` and `sunburst` series are supported at this moment.
+     */
+    interface PlotContourOnPointOptions {
+        /**
+         * (Highcharts, Highmaps) Options for the connector in the _Series on
+         * point_ feature.
+         *
+         * In styled mode, the connector can be styled with the
+         * `.highcharts-connector-seriesonpoint` class name.
+         */
+        connectorOptions?: (Highcharts.PlotContourOnPointConnectorOptions|Highcharts.SVGAttributes);
+        /**
+         * (Highcharts, Highmaps) The `id` of the point that we connect the
+         * series to. Only points with a given `plotX` and `plotY` values and
+         * map points are valid.
+         */
+        id?: string;
+        /**
+         * (Highcharts, Highmaps) Options allowing to set a position and an
+         * offset of the series in the _Series on point_ feature.
+         */
+        position?: (object|Highcharts.PlotContourOnPointPositionOptions);
     }
     /**
      * (Highcharts, Highmaps) Options allowing to set a position and an offset
@@ -103,10 +516,611 @@ declare module "../highcharts.src" {
         y?: number;
     }
     /**
+     * (Highcharts, Highmaps) A contour plot is a graphical representation of
+     * three-dimensional data
+     *
+     * Configuration options for the series are given in three levels:
+     *
+     * 1. Options for all series in a chart are defined in the
+     * plotOptions.series object.
+     *
+     * 2. Options for all `contour` series are defined in plotOptions.contour.
+     *
+     * 3. Options for one single series are given in the series instance array.
+     * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - type option should always be set, otherwise a broad set of unsupported
+     * options is allowed.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
+     */
+    interface PlotContourOptions {
+        /**
+         * (Highcharts, Highmaps) Accessibility options for a series.
+         */
+        accessibility?: Highcharts.SeriesAccessibilityOptionsObject;
+        /**
+         * (Highcharts, Highmaps) Allow this series' points to be selected by
+         * clicking on the graphic (columns, point markers, pie slices, map
+         * areas etc).
+         *
+         * The selected points can be handled by point select and unselect
+         * events, or collectively by the getSelectedPoints function.
+         *
+         * And alternative way of selecting points is through dragging.
+         */
+        allowPointSelect?: boolean;
+        /**
+         * (Highcharts, Highmaps) Enable or disable the initial animation when a
+         * series is displayed. The animation can also be set as a configuration
+         * object. Please note that this option only applies to the initial
+         * animation of the series itself. For other animations, see
+         * chart.animation and the animation parameter under the API methods.
+         * The following properties are supported:
+         *
+         * - `defer`: The animation delay time in milliseconds.
+         *
+         * - `duration`: The duration of the animation in milliseconds.
+         * (Defaults to `1000`)
+         *
+         * - `easing`: Can be a string reference to an easing function set on
+         * the `Math` object or a function. See the _Custom easing function_
+         * demo below. (Defaults to `easeInOutSine`)
+         *
+         * Due to poor performance, animation is disabled in old IE browsers for
+         * several chart types.
+         */
+        animation?: (boolean|Highcharts.AnimationOptionsObject);
+        /**
+         * (Highcharts, Highmaps) Sets the color blending in the boost module.
+         */
+        boostBlending?: Highcharts.OptionsBoostBlendingValue;
+        /**
+         * (Highcharts, Highmaps) Set the point threshold for when a series
+         * should enter boost mode.
+         *
+         * Setting it to e.g. 2000 will cause the series to enter boost mode
+         * when there are 2000 or more points in the series.
+         *
+         * To disable boosting on the series, set the `boostThreshold` to 0.
+         * Setting it to 1 will force boosting.
+         *
+         * Note that the cropThreshold also affects this setting. When zooming
+         * in on a series that has fewer points than the `cropThreshold`, all
+         * points are rendered although outside the visible plot area, and the
+         * `boostThreshold` won't take effect.
+         */
+        boostThreshold?: number;
+        /**
+         * (Highmaps) The border color of the map areas.
+         *
+         * In styled mode, the border stroke is given in the `.highcharts-point`
+         * class.
+         */
+        borderColor?: Highcharts.ColorType;
+        /**
+         * (Highmaps) The border width of each map area.
+         *
+         * In styled mode, the border stroke width is given in the
+         * `.highcharts-point` class.
+         */
+        borderWidth?: number;
+        /**
+         * (Highcharts, Highmaps) An additional class name to apply to the
+         * series' graphical elements. This option does not replace default
+         * class names of the graphical element. Changes to the series' color
+         * will also be reflected in a chart's legend and tooltip.
+         */
+        className?: string;
+        /**
+         * (Highcharts, Highmaps) Disable this option to allow series rendering
+         * in the whole plotting area.
+         *
+         * **Note:** Clipping should be always enabled when chart.zoomType is
+         * set
+         */
+        clip?: boolean;
+        /**
+         * (Highcharts, Highmaps) The main color of the series. In line type
+         * series it applies to the line and the point markers unless otherwise
+         * specified. In bar type series it applies to the bars unless a color
+         * is specified per point. The default value is pulled from the
+         * `options.colors` array.
+         *
+         * In styled mode, the color can be defined by the colorIndex option.
+         * Also, the series color can be set with the `.highcharts-series`,
+         * `.highcharts-color-{n}`, `.highcharts-{type}-series` or
+         * `.highcharts-series-{n}` class, or individual classes given by the
+         * `className` option.
+         */
+        color?: Highcharts.ColorType;
+        /**
+         * (Highcharts, Highstock, Highmaps) When using dual or multiple color
+         * axes, this number defines which colorAxis the particular series is
+         * connected to. It refers to either the axis id or the index of the
+         * axis in the colorAxis array, with 0 being the first. Set this option
+         * to false to prevent a series from connecting to the default color
+         * axis.
+         *
+         * Since v7.2.0 the option can also be an axis id or an axis index
+         * instead of a boolean flag.
+         */
+        colorAxis?: (boolean|number|string);
+        /**
+         * (Highcharts, Highmaps) Styled mode only. A specific color index to
+         * use for the series, so its graphic representations are given the
+         * class name `highcharts-color-{n}`.
+         *
+         * Since v11, CSS variables on the form `--highcharts-color-{n}` make
+         * changing the color scheme very convenient.
+         */
+        colorIndex?: number;
+        /**
+         * (Highcharts, Highstock, Highmaps) This must be set to `'value'` to
+         * make the colorAxis track with the contour plot.
+         */
+        colorKey?: string;
+        /**
+         * (Highcharts, Highmaps) The interval between contour lines. Determines
+         * the spacing of value levels where lines are drawn on the plot. By
+         * default, the interval is calculated using the value range.
+         */
+        contourInterval?: number;
+        /**
+         * (Highcharts, Highmaps) The offset for contour line positioning.
+         * Shifts the contour levels so lines and bands are drawn at
+         * `contourOffset + n * contourInterval` instead of `n *
+         * contourInterval`.
+         *
+         * Example: with `contourInterval: 10` and `contourOffset: 5`, levels
+         * are at 5, 15, 25, etc. Use this to align levels with a reference
+         * value without changing the data. Non-positive values are treated as
+         * 0.
+         */
+        contourOffset?: number;
+        /**
+         * (Highcharts, Highstock, Gantt) When true, each point or column edge
+         * is rounded to its nearest pixel in order to render sharp on screen.
+         * In some cases, when there are a lot of densely packed columns, this
+         * leads to visible difference in column widths or distance between
+         * columns. In these cases, setting `crisp` to `false` may look better,
+         * even though each column is rendered blurry.
+         */
+        crisp?: boolean;
+        /**
+         * (Highcharts, Highmaps) You can set the cursor to "pointer" if you
+         * have click events attached to the series, to signal to the user that
+         * the points and lines can be clicked.
+         *
+         * In styled mode, the series cursor can be set with the same classes as
+         * listed under series.color.
+         */
+        cursor?: (string|Highcharts.CursorValue);
+        /**
+         * (Highcharts, Highmaps) A reserved subspace to store options and
+         * values for customized functionality. Here you can add additional data
+         * for your own event callbacks and formatter callbacks.
+         */
+        custom?: Highcharts.Dictionary<any>;
+        /**
+         * (Highcharts, Highstock, Highmaps, Gantt) Options for the series data
+         * labels, appearing next to each data point.
+         *
+         * Since v6.2.0, multiple data labels can be applied to each single
+         * point by defining them as an array of configs.
+         *
+         * In styled mode, the data labels can be styled with the
+         * `.highcharts-data-label-box` and `.highcharts-data-label` class names
+         * (see example).
+         */
+        dataLabels?: (Highcharts.PlotContourDataLabelsOptions|Array<Highcharts.PlotContourDataLabelsOptions>);
+        /**
+         * (Highcharts, Highmaps) The mapping between the data table and the
+         * series data points. This is used in conjunction with the `dataTable`
+         * option (on chart or series level) to map columns from the data table
+         * to the properties of the data points. The keys of the `dataMapping`
+         * object correspond to the properties of the data points (e.g. `x`,
+         * `y`, `name`), and the values are objects that specify which column
+         * from which data table to use for that property.
+         *
+         * The keys can also be nested paths, for example `dataLabel.format`, to
+         * map to nested properties of the data points.
+         *
+         * The values can also be strings, in which case they are interpreted as
+         * column id's from the first data table.
+         *
+         * A typical use case is that multiple series share a common column,
+         * like `name` or `x`. In this case, to avoid repetition, the common
+         * column can be applied in `plotOptions.series.dataMapping` and the
+         * individual series can specify only the columns that are unique to
+         * them.
+         *
+         * The series name defaults to the column ID of the main data column in
+         * the mapping. The main data column is typically the `y` data for
+         * cartesian series, or `value` for map series. For example, if the
+         * mapping is `{ y: 'Cost' }`, the series name will be `Cost`. (see
+         * online documentation for example)
+         *
+         * If the columns of the DataTable have keys matching the series keys,
+         * the data mapping is not necessary. For example, this DataTable will
+         * connect directly to the series' `x` and `y` keys: (see online
+         * documentation for example)
+         */
+        dataMapping?: Highcharts.DataMappingOptionsObject;
+        /**
+         * (Highcharts, Highstock) Options for series data sorting.
+         */
+        dataSorting?: Highcharts.PlotContourDataSortingOptions;
+        /**
+         * (Highcharts, Highmaps) Options for a specific series-level data table
+         * or an array of data tables. The `dataTable` option can be either a
+         * configuration object or an instance of the `DataTable` class. If a
+         * `DataTable` instance is passed, it will be used directly. If a
+         * configuration object or an array is passed, a new `DataTable`
+         * instance will be created based on the provided configuration.
+         */
+        dataTable?: (Highcharts.DataTable|Highcharts.DataTableOptionsObject|Array<(Highcharts.DataTable|Highcharts.DataTableOptionsObject)>);
+        /**
+         * (Highcharts, Highmaps) Deprecated. Use
+         * plotOptions.series.accessibility.description instead.
+         *
+         * A description of the series to add to the screen reader information
+         * about the series.
+         *
+         * @deprecated 8.0.0
+         */
+        description?: string;
+        /**
+         * (Highcharts, Highmaps) Enable or disable the mouse tracking for a
+         * specific series. This includes point tooltips and click events on
+         * graphs and points. For large datasets it improves performance.
+         */
+        enableMouseTracking?: boolean;
+        /**
+         * (Highcharts, Highmaps) General event handlers for the series items.
+         * These event hooks can also be attached to the series at run time
+         * using the `Highcharts.addEvent` function.
+         */
+        events?: Highcharts.SeriesEventsOptionsObject;
+        /**
+         * (Highcharts, Highmaps) Determines whether the series should look for
+         * the nearest point in both dimensions or just the x-dimension when
+         * hovering the series. Defaults to `'xy'` for scatter series and `'x'`
+         * for most other series. If the data has duplicate x-values, it is
+         * recommended to set this to `'xy'` to allow hovering over all points.
+         *
+         * Applies only to series types using nearest neighbor search (not
+         * direct hover) for tooltip.
+         */
+        findNearestPointBy?: Highcharts.OptionsFindNearestPointByValue;
+        /**
+         * (Highcharts, Highstock) Defines when to display a gap in the graph,
+         * together with the gapUnit option.
+         *
+         * In case when `dataGrouping` is enabled, points can be grouped into a
+         * larger time span. This can make the grouped points to have a greater
+         * distance than the absolute value of `gapSize` property, which will
+         * result in disappearing graph completely. To prevent this situation
+         * the mentioned distance between grouped points is used instead of
+         * previously defined `gapSize`.
+         *
+         * In practice, this option is most often used to visualize gaps in time
+         * series. In a stock chart, intraday data is available for daytime
+         * hours, while gaps will appear in nights and weekends.
+         */
+        gapSize?: number;
+        /**
+         * (Highcharts, Highstock) Together with gapSize, this option defines
+         * where to draw gaps in the graph.
+         *
+         * When the `gapUnit` is `"relative"` (default), a gap size of 5 means
+         * that if the distance between two points is greater than 5 times that
+         * of the two closest points, the graph will be broken.
+         *
+         * When the `gapUnit` is `"value"`, the gap is based on absolute axis
+         * values, which on a datetime axis is milliseconds. This also applies
+         * to the navigator series that inherits gap options from the base
+         * series.
+         */
+        gapUnit?: Highcharts.OptionsGapUnitValue;
+        /**
+         * (Highcharts, Highmaps) Highlight only the hovered point and fade the
+         * remaining points.
+         *
+         * Scatter-type series require enabling the 'inactive' marker state and
+         * adjusting opacity. Note that this approach could affect performance
+         * with large datasets.
+         */
+        inactiveOtherPoints?: boolean;
+        /**
+         * (Highcharts, Highmaps) When set to `false` will prevent the series
+         * data from being included in any form of data export.
+         *
+         * Since version 6.0.0 until 7.1.0 the option was existing undocumented
+         * as `includeInCSVExport`.
+         */
+        includeInDataExport?: boolean;
+        /**
+         * (Highmaps) What property to join the `mapData` to the value data. For
+         * example, if joinBy is "code", the mapData items with a specific code
+         * is merged into the data with the same code. For maps loaded from
+         * GeoJSON, the keys may be held in each point's `properties` object.
+         *
+         * The joinBy option can also be an array of two values, where the first
+         * points to a key in the `mapData`, and the second points to another
+         * key in the `data`.
+         *
+         * When joinBy is `null`, the map items are joined by their position in
+         * the array, which performs much better in maps with many data points.
+         * This is the recommended option if you are printing more than a
+         * thousand data points and have a backend that can preprocess the data
+         * into a parallel array of the mapData.
+         */
+        joinBy?: (string|Array<string>);
+        /**
+         * (Highcharts, Highmaps) An array specifying which option maps to which
+         * key in the data point array. This makes it convenient to work with
+         * unstructured data arrays from different sources.
+         */
+        keys?: Array<string>;
+        /**
+         * (Highcharts, Highstock, Gantt) Series labels are placed as close to
+         * the series as possible in a natural way, seeking to avoid other
+         * series. The goal of this feature is to make the chart more easily
+         * readable, like if a human designer placed the labels in the optimal
+         * position.
+         *
+         * The series labels currently work with series types having a `graph`
+         * or an `area`.
+         */
+        label?: Highcharts.SeriesLabelOptionsObject;
+        /**
+         * (Highcharts, Highmaps) What type of legend symbol to render for this
+         * series. Can be one of `areaMarker`, `lineMarker` or `rectangle`.
+         */
+        legendSymbol?: Highcharts.OptionsLegendSymbolValue;
+        /**
+         * (Highcharts, Highmaps) The color of the contour lines.
+         */
+        lineColor?: Highcharts.ColorType;
+        /**
+         * (Highcharts, Highstock) This setting controls the visibility and size
+         * of contour lines. For now, only '1' and '0' are valid options,
+         * effectively controlling the visibility of the lines.
+         */
+        lineWidth?: number;
+        /**
+         * (Highcharts, Highstock, Gantt) The id of another series to link to.
+         * Additionally, the value can be ":previous" to link to the previous
+         * series. When two series are linked, only the first one appears in the
+         * legend. Toggling the visibility of this also toggles the linked
+         * series.
+         *
+         * If master series uses data sorting and linked series does not have
+         * its own sorting definition, the linked series will be sorted in the
+         * same order as the master one.
+         *
+         * If a `compare` value is not set on a linked series, it will be
+         * inherited from the parent series.
+         */
+        linkedTo?: string;
+        /**
+         * (Highcharts, Highmaps) Options for the point markers of line and
+         * scatter-like series. Properties like `fillColor`, `lineColor` and
+         * `lineWidth` define the visual appearance of the markers. The `symbol`
+         * option defines the shape. Other series types, like column series,
+         * don't have markers, but have visual options on the series level
+         * instead.
+         *
+         * In styled mode, the markers can be styled with the
+         * `.highcharts-point`, `.highcharts-point-hover` and
+         * `.highcharts-point-select` class names.
+         */
+        marker?: Highcharts.PointMarkerOptionsObject;
+        /**
+         * (Highcharts, Highmaps) The color for the parts of the graph or points
+         * that are below the threshold. Note that `zones` takes precedence over
+         * the negative color. Using `negativeColor` is equivalent to applying a
+         * zone with value of 0.
+         */
+        negativeColor?: Highcharts.ColorType;
+        /**
+         * (Highcharts, Highstock) Whether or not data-points with the value of
+         * `null` should be interactive. When this is set to `true`, tooltips
+         * may highlight these points, and this option also enables keyboard
+         * navigation for such points. Format options for such points include
+         * `nullFormat` and `nullFormatter`. Works for these series: `line`,
+         * `spline`, `area`, `area-spline`, `column`, `bar`, and `timeline`.
+         */
+        nullInteraction?: (boolean|undefined);
+        /**
+         * (Highcharts, Highmaps) Options for the _Series on point_ feature.
+         * Only `pie` and `sunburst` series are supported at this moment.
+         */
+        onPoint?: (object|Highcharts.PlotContourOnPointOptions);
+        /**
+         * (Highcharts, Highmaps) Opacity of a series parts: line, fill (e.g.
+         * area) and dataLabels.
+         */
+        opacity?: number;
+        /**
+         * (Highcharts, Highmaps) Properties for each single point.
+         */
+        point?: Highcharts.PlotSeriesPointOptions;
+        /**
+         * (Highcharts, Highmaps) Deprecated. Use
+         * series.accessibility.point.descriptionFormat instead.
+         *
+         * Same as accessibility.point.descriptionFormat, but for an individual
+         * series. Overrides the chart wide configuration.
+         *
+         * @deprecated 12.6.0
+         */
+        pointDescriptionFormat?: Function;
+        /**
+         * (Highcharts, Highmaps) Deprecated. Use
+         * series.accessibility.point.descriptionFormatter instead.
+         *
+         * Same as accessibility.series.descriptionFormatter, but for an
+         * individual series. Overrides the chart wide configuration.
+         *
+         * @deprecated 8.0.0
+         */
+        pointDescriptionFormatter?: Function;
+        /**
+         * (Highcharts, Highstock) When true, X values in the data set are
+         * relative to the current `pointStart`, `pointInterval` and
+         * `pointIntervalUnit` settings. This allows compression of the data for
+         * datasets with irregular X values.
+         *
+         * The real X values are computed on the formula `f(x) = ax + b`, where
+         * `a` is the `pointInterval` (optionally with a time unit given by
+         * `pointIntervalUnit`), and `b` is the `pointStart`.
+         */
+        relativeXValue?: boolean;
+        /**
+         * (Highcharts, Highmaps) Whether to select the series initially. If
+         * `showCheckbox` is true, the checkbox next to the series name in the
+         * legend will be checked for a selected series.
+         */
+        selected?: boolean;
+        /**
+         * (Highcharts, Highmaps) If true, a checkbox is displayed next to the
+         * legend item to allow selecting the series. The state of the checkbox
+         * is determined by the `selected` option.
+         */
+        showCheckbox?: boolean;
+        /**
+         * (Highcharts, Highmaps) Whether to display this particular series or
+         * series type in the legend. Standalone series are shown in legend by
+         * default, and linked series are not. Since v7.2.0 it is possible to
+         * show series that use colorAxis by setting this option to `true`.
+         */
+        showInLegend?: boolean;
+        /**
+         * (Highcharts, Highmaps) Deprecated. Use
+         * series.accessibility.keyboardNavigation instead.
+         *
+         * If set to `true`, the accessibility module will skip past the points
+         * in this series for keyboard navigation.
+         *
+         * @deprecated 8.0.0
+         */
+        skipKeyboardNavigation?: boolean;
+        /**
+         * (Highcharts, Highmaps) Whether to use gradually transitioning color
+         * gradients between contour levels. When disabled, each contour level
+         * is filled with a single flat color.
+         */
+        smoothColoring?: boolean;
+        /**
+         * (Highcharts, Highmaps) Sonification/audio chart options for a series.
+         */
+        sonification?: Highcharts.SeriesSonificationOptions;
+        /**
+         * (Highcharts, Highmaps) A collection of options for different series
+         * states.
+         *
+         * In addition to the options documented under each state, any option
+         * from the parent series type can be set, with exception of `data` and
+         * `states`.
+         */
+        states?: Highcharts.SeriesStatesOptionsObject;
+        /**
+         * (Highcharts, Highstock, Highmaps) Sticky tracking of mouse events.
+         * When true, the `mouseOut` event on a series isn't triggered until the
+         * mouse moves over another series, or out of the plot area. When false,
+         * the `mouseOut` event on a series is triggered when the mouse leaves
+         * the area around the series' graph or markers. This also implies the
+         * tooltip. When `stickyTracking` is false and `tooltip.shared` is
+         * false, the tooltip will be hidden when moving the mouse between
+         * series.
+         */
+        stickyTracking?: boolean;
+        /**
+         * (Highcharts, Highstock, Highmaps) A configuration object for the
+         * tooltip rendering of each single series. Properties are inherited
+         * from tooltip. Overridable properties are `headerFormat`,
+         * `pointFormat`, `yDecimals`, `xDateFormat`, `yPrefix` and `ySuffix`.
+         * Unlike other series, in a scatter plot the series.name by default
+         * shows in the headerFormat and point.x and point.y in the pointFormat.
+         */
+        tooltip?: Highcharts.SeriesTooltipOptionsObject;
+        /**
+         * (Highcharts, Highstock, Gantt) When a series contains a `data` array
+         * that is longer than this, the Series class looks for data
+         * configurations of plain numbers or arrays of numbers. The first and
+         * last valid points are checked. If found, the rest of the data is
+         * assumed to be the same. This saves expensive data checking and
+         * indexing in long series, and makes data-heavy charts render faster.
+         *
+         * Set it to `0` disable.
+         *
+         * Note:
+         *
+         * - In boost mode turbo threshold is forced. Only array of numbers or
+         * two dimensional arrays are allowed.
+         *
+         * - In version 11.4.3 and earlier, if object configurations were passed
+         * beyond the turbo threshold, a warning was logged in the console and
+         * the data series didn't render.
+         */
+        turboThreshold?: number;
+        /**
+         * (Highcharts, Highmaps) Set the initial visibility of the series.
+         */
+        visible?: boolean;
+        /**
+         * (Highmaps) Define the z index of the series.
+         */
+        zIndex?: number;
+        /**
+         * (Highcharts, Highstock) Defines the Axis on which the zones are
+         * applied.
+         */
+        zoneAxis?: string;
+        /**
+         * (Highcharts, Highstock) An array defining zones within a series.
+         * Zones can be applied to the X axis, Y axis or Z axis for bubbles,
+         * according to the `zoneAxis` option. The zone definitions have to be
+         * in ascending order regarding to the value.
+         *
+         * In styled mode, the color zones are styled with the
+         * `.highcharts-zone-{n}` class, or custom classed from the `className`
+         * option (view live demo).
+         */
+        zones?: Array<Highcharts.SeriesZonesOptionsObject>;
+        /**
+         * (Highcharts, Highmaps) Whether to zoom non-cartesian series. If
+         * `chart.zooming` is set, the option allows to disable zooming on an
+         * individual non-cartesian series. By default zooming is enabled for
+         * all series.
+         *
+         * **Note**: This option works only for non-cartesian series.
+         */
+        zoomEnabled?: boolean;
+    }
+    /**
      * (Highcharts, Highstock) Animation setting for hovering the graph in
      * line-type series.
      */
     interface PlotContourStatesHoverAnimationOptions {
+        /**
+         * (Highcharts, Highstock) The duration of the hover animation in
+         * milliseconds. By default the hover state animates quickly in, and
+         * slowly back to normal.
+         */
+        duration?: number;
+    }
+    /**
+     * (Highcharts, Highstock) Animation when not hovering over the marker.
+     */
+    interface PlotContourStatesInactiveAnimationOptions {
         /**
          * (Highcharts, Highstock) The duration of the hover animation in
          * milliseconds. By default the hover state animates quickly in, and
@@ -125,6 +1139,23 @@ declare module "../highcharts.src" {
          * slowly back to normal.
          */
         duration?: number;
+    }
+    /**
+     * (Highcharts, Highstock, Gantt) For series on datetime axes, the date
+     * format in the tooltip's header will by default be guessed based on the
+     * closest data points. This member gives the default string representations
+     * used for each unit. For an overview of the string or object
+     * configuration, see dateFormat.
+     */
+    interface PlotContourTooltipDateTimeLabelFormatsOptions {
+        day?: string;
+        hour?: string;
+        millisecond?: string;
+        minute?: string;
+        month?: string;
+        second?: string;
+        week?: string;
+        year?: string;
     }
     /**
      * (Highcharts, Highstock, Highmaps) Options for the tooltip header when
@@ -171,6 +1202,43 @@ declare module "../highcharts.src" {
         style?: object;
     }
     /**
+     * (Highcharts, Highstock, Highmaps) Positioning options for fixed tooltip,
+     * taking effect only when tooltip.fixed is `true`.
+     */
+    interface PlotContourTooltipPositionOptions {
+        /**
+         * (Highcharts, Highstock, Highmaps) The horizontal alignment of the
+         * fixed tooltip.
+         */
+        align?: Highcharts.AlignValue;
+        /**
+         * (Highcharts, Highstock, Highmaps) What the fixed tooltip alignment
+         * should be relative to.
+         *
+         * The default, `pane`, means that it is aligned within the plot area
+         * for that given series. If the tooltip is split (as default in Stock
+         * charts), each partial tooltip is aligned within the series' pane.
+         */
+        relativeTo?: Highcharts.OptionsRelativeToValue;
+        /**
+         * (Highcharts, Highstock, Highmaps) The vertical alignment of the fixed
+         * tooltip.
+         */
+        verticalAlign?: Highcharts.VerticalAlignValue;
+        /**
+         * (Highcharts, Highstock, Highmaps) X pixel offset from the given
+         * position. Can be used to shy away from axis lines, grid lines etc to
+         * avoid the tooltip overlapping other elements.
+         */
+        x?: number;
+        /**
+         * (Highcharts, Highstock, Highmaps) Y pixel offset from the given
+         * position. Can be used to shy away from axis lines, grid lines etc to
+         * avoid the tooltip overlapping other elements.
+         */
+        y?: number;
+    }
+    /**
      * (Highcharts, Highstock, Gantt) Enable or disable the initial animation
      * when a series is displayed for the `dataLabels`. The animation can also
      * be set as a configuration object. Please note that this option only
@@ -192,7 +1260,87 @@ declare module "../highcharts.src" {
     /**
      * (Highcharts, Highstock) Animation when hovering over the marker.
      */
+    interface SeriesContourDataMarkerStatesHoverAnimationOptions {
+        duration?: number;
+    }
+    /**
+     * (Highcharts, Highstock) Animation when hovering over the marker.
+     */
     interface SeriesContourDataMarkerStatesSelectAnimationOptions {
         duration?: number;
+    }
+    /**
+     * (Highcharts, Highmaps) A contour plot is a graphical representation of
+     * three-dimensional data in two dimensions using contour lines or
+     * color-coded regions.
+     *
+     * Configuration options for the series are given in three levels:
+     *
+     * 1. Options for all series in a chart are defined in the
+     * plotOptions.series object.
+     *
+     * 2. Options for all `contour` series are defined in plotOptions.contour.
+     *
+     * 3. Options for one single series are given in the series instance array.
+     * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - type option should always be set, otherwise a broad set of unsupported
+     * options is allowed.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
+     *
+     * You have to extend the `SeriesContourOptions` via an interface to allow
+     * custom properties: ``` declare interface SeriesContourOptions {
+     * customProperty: string; }
+     *
+     */
+    interface SeriesContourOptions extends Highcharts.PlotContourOptions, Highcharts.SeriesOptions {
+        /**
+         * (Highcharts, Highmaps) An array of data points for the series. For
+         * the `contour` series type, points can be given in the following ways:
+         *
+         * 1. An array of arrays with 3 or 2 values. In this case, the values
+         * correspond to `x,y,value`. If the first value is a string, it is
+         * applied as the name of the point, and the `x` value is inferred.
+         * Unlike the heatmap, the contour series data points, do not have to
+         * appear in any specific order. (see online documentation for example)
+         *
+         * 2. An array of objects with named values. The following snippet shows
+         * only a few settings, see the complete options set below. If the total
+         * number of data points exceeds the series' turboThreshold, this option
+         * is not available. (see online documentation for example)
+         */
+        data?: Array<(Array<number>|Highcharts.PointOptionsObject)>;
+        /**
+         * Not available
+         */
+        grouping?: undefined;
+        /**
+         * Not available
+         */
+        groupPadding?: undefined;
+        /**
+         * Not available
+         */
+        groupZPadding?: undefined;
+        /**
+         * Not available
+         */
+        jitter?: undefined;
+        /**
+         * Not available
+         */
+        stack?: undefined;
+        /**
+         * (Highcharts, Highstock, Highmaps, Gantt) This property is only in
+         * TypeScript non-optional and might be `undefined` in series objects
+         * from unknown sources.
+         */
+        type: "contour";
     }
 }

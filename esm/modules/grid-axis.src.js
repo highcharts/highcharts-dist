@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Gantt JS v13.0.2 (2026-08-27)
+ * @license Highcharts Gantt JS v13.1.0 (2026-09-18)
  * @module highcharts/modules/grid-axis
  * @requires highcharts
  *
@@ -18,48 +18,27 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 /******/ 
 /************************************************************************/
 /******/ /* webpack/runtime/compat get default export */
-/******/ (() => {
-/******/ 	// getDefaultExport function for compatibility with non-harmony modules
-/******/ 	__webpack_require__.n = (module) => {
-/******/ 		const getter = module && module.__esModule ?
-/******/ 			() => (module['default']) :
-/******/ 			() => (module);
-/******/ 		__webpack_require__.d(getter, { a: getter });
-/******/ 		return getter;
-/******/ 	};
-/******/ })();
+/******/ // getDefaultExport function for compatibility with non-harmony modules
+/******/ __webpack_require__.n = (module) => {
+/******/ 	const getter = module && module.__esModule ?
+/******/ 		() => (module['default']) :
+/******/ 		() => (module);
+/******/ 	__webpack_require__.d(getter, { a: getter });
+/******/ 	return getter;
+/******/ };
 /******/ 
 /******/ /* webpack/runtime/define property getters */
-/******/ (() => {
-/******/ 	// define getter/value functions for harmony exports
-/******/ 	__webpack_require__.d = (exports, definition) => {
-/******/ 		if(Array.isArray(definition)) {
-/******/ 			var i = 0;
-/******/ 			while(i < definition.length) {
-/******/ 				var key = definition[i++];
-/******/ 				var binding = definition[i++];
-/******/ 				if(!__webpack_require__.o(exports, key)) {
-/******/ 					if(binding === 0) {
-/******/ 						Object.defineProperty(exports, key, { enumerable: true, value: definition[i++] });
-/******/ 					} else {
-/******/ 						Object.defineProperty(exports, key, { enumerable: true, get: binding });
-/******/ 					}
-/******/ 				} else if(binding === 0) { i++; }
-/******/ 			}
-/******/ 		} else {
-/******/ 			for(var key in definition) {
-/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
-/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
-/******/ 				}
-/******/ 			}
+/******/ // define getter/value functions for harmony exports
+/******/ __webpack_require__.d = (exports, definition) => {
+/******/ 	for(var key in definition) {
+/******/ 		if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 			Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
 /******/ 		}
-/******/ 	};
-/******/ })();
+/******/ 	}
+/******/ };
 /******/ 
 /******/ /* webpack/runtime/hasOwnProperty shorthand */
-/******/ (() => {
-/******/ 	__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
-/******/ })();
+/******/ __webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop));
 /******/ 
 /************************************************************************/
 
@@ -84,7 +63,7 @@ var external_highcharts_src_js_default_Axis_default = /*#__PURE__*/__webpack_req
 
 
 
-const { dateFormats } = (external_highcharts_src_js_default_default());
+const { composed, dateFormats } = (external_highcharts_src_js_default_default());
 
 
 /* *
@@ -148,8 +127,7 @@ function applyGridOptions(axis) {
  * @internal
  */
 function compose(AxisClass, ChartClass, TickClass) {
-    if (!AxisClass.keepProps.includes('grid')) {
-        AxisClass.keepProps.push('grid');
+    if ((0,external_highcharts_src_js_default_namespaceObject.pushUnique)(composed, 'Axis.Grid')) {
         AxisClass.prototype.getMaxLabelDimensions = getMaxLabelDimensions;
         (0,external_highcharts_src_js_default_namespaceObject.wrap)(AxisClass.prototype, 'unsquish', wrapUnsquish);
         (0,external_highcharts_src_js_default_namespaceObject.wrap)(AxisClass.prototype, 'getOffset', wrapGetOffset);
@@ -289,13 +267,19 @@ function onAfterGetTitlePosition(e) {
 }
 /** @internal */
 function onAfterInit() {
+    var _a;
     const axis = this;
     const { chart, options: { grid: gridOptions = {} }, userOptions } = axis;
     if (gridOptions.enabled) {
         applyGridOptions(axis);
     }
     if (gridOptions.columns) {
-        const columns = axis.grid.columns = [];
+        (_a = axis.grid).columns || (_a.columns = []);
+        const columns = axis.grid.columns;
+        // Destroy existing columns. In a future update we could consider
+        // matching and updating existing columns instead of recreating all.
+        columns.forEach((column) => column.destroy());
+        columns.length = 0;
         let columnIndex = axis.grid.columnIndex = 0;
         // Handle columns, each column is a grid axis
         while (++columnIndex < gridOptions.columns.length) {
@@ -662,7 +646,7 @@ function onAfterSetOptions(e) {
             }
         }
         // Now merge the combined options into the axis options
-        (0,external_highcharts_src_js_default_namespaceObject.merge)(true, this.options, gridAxisOptions);
+        ;(0,external_highcharts_src_js_default_namespaceObject.merge)(true, this.options, gridAxisOptions);
         if (this.horiz) {
             /*               _________________________
             Make this:    ___|_____|_____|_____|__|
@@ -707,11 +691,10 @@ function onAfterSetScale() {
  * @internal
  */
 function onAfterTickSize(e) {
-    const { horiz, maxLabelDimensions, options: { grid: gridOptions = {} } } = this;
-    if (gridOptions.enabled && maxLabelDimensions) {
-        const labelPadding = this.options.labels.distance * 2;
-        const distance = horiz ?
-            (gridOptions.cellHeight ||
+    const { horiz, maxLabelDimensions, options } = this, { labels, grid = {} } = options;
+    if (grid.enabled && maxLabelDimensions) {
+        const labelPadding = (labels.distance ?? 15) * 2, distance = horiz ?
+            (grid.cellHeight ||
                 labelPadding + maxLabelDimensions.height) :
             labelPadding + maxLabelDimensions.width;
         if ((0,external_highcharts_src_js_default_namespaceObject.isArray)(e.tickSize)) {
@@ -732,14 +715,14 @@ function onChartAfterSetChartSize() {
     });
 }
 /** @internal */
-function onDestroy(e) {
+function onDestroy() {
     const { grid } = this;
     // Axes created before the Gantt module was loaded have no grid
     // additions to be destroyed (#24644).
     if (!grid) {
         return;
     }
-    (grid.columns || []).forEach((column) => column.destroy(e.keepEvents));
+    (grid.columns || []).forEach((column) => column.destroy());
     grid.columns = void 0;
 }
 /**
@@ -907,7 +890,7 @@ function onTrimTicks() {
         max > beforeLastPos);
     if (gridOptions.enabled === true &&
         !categoryAxis &&
-        (axis.isXAxis || axis.isLinked)) {
+        (axis.isXAxis || axis.linkedParent)) {
         if ((endMoreThanMin || startLessThanMin) && !options.startOnTick) {
             tickPositions[0] = min;
         }

@@ -10,8 +10,10 @@
  *
  * */
 'use strict';
+import H from '../Globals.js';
+const { composed } = H;
 import StackItem from './Stacking/StackItem.js';
-import { addEvent, find, fireEvent, isArray, isNumber } from '../../Shared/Utilities.js';
+import { addEvent, find, fireEvent, isArray, isNumber, pushUnique } from '../../Shared/Utilities.js';
 /* *
  *
  *  Composition
@@ -38,8 +40,7 @@ var BrokenAxis;
      * @internal
      */
     function compose(AxisClass, SeriesClass) {
-        if (!AxisClass.keepProps.includes('brokenAxis')) {
-            AxisClass.keepProps.push('brokenAxis');
+        if (pushUnique(composed, 'Axis.Broken')) {
             addEvent(AxisClass, 'init', onAxisInit);
             addEvent(AxisClass, 'afterInit', onAxisAfterInit);
             addEvent(AxisClass, 'afterSetTickPositions', onAxisAfterSetTickPositions);
@@ -257,7 +258,7 @@ var BrokenAxis;
                     });
                     // For stacked chart generate empty stack items, #6546
                     if (yAxis.stacking && this.options.stacking) {
-                        stack = yAxis.stacking.stacks[this.stackKey][xRange] = new StackItem(yAxis, yAxis.options.stackLabels, false, xRange, this.stack ?? '');
+                        stack = yAxis.stacking.stacks[this.stackKey][xRange] = new StackItem(yAxis, false, xRange, this.stack ?? '');
                         stack.total = 0;
                     }
                 }

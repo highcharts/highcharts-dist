@@ -82,6 +82,25 @@ declare module "../highcharts.src" {
         valueSuffix?: string;
     }
     /**
+     * (Highcharts, Highstock, Highmaps, Gantt) Enable or disable the initial
+     * animation when a series is displayed for the `dataLabels`. The animation
+     * can also be set as a configuration object. Please note that this option
+     * only applies to the initial animation.
+     *
+     * For other animations, see chart.animation and the animation parameter
+     * under the API methods. The following properties are supported:
+     *
+     * - `defer`: The animation delay time in milliseconds.
+     */
+    interface PlotMapDataLabelsAnimationOptions {
+        /**
+         * (Highcharts, Highstock, Highmaps, Gantt) The animation delay time in
+         * milliseconds. Set to `0` to render the data labels immediately. As
+         * `undefined` inherits defer time from the series.animation.defer.
+         */
+        defer?: number;
+    }
+    /**
      * (Highcharts, Highstock, Highmaps, Gantt) Options for the series data
      * labels, appearing next to each data point.
      *
@@ -379,6 +398,27 @@ declare module "../highcharts.src" {
         zIndex?: number;
     }
     /**
+     * (Highmaps) Options for the connector in the _Series on point_ feature.
+     *
+     * In styled mode, the connector can be styled with the
+     * `.highcharts-connector-seriesonpoint` class name.
+     */
+    interface PlotMapOnPointConnectorOptions {
+        /**
+         * (Highmaps) A name for the dash style to use for the connector.
+         */
+        dashstyle?: string;
+        /**
+         * (Highmaps) Color of the connector line. By default it's the series'
+         * color.
+         */
+        stroke?: string;
+        /**
+         * (Highmaps) Pixel width of the connector line.
+         */
+        width?: number;
+    }
+    /**
      * (Highmaps) Options for the _Series on point_ feature. Only `pie` and
      * `sunburst` series are supported at this moment.
      */
@@ -402,6 +442,34 @@ declare module "../highcharts.src" {
          * series in the _Series on point_ feature.
          */
         position?: (object|Highcharts.PlotMapOnPointPositionOptions);
+    }
+    /**
+     * (Highmaps) Options allowing to set a position and an offset of the series
+     * in the _Series on point_ feature.
+     */
+    interface PlotMapOnPointPositionOptions {
+        /**
+         * (Highmaps) Series center offset from the original x position. If
+         * defined, the connector line is drawn connecting original position
+         * with new position.
+         */
+        offsetX?: number;
+        /**
+         * (Highmaps) Series center offset from the original y position. If
+         * defined, the connector line is drawn from original position to a new
+         * position.
+         */
+        offsetY?: number;
+        /**
+         * (Highmaps) X position of the series center. By default, the series is
+         * displayed on the point that it is connected to.
+         */
+        x?: number;
+        /**
+         * (Highmaps) Y position of the series center. By default, the series is
+         * displayed on the point that it is connected to.
+         */
+        y?: number;
     }
     /**
      * (Highmaps) The map series is used for basic choropleth maps, where each
@@ -864,6 +932,23 @@ declare module "../highcharts.src" {
         zoomEnabled?: boolean;
     }
     /**
+     * (Highcharts, Highstock, Gantt) For series on datetime axes, the date
+     * format in the tooltip's header will by default be guessed based on the
+     * closest data points. This member gives the default string representations
+     * used for each unit. For an overview of the string or object
+     * configuration, see dateFormat.
+     */
+    interface PlotMapTooltipDateTimeLabelFormatsOptions {
+        day?: string;
+        hour?: string;
+        millisecond?: string;
+        minute?: string;
+        month?: string;
+        second?: string;
+        week?: string;
+        year?: string;
+    }
+    /**
      * (Highcharts, Highstock, Highmaps) Options for the tooltip header when
      * tooltip.split is enabled. The header is the box containing the X value in
      * a split tooltip.
@@ -906,6 +991,71 @@ declare module "../highcharts.src" {
          * is the same size as the axis labels.
          */
         style?: object;
+    }
+    /**
+     * (Highcharts, Highstock, Highmaps) Positioning options for fixed tooltip,
+     * taking effect only when tooltip.fixed is `true`.
+     */
+    interface PlotMapTooltipPositionOptions {
+        /**
+         * (Highcharts, Highstock, Highmaps) The horizontal alignment of the
+         * fixed tooltip.
+         */
+        align?: Highcharts.AlignValue;
+        /**
+         * (Highcharts, Highstock, Highmaps) What the fixed tooltip alignment
+         * should be relative to.
+         *
+         * The default, `pane`, means that it is aligned within the plot area
+         * for that given series. If the tooltip is split (as default in Stock
+         * charts), each partial tooltip is aligned within the series' pane.
+         */
+        relativeTo?: Highcharts.OptionsRelativeToValue;
+        /**
+         * (Highcharts, Highstock, Highmaps) The vertical alignment of the fixed
+         * tooltip.
+         */
+        verticalAlign?: Highcharts.VerticalAlignValue;
+        /**
+         * (Highcharts, Highstock, Highmaps) X pixel offset from the given
+         * position. Can be used to shy away from axis lines, grid lines etc to
+         * avoid the tooltip overlapping other elements.
+         */
+        x?: number;
+        /**
+         * (Highcharts, Highstock, Highmaps) Y pixel offset from the given
+         * position. Can be used to shy away from axis lines, grid lines etc to
+         * avoid the tooltip overlapping other elements.
+         */
+        y?: number;
+    }
+    /**
+     * (Highmaps) For map and mapline series types, the geometry of a point.
+     *
+     * To achieve a better separation between the structure and the data, it is
+     * recommended to use `mapData` to define the geometry instead of defining
+     * it on the data points themselves.
+     *
+     * The geometry object is compatible to that of a `feature` in GeoJSON, so
+     * features of GeoJSON can be passed directly into the `data`, optionally
+     * after first filtering and processing it.
+     *
+     * For pre-projected maps (like GeoJSON maps from our map collection), user
+     * has to specify coordinates in `projectedUnits` for geometry type other
+     * than `Point`, instead of `[longitude, latitude]`.
+     */
+    interface SeriesMapDataGeometryOptions {
+        /**
+         * (Highmaps) The geometry coordinates in terms of arrays of
+         * `[longitude, latitude]`, or a two dimensional array of the same. The
+         * dimensionality must comply with the `type`.
+         */
+        coordinates?: (Array<Array<Highcharts.LonLatArray>>|Array<Highcharts.LonLatArray>);
+        /**
+         * (Highmaps) The geometry type. Can be one of `LineString`, `Polygon`,
+         * `MultiLineString` or `MultiPolygon`.
+         */
+        type?: Highcharts.MapGeometryTypeValue;
     }
     /**
      * (Highmaps) An array of data points for the series. For the `map` series
@@ -1063,14 +1213,6 @@ declare module "../highcharts.src" {
          * is not available. (see online documentation for example)
          */
         data?: Array<(number|[string, (number|null)]|null|Highcharts.SeriesMapDataOptions)>;
-        /**
-         * Not available
-         */
-        dataParser?: undefined;
-        /**
-         * Not available
-         */
-        dataURL?: undefined;
         /**
          * (Highcharts, Highstock, Highmaps, Gantt) This property is only in
          * TypeScript non-optional and might be `undefined` in series objects

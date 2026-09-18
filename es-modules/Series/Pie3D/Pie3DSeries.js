@@ -40,7 +40,7 @@ class Pie3DSeries extends PieSeries {
      *
      * */
     /**
-     * @private
+     * @internal
      */
     addPoint() {
         super.addPoint.apply(this, arguments);
@@ -50,7 +50,7 @@ class Pie3DSeries extends PieSeries {
         }
     }
     /**
-     * @private
+     * @internal
      */
     animate(init) {
         if (!this.chart.is3d()) {
@@ -99,7 +99,7 @@ class Pie3DSeries extends PieSeries {
         }
     }
     /**
-     * @private
+     * @internal
      */
     getDataLabelPosition(point, distance) {
         const labelPosition = super.getDataLabelPosition(point, distance);
@@ -122,7 +122,7 @@ class Pie3DSeries extends PieSeries {
         return labelPosition;
     }
     /**
-     * @private
+     * @internal
      */
     pointAttribs(point) {
         const attr = super.pointAttribs.apply(this, arguments), options = this.options;
@@ -133,7 +133,7 @@ class Pie3DSeries extends PieSeries {
         return attr;
     }
     /**
-     * @private
+     * @internal
      */
     translate() {
         super.translate.apply(this, arguments);
@@ -169,7 +169,7 @@ class Pie3DSeries extends PieSeries {
         }
     }
     /**
-     * @private
+     * @internal
      */
     drawTracker() {
         super.drawTracker.apply(this, arguments);

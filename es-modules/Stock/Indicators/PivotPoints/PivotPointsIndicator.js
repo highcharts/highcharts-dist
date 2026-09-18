@@ -288,7 +288,6 @@ export default PivotPointsIndicator;
  * @extends   series,plotOptions.pivotpoints
  * @since     6.0.0
  * @product   highstock
- * @excluding dataParser, dataURL
  * @requires  stock/indicators/indicators
  * @requires  stock/indicators/pivot-points
  * @apioption series.pivotpoints

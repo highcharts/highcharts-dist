@@ -51,7 +51,6 @@ var OrdinalAxis;
             axisProto.ordinal2lin = axisProto.val2lin;
             addEvent(AxisClass, 'afterInit', onAxisAfterInit);
             addEvent(AxisClass, 'foundExtremes', onAxisFoundExtremes);
-            addEvent(AxisClass, 'afterSetScale', onAxisAfterSetScale);
             addEvent(AxisClass, 'initialAxisTranslation', onAxisInitialAxisTranslation);
             addEvent(ChartClass, 'pan', onChartPan);
             addEvent(ChartClass, 'touchpan', onChartPan);
@@ -327,20 +326,6 @@ var OrdinalAxis;
                     axis.min += overscroll;
                 }
             }
-        }
-    }
-    /**
-     * For ordinal axis, that loads data async, redraw axis after data is
-     * loaded. If we don't do that, axis will have the same extremes as
-     * previously, but ordinal positions won't be calculated. See #10290
-     * @internal
-     */
-    function onAxisAfterSetScale() {
-        const axis = this;
-        if (axis.horiz && !axis.isDirty) {
-            axis.isDirty = axis.isOrdinal &&
-                axis.chart.navigator &&
-                !axis.chart.navigator.adaptToUpdatedData;
         }
     }
     /** @internal */

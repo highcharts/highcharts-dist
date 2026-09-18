@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.0.2 (2026-08-27)
+ * @license Highstock JS v13.1.0 (2026-09-18)
  * @module highcharts/modules/stock-tools
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -19,48 +19,27 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 /******/ 
 /************************************************************************/
 /******/ /* webpack/runtime/compat get default export */
-/******/ (() => {
-/******/ 	// getDefaultExport function for compatibility with non-harmony modules
-/******/ 	__webpack_require__.n = (module) => {
-/******/ 		const getter = module && module.__esModule ?
-/******/ 			() => (module['default']) :
-/******/ 			() => (module);
-/******/ 		__webpack_require__.d(getter, { a: getter });
-/******/ 		return getter;
-/******/ 	};
-/******/ })();
+/******/ // getDefaultExport function for compatibility with non-harmony modules
+/******/ __webpack_require__.n = (module) => {
+/******/ 	const getter = module && module.__esModule ?
+/******/ 		() => (module['default']) :
+/******/ 		() => (module);
+/******/ 	__webpack_require__.d(getter, { a: getter });
+/******/ 	return getter;
+/******/ };
 /******/ 
 /******/ /* webpack/runtime/define property getters */
-/******/ (() => {
-/******/ 	// define getter/value functions for harmony exports
-/******/ 	__webpack_require__.d = (exports, definition) => {
-/******/ 		if(Array.isArray(definition)) {
-/******/ 			var i = 0;
-/******/ 			while(i < definition.length) {
-/******/ 				var key = definition[i++];
-/******/ 				var binding = definition[i++];
-/******/ 				if(!__webpack_require__.o(exports, key)) {
-/******/ 					if(binding === 0) {
-/******/ 						Object.defineProperty(exports, key, { enumerable: true, value: definition[i++] });
-/******/ 					} else {
-/******/ 						Object.defineProperty(exports, key, { enumerable: true, get: binding });
-/******/ 					}
-/******/ 				} else if(binding === 0) { i++; }
-/******/ 			}
-/******/ 		} else {
-/******/ 			for(var key in definition) {
-/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
-/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
-/******/ 				}
-/******/ 			}
+/******/ // define getter/value functions for harmony exports
+/******/ __webpack_require__.d = (exports, definition) => {
+/******/ 	for(var key in definition) {
+/******/ 		if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 			Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
 /******/ 		}
-/******/ 	};
-/******/ })();
+/******/ 	}
+/******/ };
 /******/ 
 /******/ /* webpack/runtime/hasOwnProperty shorthand */
-/******/ (() => {
-/******/ 	__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
-/******/ })();
+/******/ __webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop));
 /******/ 
 /************************************************************************/
 
@@ -918,7 +897,7 @@ function selectableAnnotation(annotationType) {
             selectAndShowPopup.call(this, e);
         }
     }
-    (0,external_highcharts_src_js_default_namespaceObject.merge)(true, annotationType.prototype.defaultOptions.events, {
+    ;(0,external_highcharts_src_js_default_namespaceObject.merge)(true, annotationType.prototype.defaultOptions.events, {
         click: selectAndShowPopup,
         touchstart: saveCoords,
         touchend: checkForTouchmove
@@ -1059,7 +1038,7 @@ class NavigationBindings {
             if (navigation.selectedButtonElement.classList === button.classList) {
                 shouldEventBeFired = false;
             }
-            (0,external_highcharts_src_js_default_namespaceObject.fireEvent)(navigation, 'deselectButton', { button: navigation.selectedButtonElement });
+            ;(0,external_highcharts_src_js_default_namespaceObject.fireEvent)(navigation, 'deselectButton', { button: navigation.selectedButtonElement });
             if (navigation.nextEvent) {
                 // Remove in-progress annotations adders:
                 if (navigation.currentUserDetails &&
@@ -1197,7 +1176,7 @@ class NavigationBindings {
      *         Modified config
      */
     fieldsToOptions(fields, config) {
-        (0,external_highcharts_src_js_default_namespaceObject.objectEach)(fields, (value, field) => {
+        ;(0,external_highcharts_src_js_default_namespaceObject.objectEach)(fields, (value, field) => {
             const parsedValue = parseFloat(value), path = field.split('.'), pathLength = path.length - 1;
             // If it's a number (not "format" options), parse it:
             if ((0,external_highcharts_src_js_default_namespaceObject.isNumber)(parsedValue) &&
@@ -1320,7 +1299,7 @@ class NavigationBindings {
                     else {
                         parent[key] = nextParent;
                     }
-                    (0,external_highcharts_src_js_default_namespaceObject.objectEach)(option, (nestedOption, nestedKey) => {
+                    ;(0,external_highcharts_src_js_default_namespaceObject.objectEach)(option, (nestedOption, nestedKey) => {
                         traverse(nestedOption, nestedKey, key === 0 ?
                             parentEditables :
                             nestedEditables[key], nextParent, key);
@@ -1343,7 +1322,7 @@ class NavigationBindings {
                 }
             }
         }
-        (0,external_highcharts_src_js_default_namespaceObject.objectEach)(options, (option, key) => {
+        ;(0,external_highcharts_src_js_default_namespaceObject.objectEach)(options, (option, key) => {
             if (key === 'typeOptions' &&
                 visualOptions['type'] !== 'basicAnnotation' // #23575
             ) {
@@ -1683,7 +1662,7 @@ function addFlagFromForm(type) {
         if (!toolbar || !toolbar.guiEnabled) {
             chart.addSeries(seriesOptions);
         }
-        (0,external_highcharts_src_js_default_namespaceObject.fireEvent)(navigation, 'showPopup', {
+        ;(0,external_highcharts_src_js_default_namespaceObject.fireEvent)(navigation, 'showPopup', {
             formType: 'flag',
             // Enabled options:
             options: {
@@ -1848,7 +1827,7 @@ function manageIndicators(data) {
         }
         chart.addSeries(seriesConfig, false);
     }
-    (0,external_highcharts_src_js_default_namespaceObject.fireEvent)(this, 'deselectButton', {
+    ;(0,external_highcharts_src_js_default_namespaceObject.fireEvent)(this, 'deselectButton', {
         button: this.selectedButtonElement
     });
     chart.redraw();
@@ -4243,7 +4222,7 @@ const StockToolsBindings = {
             if (this.chart.fullscreen) {
                 this.chart.fullscreen.toggle();
             }
-            (0,external_highcharts_src_js_default_namespaceObject.fireEvent)(this, 'deselectButton', { button: button });
+            ;(0,external_highcharts_src_js_default_namespaceObject.fireEvent)(this, 'deselectButton', { button: button });
         }
     },
     /**
@@ -4274,7 +4253,7 @@ const StockToolsBindings = {
                 });
                 chart.redraw();
             }
-            (0,external_highcharts_src_js_default_namespaceObject.fireEvent)(this, 'deselectButton', { button: button });
+            ;(0,external_highcharts_src_js_default_namespaceObject.fireEvent)(this, 'deselectButton', { button: button });
         }
     },
     /**
@@ -4334,7 +4313,7 @@ const StockToolsBindings = {
                         BaseFormUtils('annotations-visible.svg', gui.iconsURL, StockToolsIcons);
                 }
             }
-            (0,external_highcharts_src_js_default_namespaceObject.fireEvent)(this, 'deselectButton', { button: button });
+            ;(0,external_highcharts_src_js_default_namespaceObject.fireEvent)(this, 'deselectButton', { button: button });
         }
     },
     /**
@@ -5910,7 +5889,7 @@ class Toolbar {
             this.createButtons();
             this.showHideNavigation();
         }
-        (0,external_highcharts_src_js_default_namespaceObject.fireEvent)(this, 'afterInit');
+        ;(0,external_highcharts_src_js_default_namespaceObject.fireEvent)(this, 'afterInit');
     }
     /* *
      *
@@ -5990,7 +5969,7 @@ class Toolbar {
                     topMargin = 0;
                 }
                 // Apply calculated styles
-                (0,external_highcharts_src_js_default_namespaceObject.css)(submenuWrapper, {
+                ;(0,external_highcharts_src_js_default_namespaceObject.css)(submenuWrapper, {
                     top: -topMargin + 'px',
                     left: buttonWidth + 3 + 'px'
                 });

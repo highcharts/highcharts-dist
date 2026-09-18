@@ -24,7 +24,7 @@ import { merge } from '../../Shared/Utilities.js';
 /**
  * Pyramid series type.
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.pyramid
  *

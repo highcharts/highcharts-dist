@@ -93,7 +93,7 @@ export default AreaSplineSeries;
  *
  *
  * @extends   series,plotOptions.areaspline
- * @excluding dataParser, dataURL, step, boostThreshold, boostBlending
+ * @excluding step, boostThreshold, boostBlending
  * @product   highcharts highstock
  * @apioption series.areaspline
  */

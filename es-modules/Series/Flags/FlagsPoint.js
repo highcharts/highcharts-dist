@@ -18,6 +18,7 @@ const { column: { prototype: { pointClass: ColumnPoint } } } = SeriesRegistry.se
  *  Class
  *
  * */
+/** @internal */
 class FlagsPoint extends ColumnPoint {
     constructor() {
         /* *
@@ -34,7 +35,7 @@ class FlagsPoint extends ColumnPoint {
      *
      * */
     /**
-     * @private
+     * @internal
      */
     isValid() {
         // #9233 - Prevent from treating flags as null points (even if
@@ -42,7 +43,7 @@ class FlagsPoint extends ColumnPoint {
         return isNumber(this.y) || typeof this.y === 'undefined';
     }
     /**
-     * @private
+     * @internal
      */
     hasNewShapeType() {
         const shape = this.options.shape || this.series.options.shape;
@@ -54,4 +55,5 @@ class FlagsPoint extends ColumnPoint {
  *  Default Export
  *
  * */
+/** @internal */
 export default FlagsPoint;

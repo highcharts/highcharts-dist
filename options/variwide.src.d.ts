@@ -83,6 +83,25 @@ declare module "../highcharts.src" {
         valueSuffix?: string;
     }
     /**
+     * (Highcharts, Highstock, Highmaps, Gantt) Enable or disable the initial
+     * animation when a series is displayed for the `dataLabels`. The animation
+     * can also be set as a configuration object. Please note that this option
+     * only applies to the initial animation.
+     *
+     * For other animations, see chart.animation and the animation parameter
+     * under the API methods. The following properties are supported:
+     *
+     * - `defer`: The animation delay time in milliseconds.
+     */
+    interface PlotVariwideDataLabelsAnimationOptions {
+        /**
+         * (Highcharts, Highstock, Highmaps, Gantt) The animation delay time in
+         * milliseconds. Set to `0` to render the data labels immediately. As
+         * `undefined` inherits defer time from the series.animation.defer.
+         */
+        defer?: number;
+    }
+    /**
      * (Highcharts, Highstock, Highmaps, Gantt) Options for the series data
      * labels, appearing next to each data point.
      *
@@ -380,12 +399,54 @@ declare module "../highcharts.src" {
         zIndex?: number;
     }
     /**
+     * (Highcharts, Highstock) Options for series data sorting.
+     */
+    interface PlotVariwideDataSortingOptions {
+        /**
+         * (Highcharts, Highstock) Enable or disable data sorting for the
+         * series. Use xAxis.reversed to change the sorting order.
+         */
+        enabled?: boolean;
+        /**
+         * (Highcharts, Highstock) Whether to allow matching points by name in
+         * an update. If this option is disabled, points will be matched by
+         * order.
+         */
+        matchByName?: boolean;
+        /**
+         * (Highcharts, Highstock) Determines what data value should be used to
+         * sort by.
+         */
+        sortKey?: string;
+    }
+    /**
      * (Highcharts, Highstock, Gantt) Styles for the series label. The color
      * defaults to the series color, or a contrast color if `onArea`.
      */
     interface PlotVariwideLabelStyleOptions {
         fontSize?: number;
         fontWeight?: string;
+    }
+    /**
+     * (Highcharts) Options for the connector in the _Series on point_ feature.
+     *
+     * In styled mode, the connector can be styled with the
+     * `.highcharts-connector-seriesonpoint` class name.
+     */
+    interface PlotVariwideOnPointConnectorOptions {
+        /**
+         * (Highcharts) A name for the dash style to use for the connector.
+         */
+        dashstyle?: string;
+        /**
+         * (Highcharts) Color of the connector line. By default it's the series'
+         * color.
+         */
+        stroke?: string;
+        /**
+         * (Highcharts) Pixel width of the connector line.
+         */
+        width?: number;
     }
     /**
      * (Highcharts) Options for the _Series on point_ feature. Only `pie` and
@@ -411,6 +472,34 @@ declare module "../highcharts.src" {
          * series in the _Series on point_ feature.
          */
         position?: (object|Highcharts.PlotVariwideOnPointPositionOptions);
+    }
+    /**
+     * (Highcharts) Options allowing to set a position and an offset of the
+     * series in the _Series on point_ feature.
+     */
+    interface PlotVariwideOnPointPositionOptions {
+        /**
+         * (Highcharts) Series center offset from the original x position. If
+         * defined, the connector line is drawn connecting original position
+         * with new position.
+         */
+        offsetX?: number;
+        /**
+         * (Highcharts) Series center offset from the original y position. If
+         * defined, the connector line is drawn from original position to a new
+         * position.
+         */
+        offsetY?: number;
+        /**
+         * (Highcharts) X position of the series center. By default, the series
+         * is displayed on the point that it is connected to.
+         */
+        x?: number;
+        /**
+         * (Highcharts) Y position of the series center. By default, the series
+         * is displayed on the point that it is connected to.
+         */
+        y?: number;
     }
     /**
      * (Highcharts) A variwide chart (related to marimekko chart) is a column
@@ -810,8 +899,10 @@ declare module "../highcharts.src" {
          * (Highcharts, Highstock, Gantt) The minimal height for a column or
          * width for a bar. By default, 0 values are not shown. To visualize a 0
          * (or close to zero) point, set the minimal point length to a pixel
-         * value like 3\. In stacked column charts, minPointLength might not be
-         * respected for tightly packed values.
+         * value like 3\. In stacked column charts, the length is applied to
+         * each point in isolation, so tightly packed values may overlap. See
+         * the stacked sample below for a plugin that lays out the stack as a
+         * whole instead.
          */
         minPointLength?: number;
         /**
@@ -1128,9 +1219,33 @@ declare module "../highcharts.src" {
         zoomEnabled?: boolean;
     }
     /**
+     * (Highcharts, Highstock) Animation setting for hovering the graph in
+     * line-type series.
+     */
+    interface PlotVariwideStatesHoverAnimationOptions {
+        /**
+         * (Highcharts, Highstock) The duration of the hover animation in
+         * milliseconds. By default the hover state animates quickly in, and
+         * slowly back to normal.
+         */
+        duration?: number;
+    }
+    /**
      * (Highcharts, Highstock) Animation when not hovering over the marker.
      */
     interface PlotVariwideStatesInactiveAnimationOptions {
+        /**
+         * (Highcharts, Highstock) The duration of the hover animation in
+         * milliseconds. By default the hover state animates quickly in, and
+         * slowly back to normal.
+         */
+        duration?: number;
+    }
+    /**
+     * (Highcharts, Highstock) Animation setting for hovering the graph in
+     * line-type series.
+     */
+    interface PlotVariwideStatesSelectAnimationOptions {
         /**
          * (Highcharts, Highstock) The duration of the hover animation in
          * milliseconds. By default the hover state animates quickly in, and
@@ -1154,6 +1269,48 @@ declare module "../highcharts.src" {
         second?: string;
         week?: string;
         year?: string;
+    }
+    /**
+     * (Highcharts) Options for the tooltip header when tooltip.split is
+     * enabled. The header is the box containing the X value in a split tooltip.
+     */
+    interface PlotVariwideTooltipHeaderOptions {
+        /**
+         * (Highcharts) Background color for the tooltip header when
+         * tooltip.split is enabled.
+         */
+        backgroundColor?: Highcharts.ColorType;
+        /**
+         * (Highcharts) Border color for the tooltip header when tooltip.split
+         * is enabled.
+         */
+        borderColor?: Highcharts.ColorType;
+        /**
+         * (Highcharts) The width of the border for the tooltip header when
+         * tooltip.split is enabled.
+         */
+        borderWidth?: number;
+        /**
+         * (Highcharts) Distance between the plot area and the header (except
+         * the chevron) in a split tooltip, in pixels. The default value makes
+         * the header text align with the axis labels.
+         */
+        distance?: number;
+        /**
+         * (Highcharts) The name of a symbol to use for the border around the
+         * tooltip header. Applies only when tooltip.split is enabled.
+         *
+         * Custom callbacks for symbol path generation can also be added to
+         * `Highcharts.SVGRenderer.prototype.symbols` the same way as for
+         * series.marker.symbol.
+         */
+        shape?: string;
+        /**
+         * (Highcharts) CSS styles for the tooltip header. The default is `{
+         * fontSize: '1em' }`, ensuring that the header text is the same size as
+         * the axis labels.
+         */
+        style?: object;
     }
     /**
      * (Highcharts) Positioning options for fixed tooltip, taking effect only
@@ -1188,6 +1345,25 @@ declare module "../highcharts.src" {
          * overlapping other elements.
          */
         y?: number;
+    }
+    /**
+     * (Highcharts, Highstock, Gantt) Enable or disable the initial animation
+     * when a series is displayed for the `dataLabels`. The animation can also
+     * be set as a configuration object. Please note that this option only
+     * applies to the initial animation.
+     *
+     * For other animations, see chart.animation and the animation parameter
+     * under the API methods. The following properties are supported:
+     *
+     * - `defer`: The animation delay time in milliseconds.
+     */
+    interface SeriesVariwideDataDataLabelsAnimationOptions {
+        /**
+         * (Highcharts, Highstock, Gantt) The animation delay time in
+         * milliseconds. Set to `0` to render the data labels immediately. As
+         * `undefined` inherits defer time from the series.animation.defer.
+         */
+        defer?: number;
     }
     /**
      * (Highcharts) A `variwide` series. If the type option is not specified, it

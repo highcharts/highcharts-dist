@@ -6,6 +6,83 @@
 import * as Highcharts from "../highcharts.src";
 declare module "../highcharts.src" {
     /**
+     * (Highstock) Point accessibility options for a series.
+     */
+    interface PlotRenkoAccessibilityPointOptions {
+        /**
+         * (Highstock) Date format to use for points on datetime axes when
+         * describing them to screen reader users.
+         *
+         * Defaults to the same format as in tooltip.
+         *
+         * For an overview of the replacement codes, see dateFormat.
+         */
+        dateFormat?: string;
+        /**
+         * (Highstock) Formatter function to determine the date/time format used
+         * with points on datetime axes when describing them to screen reader
+         * users. Receives one argument, `point`, referring to the point to
+         * describe. Should return a date format string compatible with
+         * dateFormat.
+         */
+        dateFormatter?: Highcharts.ScreenReaderFormatterCallbackFunction<Highcharts.Point>;
+        /**
+         * (Highstock) Whether or not to describe points with the value `null`
+         * to assistive technology, such as screen readers.
+         */
+        describeNull?: boolean;
+        /**
+         * (Highstock) A format string to use instead of the default for point
+         * descriptions.
+         *
+         * The context of the format string is the point instance.
+         *
+         * As opposed to accessibility.point.valueDescriptionFormat, this option
+         * replaces the whole description.
+         */
+        descriptionFormat?: string;
+        /**
+         * (Highstock) Formatter function to use instead of the default for
+         * point descriptions. Same as
+         * `accessibility.point.descriptionFormatter`, but applies to a series
+         * instead of the whole chart.
+         *
+         * Note: Prefer using accessibility.point.valueDescriptionFormat instead
+         * if possible, as default functionality such as describing annotations
+         * will be preserved.
+         */
+        descriptionFormatter?: Highcharts.ScreenReaderFormatterCallbackFunction<Highcharts.Point>;
+        /**
+         * (Highstock) Decimals to use for the values in the point descriptions.
+         * Uses tooltip.valueDecimals if not defined.
+         */
+        valueDecimals?: number;
+        /**
+         * (Highstock) Format to use for describing the values of data points to
+         * assistive technology - including screen readers. The point context is
+         * available as `{point}`.
+         *
+         * Other available context variables include `{index}`, `{value}`, and
+         * `{xDescription}`.
+         *
+         * Additionally, the series name, annotation info, and description added
+         * in `point.accessibility.description` is added by default if relevant.
+         * To override this, use the accessibility.point.descriptionFormatter
+         * option.
+         */
+        valueDescriptionFormat?: string;
+        /**
+         * (Highstock) Prefix to add to the values in the point descriptions.
+         * Uses tooltip.valuePrefix if not defined.
+         */
+        valuePrefix?: string;
+        /**
+         * (Highstock) Suffix to add to the values in the point descriptions.
+         * Uses tooltip.valueSuffix if not defined.
+         */
+        valueSuffix?: string;
+    }
+    /**
      * (Highcharts, Highstock, Gantt) The corner radius of the border
      * surrounding each column or bar. A number signifies pixels. A percentage
      * string, like for example `50%`, signifies a relative size. For columns
@@ -14,6 +91,25 @@ declare module "../highcharts.src" {
      */
     interface PlotRenkoBorderRadiusOptions {
         where?: string;
+    }
+    /**
+     * (Highcharts, Highstock, Highmaps, Gantt) Enable or disable the initial
+     * animation when a series is displayed for the `dataLabels`. The animation
+     * can also be set as a configuration object. Please note that this option
+     * only applies to the initial animation.
+     *
+     * For other animations, see chart.animation and the animation parameter
+     * under the API methods. The following properties are supported:
+     *
+     * - `defer`: The animation delay time in milliseconds.
+     */
+    interface PlotRenkoDataLabelsAnimationOptions {
+        /**
+         * (Highcharts, Highstock, Highmaps, Gantt) The animation delay time in
+         * milliseconds. Set to `0` to render the data labels immediately. As
+         * `undefined` inherits defer time from the series.animation.defer.
+         */
+        defer?: number;
     }
     /**
      * (Highcharts, Highstock, Highmaps, Gantt) Options for the series data
@@ -313,6 +409,14 @@ declare module "../highcharts.src" {
         zIndex?: number;
     }
     /**
+     * (Highcharts, Highstock, Gantt) Styles for the series label. The color
+     * defaults to the series color, or a contrast color if `onArea`.
+     */
+    interface PlotRenkoLabelStyleOptions {
+        fontSize?: number;
+        fontWeight?: string;
+    }
+    /**
      * (Highstock) Options for the corresponding navigator series if
      * `showInNavigator` is `true` for this series. Available options are the
      * same as any series, documented at plotOptions and series.
@@ -322,6 +426,27 @@ declare module "../highcharts.src" {
      */
     interface PlotRenkoNavigatorOptions {
         type?: string;
+    }
+    /**
+     * (Highstock) Options for the connector in the _Series on point_ feature.
+     *
+     * In styled mode, the connector can be styled with the
+     * `.highcharts-connector-seriesonpoint` class name.
+     */
+    interface PlotRenkoOnPointConnectorOptions {
+        /**
+         * (Highstock) A name for the dash style to use for the connector.
+         */
+        dashstyle?: string;
+        /**
+         * (Highstock) Color of the connector line. By default it's the series'
+         * color.
+         */
+        stroke?: string;
+        /**
+         * (Highstock) Pixel width of the connector line.
+         */
+        width?: number;
     }
     /**
      * (Highstock) Options for the _Series on point_ feature. Only `pie` and
@@ -347,6 +472,34 @@ declare module "../highcharts.src" {
          * series in the _Series on point_ feature.
          */
         position?: (object|Highcharts.PlotRenkoOnPointPositionOptions);
+    }
+    /**
+     * (Highstock) Options allowing to set a position and an offset of the
+     * series in the _Series on point_ feature.
+     */
+    interface PlotRenkoOnPointPositionOptions {
+        /**
+         * (Highstock) Series center offset from the original x position. If
+         * defined, the connector line is drawn connecting original position
+         * with new position.
+         */
+        offsetX?: number;
+        /**
+         * (Highstock) Series center offset from the original y position. If
+         * defined, the connector line is drawn from original position to a new
+         * position.
+         */
+        offsetY?: number;
+        /**
+         * (Highstock) X position of the series center. By default, the series
+         * is displayed on the point that it is connected to.
+         */
+        x?: number;
+        /**
+         * (Highstock) Y position of the series center. By default, the series
+         * is displayed on the point that it is connected to.
+         */
+        y?: number;
     }
     /**
      * (Highstock) A Renko series is a style of financial chart used to describe
@@ -710,8 +863,10 @@ declare module "../highcharts.src" {
          * (Highcharts, Highstock, Gantt) The minimal height for a column or
          * width for a bar. By default, 0 values are not shown. To visualize a 0
          * (or close to zero) point, set the minimal point length to a pixel
-         * value like 3\. In stacked column charts, minPointLength might not be
-         * respected for tightly packed values.
+         * value like 3\. In stacked column charts, the length is applied to
+         * each point in isolation, so tightly packed values may overlap. See
+         * the stacked sample below for a plugin that lays out the stack as a
+         * whole instead.
          */
         minPointLength?: number;
         /**
@@ -954,9 +1109,33 @@ declare module "../highcharts.src" {
         zoomEnabled?: boolean;
     }
     /**
+     * (Highcharts, Highstock) Animation setting for hovering the graph in
+     * line-type series.
+     */
+    interface PlotRenkoStatesHoverAnimationOptions {
+        /**
+         * (Highcharts, Highstock) The duration of the hover animation in
+         * milliseconds. By default the hover state animates quickly in, and
+         * slowly back to normal.
+         */
+        duration?: number;
+    }
+    /**
      * (Highcharts, Highstock) Animation when not hovering over the marker.
      */
     interface PlotRenkoStatesInactiveAnimationOptions {
+        /**
+         * (Highcharts, Highstock) The duration of the hover animation in
+         * milliseconds. By default the hover state animates quickly in, and
+         * slowly back to normal.
+         */
+        duration?: number;
+    }
+    /**
+     * (Highcharts, Highstock) Animation setting for hovering the graph in
+     * line-type series.
+     */
+    interface PlotRenkoStatesSelectAnimationOptions {
         /**
          * (Highcharts, Highstock) The duration of the hover animation in
          * milliseconds. By default the hover state animates quickly in, and
@@ -980,6 +1159,48 @@ declare module "../highcharts.src" {
         second?: string;
         week?: string;
         year?: string;
+    }
+    /**
+     * (Highstock) Options for the tooltip header when tooltip.split is enabled.
+     * The header is the box containing the X value in a split tooltip.
+     */
+    interface PlotRenkoTooltipHeaderOptions {
+        /**
+         * (Highstock) Background color for the tooltip header when
+         * tooltip.split is enabled.
+         */
+        backgroundColor?: Highcharts.ColorType;
+        /**
+         * (Highstock) Border color for the tooltip header when tooltip.split is
+         * enabled.
+         */
+        borderColor?: Highcharts.ColorType;
+        /**
+         * (Highstock) The width of the border for the tooltip header when
+         * tooltip.split is enabled.
+         */
+        borderWidth?: number;
+        /**
+         * (Highstock) Distance between the plot area and the header (except the
+         * chevron) in a split tooltip, in pixels. The default value makes the
+         * header text align with the axis labels.
+         */
+        distance?: number;
+        /**
+         * (Highstock) The name of a symbol to use for the border around the
+         * tooltip header. Applies only when tooltip.split is enabled.
+         *
+         * Custom callbacks for symbol path generation can also be added to
+         * `Highcharts.SVGRenderer.prototype.symbols` the same way as for
+         * series.marker.symbol.
+         */
+        shape?: string;
+        /**
+         * (Highstock) CSS styles for the tooltip header. The default is `{
+         * fontSize: '1em' }`, ensuring that the header text is the same size as
+         * the axis labels.
+         */
+        style?: object;
     }
     /**
      * (Highstock) Positioning options for fixed tooltip, taking effect only
@@ -1035,9 +1256,33 @@ declare module "../highcharts.src" {
         defer?: number;
     }
     /**
+     * (Highcharts, Highstock) Animation setting for hovering the graph in
+     * line-type series.
+     */
+    interface SeriesRenkoDataStatesHoverAnimationOptions {
+        /**
+         * (Highcharts, Highstock) The duration of the hover animation in
+         * milliseconds. By default the hover state animates quickly in, and
+         * slowly back to normal.
+         */
+        duration?: number;
+    }
+    /**
      * (Highcharts, Highstock) Animation when not hovering over the marker.
      */
     interface SeriesRenkoDataStatesInactiveAnimationOptions {
+        /**
+         * (Highcharts, Highstock) The duration of the hover animation in
+         * milliseconds. By default the hover state animates quickly in, and
+         * slowly back to normal.
+         */
+        duration?: number;
+    }
+    /**
+     * (Highcharts, Highstock) Animation setting for hovering the graph in
+     * line-type series.
+     */
+    interface SeriesRenkoDataStatesSelectAnimationOptions {
         /**
          * (Highcharts, Highstock) The duration of the hover animation in
          * milliseconds. By default the hover state animates quickly in, and
@@ -1098,14 +1343,6 @@ declare module "../highcharts.src" {
          * documentation for example)
          */
         data?: Array<([number, number]|Highcharts.PointOptionsObject)>;
-        /**
-         * Not available
-         */
-        dataParser?: undefined;
-        /**
-         * Not available
-         */
-        dataURL?: undefined;
         /**
          * (Highcharts, Highstock, Highmaps, Gantt) This property is only in
          * TypeScript non-optional and might be `undefined` in series objects

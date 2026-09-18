@@ -12,11 +12,13 @@
 'use strict';
 import BrokenAxis from '../BrokenAxis.js';
 import GridAxis from '../GridAxis.js';
+import H from '../../Globals.js';
+const { composed } = H;
 import Tree from '../../../Gantt/Tree.js';
 import TreeGridTick from './TreeGridTick.js';
 import TU from '../../../Series/TreeUtilities.js';
 const { getLevelOptions } = TU;
-import { addEvent, find, fireEvent, isObject, isString, merge, removeEvent, wrap } from '../../../Shared/Utilities.js';
+import { addEvent, find, fireEvent, isObject, isString, merge, pushUnique, removeEvent, wrap } from '../../../Shared/Utilities.js';
 /* *
  *
  *  Variables
@@ -302,19 +304,16 @@ function onBeforeRender(e) {
  * The tick position in axis values.
  */
 function wrapGenerateTick(proceed, pos) {
-    const axis = this, mapOptionsToLevel = axis.treeGrid.mapOptionsToLevel || {}, isTreeGrid = axis.type === 'treegrid', ticks = axis.ticks;
-    let tick = ticks[pos], levelOptions, options, gridNode;
-    if (isTreeGrid &&
-        axis.treeGrid.mapOfPosToGridNode) {
-        gridNode = axis.treeGrid.mapOfPosToGridNode[pos];
+    const axis = this, mapOptionsToLevel = axis.treeGrid.mapOptionsToLevel || {}, isTreeGrid = axis.type === 'treegrid', ticks = axis.ticks, gridNode = axis.treeGrid.mapOfPosToGridNode?.[pos];
+    let tick = ticks[pos], levelOptions, options;
+    if (isTreeGrid && gridNode) {
         levelOptions = mapOptionsToLevel[gridNode.depth];
         if (levelOptions) {
             options = {
                 labels: levelOptions
             };
         }
-        if (!tick &&
-            TickConstructor) {
+        if (!tick && TickConstructor) {
             ticks[pos] = tick =
                 new TickConstructor(axis, pos, void 0, void 0, {
                     category: gridNode.name,
@@ -471,9 +470,7 @@ function wrapInit(proceed, chart, userOptions, coll) {
  * The original setTickInterval function.
  */
 function wrapSetTickInterval(proceed) {
-    const axis = this, options = axis.options, time = axis.chart.time, linkedParent = typeof options.linkedTo === 'number' ?
-        this.chart[axis.coll]?.[options.linkedTo] :
-        void 0, isTreeGrid = axis.type === 'treegrid';
+    const axis = this, options = axis.options, time = axis.chart.time, linkedParent = axis.linkedParent, isTreeGrid = axis.type === 'treegrid';
     if (isTreeGrid) {
         axis.min = axis.userMin ?? time.parse(options.min) ?? axis.dataMin;
         axis.max = axis.userMax ?? time.parse(options.max) ?? axis.dataMax;
@@ -537,9 +534,8 @@ class TreeGridAxisAdditions {
      * */
     /** @internal */
     static compose(AxisClass, ChartClass, SeriesClass, TickClass) {
-        if (!AxisClass.keepProps.includes('treeGrid')) {
+        if (pushUnique(composed, 'Axis.TreeGrid')) {
             const axisProps = AxisClass.prototype;
-            AxisClass.keepProps.push('treeGrid');
             wrap(axisProps, 'generateTick', wrapGenerateTick);
             wrap(axisProps, 'init', wrapInit);
             wrap(axisProps, 'setTickInterval', wrapSetTickInterval);

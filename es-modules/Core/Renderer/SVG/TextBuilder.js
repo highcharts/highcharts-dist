@@ -207,8 +207,12 @@ class TextBuilder {
                             this.truncate(textNode, textNode.textContent || '', void 0, 0, 
                             // Target width
                             width, ellipsisWidth, stringWithEllipsis);
-                            textNode.textContent = textNode.textContent
-                                ?.replace('\u2026', '') + '\u2026';
+                            // If there is still text left, add an ellipsis to
+                            // the end of the line
+                            if (textNode.textContent) {
+                                textNode.textContent = textNode.textContent
+                                    ?.replace('\u2026', '') + '\u2026';
+                            }
                         }
                         break;
                     }

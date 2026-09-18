@@ -50,7 +50,7 @@ const ParetoSeriesDefaults = {
  * @extends   series,plotOptions.pareto
  * @since     6.0.0
  * @product   highcharts
- * @excluding data, dataParser, dataURL, boostThreshold, boostBlending
+ * @excluding data, boostThreshold, boostBlending
  * @requires  modules/pareto
  * @apioption series.pareto
  */

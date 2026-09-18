@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highmaps JS v13.0.2 (2026-08-27)
+ * @license Highmaps JS v13.1.0 (2026-09-18)
  * @module highcharts/modules/map
  * @requires highcharts
  *
@@ -19,48 +19,27 @@ import "./coloraxis.src.js";
 /******/ 
 /************************************************************************/
 /******/ /* webpack/runtime/compat get default export */
-/******/ (() => {
-/******/ 	// getDefaultExport function for compatibility with non-harmony modules
-/******/ 	__webpack_require__.n = (module) => {
-/******/ 		const getter = module && module.__esModule ?
-/******/ 			() => (module['default']) :
-/******/ 			() => (module);
-/******/ 		__webpack_require__.d(getter, { a: getter });
-/******/ 		return getter;
-/******/ 	};
-/******/ })();
+/******/ // getDefaultExport function for compatibility with non-harmony modules
+/******/ __webpack_require__.n = (module) => {
+/******/ 	const getter = module && module.__esModule ?
+/******/ 		() => (module['default']) :
+/******/ 		() => (module);
+/******/ 	__webpack_require__.d(getter, { a: getter });
+/******/ 	return getter;
+/******/ };
 /******/ 
 /******/ /* webpack/runtime/define property getters */
-/******/ (() => {
-/******/ 	// define getter/value functions for harmony exports
-/******/ 	__webpack_require__.d = (exports, definition) => {
-/******/ 		if(Array.isArray(definition)) {
-/******/ 			var i = 0;
-/******/ 			while(i < definition.length) {
-/******/ 				var key = definition[i++];
-/******/ 				var binding = definition[i++];
-/******/ 				if(!__webpack_require__.o(exports, key)) {
-/******/ 					if(binding === 0) {
-/******/ 						Object.defineProperty(exports, key, { enumerable: true, value: definition[i++] });
-/******/ 					} else {
-/******/ 						Object.defineProperty(exports, key, { enumerable: true, get: binding });
-/******/ 					}
-/******/ 				} else if(binding === 0) { i++; }
-/******/ 			}
-/******/ 		} else {
-/******/ 			for(var key in definition) {
-/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
-/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
-/******/ 				}
-/******/ 			}
+/******/ // define getter/value functions for harmony exports
+/******/ __webpack_require__.d = (exports, definition) => {
+/******/ 	for(var key in definition) {
+/******/ 		if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 			Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
 /******/ 		}
-/******/ 	};
-/******/ })();
+/******/ 	}
+/******/ };
 /******/ 
 /******/ /* webpack/runtime/hasOwnProperty shorthand */
-/******/ (() => {
-/******/ 	__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
-/******/ })();
+/******/ __webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop));
 /******/ 
 /************************************************************************/
 
@@ -653,7 +632,7 @@ class MapNavigation {
                 })
                     .add();
             }
-            (0,external_highcharts_src_js_default_namespaceObject.objectEach)(navOptions.buttons, (buttonOptions, n) => {
+            ;(0,external_highcharts_src_js_default_namespaceObject.objectEach)(navOptions.buttons, (buttonOptions, n) => {
                 buttonOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(navOptions.buttonOptions, buttonOptions);
                 const attr = {
                     padding: buttonOptions.padding
@@ -1029,7 +1008,7 @@ var CenteredUtilities;
             thickness * 2 < positions[2] && thickness > 0) {
             positions[3] = positions[2] - thickness * 2;
         }
-        (0,external_highcharts_src_js_default_namespaceObject.fireEvent)(this, 'afterGetCenter', { positions });
+        ;(0,external_highcharts_src_js_default_namespaceObject.fireEvent)(this, 'afterGetCenter', { positions });
         return positions;
     }
     CenteredUtilities.getCenter = getCenter;
@@ -1281,13 +1260,19 @@ const { setLength: DataTableCore_setLength, splice: DataTableCore_splice } = Dat
 class DataTableCore {
     constructor(options = {}) {
         this.isDataTable = true;
-        this.autoId = !options.id;
+        // Reject IDs that would pollute the prototype of ID-keyed maps.
+        const id = this.isPollutingKey(options.id) ? void 0 : options.id;
+        this.autoId = !id;
         this.columns = {};
-        this.id = (options.id || (0,external_highcharts_src_js_default_namespaceObject.uniqueKey)());
+        this.id = (id || (0,external_highcharts_src_js_default_namespaceObject.uniqueKey)());
         this.rowCount = 0;
         this.versionTag = (0,external_highcharts_src_js_default_namespaceObject.uniqueKey)();
         let rowCount = 0;
         (0,external_highcharts_src_js_default_namespaceObject.objectEach)(options.columns || {}, (column, columnId) => {
+            if (columnId === '__proto__' ||
+                columnId === 'constructor') {
+                return;
+            }
             this.columns[columnId] = column.slice();
             rowCount = Math.max(rowCount, column.length);
         });
@@ -1298,6 +1283,17 @@ class DataTableCore {
      *  Functions
      *
      * */
+    /**
+     * Checks whether a key would pollute the prototype if used to index a
+     * plain object (e.g. as a column ID or table ID).
+     *
+     * @private
+     * @param {string|undefined} key The key to check.
+     * @return {boolean} True if the key is unsafe to use.
+     */
+    isPollutingKey(key) {
+        return key === '__proto__' || key === 'constructor';
+    }
     /**
      * Applies a row count to the table by setting the `rowCount` property and
      * adjusting the length of all columns.
@@ -1344,7 +1340,7 @@ class DataTableCore {
             });
             this.rowCount = length;
         }
-        (0,external_highcharts_src_js_default_namespaceObject.fireEvent)(this, 'afterDeleteRows', { rowIndex, rowCount });
+        ;(0,external_highcharts_src_js_default_namespaceObject.fireEvent)(this, 'afterDeleteRows', { rowIndex, rowCount });
         this.versionTag = (0,external_highcharts_src_js_default_namespaceObject.uniqueKey)();
     }
     /**
@@ -1456,6 +1452,10 @@ class DataTableCore {
     setColumns(columns, rowIndex, eventDetail) {
         let rowCount = this.rowCount;
         (0,external_highcharts_src_js_default_namespaceObject.objectEach)(columns, (column, columnId) => {
+            if (columnId === '__proto__' ||
+                columnId === 'constructor') {
+                return;
+            }
             this.columns[columnId] = column.slice();
             rowCount = column.length;
         });
@@ -1494,14 +1494,17 @@ class DataTableCore {
      * @emits #afterSetRows
      */
     setRow(row, rowIndex = this.rowCount, insert, eventDetail) {
-        var _a;
         const { columns } = this, indexRowCount = insert ? this.rowCount + 1 : rowIndex + 1, rowKeys = Object.keys(row);
         if (eventDetail?.addColumns !== false) {
             for (let i = 0, iEnd = rowKeys.length; i < iEnd; i++) {
-                columns[_a = rowKeys[i]] || (columns[_a] = new Array(this.rowCount));
+                const rowKey = rowKeys[i];
+                if (!this.isPollutingKey(rowKey) &&
+                    !Object.hasOwnProperty.call(columns, rowKey)) {
+                    columns[rowKey] = new Array(this.rowCount);
+                }
             }
         }
-        (0,external_highcharts_src_js_default_namespaceObject.objectEach)(columns, (column, columnId) => {
+        ;(0,external_highcharts_src_js_default_namespaceObject.objectEach)(columns, (column, columnId) => {
             if (column) {
                 if (insert) {
                     column = DataTableCore_splice(column, rowIndex, 0, true, [row[columnId]]).array;
@@ -2000,7 +2003,7 @@ class MapPoint extends ScatterPoint {
      * @private
      */
     onMouseOver(e) {
-        (0,external_highcharts_src_js_default_namespaceObject.internalClearTimeout)(this.colorInterval);
+        ;(0,external_highcharts_src_js_default_namespaceObject.internalClearTimeout)(this.colorInterval);
         if (
         // Valid...
         (!this.isNull && this.visible) ||
@@ -2073,7 +2076,7 @@ class MapPoint extends ScatterPoint {
         }
     }
 }
-(0,external_highcharts_src_js_default_namespaceObject.extend)(MapPoint.prototype, {
+;(0,external_highcharts_src_js_default_namespaceObject.extend)(MapPoint.prototype, {
     dataLabelOnNull: Series_ColorMapComposition.pointMembers.dataLabelOnNull,
     moveToTopOnHover: Series_ColorMapComposition.pointMembers.moveToTopOnHover,
     isValid: Series_ColorMapComposition.pointMembers.isValid
@@ -2391,7 +2394,7 @@ const MapSeriesDefaults = {
  * is inherited from [chart.type](#chart.type).
  *
  * @extends   series,plotOptions.map
- * @excluding dataParser, dataURL, dragDrop, marker
+ * @excluding dragDrop, marker
  * @product   highmaps
  * @apioption series.map
  */
@@ -5580,7 +5583,7 @@ class MapView {
             });
             this.render();
         }
-        (0,external_highcharts_src_js_default_namespaceObject.fireEvent)(this, 'afterSetView');
+        ;(0,external_highcharts_src_js_default_namespaceObject.fireEvent)(this, 'afterSetView');
         if (redraw) {
             this.redraw(animation);
         }
@@ -6272,7 +6275,7 @@ class MapSeries extends ScatterSeries {
                             applyDrilldown: true
                         });
                     }
-                    (0,external_highcharts_src_js_default_namespaceObject.fireEvent)(this, 'mapZoomComplete');
+                    ;(0,external_highcharts_src_js_default_namespaceObject.fireEvent)(this, 'mapZoomComplete');
                 }.bind(this));
                 // When dragging or first rendering, animation is off
             }
@@ -6605,7 +6608,7 @@ class MapSeries extends ScatterSeries {
                 }
             });
         }
-        (0,external_highcharts_src_js_default_namespaceObject.fireEvent)(series, 'afterTranslate');
+        ;(0,external_highcharts_src_js_default_namespaceObject.fireEvent)(series, 'afterTranslate');
     }
     update(options) {
         // Calculate and set the recommended map view after every series update
@@ -6727,7 +6730,7 @@ const MapLineSeriesDefaults = {
  * not specified, it is inherited from [chart.type](#chart.type).
  *
  * @extends   series,plotOptions.mapline
- * @excluding dataParser, dataURL, dragDrop, marker
+ * @excluding dragDrop, marker
  * @product   highmaps
  * @apioption series.mapline
  */
@@ -6982,7 +6985,6 @@ const MapPointSeriesDefaults = {
  *
  *
  * @extends   series,plotOptions.mappoint
- * @excluding dataParser, dataURL
  * @product   highmaps
  * @apioption series.mappoint
  */
@@ -7263,7 +7265,7 @@ class MapPointSeries extends MapPointSeries_ScatterSeries {
                 p.zone = this.zones.length ? p.getZone() : void 0;
             });
         }
-        (0,external_highcharts_src_js_default_namespaceObject.fireEvent)(this, 'afterTranslate');
+        ;(0,external_highcharts_src_js_default_namespaceObject.fireEvent)(this, 'afterTranslate');
     }
 }
 MapPointSeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(MapPointSeries_ScatterSeries.defaultOptions, MapPoint_MapPointSeriesDefaults);
@@ -7689,7 +7691,7 @@ class BubbleLegendItem {
             return;
         }
         // Sort ranges to right render order
-        (0,external_highcharts_src_js_default_namespaceObject.stableSort)(ranges, function (a, b) {
+        ;(0,external_highcharts_src_js_default_namespaceObject.stableSort)(ranges, function (a, b) {
             return b.value - a.value;
         });
         this.ranges = ranges;
@@ -8369,7 +8371,7 @@ class BubblePoint extends BubblePoint_ScatterPoint {
  *  Class Prototype
  *
  * */
-(0,external_highcharts_src_js_default_namespaceObject.extend)(BubblePoint.prototype, {
+;(0,external_highcharts_src_js_default_namespaceObject.extend)(BubblePoint.prototype, {
     ttBelow: false
 });
 /* *
@@ -9050,7 +9052,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  * not specified, it is inherited from [chart.type](#chart.type).
  *
  * @extends   series,plotOptions.bubble
- * @excluding dataParser, dataURL, legendSymbolColor, stack
+ * @excluding legendSymbolColor, stack
  * @product   highcharts highstock
  * @requires  highcharts-more
  * @apioption series.bubble
@@ -9168,7 +9170,7 @@ class MapBubblePoint extends Bubble_BubblePoint {
         return typeof this.z === 'number';
     }
 }
-(0,external_highcharts_src_js_default_namespaceObject.extend)(MapBubblePoint.prototype, {
+;(0,external_highcharts_src_js_default_namespaceObject.extend)(MapBubblePoint.prototype, {
     applyOptions: mapPointProto.applyOptions,
     getProjectedBounds: mapPointProto.getProjectedBounds
 });
@@ -9446,7 +9448,6 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  * is not specified, it is inherited from [chart.type](#chart.type).
  *
  * @extends   series,plotOptions.mapbubble
- * @excluding dataParser, dataURL
  * @product   highmaps
  * @apioption series.mapbubble
  */
@@ -9611,7 +9612,7 @@ class HeatmapPoint extends HeatmapPoint_ScatterPoint {
             this.value !== -Infinity);
     }
 }
-(0,external_highcharts_src_js_default_namespaceObject.extend)(HeatmapPoint.prototype, {
+;(0,external_highcharts_src_js_default_namespaceObject.extend)(HeatmapPoint.prototype, {
     dataLabelOnNull: true,
     moveToTopOnHover: true,
     ttBelow: false
@@ -9937,7 +9938,7 @@ const HeatmapSeriesDefaults = {
  * @productdesc {highcharts}
  *
  * @extends   series,plotOptions.heatmap
- * @excluding cropThreshold, dataParser, dataURL, dragDrop ,pointRange, stack,
+ * @excluding cropThreshold, dragDrop, pointRange, stack
  * @product   highcharts highmaps
  * @requires  modules/heatmap
  * @apioption series.heatmap
@@ -10616,7 +10617,7 @@ class HeatmapSeries extends HeatmapSeries_ScatterSeries {
                 d: HeatmapSeries_symbols[shape](x, y, width, height, { r: (0,external_highcharts_src_js_default_namespaceObject.isNumber)(borderRadius) ? borderRadius : 0 })
             });
         }
-        (0,external_highcharts_src_js_default_namespaceObject.fireEvent)(series, 'afterTranslate');
+        ;(0,external_highcharts_src_js_default_namespaceObject.fireEvent)(series, 'afterTranslate');
     }
 }
 HeatmapSeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(HeatmapSeries_ScatterSeries.defaultOptions, Heatmap_HeatmapSeriesDefaults);

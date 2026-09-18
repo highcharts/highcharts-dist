@@ -26,7 +26,7 @@ class Pie3DPoint extends PiePoint {
      *
      * */
     /**
-     * @private
+     * @internal
      */
     haloPath() {
         return this.series?.chart.is3d() ?

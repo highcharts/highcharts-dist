@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.2 (2026-08-27)
+ * @license Highcharts JS v13.1.0 (2026-09-18)
  * @module highcharts/modules/exporting
  * @requires highcharts
  *
@@ -14,14 +14,14 @@
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(root["_Highcharts"], root["_Highcharts"]["AST"], root["_Highcharts"]["Chart"]);
+		module.exports = factory(root["_Highcharts"]["AST"], root["_Highcharts"]["Chart"], root["_Highcharts"]);
 	else if(typeof define === 'function' && define.amd)
-		define("highcharts/modules/exporting", ["highcharts/highcharts"], function (amd1) {return factory(amd1,amd1["AST"],amd1["Chart"]);});
+		define("highcharts/modules/exporting", ["highcharts/highcharts"], function (amd1) {return factory(amd1["AST"],amd1["Chart"],amd1);});
 	else if(typeof exports === 'object')
-		exports["highcharts/modules/exporting"] = factory(root["_Highcharts"], root["_Highcharts"]["AST"], root["_Highcharts"]["Chart"]);
+		exports["highcharts/modules/exporting"] = factory(root["_Highcharts"]["AST"], root["_Highcharts"]["Chart"], root["_Highcharts"]);
 	else
-		root["Highcharts"] = factory(root["Highcharts"], root["Highcharts"]["AST"], root["Highcharts"]["Chart"]);
-})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__944__, __WEBPACK_EXTERNAL_MODULE__660__, __WEBPACK_EXTERNAL_MODULE__960__) => {
+		root["Highcharts"] = factory(root["Highcharts"]["AST"], root["Highcharts"]["Chart"], root["Highcharts"]);
+})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__660__, __WEBPACK_EXTERNAL_MODULE__960__, __WEBPACK_EXTERNAL_MODULE__944__) => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
@@ -75,48 +75,27 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__944__;
 /******/ 	
 /************************************************************************/
 /******/ 	/* webpack/runtime/compat get default export */
-/******/ 	(() => {
-/******/ 		// getDefaultExport function for compatibility with non-harmony modules
-/******/ 		__webpack_require__.n = (module) => {
-/******/ 			const getter = module && module.__esModule ?
-/******/ 				() => (module['default']) :
-/******/ 				() => (module);
-/******/ 			__webpack_require__.d(getter, { a: getter });
-/******/ 			return getter;
-/******/ 		};
-/******/ 	})();
+/******/ 	// getDefaultExport function for compatibility with non-harmony modules
+/******/ 	__webpack_require__.n = (module) => {
+/******/ 		const getter = module && module.__esModule ?
+/******/ 			() => (module['default']) :
+/******/ 			() => (module);
+/******/ 		__webpack_require__.d(getter, { a: getter });
+/******/ 		return getter;
+/******/ 	};
 /******/ 	
 /******/ 	/* webpack/runtime/define property getters */
-/******/ 	(() => {
-/******/ 		// define getter/value functions for harmony exports
-/******/ 		__webpack_require__.d = (exports, definition) => {
-/******/ 			if(Array.isArray(definition)) {
-/******/ 				var i = 0;
-/******/ 				while(i < definition.length) {
-/******/ 					var key = definition[i++];
-/******/ 					var binding = definition[i++];
-/******/ 					if(!__webpack_require__.o(exports, key)) {
-/******/ 						if(binding === 0) {
-/******/ 							Object.defineProperty(exports, key, { enumerable: true, value: definition[i++] });
-/******/ 						} else {
-/******/ 							Object.defineProperty(exports, key, { enumerable: true, get: binding });
-/******/ 						}
-/******/ 					} else if(binding === 0) { i++; }
-/******/ 				}
-/******/ 			} else {
-/******/ 				for(var key in definition) {
-/******/ 					if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
-/******/ 						Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
-/******/ 					}
-/******/ 				}
+/******/ 	// define getter/value functions for harmony exports
+/******/ 	__webpack_require__.d = (exports, definition) => {
+/******/ 		for(var key in definition) {
+/******/ 			if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 				Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
 /******/ 			}
-/******/ 		};
-/******/ 	})();
+/******/ 		}
+/******/ 	};
 /******/ 	
 /******/ 	/* webpack/runtime/hasOwnProperty shorthand */
-/******/ 	(() => {
-/******/ 		__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
-/******/ 	})();
+/******/ 	__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop));
 /******/ 	
 /************************************************************************/
 let __webpack_exports__ = {};
@@ -1855,7 +1834,7 @@ function ajax(settings) {
     if (!settings.headers?.['Content-Type']) {
         r.setRequestHeader('Content-Type', headers[settings.dataType || 'json'] || headers.text);
     }
-    (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.objectEach)(settings.headers, function (val, key) {
+    ;(0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.objectEach)(settings.headers, function (val, key) {
         r.setRequestHeader(key, val);
     });
     if (settings.responseType) {
@@ -2146,7 +2125,7 @@ class Exporting {
             return newSheet;
         }
         catch {
-            (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.error)(`Warning: Failed to fetch CSS from ${href}`, false);
+            ;(0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.error)(`Warning: Failed to fetch CSS from ${href}`, false);
         }
     }
     /** @internal */
@@ -2726,7 +2705,7 @@ class Exporting {
             }
             // Hide on mouse out
             menu.hideMenu = function () {
-                (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.css)(menu, { display: 'none' });
+                ;(0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.css)(menu, { display: 'none' });
                 if (button) {
                     button.setState(0);
                 }
@@ -2734,7 +2713,7 @@ class Exporting {
                     chart.exporting.openMenu = false;
                 }
                 // #10361, #9998
-                (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.css)(chart.renderTo, { overflow: 'hidden' });
+                ;(0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.css)(chart.renderTo, { overflow: 'hidden' });
                 (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.css)(chart.container, { overflow: 'hidden' });
                 (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.internalClearTimeout)(menu.hideTimer);
                 (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.fireEvent)(chart, 'exportMenuHidden');
@@ -2840,14 +2819,14 @@ class Exporting {
         else {
             menuStyle.top = (y + height - menuPadding) + 'px';
         }
-        (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.css)(menu, menuStyle);
+        ;(0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.css)(menu, menuStyle);
         // #10361, #9998
         (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.css)(chart.renderTo, { overflow: '' });
         (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.css)(chart.container, { overflow: '' });
         if (chart.exporting) {
             chart.exporting.openMenu = true;
         }
-        (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.fireEvent)(chart, 'exportMenuShown');
+        ;(0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.fireEvent)(chart, 'exportMenuShown');
     }
     /**
      * Destroy the export buttons.
@@ -3327,7 +3306,7 @@ class Exporting {
             if (exporting?.options.applyStyleSheets) {
                 this.applyShadowDOMStyles(chartCopy);
             }
-            (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.fireEvent)(chart, 'getSVG', { chartCopy });
+            ;(0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.fireEvent)(chart, 'getSVG', { chartCopy });
             // Get the SVG from the container's innerHTML
             svg = exporting?.getChartHTML(chart.styledMode ||
                 options?.exporting?.applyStyleSheets) || '';
@@ -3575,7 +3554,7 @@ class Exporting {
                     }
                 }
                 // Apply styles
-                (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.css)(node, filteredStyles);
+                ;(0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.css)(node, filteredStyles);
                 // Set default stroke width (needed at least for IE)
                 if (node.nodeName === 'svg') {
                     node.setAttribute('stroke-width', '1px');
@@ -3936,7 +3915,7 @@ Exporting.unstyledElements = [
             return;
         }
         // Adding wrappers for the deprecated functions
-        (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.extend)((highcharts_Chart_commonjs_highcharts_Chart_commonjs2_highcharts_Chart_root_Highcharts_Chart_default()).prototype, {
+        ;(0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.extend)((highcharts_Chart_commonjs_highcharts_Chart_commonjs2_highcharts_Chart_root_Highcharts_Chart_default()).prototype, {
             exportChart: async function (exportingOptions, chartOptions) {
                 await this.exporting?.exportChart(exportingOptions, chartOptions);
                 return;

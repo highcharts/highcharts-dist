@@ -234,13 +234,11 @@ class Annotation extends EventEmitter {
      * @internal
      */
     destroy() {
-        const chart = this.chart, destroyItem = function (item) {
-            item.destroy();
-        };
-        this.labels.forEach(destroyItem);
-        this.shapes.forEach(destroyItem);
-        this.clipXAxis = null;
-        this.clipYAxis = null;
+        const chart = this.chart;
+        destroyObjectProperties(this.labels);
+        destroyObjectProperties(this.shapes);
+        delete this.clipXAxis;
+        delete this.clipYAxis;
         erase(chart.labelCollectors, this.labelCollector);
         super.destroy();
         this.destroyControlTarget();

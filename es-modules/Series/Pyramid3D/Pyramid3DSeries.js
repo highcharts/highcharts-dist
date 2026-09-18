@@ -24,7 +24,7 @@ const { funnel3d: Funnel3DSeries } = SeriesRegistry.seriesTypes;
 /**
  * The pyramid3d series type.
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.pyramid3d
  * @augments seriesTypes.funnel3d

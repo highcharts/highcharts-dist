@@ -775,7 +775,10 @@ class Chart {
             elem = this.renderer.text(options.text, 0, 0, options.useHTML)
                 .attr({
                 align: options.align,
-                'class': 'highcharts-' + key,
+                'class': [
+                    options.className,
+                    'highcharts-' + key
+                ].filter(isString).join(' '),
                 zIndex: options.zIndex || 4
             })
                 .css({
@@ -1780,7 +1783,7 @@ class Chart {
                 if (label &&
                     (labels.reserveSpace ?? !isNumber(options.crossing))) {
                     expectedSpace = label.getBBox().height +
-                        labels.distance +
+                        (labels.distance ?? 15) +
                         Math.max(isNumber(offset) ? offset : 0, 0);
                 }
                 if (expectedSpace) {
@@ -1868,6 +1871,12 @@ class Chart {
     addCredits(credits) {
         const chart = this, creds = merge(true, this.options.credits, credits);
         if (creds.enabled && !this.credits) {
+            // Run the user-supplied URL through the allow list, so that
+            // references like `javascript:` can't be executed from the
+            // credits label
+            const href = creds.href ?
+                AST.filterUserAttributes({ href: creds.href }).href :
+                void 0;
             /**
              * The chart's credits label. The label has an `update` method that
              * allows setting new options as per the
@@ -1881,8 +1890,8 @@ class Chart {
                 .on('click', function (e) {
                 // Fire the event with browser redirect as default function
                 fireEvent(chart, 'creditsClick', e, () => {
-                    if (creds.href) {
-                        win.location.href = creds.href;
+                    if (href) {
+                        win.location.href = href;
                     }
                 });
             })

@@ -6,6 +6,82 @@
 import * as Highcharts from "../highcharts";
 declare module "../highcharts" {
     /**
+     * (Highmaps) Point accessibility options for a series.
+     */
+    interface PlotTiledwebmapAccessibilityPointOptions {
+        /**
+         * (Highmaps) Date format to use for points on datetime axes when
+         * describing them to screen reader users.
+         *
+         * Defaults to the same format as in tooltip.
+         *
+         * For an overview of the replacement codes, see dateFormat.
+         */
+        dateFormat?: string;
+        /**
+         * (Highmaps) Formatter function to determine the date/time format used
+         * with points on datetime axes when describing them to screen reader
+         * users. Receives one argument, `point`, referring to the point to
+         * describe. Should return a date format string compatible with
+         * dateFormat.
+         */
+        dateFormatter?: Highcharts.ScreenReaderFormatterCallbackFunction<Highcharts.Point>;
+        /**
+         * (Highmaps) Whether or not to describe points with the value `null` to
+         * assistive technology, such as screen readers.
+         */
+        describeNull?: boolean;
+        /**
+         * (Highmaps) A format string to use instead of the default for point
+         * descriptions.
+         *
+         * The context of the format string is the point instance.
+         *
+         * As opposed to accessibility.point.valueDescriptionFormat, this option
+         * replaces the whole description.
+         */
+        descriptionFormat?: string;
+        /**
+         * (Highmaps) Formatter function to use instead of the default for point
+         * descriptions. Same as `accessibility.point.descriptionFormatter`, but
+         * applies to a series instead of the whole chart.
+         *
+         * Note: Prefer using accessibility.point.valueDescriptionFormat instead
+         * if possible, as default functionality such as describing annotations
+         * will be preserved.
+         */
+        descriptionFormatter?: Highcharts.ScreenReaderFormatterCallbackFunction<Highcharts.Point>;
+        /**
+         * (Highmaps) Decimals to use for the values in the point descriptions.
+         * Uses tooltip.valueDecimals if not defined.
+         */
+        valueDecimals?: number;
+        /**
+         * (Highmaps) Format to use for describing the values of data points to
+         * assistive technology - including screen readers. The point context is
+         * available as `{point}`.
+         *
+         * Other available context variables include `{index}`, `{value}`, and
+         * `{xDescription}`.
+         *
+         * Additionally, the series name, annotation info, and description added
+         * in `point.accessibility.description` is added by default if relevant.
+         * To override this, use the accessibility.point.descriptionFormatter
+         * option.
+         */
+        valueDescriptionFormat?: string;
+        /**
+         * (Highmaps) Prefix to add to the values in the point descriptions.
+         * Uses tooltip.valuePrefix if not defined.
+         */
+        valuePrefix?: string;
+        /**
+         * (Highmaps) Suffix to add to the values in the point descriptions.
+         * Uses tooltip.valueSuffix if not defined.
+         */
+        valueSuffix?: string;
+    }
+    /**
      * (Highmaps) A tiledwebmap series allows user to display dynamically joined
      * individual images (tiles) and join them together to create a map.
      *
@@ -193,5 +269,93 @@ declare module "../highcharts" {
          * **Note**: This option works only for non-cartesian series.
          */
         zoomEnabled?: boolean;
+    }
+    /**
+     * (Highmaps) Provider options for the series.
+     */
+    interface PlotTiledwebmapProviderOptions {
+        /**
+         * (Highmaps) API key for providers that require using one.
+         */
+        apiKey?: string;
+        /**
+         * (Highmaps) Subdomain required by each provider. Check the providers
+         * documentation for available subdomains.
+         */
+        subdomain?: string;
+        /**
+         * (Highmaps) Set a tiles theme. Check the providers documentation for
+         * official list of available themes.
+         */
+        theme?: string;
+        /**
+         * (Highmaps) Provider type to pull data (tiles) from.
+         */
+        type?: string;
+        /**
+         * (Highmaps) Custom URL for providers not specified in providers type.
+         * Available variables to use in URL are: `{x}`, `{y}`, `{z}` or
+         * `{zoom}`. Remember to always specify a projection, when using a
+         * custom URL.
+         */
+        url?: string;
+    }
+    /**
+     * (Highmaps) A `tiledwebmap` series. The type option is not specified, it
+     * is inherited from chart.type.
+     *
+     * Configuration options for the series are given in three levels:
+     *
+     * 1. Options for all series in a chart are defined in the
+     * plotOptions.series object.
+     *
+     * 2. Options for all `tiledwebmap` series are defined in
+     * plotOptions.tiledwebmap.
+     *
+     * 3. Options for one single series are given in the series instance array.
+     * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - type option should always be set, otherwise a broad set of unsupported
+     * options is allowed.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
+     *
+     * You have to extend the `SeriesTiledwebmapOptions` via an interface to
+     * allow custom properties: ``` declare interface SeriesTiledwebmapOptions {
+     * customProperty: string; }
+     *
+     */
+    interface SeriesTiledwebmapOptions extends Highcharts.PlotTiledwebmapOptions, Highcharts.SeriesOptions {
+        /**
+         * Not available
+         */
+        affectsMapView?: undefined;
+        /**
+         * Not available
+         */
+        allAreas?: undefined;
+        /**
+         * Not available
+         */
+        colorByPoint?: undefined;
+        /**
+         * Not available
+         */
+        colors?: undefined;
+        /**
+         * Not available
+         */
+        nullColor?: undefined;
+        /**
+         * (Highcharts, Highstock, Highmaps, Gantt) This property is only in
+         * TypeScript non-optional and might be `undefined` in series objects
+         * from unknown sources.
+         */
+        type: "tiledwebmap";
     }
 }

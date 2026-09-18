@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.2 (2026-08-27)
+ * @license Highcharts JS v13.1.0 (2026-09-18)
  * @module highcharts/modules/exporting
  * @requires highcharts
  *
@@ -18,48 +18,27 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 /******/ 
 /************************************************************************/
 /******/ /* webpack/runtime/compat get default export */
-/******/ (() => {
-/******/ 	// getDefaultExport function for compatibility with non-harmony modules
-/******/ 	__webpack_require__.n = (module) => {
-/******/ 		const getter = module && module.__esModule ?
-/******/ 			() => (module['default']) :
-/******/ 			() => (module);
-/******/ 		__webpack_require__.d(getter, { a: getter });
-/******/ 		return getter;
-/******/ 	};
-/******/ })();
+/******/ // getDefaultExport function for compatibility with non-harmony modules
+/******/ __webpack_require__.n = (module) => {
+/******/ 	const getter = module && module.__esModule ?
+/******/ 		() => (module['default']) :
+/******/ 		() => (module);
+/******/ 	__webpack_require__.d(getter, { a: getter });
+/******/ 	return getter;
+/******/ };
 /******/ 
 /******/ /* webpack/runtime/define property getters */
-/******/ (() => {
-/******/ 	// define getter/value functions for harmony exports
-/******/ 	__webpack_require__.d = (exports, definition) => {
-/******/ 		if(Array.isArray(definition)) {
-/******/ 			var i = 0;
-/******/ 			while(i < definition.length) {
-/******/ 				var key = definition[i++];
-/******/ 				var binding = definition[i++];
-/******/ 				if(!__webpack_require__.o(exports, key)) {
-/******/ 					if(binding === 0) {
-/******/ 						Object.defineProperty(exports, key, { enumerable: true, value: definition[i++] });
-/******/ 					} else {
-/******/ 						Object.defineProperty(exports, key, { enumerable: true, get: binding });
-/******/ 					}
-/******/ 				} else if(binding === 0) { i++; }
-/******/ 			}
-/******/ 		} else {
-/******/ 			for(var key in definition) {
-/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
-/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
-/******/ 				}
-/******/ 			}
+/******/ // define getter/value functions for harmony exports
+/******/ __webpack_require__.d = (exports, definition) => {
+/******/ 	for(var key in definition) {
+/******/ 		if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 			Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
 /******/ 		}
-/******/ 	};
-/******/ })();
+/******/ 	}
+/******/ };
 /******/ 
 /******/ /* webpack/runtime/hasOwnProperty shorthand */
-/******/ (() => {
-/******/ 	__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
-/******/ })();
+/******/ __webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop));
 /******/ 
 /************************************************************************/
 
@@ -1792,7 +1771,7 @@ function ajax(settings) {
     if (!settings.headers?.['Content-Type']) {
         r.setRequestHeader('Content-Type', headers[settings.dataType || 'json'] || headers.text);
     }
-    (0,external_highcharts_src_js_default_namespaceObject.objectEach)(settings.headers, function (val, key) {
+    ;(0,external_highcharts_src_js_default_namespaceObject.objectEach)(settings.headers, function (val, key) {
         r.setRequestHeader(key, val);
     });
     if (settings.responseType) {
@@ -2083,7 +2062,7 @@ class Exporting {
             return newSheet;
         }
         catch {
-            (0,external_highcharts_src_js_default_namespaceObject.error)(`Warning: Failed to fetch CSS from ${href}`, false);
+            ;(0,external_highcharts_src_js_default_namespaceObject.error)(`Warning: Failed to fetch CSS from ${href}`, false);
         }
     }
     /** @internal */
@@ -2663,7 +2642,7 @@ class Exporting {
             }
             // Hide on mouse out
             menu.hideMenu = function () {
-                (0,external_highcharts_src_js_default_namespaceObject.css)(menu, { display: 'none' });
+                ;(0,external_highcharts_src_js_default_namespaceObject.css)(menu, { display: 'none' });
                 if (button) {
                     button.setState(0);
                 }
@@ -2671,7 +2650,7 @@ class Exporting {
                     chart.exporting.openMenu = false;
                 }
                 // #10361, #9998
-                (0,external_highcharts_src_js_default_namespaceObject.css)(chart.renderTo, { overflow: 'hidden' });
+                ;(0,external_highcharts_src_js_default_namespaceObject.css)(chart.renderTo, { overflow: 'hidden' });
                 (0,external_highcharts_src_js_default_namespaceObject.css)(chart.container, { overflow: 'hidden' });
                 (0,external_highcharts_src_js_default_namespaceObject.internalClearTimeout)(menu.hideTimer);
                 (0,external_highcharts_src_js_default_namespaceObject.fireEvent)(chart, 'exportMenuHidden');
@@ -2777,14 +2756,14 @@ class Exporting {
         else {
             menuStyle.top = (y + height - menuPadding) + 'px';
         }
-        (0,external_highcharts_src_js_default_namespaceObject.css)(menu, menuStyle);
+        ;(0,external_highcharts_src_js_default_namespaceObject.css)(menu, menuStyle);
         // #10361, #9998
         (0,external_highcharts_src_js_default_namespaceObject.css)(chart.renderTo, { overflow: '' });
         (0,external_highcharts_src_js_default_namespaceObject.css)(chart.container, { overflow: '' });
         if (chart.exporting) {
             chart.exporting.openMenu = true;
         }
-        (0,external_highcharts_src_js_default_namespaceObject.fireEvent)(chart, 'exportMenuShown');
+        ;(0,external_highcharts_src_js_default_namespaceObject.fireEvent)(chart, 'exportMenuShown');
     }
     /**
      * Destroy the export buttons.
@@ -3264,7 +3243,7 @@ class Exporting {
             if (exporting?.options.applyStyleSheets) {
                 this.applyShadowDOMStyles(chartCopy);
             }
-            (0,external_highcharts_src_js_default_namespaceObject.fireEvent)(chart, 'getSVG', { chartCopy });
+            ;(0,external_highcharts_src_js_default_namespaceObject.fireEvent)(chart, 'getSVG', { chartCopy });
             // Get the SVG from the container's innerHTML
             svg = exporting?.getChartHTML(chart.styledMode ||
                 options?.exporting?.applyStyleSheets) || '';
@@ -3512,7 +3491,7 @@ class Exporting {
                     }
                 }
                 // Apply styles
-                (0,external_highcharts_src_js_default_namespaceObject.css)(node, filteredStyles);
+                ;(0,external_highcharts_src_js_default_namespaceObject.css)(node, filteredStyles);
                 // Set default stroke width (needed at least for IE)
                 if (node.nodeName === 'svg') {
                     node.setAttribute('stroke-width', '1px');
@@ -3873,7 +3852,7 @@ Exporting.unstyledElements = [
             return;
         }
         // Adding wrappers for the deprecated functions
-        (0,external_highcharts_src_js_default_namespaceObject.extend)((external_highcharts_src_js_default_Chart_default()).prototype, {
+        ;(0,external_highcharts_src_js_default_namespaceObject.extend)((external_highcharts_src_js_default_Chart_default()).prototype, {
             exportChart: async function (exportingOptions, chartOptions) {
                 await this.exporting?.exportChart(exportingOptions, chartOptions);
                 return;

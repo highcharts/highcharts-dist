@@ -73,6 +73,7 @@ class SVGElement {
         let ret = (this[key + 'Value'] ??
             this[key] ??
             (this.element ? this.element.getAttribute(key) : null) ??
+            this.box?.[key] ?? // For labels, when animating border radius
             0);
         if (/^-?[\d\.]+$/.test(ret)) { // Is numerical
             ret = parseFloat(ret);

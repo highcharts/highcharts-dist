@@ -325,20 +325,11 @@ function createAndAttachRenderer(chart, series) {
  */
 function destroyGraphics(series) {
     const points = series.points;
-    if (points) {
-        let point, i;
-        for (i = 0; i < points.length; i = i + 1) {
-            point = points[i];
-            if (point && point.destroyElements) {
-                point.destroyElements(); // #7557
-            }
-        }
-    }
+    points?.forEach((point) => {
+        point?.destroyElements?.(); // #7557
+    });
     ['graph', 'area', 'tracker'].forEach((prop) => {
-        const seriesProp = series[prop];
-        if (seriesProp) {
-            series[prop] = seriesProp.destroy();
-        }
+        series[prop] = series[prop]?.destroy();
     });
     for (const zone of series.zones) {
         destroyObjectProperties(zone, void 0, true);

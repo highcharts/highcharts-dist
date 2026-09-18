@@ -18,7 +18,7 @@ const { hideSeriesFromAT } = ChartUtilities;
 import ForcedMarkers from './ForcedMarkers.js';
 import NewDataAnnouncer from './NewDataAnnouncer.js';
 import SeriesDescriber from './SeriesDescriber.js';
-const { describeSeries } = SeriesDescriber;
+const { compose: composeSeriesDescriber, describeSeries } = SeriesDescriber;
 import SeriesKeyboardNavigation from './SeriesKeyboardNavigation.js';
 /* *
  *
@@ -44,6 +44,7 @@ class SeriesComponent extends AccessibilityComponent {
     static compose(ChartClass, PointClass, SeriesClass) {
         NewDataAnnouncer.compose(SeriesClass);
         ForcedMarkers.compose(SeriesClass);
+        composeSeriesDescriber(PointClass);
         SeriesKeyboardNavigation.compose(ChartClass, PointClass, SeriesClass);
     }
     /* *

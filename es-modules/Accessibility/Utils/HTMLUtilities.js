@@ -132,11 +132,20 @@ function escapeStringForHTML(str) {
         .replace(/\//g, '&#x2F;');
 }
 /**
- * Get an element by ID
+ * Get the shadow root the element lives in, if any. Lookups in the main
+ * document do not cross a shadow boundary. (#22682)
  * @private
  */
-function getElement(id) {
-    return doc.getElementById(id);
+function getShadowRoot(el) {
+    const root = el?.getRootNode();
+    return root?.host ? root : void 0;
+}
+/**
+ * Get an element by ID, from the reference element's shadow root if it has one.
+ * @private
+ */
+function getElement(id, referenceElement) {
+    return (getShadowRoot(referenceElement) || doc).getElementById(id);
 }
 /**
  * Get a fake mouse event of a given type. If relatedTarget is not given,
@@ -308,6 +317,7 @@ const HTMLUtilities = {
     getElement,
     getFakeMouseEvent,
     getHeadingTagNameForElement,
+    getShadowRoot,
     removeChildNodes,
     removeClass,
     removeElement,

@@ -6,6 +6,83 @@
 import * as Highcharts from "../highcharts";
 declare module "../highcharts" {
     /**
+     * (Highcharts) Point accessibility options for a series.
+     */
+    interface PlotDependencywheelAccessibilityPointOptions {
+        /**
+         * (Highcharts) Date format to use for points on datetime axes when
+         * describing them to screen reader users.
+         *
+         * Defaults to the same format as in tooltip.
+         *
+         * For an overview of the replacement codes, see dateFormat.
+         */
+        dateFormat?: string;
+        /**
+         * (Highcharts) Formatter function to determine the date/time format
+         * used with points on datetime axes when describing them to screen
+         * reader users. Receives one argument, `point`, referring to the point
+         * to describe. Should return a date format string compatible with
+         * dateFormat.
+         */
+        dateFormatter?: Highcharts.ScreenReaderFormatterCallbackFunction<Highcharts.Point>;
+        /**
+         * (Highcharts) Whether or not to describe points with the value `null`
+         * to assistive technology, such as screen readers.
+         */
+        describeNull?: boolean;
+        /**
+         * (Highcharts) A format string to use instead of the default for point
+         * descriptions.
+         *
+         * The context of the format string is the point instance.
+         *
+         * As opposed to accessibility.point.valueDescriptionFormat, this option
+         * replaces the whole description.
+         */
+        descriptionFormat?: string;
+        /**
+         * (Highcharts) Formatter function to use instead of the default for
+         * point descriptions. Same as
+         * `accessibility.point.descriptionFormatter`, but applies to a series
+         * instead of the whole chart.
+         *
+         * Note: Prefer using accessibility.point.valueDescriptionFormat instead
+         * if possible, as default functionality such as describing annotations
+         * will be preserved.
+         */
+        descriptionFormatter?: Highcharts.ScreenReaderFormatterCallbackFunction<Highcharts.Point>;
+        /**
+         * (Highcharts) Decimals to use for the values in the point
+         * descriptions. Uses tooltip.valueDecimals if not defined.
+         */
+        valueDecimals?: number;
+        /**
+         * (Highcharts) Format to use for describing the values of data points
+         * to assistive technology - including screen readers. The point context
+         * is available as `{point}`.
+         *
+         * Other available context variables include `{index}`, `{value}`, and
+         * `{xDescription}`.
+         *
+         * Additionally, the series name, annotation info, and description added
+         * in `point.accessibility.description` is added by default if relevant.
+         * To override this, use the accessibility.point.descriptionFormatter
+         * option.
+         */
+        valueDescriptionFormat?: string;
+        /**
+         * (Highcharts) Prefix to add to the values in the point descriptions.
+         * Uses tooltip.valuePrefix if not defined.
+         */
+        valuePrefix?: string;
+        /**
+         * (Highcharts) Suffix to add to the values in the point descriptions.
+         * Uses tooltip.valueSuffix if not defined.
+         */
+        valueSuffix?: string;
+    }
+    /**
      * (Highcharts, Highstock, Highmaps, Gantt) Enable or disable the initial
      * animation when a series is displayed for the `dataLabels`. The animation
      * can also be set as a configuration object. Please note that this option
@@ -23,6 +100,14 @@ declare module "../highcharts" {
          * `undefined` inherits defer time from the series.animation.defer.
          */
         defer?: number;
+    }
+    /**
+     * (Highcharts, Highstock, Gantt) Styles for the series label. The color
+     * defaults to the series color, or a contrast color if `onArea`.
+     */
+    interface PlotDependencywheelLabelStyleOptions {
+        fontSize?: number;
+        fontWeight?: string;
     }
     /**
      * (Highcharts, Highstock, Highmaps, Gantt) Enable or disable the initial
@@ -44,10 +129,67 @@ declare module "../highcharts" {
         defer?: number;
     }
     /**
+     * (Highcharts) Set options on specific levels. Takes precedence over series
+     * options, but not node and link options.
+     */
+    interface PlotDependencywheelLevelsOptions {
+        /**
+         * (Highcharts) Can set `borderColor` on all nodes which lay on the same
+         * level.
+         */
+        borderColor?: Highcharts.ColorString;
+        /**
+         * (Highcharts) Can set `borderWidth` on all nodes which lay on the same
+         * level.
+         */
+        borderWidth?: number;
+        /**
+         * (Highcharts) Can set `color` on all nodes which lay on the same
+         * level.
+         */
+        color?: Highcharts.ColorType;
+        /**
+         * (Highcharts) Can set `colorByPoint` on all nodes which lay on the
+         * same level.
+         */
+        colorByPoint?: boolean;
+        /**
+         * (Highcharts, Highstock, Highmaps, Gantt) Can set `dataLabels` on all
+         * points which lay on the same level.
+         */
+        dataLabels?: (Highcharts.SeriesSankeyDataLabelsOptionsObject|Array<Highcharts.SeriesSankeyDataLabelsOptionsObject>);
+        /**
+         * (Highcharts) Decides which level takes effect from the options set in
+         * the levels object.
+         */
+        level?: number;
+        /**
+         * (Highcharts) Can set `linkOpacity` on all points which lay on the
+         * same level.
+         */
+        linkOpacity?: number;
+        /**
+         * (Highcharts) Can set `states` on all nodes and points which lay on
+         * the same level.
+         */
+        states?: Highcharts.SeriesStatesOptionsObject;
+    }
+    /**
      * (Highcharts, Highstock) Animation setting for hovering the graph in
      * line-type series.
      */
     interface PlotDependencywheelLevelsStatesHoverAnimationOptions {
+        /**
+         * (Highcharts, Highstock) The duration of the hover animation in
+         * milliseconds. By default the hover state animates quickly in, and
+         * slowly back to normal.
+         */
+        duration?: number;
+    }
+    /**
+     * (Highcharts, Highstock) Animation when not hovering over the marker.
+     */
+    interface PlotDependencywheelLevelsStatesInactiveAnimationOptions {
         /**
          * (Highcharts, Highstock) The duration of the hover animation in
          * milliseconds. By default the hover state animates quickly in, and
@@ -66,6 +208,27 @@ declare module "../highcharts" {
          * slowly back to normal.
          */
         duration?: number;
+    }
+    /**
+     * (Highcharts) Options for the connector in the _Series on point_ feature.
+     *
+     * In styled mode, the connector can be styled with the
+     * `.highcharts-connector-seriesonpoint` class name.
+     */
+    interface PlotDependencywheelOnPointConnectorOptions {
+        /**
+         * (Highcharts) A name for the dash style to use for the connector.
+         */
+        dashstyle?: string;
+        /**
+         * (Highcharts) Color of the connector line. By default it's the series'
+         * color.
+         */
+        stroke?: string;
+        /**
+         * (Highcharts) Pixel width of the connector line.
+         */
+        width?: number;
     }
     /**
      * (Highcharts) Options for the _Series on point_ feature. Only `pie` and
@@ -91,6 +254,34 @@ declare module "../highcharts" {
          * series in the _Series on point_ feature.
          */
         position?: (object|Highcharts.PlotDependencywheelOnPointPositionOptions);
+    }
+    /**
+     * (Highcharts) Options allowing to set a position and an offset of the
+     * series in the _Series on point_ feature.
+     */
+    interface PlotDependencywheelOnPointPositionOptions {
+        /**
+         * (Highcharts) Series center offset from the original x position. If
+         * defined, the connector line is drawn connecting original position
+         * with new position.
+         */
+        offsetX?: number;
+        /**
+         * (Highcharts) Series center offset from the original y position. If
+         * defined, the connector line is drawn from original position to a new
+         * position.
+         */
+        offsetY?: number;
+        /**
+         * (Highcharts) X position of the series center. By default, the series
+         * is displayed on the point that it is connected to.
+         */
+        x?: number;
+        /**
+         * (Highcharts) Y position of the series center. By default, the series
+         * is displayed on the point that it is connected to.
+         */
+        y?: number;
     }
     /**
      * (Highcharts) A dependency wheel chart is a type of flow diagram, where
@@ -616,9 +807,33 @@ declare module "../highcharts" {
         zoomEnabled?: boolean;
     }
     /**
+     * (Highcharts, Highstock) Animation setting for hovering the graph in
+     * line-type series.
+     */
+    interface PlotDependencywheelStatesHoverAnimationOptions {
+        /**
+         * (Highcharts, Highstock) The duration of the hover animation in
+         * milliseconds. By default the hover state animates quickly in, and
+         * slowly back to normal.
+         */
+        duration?: number;
+    }
+    /**
      * (Highcharts, Highstock) Animation when not hovering over the marker.
      */
     interface PlotDependencywheelStatesInactiveAnimationOptions {
+        /**
+         * (Highcharts, Highstock) The duration of the hover animation in
+         * milliseconds. By default the hover state animates quickly in, and
+         * slowly back to normal.
+         */
+        duration?: number;
+    }
+    /**
+     * (Highcharts, Highstock) Animation setting for hovering the graph in
+     * line-type series.
+     */
+    interface PlotDependencywheelStatesSelectAnimationOptions {
         /**
          * (Highcharts, Highstock) The duration of the hover animation in
          * milliseconds. By default the hover state animates quickly in, and
@@ -642,6 +857,48 @@ declare module "../highcharts" {
         second?: string;
         week?: string;
         year?: string;
+    }
+    /**
+     * (Highcharts) Options for the tooltip header when tooltip.split is
+     * enabled. The header is the box containing the X value in a split tooltip.
+     */
+    interface PlotDependencywheelTooltipHeaderOptions {
+        /**
+         * (Highcharts) Background color for the tooltip header when
+         * tooltip.split is enabled.
+         */
+        backgroundColor?: Highcharts.ColorType;
+        /**
+         * (Highcharts) Border color for the tooltip header when tooltip.split
+         * is enabled.
+         */
+        borderColor?: Highcharts.ColorType;
+        /**
+         * (Highcharts) The width of the border for the tooltip header when
+         * tooltip.split is enabled.
+         */
+        borderWidth?: number;
+        /**
+         * (Highcharts) Distance between the plot area and the header (except
+         * the chevron) in a split tooltip, in pixels. The default value makes
+         * the header text align with the axis labels.
+         */
+        distance?: number;
+        /**
+         * (Highcharts) The name of a symbol to use for the border around the
+         * tooltip header. Applies only when tooltip.split is enabled.
+         *
+         * Custom callbacks for symbol path generation can also be added to
+         * `Highcharts.SVGRenderer.prototype.symbols` the same way as for
+         * series.marker.symbol.
+         */
+        shape?: string;
+        /**
+         * (Highcharts) CSS styles for the tooltip header. The default is `{
+         * fontSize: '1em' }`, ensuring that the header text is the same size as
+         * the axis labels.
+         */
+        style?: object;
     }
     /**
      * (Highcharts) Positioning options for fixed tooltip, taking effect only
@@ -695,5 +952,63 @@ declare module "../highcharts" {
          * `undefined` inherits defer time from the series.animation.defer.
          */
         defer?: number;
+    }
+    /**
+     * (Highcharts) A `dependencywheel` series. If the type option is not
+     * specified, it is inherited from chart.type.
+     *
+     * Configuration options for the series are given in three levels:
+     *
+     * 1. Options for all series in a chart are defined in the
+     * plotOptions.series object.
+     *
+     * 2. Options for all `dependencywheel` series are defined in
+     * plotOptions.dependencywheel.
+     *
+     * 3. Options for one single series are given in the series instance array.
+     * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - type option should always be set, otherwise a broad set of unsupported
+     * options is allowed.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
+     *
+     * You have to extend the `SeriesDependencywheelOptions` via an interface to
+     * allow custom properties: ``` declare interface
+     * SeriesDependencywheelOptions { customProperty: string; }
+     *
+     */
+    interface SeriesDependencywheelOptions extends Highcharts.PlotDependencywheelOptions, Highcharts.SeriesOptions {
+        /**
+         * (Highcharts) An array of data points for the series. For the
+         * `dependencywheel` series type, points can be given in the following
+         * way:
+         *
+         * An array of objects with named values. The following snippet shows
+         * only a few settings, see the complete options set below. If the total
+         * number of data points exceeds the series' turboThreshold, this option
+         * is not available. (see online documentation for example) When you
+         * provide the data as tuples, the keys option has to be set as well.
+         * (see online documentation for example)
+         */
+        data?: Array<([string, string, number]|Highcharts.SeriesSankeyPointOptionsObject)>;
+        /**
+         * (Highcharts) A collection of options for the individual nodes. The
+         * nodes in a dependency diagram are auto-generated instances of
+         * `Highcharts.Point`, but options can be applied here and linked by the
+         * `id`.
+         */
+        nodes?: Array<Highcharts.SeriesSankeyNodesOptionsObject>;
+        /**
+         * (Highcharts, Highstock, Highmaps, Gantt) This property is only in
+         * TypeScript non-optional and might be `undefined` in series objects
+         * from unknown sources.
+         */
+        type: "dependencywheel";
     }
 }

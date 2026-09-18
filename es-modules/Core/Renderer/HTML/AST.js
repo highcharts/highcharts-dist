@@ -12,7 +12,7 @@
 'use strict';
 import H from '../../Globals.js';
 const { SVG_NS, win } = H;
-import { attr, createElement, css, isFunction, isString, objectEach, splat } from '../../../Shared/Utilities.js';
+import { attr, css, isFunction, isString, objectEach, splat } from '../../../Shared/Utilities.js';
 import { error } from '../../Utilities.js';
 const { trustedTypes } = win;
 /* *
@@ -252,17 +252,25 @@ class AST {
                 markup, 'text/html');
         }
         catch {
-            // There are two cases where this fails:
-            // 1. IE9 and PhantomJS, where the DOMParser only supports parsing
-            //    XML
-            // 2. Due to a Chromium issue where chart redraws are triggered by
-            //    a `beforeprint` event (#16931),
-            //    https://issues.chromium.org/issues/40222135
+            // Due to a Chromium issue where chart redraws are triggered by a
+            // `beforeprint` event (#16931),
+            // https://issues.chromium.org/issues/40222135, the Trusted
+            // Types `createHTML` callback can throw "The provided callback
+            // is no longer runnable" while the browser is mid-print. Retry
+            // with the raw string - `DOMParser` itself is not a Trusted
+            // Types sink, so parsing it directly is safe.
+            try {
+                doc = new DOMParser().parseFromString(markup, 'text/html');
+            }
+            catch {
+                // Ignore, fall through to the inert-document fallback below.
+            }
         }
         if (!doc) {
-            const body = createElement('div');
-            body.innerHTML = markup;
-            doc = { body };
+            // Never assign untrusted markup to a live document's innerHTML.
+            // Parse into a detached, inert document instead.
+            doc = H.doc.implementation.createHTMLDocument('');
+            doc.body.innerHTML = markup;
         }
         const appendChildNodes = (node, addTo) => {
             // Preserve the camelCase of SVG tags via localName (#24702).
@@ -499,7 +507,6 @@ AST.allowedTags = [
     'span',
     'stop',
     'strong',
-    'style',
     'sub',
     'sup',
     'svg',

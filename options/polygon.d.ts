@@ -83,6 +83,25 @@ declare module "../highcharts" {
         valueSuffix?: string;
     }
     /**
+     * (Highcharts, Highstock, Highmaps, Gantt) Enable or disable the initial
+     * animation when a series is displayed for the `dataLabels`. The animation
+     * can also be set as a configuration object. Please note that this option
+     * only applies to the initial animation.
+     *
+     * For other animations, see chart.animation and the animation parameter
+     * under the API methods. The following properties are supported:
+     *
+     * - `defer`: The animation delay time in milliseconds.
+     */
+    interface PlotPolygonDataLabelsAnimationOptions {
+        /**
+         * (Highcharts, Highstock, Highmaps, Gantt) The animation delay time in
+         * milliseconds. Set to `0` to render the data labels immediately. As
+         * `undefined` inherits defer time from the series.animation.defer.
+         */
+        defer?: number;
+    }
+    /**
      * (Highcharts, Highstock, Highmaps, Gantt) Options for the series data
      * labels, appearing next to each data point.
      *
@@ -380,6 +399,27 @@ declare module "../highcharts" {
         zIndex?: number;
     }
     /**
+     * (Highcharts, Highstock) Options for series data sorting.
+     */
+    interface PlotPolygonDataSortingOptions {
+        /**
+         * (Highcharts, Highstock) Enable or disable data sorting for the
+         * series. Use xAxis.reversed to change the sorting order.
+         */
+        enabled?: boolean;
+        /**
+         * (Highcharts, Highstock) Whether to allow matching points by name in
+         * an update. If this option is disabled, points will be matched by
+         * order.
+         */
+        matchByName?: boolean;
+        /**
+         * (Highcharts, Highstock) Determines what data value should be used to
+         * sort by.
+         */
+        sortKey?: string;
+    }
+    /**
      * (Highcharts, Highstock, Gantt) Styles for the series label. The color
      * defaults to the series color, or a contrast color if `onArea`.
      */
@@ -390,8 +430,37 @@ declare module "../highcharts" {
     /**
      * (Highcharts, Highstock) Animation when hovering over the marker.
      */
+    interface PlotPolygonMarkerStatesHoverAnimationOptions {
+        duration?: number;
+    }
+    /**
+     * (Highcharts, Highstock) Animation when hovering over the marker.
+     */
     interface PlotPolygonMarkerStatesSelectAnimationOptions {
         duration?: number;
+    }
+    /**
+     * (Highcharts, Highstock) Options for the connector in the _Series on
+     * point_ feature.
+     *
+     * In styled mode, the connector can be styled with the
+     * `.highcharts-connector-seriesonpoint` class name.
+     */
+    interface PlotPolygonOnPointConnectorOptions {
+        /**
+         * (Highcharts, Highstock) A name for the dash style to use for the
+         * connector.
+         */
+        dashstyle?: string;
+        /**
+         * (Highcharts, Highstock) Color of the connector line. By default it's
+         * the series' color.
+         */
+        stroke?: string;
+        /**
+         * (Highcharts, Highstock) Pixel width of the connector line.
+         */
+        width?: number;
     }
     /**
      * (Highcharts, Highstock) Options for the _Series on point_ feature. Only
@@ -417,6 +486,34 @@ declare module "../highcharts" {
          * offset of the series in the _Series on point_ feature.
          */
         position?: (object|Highcharts.PlotPolygonOnPointPositionOptions);
+    }
+    /**
+     * (Highcharts, Highstock) Options allowing to set a position and an offset
+     * of the series in the _Series on point_ feature.
+     */
+    interface PlotPolygonOnPointPositionOptions {
+        /**
+         * (Highcharts, Highstock) Series center offset from the original x
+         * position. If defined, the connector line is drawn connecting original
+         * position with new position.
+         */
+        offsetX?: number;
+        /**
+         * (Highcharts, Highstock) Series center offset from the original y
+         * position. If defined, the connector line is drawn from original
+         * position to a new position.
+         */
+        offsetY?: number;
+        /**
+         * (Highcharts, Highstock) X position of the series center. By default,
+         * the series is displayed on the point that it is connected to.
+         */
+        x?: number;
+        /**
+         * (Highcharts, Highstock) Y position of the series center. By default,
+         * the series is displayed on the point that it is connected to.
+         */
+        y?: number;
     }
     /**
      * (Highcharts, Highstock) A polygon series can be used to draw any freeform
@@ -1152,9 +1249,33 @@ declare module "../highcharts" {
         zoomEnabled?: boolean;
     }
     /**
+     * (Highcharts, Highstock) Animation setting for hovering the graph in
+     * line-type series.
+     */
+    interface PlotPolygonStatesHoverAnimationOptions {
+        /**
+         * (Highcharts, Highstock) The duration of the hover animation in
+         * milliseconds. By default the hover state animates quickly in, and
+         * slowly back to normal.
+         */
+        duration?: number;
+    }
+    /**
      * (Highcharts, Highstock) Animation when not hovering over the marker.
      */
     interface PlotPolygonStatesInactiveAnimationOptions {
+        /**
+         * (Highcharts, Highstock) The duration of the hover animation in
+         * milliseconds. By default the hover state animates quickly in, and
+         * slowly back to normal.
+         */
+        duration?: number;
+    }
+    /**
+     * (Highcharts, Highstock) Animation setting for hovering the graph in
+     * line-type series.
+     */
+    interface PlotPolygonStatesSelectAnimationOptions {
         /**
          * (Highcharts, Highstock) The duration of the hover animation in
          * milliseconds. By default the hover state animates quickly in, and
@@ -1178,6 +1299,50 @@ declare module "../highcharts" {
         second?: string;
         week?: string;
         year?: string;
+    }
+    /**
+     * (Highcharts, Highstock, Highmaps) Options for the tooltip header when
+     * tooltip.split is enabled. The header is the box containing the X value in
+     * a split tooltip.
+     */
+    interface PlotPolygonTooltipHeaderOptions {
+        /**
+         * (Highcharts, Highstock, Highmaps) Background color for the tooltip
+         * header when tooltip.split is enabled.
+         */
+        backgroundColor?: Highcharts.ColorType;
+        /**
+         * (Highcharts, Highstock, Highmaps) Border color for the tooltip header
+         * when tooltip.split is enabled.
+         */
+        borderColor?: Highcharts.ColorType;
+        /**
+         * (Highcharts, Highstock, Highmaps) The width of the border for the
+         * tooltip header when tooltip.split is enabled.
+         */
+        borderWidth?: number;
+        /**
+         * (Highcharts, Highstock, Highmaps) Distance between the plot area and
+         * the header (except the chevron) in a split tooltip, in pixels. The
+         * default value makes the header text align with the axis labels.
+         */
+        distance?: number;
+        /**
+         * (Highcharts, Highstock, Highmaps) The name of a symbol to use for the
+         * border around the tooltip header. Applies only when tooltip.split is
+         * enabled.
+         *
+         * Custom callbacks for symbol path generation can also be added to
+         * `Highcharts.SVGRenderer.prototype.symbols` the same way as for
+         * series.marker.symbol.
+         */
+        shape?: string;
+        /**
+         * (Highcharts, Highstock, Highmaps) CSS styles for the tooltip header.
+         * The default is `{ fontSize: '1em' }`, ensuring that the header text
+         * is the same size as the axis labels.
+         */
+        style?: object;
     }
     /**
      * (Highcharts, Highstock, Highmaps) Positioning options for fixed tooltip,
@@ -1238,7 +1403,76 @@ declare module "../highcharts" {
     /**
      * (Highcharts, Highstock) Animation when hovering over the marker.
      */
+    interface SeriesPolygonDataMarkerStatesHoverAnimationOptions {
+        duration?: number;
+    }
+    /**
+     * (Highcharts, Highstock) Animation when hovering over the marker.
+     */
     interface SeriesPolygonDataMarkerStatesSelectAnimationOptions {
         duration?: number;
+    }
+    /**
+     * (Highcharts, Highstock) A `polygon` series. If the type option is not
+     * specified, it is inherited from chart.type.
+     *
+     * Configuration options for the series are given in three levels:
+     *
+     * 1. Options for all series in a chart are defined in the
+     * plotOptions.series object.
+     *
+     * 2. Options for all `polygon` series are defined in plotOptions.polygon.
+     *
+     * 3. Options for one single series are given in the series instance array.
+     * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - type option should always be set, otherwise a broad set of unsupported
+     * options is allowed.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
+     *
+     * You have to extend the `SeriesPolygonOptions` via an interface to allow
+     * custom properties: ``` declare interface SeriesPolygonOptions {
+     * customProperty: string; }
+     *
+     */
+    interface SeriesPolygonOptions extends Highcharts.PlotPolygonOptions, Highcharts.SeriesOptions {
+        /**
+         * (Highcharts, Highstock) An array of data points for the series. For
+         * the `polygon` series type, points can be given in the following ways:
+         *
+         * 1. An array of numerical values. In this case, the numerical values
+         * will be interpreted as `y` options. The `x` values will be
+         * automatically calculated, either starting at 0 and incremented by 1,
+         * or from `pointStart` and `pointInterval` given in the series options.
+         * If the axis has categories, these will be used. Example: (see online
+         * documentation for example)
+         *
+         * 2. An array of arrays with 2 values. In this case, the values
+         * correspond to `x,y`. If the first value is a string, it is applied as
+         * the name of the point, and the `x` value is inferred. (see online
+         * documentation for example)
+         *
+         * 3. An array of objects with named values. The following snippet shows
+         * only a few settings, see the complete options set below. If the total
+         * number of data points exceeds the series' turboThreshold, this option
+         * is not available. (see online documentation for example)
+         */
+        data?: Array<(number|[(number|string), (number|null)]|null|Highcharts.PointOptionsObject)>;
+        /**
+         * Not available
+         */
+        stack?: undefined;
+        /**
+         * (Highcharts, Highstock, Highmaps, Gantt) This property is only in
+         * TypeScript non-optional and might be `undefined` in series objects
+         * from unknown sources.
+         */
+        type: "polygon";
     }
 }

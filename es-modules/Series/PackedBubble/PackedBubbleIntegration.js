@@ -19,7 +19,7 @@ import VerletIntegration from '../Networkgraph/VerletIntegration.js';
  *
  * */
 /**
- * @private
+ * @internal
  */
 function barycenter() {
     const layout = this, gravitationalConstant = layout.options.gravitationalConstant || 0, box = layout.box, nodes = layout.nodes, nodeCountSqrt = Math.sqrt(nodes.length);
@@ -53,7 +53,7 @@ function barycenter() {
     }
 }
 /**
- * @private
+ * @internal
  */
 function repulsive(node, force, distanceXY, repNode) {
     const factor = (force * this.diffTemperature / node.mass /
@@ -68,7 +68,7 @@ function repulsive(node, force, distanceXY, repNode) {
     }
 }
 /**
- * @private
+ * @internal
  */
 function repulsiveForceFunction(d, k, node, repNode) {
     return Math.min(d, (node.marker.radius +

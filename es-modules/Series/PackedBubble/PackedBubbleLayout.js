@@ -20,7 +20,7 @@ import { addEvent, defined } from '../../Shared/Utilities.js';
  *
  * */
 /**
- * @private
+ * @internal
  */
 function chartGetSelectedParentNodes() {
     const allSeries = this.series, selectedParentsNodes = [];
@@ -34,7 +34,7 @@ function chartGetSelectedParentNodes() {
 /**
  * Remove accumulated data points to redistribute all of them again
  * (i.e after hiding series by legend)
- * @private
+ * @internal
  */
 function onChartBeforeRedraw() {
     if (this.allDataPoints) {

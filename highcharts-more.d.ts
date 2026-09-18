@@ -95,6 +95,16 @@ declare module "./highcharts" {
      */
     function renderHidden(): void;
     /**
+     * Before modifying the axis properities, save references to the unmodified
+     * properties so that they can be restored when switching back from radial
+     * to cartesian.
+     */
+    function saveUnmodified(): void;
+    /**
+     * Restore unmodified axis properties.
+     */
+    function unmodify(): void;
+    /**
      * Wrap the `getMinorTickInterval` method to return 'auto' for gauge axes by
      * default, when `minorTicks` are not explicitly enabled or disabled.
      */

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.2 (2026-08-27)
+ * @license Highcharts JS v13.1.0 (2026-09-18)
  * @module highcharts/modules/accessibility
  * @requires highcharts
  *
@@ -14,14 +14,14 @@
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(root["_Highcharts"], root["_Highcharts"]["Templating"], root["_Highcharts"]["AST"], root["_Highcharts"]["Legend"], root["_Highcharts"]["Axis"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]["SVGRenderer"], root["_Highcharts"]["Point"], root["_Highcharts"]["Series"]);
+		module.exports = factory(root["_Highcharts"]["AST"], root["_Highcharts"]["Axis"], root["_Highcharts"]["Legend"], root["_Highcharts"]["Point"], root["_Highcharts"]["SVGRenderer"], root["_Highcharts"]["Series"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]["Templating"], root["_Highcharts"]);
 	else if(typeof define === 'function' && define.amd)
-		define("highcharts/modules/accessibility", ["highcharts/highcharts"], function (amd1) {return factory(amd1,amd1["Templating"],amd1["AST"],amd1["Legend"],amd1["Axis"],amd1["SeriesRegistry"],amd1["SVGRenderer"],amd1["Point"],amd1["Series"]);});
+		define("highcharts/modules/accessibility", ["highcharts/highcharts"], function (amd1) {return factory(amd1["AST"],amd1["Axis"],amd1["Legend"],amd1["Point"],amd1["SVGRenderer"],amd1["Series"],amd1["SeriesRegistry"],amd1["Templating"],amd1);});
 	else if(typeof exports === 'object')
-		exports["highcharts/modules/accessibility"] = factory(root["_Highcharts"], root["_Highcharts"]["Templating"], root["_Highcharts"]["AST"], root["_Highcharts"]["Legend"], root["_Highcharts"]["Axis"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]["SVGRenderer"], root["_Highcharts"]["Point"], root["_Highcharts"]["Series"]);
+		exports["highcharts/modules/accessibility"] = factory(root["_Highcharts"]["AST"], root["_Highcharts"]["Axis"], root["_Highcharts"]["Legend"], root["_Highcharts"]["Point"], root["_Highcharts"]["SVGRenderer"], root["_Highcharts"]["Series"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]["Templating"], root["_Highcharts"]);
 	else
-		root["Highcharts"] = factory(root["Highcharts"], root["Highcharts"]["Templating"], root["Highcharts"]["AST"], root["Highcharts"]["Legend"], root["Highcharts"]["Axis"], root["Highcharts"]["SeriesRegistry"], root["Highcharts"]["SVGRenderer"], root["Highcharts"]["Point"], root["Highcharts"]["Series"]);
-})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__944__, __WEBPACK_EXTERNAL_MODULE__984__, __WEBPACK_EXTERNAL_MODULE__660__, __WEBPACK_EXTERNAL_MODULE__632__, __WEBPACK_EXTERNAL_MODULE__532__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__540__, __WEBPACK_EXTERNAL_MODULE__260__, __WEBPACK_EXTERNAL_MODULE__820__) => {
+		root["Highcharts"] = factory(root["Highcharts"]["AST"], root["Highcharts"]["Axis"], root["Highcharts"]["Legend"], root["Highcharts"]["Point"], root["Highcharts"]["SVGRenderer"], root["Highcharts"]["Series"], root["Highcharts"]["SeriesRegistry"], root["Highcharts"]["Templating"], root["Highcharts"]);
+})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__660__, __WEBPACK_EXTERNAL_MODULE__532__, __WEBPACK_EXTERNAL_MODULE__632__, __WEBPACK_EXTERNAL_MODULE__260__, __WEBPACK_EXTERNAL_MODULE__540__, __WEBPACK_EXTERNAL_MODULE__820__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__984__, __WEBPACK_EXTERNAL_MODULE__944__) => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
@@ -117,48 +117,27 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__944__;
 /******/ 	
 /************************************************************************/
 /******/ 	/* webpack/runtime/compat get default export */
-/******/ 	(() => {
-/******/ 		// getDefaultExport function for compatibility with non-harmony modules
-/******/ 		__webpack_require__.n = (module) => {
-/******/ 			const getter = module && module.__esModule ?
-/******/ 				() => (module['default']) :
-/******/ 				() => (module);
-/******/ 			__webpack_require__.d(getter, { a: getter });
-/******/ 			return getter;
-/******/ 		};
-/******/ 	})();
+/******/ 	// getDefaultExport function for compatibility with non-harmony modules
+/******/ 	__webpack_require__.n = (module) => {
+/******/ 		const getter = module && module.__esModule ?
+/******/ 			() => (module['default']) :
+/******/ 			() => (module);
+/******/ 		__webpack_require__.d(getter, { a: getter });
+/******/ 		return getter;
+/******/ 	};
 /******/ 	
 /******/ 	/* webpack/runtime/define property getters */
-/******/ 	(() => {
-/******/ 		// define getter/value functions for harmony exports
-/******/ 		__webpack_require__.d = (exports, definition) => {
-/******/ 			if(Array.isArray(definition)) {
-/******/ 				var i = 0;
-/******/ 				while(i < definition.length) {
-/******/ 					var key = definition[i++];
-/******/ 					var binding = definition[i++];
-/******/ 					if(!__webpack_require__.o(exports, key)) {
-/******/ 						if(binding === 0) {
-/******/ 							Object.defineProperty(exports, key, { enumerable: true, value: definition[i++] });
-/******/ 						} else {
-/******/ 							Object.defineProperty(exports, key, { enumerable: true, get: binding });
-/******/ 						}
-/******/ 					} else if(binding === 0) { i++; }
-/******/ 				}
-/******/ 			} else {
-/******/ 				for(var key in definition) {
-/******/ 					if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
-/******/ 						Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
-/******/ 					}
-/******/ 				}
+/******/ 	// define getter/value functions for harmony exports
+/******/ 	__webpack_require__.d = (exports, definition) => {
+/******/ 		for(var key in definition) {
+/******/ 			if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 				Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
 /******/ 			}
-/******/ 		};
-/******/ 	})();
+/******/ 		}
+/******/ 	};
 /******/ 	
 /******/ 	/* webpack/runtime/hasOwnProperty shorthand */
-/******/ 	(() => {
-/******/ 		__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
-/******/ 	})();
+/******/ 	__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop));
 /******/ 	
 /************************************************************************/
 let __webpack_exports__ = {};
@@ -306,11 +285,20 @@ function escapeStringForHTML(str) {
         .replace(/\//g, '&#x2F;');
 }
 /**
- * Get an element by ID
+ * Get the shadow root the element lives in, if any. Lookups in the main
+ * document do not cross a shadow boundary. (#22682)
  * @private
  */
-function getElement(id) {
-    return doc.getElementById(id);
+function getShadowRoot(el) {
+    const root = el?.getRootNode();
+    return root?.host ? root : void 0;
+}
+/**
+ * Get an element by ID, from the reference element's shadow root if it has one.
+ * @private
+ */
+function getElement(id, referenceElement) {
+    return (getShadowRoot(referenceElement) || doc).getElementById(id);
 }
 /**
  * Get a fake mouse event of a given type. If relatedTarget is not given,
@@ -456,7 +444,7 @@ function stripHTMLTagsFromString(str, isForExport = false) {
  * @private
  */
 function visuallyHideElement(element) {
-    (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.css)(element, {
+    ;(0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.css)(element, {
         position: 'absolute',
         width: '1px',
         height: '1px',
@@ -482,6 +470,7 @@ const HTMLUtilities = {
     getElement,
     getFakeMouseEvent,
     getHeadingTagNameForElement,
+    getShadowRoot,
     removeChildNodes,
     removeClass,
     removeElement,
@@ -2252,7 +2241,7 @@ const { format: InfoRegionsComponent_format } = (highcharts_Templating_commonjs_
 
 const { doc: InfoRegionsComponent_doc } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 
-const { addClass: InfoRegionsComponent_addClass, getElement: InfoRegionsComponent_getElement, getHeadingTagNameForElement: InfoRegionsComponent_getHeadingTagNameForElement, stripHTMLTagsFromString: InfoRegionsComponent_stripHTMLTagsFromString, visuallyHideElement: InfoRegionsComponent_visuallyHideElement } = Utils_HTMLUtilities;
+const { addClass: InfoRegionsComponent_addClass, getElement: InfoRegionsComponent_getElement, getHeadingTagNameForElement: InfoRegionsComponent_getHeadingTagNameForElement, getShadowRoot: InfoRegionsComponent_getShadowRoot, stripHTMLTagsFromString: InfoRegionsComponent_stripHTMLTagsFromString, visuallyHideElement: InfoRegionsComponent_visuallyHideElement } = Utils_HTMLUtilities;
 
 /* *
  *
@@ -2467,7 +2456,11 @@ class InfoRegionsComponent extends Accessibility_AccessibilityComponent {
         if (typeof linkedDescOption !== 'string') {
             return linkedDescOption;
         }
-        const query = InfoRegionsComponent_format(linkedDescOption, this.chart), queryMatch = InfoRegionsComponent_doc.querySelectorAll(query);
+        const query = InfoRegionsComponent_format(linkedDescOption, this.chart), shadowRoot = InfoRegionsComponent_getShadowRoot(this.chart.renderTo), shadowMatch = shadowRoot?.querySelectorAll(query), 
+        // The description may also live outside the shadow root (#22682)
+        queryMatch = shadowMatch?.length ?
+            shadowMatch :
+            InfoRegionsComponent_doc.querySelectorAll(query);
         if (queryMatch.length === 1) {
             return queryMatch[0];
         }
@@ -2639,7 +2632,7 @@ class InfoRegionsComponent extends Accessibility_AccessibilityComponent {
      * @private
      */
     getEndOfChartMarkerText() {
-        const endMarkerId = `highcharts-end-of-chart-marker-${this.chart.index}`, endMarker = InfoRegionsComponent_getElement(endMarkerId);
+        const endMarkerId = `highcharts-end-of-chart-marker-${this.chart.index}`, endMarker = InfoRegionsComponent_getElement(endMarkerId, this.chart.renderTo);
         if (endMarker) {
             return endMarker.outerHTML;
         }
@@ -2676,8 +2669,8 @@ class InfoRegionsComponent extends Accessibility_AccessibilityComponent {
      * @param {string} sonifyButtonId
      */
     initSonifyButton(sonifyButtonId) {
-        const el = this.sonifyButton = InfoRegionsComponent_getElement(sonifyButtonId);
         const chart = this.chart;
+        const el = this.sonifyButton = InfoRegionsComponent_getElement(sonifyButtonId, chart.renderTo);
         const defaultHandler = (e) => {
             if (el) {
                 el.setAttribute('aria-hidden', 'true');
@@ -2713,11 +2706,11 @@ class InfoRegionsComponent extends Accessibility_AccessibilityComponent {
      * @param {string} tableButtonId
      */
     initDataTableButton(tableButtonId) {
-        const el = this.viewDataTableButton = InfoRegionsComponent_getElement(tableButtonId), chart = this.chart, tableId = tableButtonId.replace('hc-linkto-', '');
+        const chart = this.chart, el = this.viewDataTableButton = InfoRegionsComponent_getElement(tableButtonId, chart.renderTo), tableId = tableButtonId.replace('hc-linkto-', '');
         if (el) {
             (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.attr)(el, {
                 tabindex: -1,
-                'aria-expanded': !!InfoRegionsComponent_getElement(tableId)
+                'aria-expanded': !!InfoRegionsComponent_getElement(tableId, chart.renderTo)
             });
             el.onclick = chart.options.accessibility
                 .screenReaderSection.onViewDataTableClick ||
@@ -3328,7 +3321,7 @@ class KeyboardNavigation {
      * @private
      */
     updateExitAnchor() {
-        const endMarkerId = `highcharts-end-of-chart-marker-${this.chart.index}`, endMarker = KeyboardNavigation_getElement(endMarkerId);
+        const endMarkerId = `highcharts-end-of-chart-marker-${this.chart.index}`, endMarker = KeyboardNavigation_getElement(endMarkerId, this.chart.renderTo);
         this.removeExitAnchor();
         if (endMarker) {
             this.makeElementAnExitAnchor(endMarker);
@@ -4189,7 +4182,8 @@ function compose(ChartClass, NavigatorClass) {
         const chartProto = ChartClass.prototype;
         NavigatorConstructor = NavigatorClass;
         chartProto.callbacks.push(onChartCallback);
-        (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.addEvent)(ChartClass, 'afterAddSeries', onChartAfterAddSeries);
+        (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.addEvent)(ChartClass, 'afterAddSeries', resetBaseSeries);
+        (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.addEvent)(ChartClass, 'afterDrillUp', resetBaseSeries);
         (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.addEvent)(ChartClass, 'afterSetChartSize', onChartAfterSetChartSize);
         (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.addEvent)(ChartClass, 'afterUpdate', onChartAfterUpdate);
         (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.addEvent)(ChartClass, 'beforeRender', onChartBeforeRender);
@@ -4198,13 +4192,12 @@ function compose(ChartClass, NavigatorClass) {
     }
 }
 /**
- * Handle adding new series.
+ * Reset the base series.
  * @internal
  */
-function onChartAfterAddSeries() {
+function resetBaseSeries() {
     if (this.navigator) {
-        // Recompute which series should be shown in navigator, and add them
-        this.navigator.setBaseSeries(null, false);
+        this.navigator.setBaseSeries(void 0, false);
     }
 }
 /**
@@ -4353,7 +4346,7 @@ const ChartNavigatorComposition = {
  * */
 
 
-const { isTouchDevice: NavigatorAxisComposition_isTouchDevice } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
+const { composed, isTouchDevice: NavigatorAxisComposition_isTouchDevice } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 
 /* *
  *
@@ -4419,8 +4412,7 @@ class NavigatorAxisAdditions {
      *
      * */
     static compose(AxisClass) {
-        if (!AxisClass.keepProps.includes('navigatorAxis')) {
-            AxisClass.keepProps.push('navigatorAxis');
+        if ((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pushUnique)(composed, 'Axis.Navigator')) {
             (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.addEvent)(AxisClass, 'init', onAxisInit);
             (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.addEvent)(AxisClass, 'setExtremes', onAxisSetExtremes);
         }
@@ -5531,7 +5523,7 @@ function Symbols_arc(cx, cy, w, h, options) {
  * Path
  */
 function callout(x, y, w, h, options) {
-    const arrowLength = 6, halfDistance = 6, r = Math.min((options?.r) || 0, w, h), safeDistance = r + halfDistance, anchorX = options?.anchorX, anchorY = options?.anchorY || 0;
+    const arrowLength = options?.arrowLength ?? 6, halfDistance = 6, r = Math.min((options?.r) || 0, w, h), safeDistance = r + halfDistance, anchorX = options?.anchorX, anchorY = options?.anchorY || 0;
     const path = Symbols_roundedRect(x, y, w, h, { r });
     if (!(0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.isNumber)(anchorX)) {
         return path;
@@ -6058,7 +6050,7 @@ const StockUtilities = {
 
 const { defaultOptions: NavigatorComposition_defaultOptions } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 
-const { composed } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
+const { composed: NavigatorComposition_composed } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 
 
 
@@ -6079,7 +6071,7 @@ const { setFixedRange: NavigatorComposition_setFixedRange } = Utilities_StockUti
 /** @internal */
 function NavigatorComposition_compose(ChartClass, AxisClass, SeriesClass) {
     NavigatorAxisComposition.compose(AxisClass);
-    if ((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pushUnique)(composed, 'Navigator')) {
+    if ((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pushUnique)(NavigatorComposition_composed, 'Navigator')) {
         ChartClass.prototype.setFixedRange = NavigatorComposition_setFixedRange;
         (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.extend)((highcharts_SVGRenderer_commonjs_highcharts_SVGRenderer_commonjs2_highcharts_SVGRenderer_root_Highcharts_SVGRenderer_default()).prototype.symbols, Navigator_NavigatorSymbols);
         (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.extend)(NavigatorComposition_defaultOptions, { navigator: Navigator_NavigatorDefaults });
@@ -6231,6 +6223,9 @@ var ScrollbarAxis;
                 }
             });
         }
+        else if (axis.scrollbar) {
+            axis.scrollbar = axis.scrollbar.destroy();
+        }
     }
     /**
      * Wrap rendering axis, and update scrollbar if one is created.
@@ -6368,14 +6363,12 @@ var ScrollbarAxis;
  */
 const ScrollbarDefaults = {
     /**
-     * The height of the scrollbar. If `buttonsEnabled` is true , the height
+     * The height of the scrollbar. If `buttonsEnabled` is true, the height
      * also applies to the width of the scroll arrows so that they are always
      * squares.
      *
      * @sample stock/scrollbar/style/
      *         Non-default height
-     *
-     * @type    {number}
      */
     height: 10,
     /**
@@ -7163,7 +7156,7 @@ class Scrollbar {
             // On the bottom or the right side of the track:
             scroller.updatePosition(scroller.from - range, scroller.to - range);
         }
-        (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.fireEvent)(scroller, 'changed', {
+        ;(0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.fireEvent)(scroller, 'changed', {
             from: scroller.from,
             to: scroller.to,
             trigger: 'scrollbar',
@@ -8682,11 +8675,7 @@ class Navigator {
             (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.erase)(this.chart.axes, this.yAxis);
         }
         // Destroy series
-        (this.series || []).forEach((s) => {
-            if (s.destroy) {
-                s.destroy();
-            }
-        });
+        ;(0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.destroyObjectProperties)(this.series || []);
         // Destroy properties
         [
             'series', 'xAxis', 'yAxis', 'shades', 'outline', 'scrollbarTrack',
@@ -8975,6 +8964,8 @@ const { getAxisDescription: SeriesDescriber_getAxisDescription, getSeriesFirstPo
 
 const { format: SeriesDescriber_format, numberFormat } = (highcharts_Templating_commonjs_highcharts_Templating_commonjs2_highcharts_Templating_root_Highcharts_Templating_default());
 
+const { composed: SeriesDescriber_composed } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
+
 const { reverseChildNodes: SeriesDescriber_reverseChildNodes, stripHTMLTagsFromString: SeriesDescriber_stripHTMLTags } = Utils_HTMLUtilities;
 
 /* *
@@ -8982,6 +8973,27 @@ const { reverseChildNodes: SeriesDescriber_reverseChildNodes, stripHTMLTagsFromS
  *  Functions
  *
  * */
+/**
+ * @private
+ */
+function SeriesDescriber_compose(PointClass) {
+    if ((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pushUnique)(SeriesDescriber_composed, 'A11y.SD')) {
+        (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.wrap)(PointClass.prototype, 'applyOptions', pointApplyOptions);
+    }
+}
+/**
+ * Discard the mock graphic once the point is no longer null, so that the
+ * series can draw a real marker for it, #25299.
+ * @private
+ */
+function pointApplyOptions(proceed, ...args) {
+    const point = proceed.apply(this, args);
+    if (point.hasMockGraphic && !point.isNull) {
+        point.graphic = point.graphic?.destroy();
+        delete point.hasMockGraphic;
+    }
+    return point;
+}
 /**
  * @private
  */
@@ -9367,6 +9379,7 @@ function describeSeries(series) {
  *
  * */
 const SeriesDescriber = {
+    compose: SeriesDescriber_compose,
     defaultPointDescriptionFormatter,
     defaultSeriesDescriptionFormatter,
     describeSeries
@@ -9846,7 +9859,7 @@ class ProxyElement {
      * Set visually hidden style on a proxy element
      */
     hideElementVisually(el) {
-        (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.css)(el, {
+        ;(0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.css)(el, {
             borderWidth: 0,
             backgroundColor: 'transparent',
             cursor: 'pointer',
@@ -10031,7 +10044,7 @@ class ProxyProvider {
         if (!group) {
             throw new Error('ProxyProvider.updateGroupAttrs: Invalid group key ' + groupKey);
         }
-        (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.attr)(group.groupElement, attributes);
+        ;(0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.attr)(group.groupElement, attributes);
     }
     /**
      * Reorder the proxy groups.
@@ -10362,7 +10375,7 @@ class RangeSelectorComponent extends Accessibility_AccessibilityComponent {
      * @private
      */
     setRangeButtonAttrs(button) {
-        (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.attr)(button.element, {
+        ;(0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.attr)(button.element, {
             tabindex: -1,
             role: 'button'
         });
@@ -10891,7 +10904,7 @@ var ForcedMarkersComposition;
      * @private
      */
     function unforcePointMarkerOptions(pointOptions) {
-        (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(true, pointOptions.marker, {
+        ;(0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(true, pointOptions.marker, {
             states: {
                 normal: {
                     opacity: getPointMarkerOpacity(pointOptions) || 1
@@ -11714,7 +11727,7 @@ const { hideSeriesFromAT: SeriesComponent_hideSeriesFromAT } = Utils_ChartUtilit
 
 
 
-const { describeSeries: SeriesComponent_describeSeries } = SeriesComponent_SeriesDescriber;
+const { compose: composeSeriesDescriber, describeSeries: SeriesComponent_describeSeries } = SeriesComponent_SeriesDescriber;
 
 /* *
  *
@@ -11740,6 +11753,7 @@ class SeriesComponent extends Accessibility_AccessibilityComponent {
     static compose(ChartClass, PointClass, SeriesClass) {
         SeriesComponent_NewDataAnnouncer.compose(SeriesClass);
         ForcedMarkers.compose(SeriesClass);
+        composeSeriesDescriber(PointClass);
         SeriesComponent_SeriesKeyboardNavigation.compose(ChartClass, PointClass, SeriesClass);
     }
     /* *
@@ -14362,7 +14376,7 @@ class Accessibility {
             a11yOptions.highContrastMode === true)) {
             HighContrastMode.setHighContrastTheme(chart);
         }
-        (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.fireEvent)(chart, 'afterA11yUpdate', {
+        ;(0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.fireEvent)(chart, 'afterA11yUpdate', {
             accessibility: this
         });
     }
@@ -14509,7 +14523,7 @@ class Accessibility {
                     newOptions.customComponents;
                 delete newOptions.customComponents;
             }
-            (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(true, this.options.accessibility, newOptions);
+            ;(0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(true, this.options.accessibility, newOptions);
             // Recreate from scratch
             if (this.accessibility && this.accessibility.destroy) {
                 this.accessibility.destroy();

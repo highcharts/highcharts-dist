@@ -24,8 +24,7 @@
  *         HLC chart
  *
  * @extends      plotOptions.column
- * @excluding    borderColor, borderRadius, borderWidth, crisp, stacking,
- *               stack
+ * @excluding    borderColor, borderRadius, borderWidth, crisp, stack, stacking
  * @product      highstock
  * @optionparent plotOptions.hlc
  */
@@ -48,10 +47,6 @@ const HLCSeriesDefaults = {
      * @default   hlc
      * @product   highstock
      * @apioption plotOptions.hlc.dataGrouping.approximation
-     */
-    /**
-     * @default   close
-     * @apioption plotOptions.hlc.colorKey
      */
     /**
      * What type of legend symbol to render for this series. For HLC series,
@@ -129,7 +124,6 @@ const HLCSeriesDefaults = {
  * specified, it is inherited from [chart.type](#chart.type).
  *
  * @extends   series,plotOptions.hlc
- * @excluding dataParser, dataURL
  * @product   highstock
  * @apioption series.hlc
  */

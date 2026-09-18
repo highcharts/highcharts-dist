@@ -11,8 +11,8 @@
  * */
 'use strict';
 import H from '../Globals.js';
-const { isTouchDevice } = H;
-import { addEvent, correctFloat, defined, isNumber } from '../../Shared/Utilities.js';
+const { composed, isTouchDevice } = H;
+import { addEvent, correctFloat, defined, isNumber, pushUnique } from '../../Shared/Utilities.js';
 /* *
  *
  *  Functions
@@ -77,8 +77,7 @@ class NavigatorAxisAdditions {
      *
      * */
     static compose(AxisClass) {
-        if (!AxisClass.keepProps.includes('navigatorAxis')) {
-            AxisClass.keepProps.push('navigatorAxis');
+        if (pushUnique(composed, 'Axis.Navigator')) {
             addEvent(AxisClass, 'init', onAxisInit);
             addEvent(AxisClass, 'setExtremes', onAxisSetExtremes);
         }

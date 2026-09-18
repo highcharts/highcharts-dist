@@ -59,17 +59,19 @@ function chartAdjustHeight() {
                 }
                 // Make sure clip rects have the right height before initial
                 // animation.
-                axis.series.forEach(function (series) {
-                    const clipRect = series.sharedClipKey &&
-                        chart.sharedClips[series.sharedClipKey];
-                    if (clipRect) {
-                        clipRect.attr(chart.inverted ? {
-                            width: chart.plotHeight
-                        } : {
-                            height: chart.plotHeight
-                        });
-                    }
-                });
+                if (!chart.initiatedScale) {
+                    axis.series.forEach((series) => {
+                        const clipRect = series.sharedClipKey &&
+                            chart.sharedClips[series.sharedClipKey];
+                        if (clipRect) {
+                            clipRect.attr(chart.inverted ? {
+                                width: chart.plotHeight
+                            } : {
+                                height: chart.plotHeight
+                            });
+                        }
+                    });
+                }
             }
         }
         this.initiatedScale = true;

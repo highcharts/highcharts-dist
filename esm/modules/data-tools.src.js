@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.2 (2026-08-27)
+ * @license Highcharts JS v13.1.0 (2026-09-18)
  * @module highcharts/modules/data-tools
  * @requires highcharts
  *
@@ -17,48 +17,27 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 /******/ 
 /************************************************************************/
 /******/ /* webpack/runtime/compat get default export */
-/******/ (() => {
-/******/ 	// getDefaultExport function for compatibility with non-harmony modules
-/******/ 	__webpack_require__.n = (module) => {
-/******/ 		const getter = module && module.__esModule ?
-/******/ 			() => (module['default']) :
-/******/ 			() => (module);
-/******/ 		__webpack_require__.d(getter, { a: getter });
-/******/ 		return getter;
-/******/ 	};
-/******/ })();
+/******/ // getDefaultExport function for compatibility with non-harmony modules
+/******/ __webpack_require__.n = (module) => {
+/******/ 	const getter = module && module.__esModule ?
+/******/ 		() => (module['default']) :
+/******/ 		() => (module);
+/******/ 	__webpack_require__.d(getter, { a: getter });
+/******/ 	return getter;
+/******/ };
 /******/ 
 /******/ /* webpack/runtime/define property getters */
-/******/ (() => {
-/******/ 	// define getter/value functions for harmony exports
-/******/ 	__webpack_require__.d = (exports, definition) => {
-/******/ 		if(Array.isArray(definition)) {
-/******/ 			var i = 0;
-/******/ 			while(i < definition.length) {
-/******/ 				var key = definition[i++];
-/******/ 				var binding = definition[i++];
-/******/ 				if(!__webpack_require__.o(exports, key)) {
-/******/ 					if(binding === 0) {
-/******/ 						Object.defineProperty(exports, key, { enumerable: true, value: definition[i++] });
-/******/ 					} else {
-/******/ 						Object.defineProperty(exports, key, { enumerable: true, get: binding });
-/******/ 					}
-/******/ 				} else if(binding === 0) { i++; }
-/******/ 			}
-/******/ 		} else {
-/******/ 			for(var key in definition) {
-/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
-/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
-/******/ 				}
-/******/ 			}
+/******/ // define getter/value functions for harmony exports
+/******/ __webpack_require__.d = (exports, definition) => {
+/******/ 	for(var key in definition) {
+/******/ 		if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 			Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
 /******/ 		}
-/******/ 	};
-/******/ })();
+/******/ 	}
+/******/ };
 /******/ 
 /******/ /* webpack/runtime/hasOwnProperty shorthand */
-/******/ (() => {
-/******/ 	__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
-/******/ })();
+/******/ __webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop));
 /******/ 
 /************************************************************************/
 
@@ -180,7 +159,7 @@ class DataModifier {
      * Event object containing additional event information.
      */
     emit(e) {
-        (0,external_highcharts_src_js_default_namespaceObject.fireEvent)(this, e.type, e);
+        ;(0,external_highcharts_src_js_default_namespaceObject.fireEvent)(this, e.type, e);
     }
     /**
      * Modifies the given table and sets its `modified` property as a reference
@@ -441,13 +420,19 @@ const { setLength: DataTableCore_setLength, splice: DataTableCore_splice } = Dat
 class DataTableCore {
     constructor(options = {}) {
         this.isDataTable = true;
-        this.autoId = !options.id;
+        // Reject IDs that would pollute the prototype of ID-keyed maps.
+        const id = this.isPollutingKey(options.id) ? void 0 : options.id;
+        this.autoId = !id;
         this.columns = {};
-        this.id = (options.id || (0,external_highcharts_src_js_default_namespaceObject.uniqueKey)());
+        this.id = (id || (0,external_highcharts_src_js_default_namespaceObject.uniqueKey)());
         this.rowCount = 0;
         this.versionTag = (0,external_highcharts_src_js_default_namespaceObject.uniqueKey)();
         let rowCount = 0;
         (0,external_highcharts_src_js_default_namespaceObject.objectEach)(options.columns || {}, (column, columnId) => {
+            if (columnId === '__proto__' ||
+                columnId === 'constructor') {
+                return;
+            }
             this.columns[columnId] = column.slice();
             rowCount = Math.max(rowCount, column.length);
         });
@@ -458,6 +443,17 @@ class DataTableCore {
      *  Functions
      *
      * */
+    /**
+     * Checks whether a key would pollute the prototype if used to index a
+     * plain object (e.g. as a column ID or table ID).
+     *
+     * @private
+     * @param {string|undefined} key The key to check.
+     * @return {boolean} True if the key is unsafe to use.
+     */
+    isPollutingKey(key) {
+        return key === '__proto__' || key === 'constructor';
+    }
     /**
      * Applies a row count to the table by setting the `rowCount` property and
      * adjusting the length of all columns.
@@ -504,7 +500,7 @@ class DataTableCore {
             });
             this.rowCount = length;
         }
-        (0,external_highcharts_src_js_default_namespaceObject.fireEvent)(this, 'afterDeleteRows', { rowIndex, rowCount });
+        ;(0,external_highcharts_src_js_default_namespaceObject.fireEvent)(this, 'afterDeleteRows', { rowIndex, rowCount });
         this.versionTag = (0,external_highcharts_src_js_default_namespaceObject.uniqueKey)();
     }
     /**
@@ -616,6 +612,10 @@ class DataTableCore {
     setColumns(columns, rowIndex, eventDetail) {
         let rowCount = this.rowCount;
         (0,external_highcharts_src_js_default_namespaceObject.objectEach)(columns, (column, columnId) => {
+            if (columnId === '__proto__' ||
+                columnId === 'constructor') {
+                return;
+            }
             this.columns[columnId] = column.slice();
             rowCount = column.length;
         });
@@ -654,14 +654,17 @@ class DataTableCore {
      * @emits #afterSetRows
      */
     setRow(row, rowIndex = this.rowCount, insert, eventDetail) {
-        var _a;
         const { columns } = this, indexRowCount = insert ? this.rowCount + 1 : rowIndex + 1, rowKeys = Object.keys(row);
         if (eventDetail?.addColumns !== false) {
             for (let i = 0, iEnd = rowKeys.length; i < iEnd; i++) {
-                columns[_a = rowKeys[i]] || (columns[_a] = new Array(this.rowCount));
+                const rowKey = rowKeys[i];
+                if (!this.isPollutingKey(rowKey) &&
+                    !Object.hasOwnProperty.call(columns, rowKey)) {
+                    columns[rowKey] = new Array(this.rowCount);
+                }
             }
         }
-        (0,external_highcharts_src_js_default_namespaceObject.objectEach)(columns, (column, columnId) => {
+        ;(0,external_highcharts_src_js_default_namespaceObject.objectEach)(columns, (column, columnId) => {
             if (column) {
                 if (insert) {
                     column = DataTableCore_splice(column, rowIndex, 0, true, [row[columnId]]).array;
@@ -1023,7 +1026,7 @@ class DataTable extends Data_DataTableCore {
         ].includes(e.type)) {
             this.versionTag = (0,external_highcharts_src_js_default_namespaceObject.uniqueKey)();
         }
-        (0,external_highcharts_src_js_default_namespaceObject.fireEvent)(this, e.type, e);
+        ;(0,external_highcharts_src_js_default_namespaceObject.fireEvent)(this, e.type, e);
     }
     /**
      * Fetches a single cell value.
@@ -1348,6 +1351,9 @@ class DataTable extends Data_DataTableCore {
     hasRowWith(columnId, cellValue) {
         const table = this;
         const column = table.columns[columnId];
+        if (!column) {
+            return false;
+        }
         // Normal array
         if (Array.isArray(column)) {
             return (column.indexOf(cellValue) !== -1);
@@ -1393,8 +1399,14 @@ class DataTable extends Data_DataTableCore {
      * Returns `true` if successful, `false` if the column was not found.
      */
     changeColumnId(columnId, newColumnId) {
+        if (columnId === '__proto__' ||
+            columnId === 'constructor' ||
+            newColumnId === '__proto__' ||
+            newColumnId === 'constructor') {
+            return false;
+        }
         const table = this, columns = table.columns;
-        if (columns[columnId]) {
+        if (Object.hasOwnProperty.call(columns, columnId)) {
             if (columnId !== newColumnId) {
                 columns[newColumnId] = columns[columnId];
                 delete columns[columnId];
@@ -1427,8 +1439,14 @@ class DataTable extends Data_DataTableCore {
      * @emits #afterSetCell
      */
     setCell(columnId, rowIndex, cellValue, eventDetail) {
+        if (columnId === '__proto__' ||
+            columnId === 'constructor') {
+            return;
+        }
         const table = this, columns = table.columns, modifier = table.modifier;
-        let column = columns[columnId];
+        let column = Object.hasOwnProperty.call(columns, columnId) ?
+            columns[columnId] :
+            void 0;
         if (column && column[rowIndex] === cellValue) {
             return;
         }
@@ -1497,6 +1515,10 @@ class DataTable extends Data_DataTableCore {
         else {
             for (let i = 0, iEnd = columnIds.length, column, tableColumn, columnId, ArrayConstructor; i < iEnd; ++i) {
                 columnId = columnIds[i];
+                if (columnId === '__proto__' ||
+                    columnId === 'constructor') {
+                    continue;
+                }
                 column = columns[columnId];
                 tableColumn = tableColumns[columnId];
                 ArrayConstructor = Object.getPrototypeOf((tableColumn && typeAsOriginal) ? tableColumn : column).constructor;
@@ -2035,7 +2057,7 @@ class DataConnector {
      * Event object containing additional event information.
      */
     emit(e) {
-        (0,external_highcharts_src_js_default_namespaceObject.fireEvent)(this, e.type, e);
+        ;(0,external_highcharts_src_js_default_namespaceObject.fireEvent)(this, e.type, e);
     }
     /**
      * Registers a callback for a specific connector event.
@@ -2569,7 +2591,7 @@ class DataConverter {
      * Event object containing additional event data
      */
     emit(e) {
-        (0,external_highcharts_src_js_default_namespaceObject.fireEvent)(this, e.type, e);
+        ;(0,external_highcharts_src_js_default_namespaceObject.fireEvent)(this, e.type, e);
     }
     /**
      * Registers a callback for a specific event.
@@ -2707,9 +2729,10 @@ class DataCursor {
      *  Constructor
      *
      * */
-    constructor(stateMap = {}) {
+    constructor(stateMap = Object.create(null)) {
         this.emittingRegister = [];
-        this.listenerMap = {};
+        // Table IDs are used as keys, so keep the maps prototype-less.
+        this.listenerMap = Object.create(null);
         this.stateMap = stateMap;
     }
     /* *
@@ -3085,7 +3108,7 @@ class DataPool {
      * Event object with event information.
      */
     emit(e) {
-        (0,external_highcharts_src_js_default_namespaceObject.fireEvent)(this, e.type, e);
+        ;(0,external_highcharts_src_js_default_namespaceObject.fireEvent)(this, e.type, e);
     }
     /**
      * Loads the connector.
@@ -3342,9 +3365,15 @@ const decimal2RegExp = /^[+\-]?\d+(?:,\d+)?(?:e[+\-]\d+)?/;
  */
 const functionRegExp = /^([A-Z][A-Z\d\.]*)\(/;
 /**
+ * Maximum nesting level of parentheses and function arguments. Deeper
+ * formulas would exceed the call stack of the recursive parser.
  * @private
  */
-const operatorRegExp = /^(?:[+\-*\/^<=>]|<=|=>)/;
+const MAX_NESTING_LEVEL = 256;
+/**
+ * @private
+ */
+const operatorRegExp = /^(?:<=|>=|[+\-*\/^<=>])/;
 /**
  * - Group 1: Start column
  * - Group 2: Start row
@@ -3462,10 +3491,13 @@ function extractString(text) {
  * @param {boolean} alternativeSeparators
  * Whether to expect `;` as argument separator and `,` as decimal separator.
  *
+ * @param {number} nestingLevel
+ * Current nesting level of the parsed formula.
+ *
  * @return {Formula|Function|Range|Reference|Value}
  * The recognized term structure.
  */
-function parseArgument(text, alternativeSeparators) {
+function parseArgument(text, alternativeSeparators, nestingLevel) {
     let match;
     // Check for a R1C1:R1C1 range notation
     match = text.match(rangeR1C1RegExp);
@@ -3540,7 +3572,7 @@ function parseArgument(text, alternativeSeparators) {
         return range;
     }
     // Fallback to formula processing for other pattern types
-    const formula = parseFormula(text, alternativeSeparators);
+    const formula = parseFormula(text, alternativeSeparators, nestingLevel);
     return (formula.length === 1 && typeof formula[0] !== 'string' ?
         formula[0] :
         formula);
@@ -3556,10 +3588,13 @@ function parseArgument(text, alternativeSeparators) {
  * @param {boolean} alternativeSeparators
  * Whether to expect `;` as argument separator and `,` as decimal separator.
  *
+ * @param {number} nestingLevel
+ * Current nesting level of the parsed formula.
+ *
  * @return {Highcharts.FormulaArguments}
  * Parsed arguments array.
  */
-function parseArguments(text, alternativeSeparators) {
+function parseArguments(text, alternativeSeparators, nestingLevel) {
     const args = [], argumentsSeparator = (alternativeSeparators ? ';' : ',');
     let parantheseLevel = 0, term = '';
     for (let i = 0, iEnd = text.length, char; i < iEnd; ++i) {
@@ -3568,7 +3603,7 @@ function parseArguments(text, alternativeSeparators) {
         if (char === argumentsSeparator &&
             !parantheseLevel &&
             term) {
-            args.push(parseArgument(term, alternativeSeparators));
+            args.push(parseArgument(term, alternativeSeparators, nestingLevel));
             term = '';
             // Check for a quoted string before skip logic
         }
@@ -3592,7 +3627,7 @@ function parseArguments(text, alternativeSeparators) {
     }
     // Look for left-overs from last argument
     if (!parantheseLevel && term) {
-        args.push(parseArgument(term, alternativeSeparators));
+        args.push(parseArgument(term, alternativeSeparators, nestingLevel));
     }
     return args;
 }
@@ -3624,10 +3659,19 @@ function negativeReference(formula) {
  * * `false` to expect `,` between arguments and `.` in decimals.
  * * `true` to expect `;` between arguments and `,` in decimals.
  *
+ * @param {number} [nestingLevel]
+ * Current nesting level of the parsed formula. Formulas nested deeper than
+ * 256 levels are rejected.
+ *
  * @return {Formula.Formula}
  * Formula array representing the string.
  */
-function parseFormula(text, alternativeSeparators) {
+function parseFormula(text, alternativeSeparators, nestingLevel = 0) {
+    if (nestingLevel > MAX_NESTING_LEVEL) {
+        const error = new Error('Formula nested deeper than ' + MAX_NESTING_LEVEL + ' levels.');
+        error.name = 'FormulaParseError';
+        throw error;
+    }
     const decimalRegExp = (alternativeSeparators ?
         decimal2RegExp :
         decimal1RegExp), formula = [];
@@ -3733,7 +3777,7 @@ function parseFormula(text, alternativeSeparators) {
             formula.push({
                 type: 'function',
                 name: match[1],
-                args: parseArguments(parantheses, alternativeSeparators)
+                args: parseArguments(parantheses, alternativeSeparators, nestingLevel + 1)
             });
             next = next.substring(parantheses.length + 2).trim();
             continue;
@@ -3742,8 +3786,7 @@ function parseFormula(text, alternativeSeparators) {
         if (next[0] === '(') {
             const parentheses = extractParentheses(next);
             if (parentheses) {
-                formula
-                    .push(parseFormula(parentheses, alternativeSeparators));
+                formula.push(parseFormula(parentheses, alternativeSeparators, nestingLevel + 1));
                 next = next.substring(parentheses.length + 2).trim();
                 continue;
             }
@@ -6308,7 +6351,7 @@ class CSVConnector extends Connectors_DataConnector {
      * Event object containing additional event information.
      */
     emit(e) {
-        (0,external_highcharts_src_js_default_namespaceObject.fireEvent)(this, e.type, e);
+        ;(0,external_highcharts_src_js_default_namespaceObject.fireEvent)(this, e.type, e);
     }
     /**
      * Initiates the loading of the CSV source to the connector
@@ -6698,7 +6741,7 @@ class JSONConnector extends Connectors_DataConnector {
      * Event object containing additional event information.
      */
     emit(e) {
-        (0,external_highcharts_src_js_default_namespaceObject.fireEvent)(this, e.type, e);
+        ;(0,external_highcharts_src_js_default_namespaceObject.fireEvent)(this, e.type, e);
     }
     /**
      * Initiates the loading of the JSON source to the connector
@@ -7010,7 +7053,7 @@ class GoogleSheetsConnector extends Connectors_DataConnector {
  * Event object containing additional event information.
  */
     emit(e) {
-        (0,external_highcharts_src_js_default_namespaceObject.fireEvent)(this, e.type, e);
+        ;(0,external_highcharts_src_js_default_namespaceObject.fireEvent)(this, e.type, e);
     }
     /**
  * Loads data from a Google Spreadsheet.
@@ -7839,7 +7882,7 @@ class ChainModifier extends Modifiers_DataModifier {
         });
     }
     emit(e) {
-        (0,external_highcharts_src_js_default_namespaceObject.fireEvent)(this, e.type, e);
+        ;(0,external_highcharts_src_js_default_namespaceObject.fireEvent)(this, e.type, e);
     }
     on(type, callback) {
         return (0,external_highcharts_src_js_default_namespaceObject.addEvent)(this, type, callback);

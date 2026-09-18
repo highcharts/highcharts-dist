@@ -12,8 +12,10 @@
  *
  * */
 'use strict';
+import H from '../../Core/Globals.js';
+const { composed } = H;
 import ParallelCoordinatesDefaults from './ParallelCoordinatesDefaults.js';
-import { addEvent, arrayMax, arrayMin, isNumber, merge } from '../../Shared/Utilities.js';
+import { addEvent, arrayMax, arrayMin, isNumber, merge, pushUnique } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class
@@ -89,10 +91,8 @@ var ParallelAxis;
      * @internal
      */
     function compose(AxisClass) {
-        if (!AxisClass.keepProps.includes('parallel')) {
+        if (pushUnique(composed, 'Axis.ParallelCoordinates')) {
             const axisCompo = AxisClass;
-            // On update, keep parallel additions.
-            AxisClass.keepProps.push('parallel');
             addEvent(axisCompo, 'init', onInit);
             addEvent(axisCompo, 'afterSetOptions', onAfterSetOptions);
             addEvent(axisCompo, 'getSeriesExtremes', onGetSeriesExtremes);
@@ -161,6 +161,7 @@ var ParallelAxis;
      */
     function onInit() {
         const axis = this;
+        delete this.type; // After Axis.update
         if (!axis.parallelCoordinates) {
             axis.parallelCoordinates = new ParallelAxisAdditions(axis);
         }

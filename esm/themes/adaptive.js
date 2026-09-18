@@ -1,5 +1,5 @@
 /**
- * Highcharts JS v13.0.2 (2026-08-27)
+ * Highcharts JS v13.1.0 (2026-09-18)
  * @module highcharts/themes/adaptive
  * @requires highcharts
  *
@@ -8,7 +8,7 @@
  *
  * A commercial license may be required depending on use,
  * see www.highcharts.com/license
- */import*as r from"../highcharts.js";let o={};o.n=r=>{let a=r&&r.__esModule?()=>r.default:()=>r;return o.d(a,{a:a}),a},o.d=(r,a)=>{if(Array.isArray(a))for(var l=0;l<a.length;){var h=a[l++],t=a[l++];o.o(r,h)?0===t&&l++:0===t?Object.defineProperty(r,h,{enumerable:!0,value:a[l++]}):Object.defineProperty(r,h,{enumerable:!0,get:t})}else for(var h in a)o.o(a,h)&&!o.o(r,h)&&Object.defineProperty(r,h,{enumerable:!0,get:a[h]})},o.o=(r,o)=>Object.prototype.hasOwnProperty.call(r,o);let a=r.default;var l,h,t=o.n(a);let c=r.default.Chart;var e=o.n(c);let{setOptions:i}=t(),s=`
+ */import*as r from"../highcharts.js";let o={};o.n=r=>{let a=r&&r.__esModule?()=>r.default:()=>r;return o.d(a,{a:a}),a},o.d=(r,a)=>{for(var l in a)o.o(a,l)&&!o.o(r,l)&&Object.defineProperty(r,l,{enumerable:!0,get:a[l]})},o.o=(r,o)=>Object.prototype.hasOwnProperty.call(r,o);let a=r.default;var l,h,t=o.n(a);let c=r.default.Chart;var e=o.n(c);let{setOptions:i}=t(),s=`
         /* Colors for data series and points */
         --highcharts-color-0: #2caffe;
         --highcharts-color-1: #544fc5;

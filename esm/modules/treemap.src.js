@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.2 (2026-08-27)
+ * @license Highcharts JS v13.1.0 (2026-09-18)
  * @module highcharts/modules/treemap
  * @requires highcharts
  *
@@ -16,48 +16,27 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 /******/ 
 /************************************************************************/
 /******/ /* webpack/runtime/compat get default export */
-/******/ (() => {
-/******/ 	// getDefaultExport function for compatibility with non-harmony modules
-/******/ 	__webpack_require__.n = (module) => {
-/******/ 		const getter = module && module.__esModule ?
-/******/ 			() => (module['default']) :
-/******/ 			() => (module);
-/******/ 		__webpack_require__.d(getter, { a: getter });
-/******/ 		return getter;
-/******/ 	};
-/******/ })();
+/******/ // getDefaultExport function for compatibility with non-harmony modules
+/******/ __webpack_require__.n = (module) => {
+/******/ 	const getter = module && module.__esModule ?
+/******/ 		() => (module['default']) :
+/******/ 		() => (module);
+/******/ 	__webpack_require__.d(getter, { a: getter });
+/******/ 	return getter;
+/******/ };
 /******/ 
 /******/ /* webpack/runtime/define property getters */
-/******/ (() => {
-/******/ 	// define getter/value functions for harmony exports
-/******/ 	__webpack_require__.d = (exports, definition) => {
-/******/ 		if(Array.isArray(definition)) {
-/******/ 			var i = 0;
-/******/ 			while(i < definition.length) {
-/******/ 				var key = definition[i++];
-/******/ 				var binding = definition[i++];
-/******/ 				if(!__webpack_require__.o(exports, key)) {
-/******/ 					if(binding === 0) {
-/******/ 						Object.defineProperty(exports, key, { enumerable: true, value: definition[i++] });
-/******/ 					} else {
-/******/ 						Object.defineProperty(exports, key, { enumerable: true, get: binding });
-/******/ 					}
-/******/ 				} else if(binding === 0) { i++; }
-/******/ 			}
-/******/ 		} else {
-/******/ 			for(var key in definition) {
-/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
-/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
-/******/ 				}
-/******/ 			}
+/******/ // define getter/value functions for harmony exports
+/******/ __webpack_require__.d = (exports, definition) => {
+/******/ 	for(var key in definition) {
+/******/ 		if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 			Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
 /******/ 		}
-/******/ 	};
-/******/ })();
+/******/ 	}
+/******/ };
 /******/ 
 /******/ /* webpack/runtime/hasOwnProperty shorthand */
-/******/ (() => {
-/******/ 	__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
-/******/ })();
+/******/ __webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop));
 /******/ 
 /************************************************************************/
 
@@ -304,7 +283,7 @@ const options = {
      * `.highcharts-breadcrumbs-buttons .highcharts-button` rule with its
      * different states.
      *
-     * @type  {Highcharts.SVGAttributes}
+     * @type  {Highcharts.CSSObject}
      * @since 10.0.0
      */
     style: {},
@@ -666,7 +645,12 @@ class Breadcrumbs {
      *        Returns the SVG button
      */
     renderButton(breadcrumb, posX, posY) {
-        const breadcrumbs = this, chart = this.chart, breadcrumbsOptions = breadcrumbs.options, buttonTheme = (0,external_highcharts_src_js_default_namespaceObject.merge)(breadcrumbsOptions.buttonTheme);
+        const breadcrumbs = this, chart = this.chart, breadcrumbsOptions = breadcrumbs.options, 
+        // The `style` option is CSS for the button text, so it belongs in
+        // the theme's `style` rather than being applied afterwards. A
+        // later `setState` re-applies the normal state style, which would
+        // otherwise wipe it (#25357).
+        buttonTheme = (0,external_highcharts_src_js_default_namespaceObject.merge)(breadcrumbsOptions.buttonTheme, chart.styledMode ? void 0 : { style: breadcrumbsOptions.style });
         const button = chart.renderer
             .button(breadcrumbs.getButtonText(breadcrumb), posX, posY, function (e /* @todo (Event|any) */) {
             // Extract events from button object and call
@@ -690,14 +674,11 @@ class Breadcrumbs {
                 else {
                     e.newLevel = breadcrumb.level;
                 }
-                (0,external_highcharts_src_js_default_namespaceObject.fireEvent)(breadcrumbs, 'up', e);
+                ;(0,external_highcharts_src_js_default_namespaceObject.fireEvent)(breadcrumbs, 'up', e);
             }
         }, buttonTheme)
             .addClass('highcharts-breadcrumbs-button')
             .add(breadcrumbs.group);
-        if (!chart.styledMode) {
-            button.attr(breadcrumbsOptions.style);
-        }
         return button;
     }
     /**
@@ -723,7 +704,7 @@ class Breadcrumbs {
         return separator;
     }
     update(options) {
-        (0,external_highcharts_src_js_default_namespaceObject.merge)(true, this.options, options);
+        ;(0,external_highcharts_src_js_default_namespaceObject.merge)(true, this.options, options);
         this.destroy();
         this.isDirty = true;
     }
@@ -794,7 +775,7 @@ class Breadcrumbs {
      * @function Highcharts.Breadcrumbs#resetElementListState
      */
     resetElementListState() {
-        (0,external_highcharts_src_js_default_namespaceObject.objectEach)(this.elementList, (element) => {
+        ;(0,external_highcharts_src_js_default_namespaceObject.objectEach)(this.elementList, (element) => {
             element.updated = false;
         });
     }
@@ -1410,7 +1391,7 @@ class TreemapPoint extends ScatterPoint {
         return (0,external_highcharts_src_js_default_namespaceObject.isNumber)(this.plotY) && this.y !== null;
     }
 }
-(0,external_highcharts_src_js_default_namespaceObject.extend)(TreemapPoint.prototype, {
+;(0,external_highcharts_src_js_default_namespaceObject.extend)(TreemapPoint.prototype, {
     setVisible: PiePoint.prototype.setVisible
 });
 /* *
@@ -2072,7 +2053,7 @@ const TreemapSeriesDefaults = {
  * not specified, it is inherited from [chart.type](#chart.type).
  *
  * @extends   series,plotOptions.treemap
- * @excluding dataParser, dataURL, stack, dataSorting
+ * @excluding stack, dataSorting
  * @product   highcharts
  * @requires  modules/treemap
  * @apioption series.treemap
@@ -2500,7 +2481,7 @@ function onSeriesAfterBindAxes() {
                 treeAxisDefaults.max = axisMax;
                 treeAxisDefaults.tickPositions = [];
             }
-            (0,external_highcharts_src_js_default_namespaceObject.merge)(true, xAxis.options, treeAxisDefaults, xAxis.userOptions);
+            ;(0,external_highcharts_src_js_default_namespaceObject.merge)(true, xAxis.options, treeAxisDefaults, xAxis.userOptions);
             (0,external_highcharts_src_js_default_namespaceObject.merge)(true, yAxis.options, treeAxisDefaults, yAxis.userOptions);
             // Set the properties on the axis object
             xAxis.visible = xAxis.options.visible;
@@ -3038,7 +3019,7 @@ class TreemapSeries extends ScatterSeries {
                 if (borderRadius) {
                     attribs.r = borderRadius;
                 }
-                (0,external_highcharts_src_js_default_namespaceObject.merge)(true, // Extend object
+                ;(0,external_highcharts_src_js_default_namespaceObject.merge)(true, // Extend object
                 // Which object to extend
                 shouldAnimate ? animatableAttribs : attribs, 
                 // Add shapeArgs to animate/attr if graphic exists
@@ -3127,7 +3108,7 @@ class TreemapSeries extends ScatterSeries {
      * @private
      */
     drillToNode(id, redraw) {
-        (0,external_highcharts_src_js_default_namespaceObject.error)(32, false, void 0, { 'treemap.drillToNode': 'use treemap.setRootNode' });
+        ;(0,external_highcharts_src_js_default_namespaceObject.error)(32, false, void 0, { 'treemap.drillToNode': 'use treemap.setRootNode' });
         this.setRootNode(id, redraw);
     }
     drillUp() {
@@ -3519,7 +3500,7 @@ class TreemapSeries extends ScatterSeries {
             }
         }
         // Sort the children
-        (0,external_highcharts_src_js_default_namespaceObject.stableSort)(children, (a, b) => ((a.sortIndex || 0) - (b.sortIndex || 0)));
+        ;(0,external_highcharts_src_js_default_namespaceObject.stableSort)(children, (a, b) => ((a.sortIndex || 0) - (b.sortIndex || 0)));
         // Set the values
         let val = point?.simulatedValue ?? point?.options.value ?? childrenTotal;
         if (point) {
@@ -3531,7 +3512,7 @@ class TreemapSeries extends ScatterSeries {
         if (tree.parentNode?.point?.isGroup && series.rootNode !== tree.parent) {
             tree.visible = false;
         }
-        (0,external_highcharts_src_js_default_namespaceObject.extend)(tree, {
+        ;(0,external_highcharts_src_js_default_namespaceObject.extend)(tree, {
             children: children,
             childrenTotal: childrenTotal,
             // Ignore this node if point is not visible

@@ -24,6 +24,7 @@ import ExportDataDefaults from './ExportDataDefaults.js';
 import G from '../../Core/Globals.js';
 const { composed, doc, win } = G;
 import { addEvent, defined, extend, find, fireEvent, isNumber, pushUnique } from '../../Shared/Utilities.js';
+import { error } from '../../Core/Utilities.js';
 /* *
  *
  *  Composition
@@ -158,6 +159,10 @@ var ExportData;
      * @requires modules/export-data
      */
     function downloadCSV() {
+        if (!this.chart.series.some(isExportableSeries)) {
+            error('Warning: No data to export', false, this.chart);
+            return;
+        }
         this.wrapLoading(() => {
             const csv = this.getCSV(true);
             downloadURL(getBlobFromContent(csv, 'text/csv') ||
@@ -177,6 +182,10 @@ var ExportData;
      * @requires modules/export-data
      */
     function downloadXLS() {
+        if (!this.chart.series.some(isExportableSeries)) {
+            error('Warning: No data to export', false, this.chart);
+            return;
+        }
         this.wrapLoading(() => {
             const uri = 'data:application/vnd.ms-excel;base64,', template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" ' +
                 'xmlns:x="urn:schemas-microsoft-com:office:excel" ' +
@@ -344,10 +353,7 @@ var ExportData;
         chart.series.forEach(function (series) {
             const keys = series.options.keys, xAxis = series.xAxis, pointArrayMap = keys || getPointArray(series, xAxis), valueCount = pointArrayMap.length, xTaken = !series.requireSorting && {}, xAxisIndex = xAxes.indexOf(xAxis);
             let categoryAndDatetimeMap = getCategoryAndDateTimeMap(series, pointArrayMap), mockSeries, j;
-            if (series.options.includeInDataExport !== false &&
-                !series.options.isInternal &&
-                series.visible !== false // #55
-            ) {
+            if (isExportableSeries(series)) {
                 // Build a lookup for X axis index and the position of the first
                 // series that belongs to that X axis. Includes -1 for non-axis
                 // series types like pies.
@@ -776,6 +782,20 @@ var ExportData;
      */
     function hideData() {
         this.toggleDataTable(false);
+    }
+    /**
+     * Whether the series contributes columns to the exported data.
+     *
+     * @internal
+     *
+     * @requires modules/exporting
+     * @requires modules/export-data
+     */
+    function isExportableSeries(series) {
+        return (series.options.includeInDataExport !== false &&
+            !series.options.isInternal &&
+            series.visible !== false // #55
+        );
     }
     /**
      * Toggle showing data table.

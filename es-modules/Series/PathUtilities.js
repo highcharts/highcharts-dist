@@ -81,7 +81,7 @@ function getCurvedPath(pathParams) {
 }
 /**
  * General function to apply corner radius to a path
- * @private
+ * @internal
  */
 function applyRadius(path, r) {
     const d = [];
@@ -134,8 +134,10 @@ function applyRadius(path, r) {
     }
     return d;
 }
+/** @internal */
 const PathUtilities = {
     applyRadius,
     getLinkPath
 };
+/** @internal */
 export default PathUtilities;

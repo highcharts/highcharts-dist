@@ -28,7 +28,7 @@ class PackedBubblePoint extends BubblePoint {
     /**
      * Destroy point.
      * Then remove point from the layout.
-     * @private
+     * @internal
      */
     destroy() {
         if (this.series?.layout) {

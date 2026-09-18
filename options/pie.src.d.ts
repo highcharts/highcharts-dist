@@ -6,6 +6,83 @@
 import * as Highcharts from "../highcharts.src";
 declare module "../highcharts.src" {
     /**
+     * (Highcharts, Highmaps) Point accessibility options for a series.
+     */
+    interface PlotPieAccessibilityPointOptions {
+        /**
+         * (Highcharts, Highmaps) Date format to use for points on datetime axes
+         * when describing them to screen reader users.
+         *
+         * Defaults to the same format as in tooltip.
+         *
+         * For an overview of the replacement codes, see dateFormat.
+         */
+        dateFormat?: string;
+        /**
+         * (Highcharts, Highmaps) Formatter function to determine the date/time
+         * format used with points on datetime axes when describing them to
+         * screen reader users. Receives one argument, `point`, referring to the
+         * point to describe. Should return a date format string compatible with
+         * dateFormat.
+         */
+        dateFormatter?: Highcharts.ScreenReaderFormatterCallbackFunction<Highcharts.Point>;
+        /**
+         * (Highcharts, Highmaps) Whether or not to describe points with the
+         * value `null` to assistive technology, such as screen readers.
+         */
+        describeNull?: boolean;
+        /**
+         * (Highcharts, Highmaps) A format string to use instead of the default
+         * for point descriptions.
+         *
+         * The context of the format string is the point instance.
+         *
+         * As opposed to accessibility.point.valueDescriptionFormat, this option
+         * replaces the whole description.
+         */
+        descriptionFormat?: string;
+        /**
+         * (Highcharts, Highmaps) Formatter function to use instead of the
+         * default for point descriptions. Same as
+         * `accessibility.point.descriptionFormatter`, but applies to a series
+         * instead of the whole chart.
+         *
+         * Note: Prefer using accessibility.point.valueDescriptionFormat instead
+         * if possible, as default functionality such as describing annotations
+         * will be preserved.
+         */
+        descriptionFormatter?: Highcharts.ScreenReaderFormatterCallbackFunction<Highcharts.Point>;
+        /**
+         * (Highcharts, Highmaps) Decimals to use for the values in the point
+         * descriptions. Uses tooltip.valueDecimals if not defined.
+         */
+        valueDecimals?: number;
+        /**
+         * (Highcharts, Highmaps) Format to use for describing the values of
+         * data points to assistive technology - including screen readers. The
+         * point context is available as `{point}`.
+         *
+         * Other available context variables include `{index}`, `{value}`, and
+         * `{xDescription}`.
+         *
+         * Additionally, the series name, annotation info, and description added
+         * in `point.accessibility.description` is added by default if relevant.
+         * To override this, use the accessibility.point.descriptionFormatter
+         * option.
+         */
+        valueDescriptionFormat?: string;
+        /**
+         * (Highcharts, Highmaps) Prefix to add to the values in the point
+         * descriptions. Uses tooltip.valuePrefix if not defined.
+         */
+        valuePrefix?: string;
+        /**
+         * (Highcharts, Highmaps) Suffix to add to the values in the point
+         * descriptions. Uses tooltip.valueSuffix if not defined.
+         */
+        valueSuffix?: string;
+    }
+    /**
      * (Highcharts, Highstock, Highmaps, Gantt) Enable or disable the initial
      * animation when a series is displayed for the `dataLabels`. The animation
      * can also be set as a configuration object. Please note that this option
@@ -23,6 +100,29 @@ declare module "../highcharts.src" {
          * `undefined` inherits defer time from the series.animation.defer.
          */
         defer?: number;
+    }
+    /**
+     * (Highcharts, Highmaps) Options for the connector in the _Series on point_
+     * feature.
+     *
+     * In styled mode, the connector can be styled with the
+     * `.highcharts-connector-seriesonpoint` class name.
+     */
+    interface PlotPieOnPointConnectorOptions {
+        /**
+         * (Highcharts, Highmaps) A name for the dash style to use for the
+         * connector.
+         */
+        dashstyle?: string;
+        /**
+         * (Highcharts, Highmaps) Color of the connector line. By default it's
+         * the series' color.
+         */
+        stroke?: string;
+        /**
+         * (Highcharts, Highmaps) Pixel width of the connector line.
+         */
+        width?: number;
     }
     /**
      * (Highcharts, Highmaps) Options for the _Series on point_ feature. Only
@@ -48,6 +148,34 @@ declare module "../highcharts.src" {
          * offset of the series in the _Series on point_ feature.
          */
         position?: (object|Highcharts.PlotPieOnPointPositionOptions);
+    }
+    /**
+     * (Highcharts, Highmaps) Options allowing to set a position and an offset
+     * of the series in the _Series on point_ feature.
+     */
+    interface PlotPieOnPointPositionOptions {
+        /**
+         * (Highcharts, Highmaps) Series center offset from the original x
+         * position. If defined, the connector line is drawn connecting original
+         * position with new position.
+         */
+        offsetX?: number;
+        /**
+         * (Highcharts, Highmaps) Series center offset from the original y
+         * position. If defined, the connector line is drawn from original
+         * position to a new position.
+         */
+        offsetY?: number;
+        /**
+         * (Highcharts, Highmaps) X position of the series center. By default,
+         * the series is displayed on the point that it is connected to.
+         */
+        x?: number;
+        /**
+         * (Highcharts, Highmaps) Y position of the series center. By default,
+         * the series is displayed on the point that it is connected to.
+         */
+        y?: number;
     }
     /**
      * (Highcharts, Highmaps) A pie chart is a circular graphic which is divided
@@ -605,9 +733,33 @@ declare module "../highcharts.src" {
         zoomEnabled?: boolean;
     }
     /**
+     * (Highcharts, Highstock) Animation setting for hovering the graph in
+     * line-type series.
+     */
+    interface PlotPieStatesHoverAnimationOptions {
+        /**
+         * (Highcharts, Highstock) The duration of the hover animation in
+         * milliseconds. By default the hover state animates quickly in, and
+         * slowly back to normal.
+         */
+        duration?: number;
+    }
+    /**
      * (Highcharts, Highstock) Animation when not hovering over the marker.
      */
     interface PlotPieStatesInactiveAnimationOptions {
+        /**
+         * (Highcharts, Highstock) The duration of the hover animation in
+         * milliseconds. By default the hover state animates quickly in, and
+         * slowly back to normal.
+         */
+        duration?: number;
+    }
+    /**
+     * (Highcharts, Highstock) Animation setting for hovering the graph in
+     * line-type series.
+     */
+    interface PlotPieStatesSelectAnimationOptions {
         /**
          * (Highcharts, Highstock) The duration of the hover animation in
          * milliseconds. By default the hover state animates quickly in, and
@@ -631,6 +783,50 @@ declare module "../highcharts.src" {
         second?: string;
         week?: string;
         year?: string;
+    }
+    /**
+     * (Highcharts, Highmaps) Options for the tooltip header when tooltip.split
+     * is enabled. The header is the box containing the X value in a split
+     * tooltip.
+     */
+    interface PlotPieTooltipHeaderOptions {
+        /**
+         * (Highcharts, Highmaps) Background color for the tooltip header when
+         * tooltip.split is enabled.
+         */
+        backgroundColor?: Highcharts.ColorType;
+        /**
+         * (Highcharts, Highmaps) Border color for the tooltip header when
+         * tooltip.split is enabled.
+         */
+        borderColor?: Highcharts.ColorType;
+        /**
+         * (Highcharts, Highmaps) The width of the border for the tooltip header
+         * when tooltip.split is enabled.
+         */
+        borderWidth?: number;
+        /**
+         * (Highcharts, Highmaps) Distance between the plot area and the header
+         * (except the chevron) in a split tooltip, in pixels. The default value
+         * makes the header text align with the axis labels.
+         */
+        distance?: number;
+        /**
+         * (Highcharts, Highmaps) The name of a symbol to use for the border
+         * around the tooltip header. Applies only when tooltip.split is
+         * enabled.
+         *
+         * Custom callbacks for symbol path generation can also be added to
+         * `Highcharts.SVGRenderer.prototype.symbols` the same way as for
+         * series.marker.symbol.
+         */
+        shape?: string;
+        /**
+         * (Highcharts, Highmaps) CSS styles for the tooltip header. The default
+         * is `{ fontSize: '1em' }`, ensuring that the header text is the same
+         * size as the axis labels.
+         */
+        style?: object;
     }
     /**
      * (Highcharts, Highmaps) Positioning options for fixed tooltip, taking
@@ -730,14 +926,6 @@ declare module "../highcharts.src" {
          * is not available. (see online documentation for example)
          */
         data?: Array<(number|[string, (number|null)]|null|Highcharts.PointOptionsObject)>;
-        /**
-         * Not available
-         */
-        dataParser?: undefined;
-        /**
-         * Not available
-         */
-        dataURL?: undefined;
         /**
          * Not available
          */

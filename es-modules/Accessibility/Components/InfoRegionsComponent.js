@@ -25,7 +25,7 @@ const { format } = F;
 import H from '../../Core/Globals.js';
 const { doc } = H;
 import HU from '../Utils/HTMLUtilities.js';
-const { addClass, getElement, getHeadingTagNameForElement, stripHTMLTagsFromString, visuallyHideElement } = HU;
+const { addClass, getElement, getHeadingTagNameForElement, getShadowRoot, stripHTMLTagsFromString, visuallyHideElement } = HU;
 import { attr, replaceNested } from '../../Shared/Utilities.js';
 /* *
  *
@@ -240,7 +240,11 @@ class InfoRegionsComponent extends AccessibilityComponent {
         if (typeof linkedDescOption !== 'string') {
             return linkedDescOption;
         }
-        const query = format(linkedDescOption, this.chart), queryMatch = doc.querySelectorAll(query);
+        const query = format(linkedDescOption, this.chart), shadowRoot = getShadowRoot(this.chart.renderTo), shadowMatch = shadowRoot?.querySelectorAll(query), 
+        // The description may also live outside the shadow root (#22682)
+        queryMatch = shadowMatch?.length ?
+            shadowMatch :
+            doc.querySelectorAll(query);
         if (queryMatch.length === 1) {
             return queryMatch[0];
         }
@@ -412,7 +416,7 @@ class InfoRegionsComponent extends AccessibilityComponent {
      * @private
      */
     getEndOfChartMarkerText() {
-        const endMarkerId = `highcharts-end-of-chart-marker-${this.chart.index}`, endMarker = getElement(endMarkerId);
+        const endMarkerId = `highcharts-end-of-chart-marker-${this.chart.index}`, endMarker = getElement(endMarkerId, this.chart.renderTo);
         if (endMarker) {
             return endMarker.outerHTML;
         }
@@ -449,8 +453,8 @@ class InfoRegionsComponent extends AccessibilityComponent {
      * @param {string} sonifyButtonId
      */
     initSonifyButton(sonifyButtonId) {
-        const el = this.sonifyButton = getElement(sonifyButtonId);
         const chart = this.chart;
+        const el = this.sonifyButton = getElement(sonifyButtonId, chart.renderTo);
         const defaultHandler = (e) => {
             if (el) {
                 el.setAttribute('aria-hidden', 'true');
@@ -486,11 +490,11 @@ class InfoRegionsComponent extends AccessibilityComponent {
      * @param {string} tableButtonId
      */
     initDataTableButton(tableButtonId) {
-        const el = this.viewDataTableButton = getElement(tableButtonId), chart = this.chart, tableId = tableButtonId.replace('hc-linkto-', '');
+        const chart = this.chart, el = this.viewDataTableButton = getElement(tableButtonId, chart.renderTo), tableId = tableButtonId.replace('hc-linkto-', '');
         if (el) {
             attr(el, {
                 tabindex: -1,
-                'aria-expanded': !!getElement(tableId)
+                'aria-expanded': !!getElement(tableId, chart.renderTo)
             });
             el.onclick = chart.options.accessibility
                 .screenReaderSection.onViewDataTableClick ||
