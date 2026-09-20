@@ -3,9 +3,8 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
@@ -29,7 +28,7 @@
  *         Jittered scatter plot on top of a box plot
  *
  * @extends      plotOptions.column
- * @excluding    borderColor, borderWidth, groupZPadding,
+ * @excluding    borderColor, borderRadius, borderWidth, groupZPadding,
  *               states, boostThreshold, boostBlending
  * @product      highcharts
  * @requires     highcharts-more
@@ -37,28 +36,7 @@
  */
 const BoxPlotSeriesDefaults = {
     /**
-     * The corner radius of the border surrounding the box. A number
-     * signifies pixels. A percentage string, like for example `50%`, signifies
-     * a size relative to the box width.
-     *
-     * @sample {highcharts} highcharts/demo/violin-plot/
-     *         Box plot with rounded corners
-     *
-     * @type    {number|string|Highcharts.BorderRadiusOptionsObject}
-     * @default 0
-     * @since   13.0.1
-     * @product highcharts
-     */
-    borderRadius: 0,
-    /**
-     * The Y axis value to serve as the base for the columns, for
-     * distinguishing between values above and below a threshold. If `null`,
-     * the columns extend from the padding Y axis minimum.
-     *
-     * @type    {number|null}
-     * @default null
-     * @since   2.0
-     * @product highcharts
+     * @type {number|null}
      */
     threshold: null,
     tooltip: {
@@ -97,7 +75,7 @@ const BoxPlotSeriesDefaults = {
      * @since   3.0
      * @product highcharts
      */
-    fillColor: 'var(--highcharts-background-color)',
+    fillColor: "#ffffff" /* Palette.backgroundColor */,
     /**
      * The width of the line surrounding the box. If any of
      * [stemWidth](#plotOptions.boxplot.stemWidth),
@@ -262,29 +240,11 @@ const BoxPlotSeriesDefaults = {
      * @apioption plotOptions.boxplot.colorKey
      */
     /**
-     * The point key used to position a box plot data label.
-     *
-     * @typedef {"low"|"q1"|"median"|"q3"|"high"} Highcharts.BoxPlotPointValKey
-     */
-    /**
-     * The point key to use for positioning this data label.
-     * Possible values are `low`, `q1`, `median`, `q3` and `high`.
-     *
-     * @sample {highcharts} highcharts/series-boxplot/data-labels/
-     *         Multiple data labels
-     *
-     * @type      {Highcharts.BoxPlotPointValKey}
-     * @default   high
-     * @validvalue ["low", "q1", "median", "q3", "high"]
-     * @product   highcharts
-     * @apioption plotOptions.boxplot.dataLabels.alignToKey
-     */
-    /**
      * The color of the whiskers, the horizontal lines marking low and high
      * values. When `undefined`, the general series color is used.
      *
      * In styled mode, the whisker stroke can be set with the
-     * `.highcharts-boxplot-whisker` class.
+     * `.highcharts-boxplot-whisker` class .
      *
      * @sample {highcharts} highcharts/plotoptions/box-plot-styling/
      *         Box plot styling
@@ -319,7 +279,7 @@ const BoxPlotSeriesDefaults = {
  * not specified, it is inherited from [chart.type](#chart.type).
  *
  * @extends   series,plotOptions.boxplot
- * @excluding marker, stack, stacking, states,
+ * @excluding dataParser, dataURL, marker, stack, stacking, states,
  *            boostThreshold, boostBlending
  * @product   highcharts
  * @requires  highcharts-more
@@ -380,7 +340,6 @@ const BoxPlotSeriesDefaults = {
  * @sample {highcharts} highcharts/series/data-array-of-objects/
  *         Config objects
  *
- * @basic
  * @type      {Array<Array<(number|string),number,number,number,number>|Array<(number|string),number,number,number,number,number>|*>}
  * @extends   series.line.data
  * @excluding marker

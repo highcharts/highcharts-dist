@@ -6,9 +6,8 @@
  *
  *  Author: Kacper Madej
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
@@ -21,7 +20,6 @@ const { column: { prototype: { pointClass: ColumnPoint } } } = SeriesRegistry.se
  *  Class
  *
  * */
-/** @internal */
 class CylinderPoint extends ColumnPoint {
 }
 extend(CylinderPoint.prototype, {
@@ -32,5 +30,4 @@ extend(CylinderPoint.prototype, {
  *  Default Export
  *
  * */
-/** @internal */
 export default CylinderPoint;

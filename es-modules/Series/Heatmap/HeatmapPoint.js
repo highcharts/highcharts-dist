@@ -3,16 +3,15 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
 'use strict';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { scatter: { prototype: { pointClass: ScatterPoint } } } = SeriesRegistry.seriesTypes;
-import { clamp, defined, extend } from '../../Shared/Utilities.js';
+import { clamp, defined, extend, pick } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class
@@ -24,7 +23,7 @@ class HeatmapPoint extends ScatterPoint {
      *  Functions
      *
      * */
-    /** @internal */
+    /** @private */
     applyOptions(options, x) {
         // #17970, if point is null remove its color, because it may be updated
         if (this.isNull || this.value === null) {
@@ -35,10 +34,10 @@ class HeatmapPoint extends ScatterPoint {
             'null' : 'point';
         return this;
     }
-    /** @internal */
+    /** @private */
     getCellAttributes() {
         const point = this, series = point.series, seriesOptions = series.options, xPad = (seriesOptions.colsize || 1) / 2, yPad = (seriesOptions.rowsize || 1) / 2, xAxis = series.xAxis, yAxis = series.yAxis, markerOptions = point.options.marker || series.options.marker, pointPlacement = series.pointPlacementToXValue(), // #7860
-        pointPadding = point.pointPadding ?? seriesOptions.pointPadding ?? 0, cellAttr = {
+        pointPadding = pick(point.pointPadding, seriesOptions.pointPadding, 0), cellAttr = {
             x1: clamp(Math.round(xAxis.len -
                 xAxis.translate(point.x - xPad, false, true, false, true, -pointPlacement)), -xAxis.len, 2 * xAxis.len),
             x2: clamp(Math.round(xAxis.len -
@@ -73,7 +72,7 @@ class HeatmapPoint extends ScatterPoint {
         return cellAttr;
     }
     /**
-     * @internal
+     * @private
      */
     haloPath(size) {
         if (!size) {
@@ -91,7 +90,7 @@ class HeatmapPoint extends ScatterPoint {
     /**
      * Color points have a value option that determines whether or not it is
      * a null point
-     * @internal
+     * @private
      */
     isValid() {
         // Undefined is allowed

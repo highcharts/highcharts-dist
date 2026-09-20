@@ -5,9 +5,8 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Paweł Fus
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
@@ -18,7 +17,7 @@ const { win } = H;
 import GraphLayout from '../GraphLayoutComposition.js';
 import QuadTree from './QuadTree.js';
 import VerletIntegration from './VerletIntegration.js';
-import { clamp, defined, fireEvent, isFunction } from '../../Shared/Utilities.js';
+import { clamp, defined, fireEvent, isFunction, pick } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class
@@ -66,16 +65,12 @@ class ReingoldFruchtermanLayout {
         this.integration =
             GraphLayout.integrations[options.integration];
         this.enableSimulation = options.enableSimulation;
-        this.attractiveForce =
-            options.attractiveForce ??
-                this.integration.attractiveForceFunction;
-        this.repulsiveForce =
-            options.repulsiveForce ??
-                this.integration.repulsiveForceFunction;
+        this.attractiveForce = pick(options.attractiveForce, this.integration.attractiveForceFunction);
+        this.repulsiveForce = pick(options.repulsiveForce, this.integration.repulsiveForceFunction);
         this.approximation = options.approximation;
     }
     updateSimulation(enable) {
-        this.enableSimulation = (enable ?? this.options.enableSimulation);
+        this.enableSimulation = pick(enable, this.options.enableSimulation);
     }
     start() {
         const layout = this, series = this.series, options = this.options;
@@ -205,7 +200,7 @@ class ReingoldFruchtermanLayout {
         }
     }
     setMaxIterations(maxIterations) {
-        this.maxIterations = (maxIterations ?? this.options.maxIterations);
+        this.maxIterations = pick(maxIterations, this.options.maxIterations);
     }
     setTemperature() {
         this.temperature = this.startTemperature =
@@ -248,11 +243,11 @@ class ReingoldFruchtermanLayout {
         const box = this.box, nodes = this.nodes, nodesLength = nodes.length + 1, angle = 2 * Math.PI / nodesLength, rootNodes = nodes.filter(function (node) {
             return node.linksTo.length === 0;
         }), visitedNodes = {}, radius = this.options.initialPositionRadius, addToNodes = (node) => {
-            for (const { toNode } of node.linksFrom || []) {
-                if (toNode && !visitedNodes[toNode.id]) {
-                    visitedNodes[toNode.id] = true;
-                    sortedNodes.push(toNode);
-                    addToNodes(toNode);
+            for (const link of node.linksFrom || []) {
+                if (!visitedNodes[link.toNode.id]) {
+                    visitedNodes[link.toNode.id] = true;
+                    sortedNodes.push(link.toNode);
+                    addToNodes(link.toNode);
                 }
             }
         };
@@ -281,12 +276,8 @@ class ReingoldFruchtermanLayout {
         // as a cluster in the middle
         for (let i = 0, iEnd = sortedNodes.length; i < iEnd; ++i) {
             node = sortedNodes[i];
-            node.plotX = node.prevX =
-                node.plotX ??
-                    box.width / 2 + radius * Math.cos(i * angle);
-            node.plotY = node.prevY =
-                node.plotY ??
-                    box.height / 2 + radius * Math.sin(i * angle);
+            node.plotX = node.prevX = pick(node.plotX, box.width / 2 + radius * Math.cos(i * angle));
+            node.plotY = node.prevY = pick(node.plotY, box.height / 2 + radius * Math.sin(i * angle));
             node.dispX = 0;
             node.dispY = 0;
         }
@@ -307,9 +298,8 @@ class ReingoldFruchtermanLayout {
         // Initial positions:
         for (let i = 0, iEnd = nodes.length; i < iEnd; ++i) {
             node = nodes[i];
-            node.plotX = node.prevX = (node.plotX ?? box.width * unrandom(i));
-            node.plotY = node.prevY =
-                node.plotY ?? box.height * unrandom(nodesLength + i);
+            node.plotX = node.prevX = pick(node.plotX, box.width * unrandom(i));
+            node.plotY = node.prevY = pick(node.plotY, box.height * unrandom(nodesLength + i));
             node.dispX = 0;
             node.dispY = 0;
         }

@@ -4,9 +4,8 @@
  *
  *  Author: Paweł Potaczek
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
@@ -26,8 +25,6 @@ import { addEvent, objectEach, pushUnique, wrap } from '../../Shared/Utilities.j
 /**
  * If ranges are not specified, determine ranges from rendered bubble series
  * and render legend again.
- *
- * @internal
  */
 function chartDrawChartBox(proceed, options, callback) {
     const chart = this, legend = chart.legend, bubbleSeries = getVisibleBubbleSeriesIndex(chart) >= 0;
@@ -79,8 +76,8 @@ function chartDrawChartBox(proceed, options, callback) {
 }
 /**
  * Compose classes for use with Bubble series.
+ * @private
  *
- * @internal
  * @param {Highcharts.Chart} ChartClass
  * Core chart class to use with Bubble series.
  *
@@ -104,7 +101,7 @@ function compose(ChartClass, LegendClass) {
 /**
  * Check if there is at least one visible bubble series.
  *
- * @internal
+ * @private
  * @function getVisibleBubbleSeriesIndex
  * @param {Highcharts.Chart} chart
  * Chart to check.
@@ -128,7 +125,7 @@ function getVisibleBubbleSeriesIndex(chart) {
 /**
  * Calculate height for each row in legend.
  *
- * @internal
+ * @private
  * @function getLinesHeights
  *
  * @param {Highcharts.Legend} legend
@@ -165,8 +162,6 @@ function getLinesHeights(legend) {
 }
 /**
  * Start the bubble legend creation process.
- *
- * @internal
  */
 function onLegendAfterGetAllItems(e) {
     const legend = this, bubbleLegend = legend.bubbleLegend, legendOptions = legend.options, options = legendOptions.bubbleLegend, bubbleSeriesIndex = getVisibleBubbleSeriesIndex(legend.chart);
@@ -191,8 +186,6 @@ function onLegendAfterGetAllItems(e) {
 }
 /**
  * Retranslate the legend items after render
- *
- * @internal
  */
 function onLegendAfterRender() {
     if (this.bubbleLegend) {
@@ -224,8 +217,6 @@ function onLegendAfterRender() {
 }
 /**
  * Toggle bubble legend depending on the visible status of bubble series.
- *
- * @internal
  */
 function onLegendItemClick(e) {
     // #14080 don't fire this code if click function is prevented
@@ -257,9 +248,7 @@ function onLegendItemClick(e) {
  *  Default Export
  *
  * */
-/** @internal */
 const BubbleLegendComposition = {
     compose
 };
-/** @internal */
 export default BubbleLegendComposition;

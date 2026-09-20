@@ -4,9 +4,8 @@
  *
  *  Author: Torstein Hønsi
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
@@ -83,7 +82,7 @@ const DrilldownDefaults = {
         /** @ignore-option */
         cursor: 'pointer',
         /** @ignore-option */
-        color: 'var(--highcharts-highlight-color-100)',
+        color: "#0022ff" /* Palette.highlightColor100 */,
         /** @ignore-option */
         fontWeight: 'bold',
         /** @ignore-option */
@@ -107,7 +106,7 @@ const DrilldownDefaults = {
      */
     activeDataLabelStyle: {
         cursor: 'pointer',
-        color: 'var(--highcharts-highlight-color-100)',
+        color: "#0022ff" /* Palette.highlightColor100 */,
         fontWeight: 'bold',
         textDecoration: 'underline'
     },

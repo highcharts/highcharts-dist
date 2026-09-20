@@ -1,8 +1,7 @@
 /* *
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
@@ -16,16 +15,22 @@ import { correctFloat, extend, merge } from '../../../Shared/Utilities.js';
  *  Functions
  *
  * */
-/** @internal */
+/**
+ * @private
+ */
 function getBaseForBand(low, high, factor) {
     return (((correctFloat(high - low)) /
         ((correctFloat(high + low)) / 2)) * 1000) * factor;
 }
-/** @internal */
+/**
+ * @private
+ */
 function getPointUB(high, base) {
     return high * (correctFloat(1 + 2 * base));
 }
-/** @internal */
+/**
+ * @private
+ */
 function getPointLB(low, base) {
     return low * (correctFloat(1 - 2 * base));
 }
@@ -37,7 +42,7 @@ function getPointLB(low, base) {
 /**
  * The ABands series type
  *
- * @internal
+ * @private
  * @class
  * @name Highcharts.seriesTypes.abands
  *
@@ -194,7 +199,6 @@ SeriesRegistry.registerSeriesType('abands', ABandsIndicator);
  *  Default Export
  *
  * */
-/** @internal */
 export default ABandsIndicator;
 /* *
  *
@@ -208,7 +212,7 @@ export default ABandsIndicator;
  * @extends   series,plotOptions.abands
  * @since     7.0.0
  * @product   highstock
- * @excluding allAreas, colorAxis, compare, compareBase,
+ * @excluding allAreas, colorAxis, compare, compareBase, dataParser, dataURL,
  *            joinBy, keys, navigatorOptions, pointInterval,
  *            pointIntervalUnit, pointPlacement, pointRange, pointStart,
  *            stacking, showInNavigator,

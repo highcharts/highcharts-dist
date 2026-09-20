@@ -3,9 +3,8 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
@@ -76,8 +75,7 @@ class LineSeries extends Series {
                     'stroke': ((!i && options.lineColor) || // Series only
                         owner.color ||
                         this.color ||
-                        // When colorByPoint = true
-                        'var(--highcharts-neutral-color-20)'),
+                        "#cccccc" /* Palette.neutralColor20 */),
                     'stroke-width': options.lineWidth || 0,
                     // Polygon series use filled graph
                     'fill': (this.fillGraph && this.color) || 'none'
@@ -277,6 +275,7 @@ export default LineSeries;
  * specified, it is inherited from [chart.type](#chart.type).
  *
  * @extends   series,plotOptions.line
+ * @excluding dataParser,dataURL
  * @product   highcharts highstock
  * @apioption series.line
  */
@@ -344,7 +343,6 @@ export default LineSeries;
  * @sample {highcharts} highcharts/series/data-array-of-objects/
  *         Config objects
  *
- * @basic
  * @declare   Highcharts.PointOptionsObject
  * @type      {Array<number|Array<(number|string),(number|null)>|null|*>}
  * @apioption series.line.data

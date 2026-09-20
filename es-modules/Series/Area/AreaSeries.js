@@ -3,9 +3,8 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
@@ -13,7 +12,7 @@
 import AreaSeriesDefaults from './AreaSeriesDefaults.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { seriesTypes: { line: LineSeries } } = SeriesRegistry;
-import { defined, extend, merge, objectEach } from '../../Shared/Utilities.js';
+import { defined, extend, merge, objectEach, pick } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class
@@ -100,7 +99,8 @@ class AreaSeries extends LineSeries {
      */
     getGraphPath(points) {
         const getGraphPath = LineSeries.prototype.getGraphPath, options = this.options, stacking = options.stacking, yAxis = this.yAxis, bottomPoints = [], graphPoints = [], seriesIndex = this.index, stacks = yAxis.stacking.stacks[this.stackKey], threshold = options.threshold, translatedThreshold = Math.round(// #10909
-        yAxis.getThreshold(options.threshold)), connectNulls = (options.connectNulls ?? stacking === 'percent'), 
+        yAxis.getThreshold(options.threshold)), connectNulls = pick(// #10574
+        options.connectNulls, stacking === 'percent'), 
         // To display null points in underlying stacked series, this
         // series graph must be broken, and the area also fall down to
         // fill the gap left by the null point. #2069
@@ -153,9 +153,9 @@ class AreaSeries extends LineSeries {
             // Treat points with undefined plotY as null (e.g. non-positive
             // values on logarithmic axis, #18422)
             isNull = points[i].isNull || !defined(points[i].plotY);
-            plotX = (points[i].rectPlotX ?? points[i].plotX);
+            plotX = pick(points[i].rectPlotX, points[i].plotX);
             yBottom = stacking ?
-                (points[i].yBottom ?? translatedThreshold) :
+                pick(points[i].yBottom, translatedThreshold) :
                 translatedThreshold;
             if (!isNull || connectNulls) {
                 if (!connectNulls) {

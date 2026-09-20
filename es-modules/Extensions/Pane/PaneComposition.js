@@ -3,7 +3,7 @@
  *  Imports
  *
  * */
-import { addEvent, correctFloat, defined } from '../../Shared/Utilities.js';
+import { addEvent, correctFloat, defined, pick } from '../../Shared/Utilities.js';
 /* *
  *
  *  Functions
@@ -23,8 +23,28 @@ function chartGetHoverPane(eventArgs) {
     }
     return hoverPane;
 }
+/**
+ * Adjusts the clipBox based on the position of panes.
+ * @internal
+ */
+function onSetClip({ clipBox }) {
+    if (!this.xAxis ||
+        !this.yAxis ||
+        (!this.chart.angular && !this.chart.polar)) {
+        return;
+    }
+    const { plotWidth, plotHeight } = this.chart, smallestSize = Math.min(plotWidth, plotHeight), xPane = this.xAxis.pane, yPane = this.yAxis.pane;
+    if (xPane && xPane.axis) {
+        clipBox.x += xPane.center[0] -
+            (xPane.center[2] / smallestSize) * plotWidth / 2;
+    }
+    if (yPane && yPane.axis) {
+        clipBox.y += yPane.center[1] -
+            (yPane.center[2] / smallestSize) * plotHeight / 2;
+    }
+}
 /** @internal */
-function compose(ChartClass, PointerClass) {
+function compose(ChartClass, PointerClass, SeriesClass) {
     const chartProto = ChartClass.prototype;
     if (!chartProto.getHoverPane) {
         chartProto.collectionsWithUpdate.push('pane');
@@ -32,6 +52,7 @@ function compose(ChartClass, PointerClass) {
         addEvent(ChartClass, 'afterIsInsidePlot', onChartAfterIsInsiderPlot);
         addEvent(PointerClass, 'afterGetHoverData', onPointerAfterGetHoverData);
         addEvent(PointerClass, 'beforeGetHoverData', onPointerBeforeGetHoverData);
+        addEvent(SeriesClass, 'setClip', onSetClip);
     }
 }
 /**
@@ -119,7 +140,7 @@ function onPointerBeforeGetHoverData(eventArgs) {
         eventArgs.filter = function (s) {
             return (s.visible &&
                 !(!eventArgs.shared && s.directTouch) && // #3821
-                (s.options.enableMouseTracking ?? true) &&
+                pick(s.options.enableMouseTracking, true) &&
                 (!chart.hoverPane || s.xAxis.pane === chart.hoverPane));
         };
     }

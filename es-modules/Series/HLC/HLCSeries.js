@@ -3,9 +3,8 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Paweł Lysy
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
@@ -14,7 +13,6 @@ import HLCPoint from './HLCPoint.js';
 import HLCSeriesDefaults from './HLCSeriesDefaults.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { column: ColumnSeries } = SeriesRegistry.seriesTypes;
-import FinancialSymbols from '../FinancialSymbols.js';
 import D from '../../Core/Defaults.js';
 import { crisp, extend, merge } from '../../Shared/Utilities.js';
 const { defaultOptions } = D;
@@ -33,14 +31,6 @@ const { defaultOptions } = D;
  * @augments Highcharts.Series
  */
 class HLCSeries extends ColumnSeries {
-    /* *
-     *
-     *  Static Properties
-     *
-     * */
-    static compose(_SeriesClass, SVGRendererClass) {
-        FinancialSymbols.compose(SVGRendererClass);
-    }
     /* *
      *
      *  Functions
@@ -66,13 +56,13 @@ class HLCSeries extends ColumnSeries {
         }
     }
     /**
-     * Function to create SVGPath of the point based on the plot positions of
-     * this point.
+     * Function to create SVGPath of the point based on the
+     * plot positions of this point.
      * @private
      */
-    getPointPath(point) {
+    getPointPath(point, graphic) {
         // Crisp vector coordinates
-        const series = point.series, strokeWidth = series.borderWidth, 
+        const strokeWidth = graphic.strokeWidth(), series = point.series, 
         // #2596:
         crispX = crisp(point.plotX || 0, strokeWidth), halfWidth = Math.round(point.shapeArgs.width / 2);
         // The vertical stem
@@ -89,6 +79,35 @@ class HLCSeries extends ColumnSeries {
         return path;
     }
     /**
+     * Draw single point
+     * @private
+     */
+    drawSinglePoint(point) {
+        const series = point.series, chart = series.chart;
+        let path, graphic = point.graphic;
+        if (typeof point.plotY !== 'undefined') {
+            // Create and/or update the graphic
+            if (!graphic) {
+                point.graphic = graphic = chart.renderer.path()
+                    .add(series.group);
+            }
+            if (!chart.styledMode) {
+                graphic.attr(series.pointAttribs(point, (point.selected && 'select'))); // #3897
+            }
+            // Crisp vector coordinates
+            path = series.getPointPath(point, graphic);
+            graphic[!graphic ? 'attr' : 'animate']({ d: path })
+                .addClass(point.getClassName(), true);
+        }
+    }
+    /**
+     * Draw the data points
+     * @private
+     */
+    drawPoints() {
+        this.points.forEach(this.drawSinglePoint);
+    }
+    /**
      * @private
      * @function Highcharts.seriesTypes.hlc#init
      */
@@ -102,9 +121,7 @@ class HLCSeries extends ColumnSeries {
      */
     pointAttribs(point, state) {
         const attribs = super.pointAttribs.call(this, point, state);
-        if (point) {
-            delete attribs.fill;
-        }
+        delete attribs.fill;
         return attribs;
     }
     toYData(point) {
@@ -118,13 +135,12 @@ class HLCSeries extends ColumnSeries {
      * @function Highcharts.seriesTypes.hlc#translate
      */
     translate() {
-        const series = this, yAxis = series.yAxis, names = (this.pointArrayMap && this.pointArrayMap.slice()) || [], translated = names.map((name) => `plot${name.charAt(0).toUpperCase() + name.slice(1)}`), lineWidth = series.options.lineWidth ?? 1;
+        const series = this, yAxis = series.yAxis, names = (this.pointArrayMap && this.pointArrayMap.slice()) || [], translated = names.map((name) => `plot${name.charAt(0).toUpperCase() + name.slice(1)}`);
         translated.push('yBottom');
         names.push('low');
         super.translate.apply(series);
-        series.borderWidth = lineWidth;
         // Do the translation
-        series.points.concat(series.condemnedPoints).forEach((point) => {
+        series.points.forEach(function (point) {
             names.forEach(function (name, i) {
                 let value = point[name];
                 if (value !== null) {
@@ -135,18 +151,18 @@ class HLCSeries extends ColumnSeries {
                         yAxis.toPixels(value, true);
                 }
             });
-            // The data label box
-            const { x = 0, y = 0, width = 0, height = 0 } = point.shapeArgs || {};
-            point.dlBox = { x, y, width, height };
-            // The new shape args overwrite those of ColumnSeries
-            point.shapeType = 'path';
-            point.shapeArgs = { d: series.getPointPath(point) };
-            // Align the tooltip to the high value to avoid covering the point
+            // Align the tooltip to the high value to avoid covering the
+            // point
             point.tooltipPos[1] =
                 point.plotHigh + yAxis.pos - series.chart.plotTop;
         });
     }
 }
+/* *
+ *
+ *  Static Properties
+ *
+ * */
 HLCSeries.defaultOptions = merge(ColumnSeries.defaultOptions, HLCSeriesDefaults);
 extend(HLCSeries.prototype, {
     pointClass: HLCPoint,

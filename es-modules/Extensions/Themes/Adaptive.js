@@ -4,9 +4,8 @@
  *
  *  Author: Torstein Hønsi
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *  Dynamic light/dark theme based on CSS variables
  *
@@ -442,8 +441,8 @@ var DynamicDefaultTheme;
                     borderColor: 'var(--highcharts-neutral-color-20)'
                 },
                 pivot: {
-                    borderColor: 'var(--highcharts-neutral-color-100)',
-                    backgroundColor: 'var(--highcharts-background-color)'
+                    borderColor: 'var(--highcharts-neutral-color-20)',
+                    backgroundColor: 'var(--highcharts-neutral-color-100)'
                 }
             },
             packedbubble: {
@@ -836,7 +835,18 @@ var DynamicDefaultTheme;
         pane: {
             background: {
                 borderColor: 'var(--highcharts-neutral-color-20)',
-                backgroundColor: 'var(--highcharts-neutral-color-5)'
+                backgroundColor: {
+                    stops: [
+                        [
+                            0,
+                            'var(--highcharts-background-color)'
+                        ],
+                        [
+                            1,
+                            'var(--highcharts-neutral-color-10)'
+                        ]
+                    ]
+                }
             }
         },
         zAxis: {

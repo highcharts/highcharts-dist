@@ -3,9 +3,8 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
@@ -115,7 +114,7 @@ const PieSeriesDefaults = {
      *         Empty pie series
      *
      * @type      {Highcharts.ColorType}
-     * @default   var(--highcharts-neutral-color-20)
+     * @default   ${palette.neutralColor20}
      * @apioption plotOptions.pie.color
      */
     /**
@@ -507,9 +506,10 @@ const PieSeriesDefaults = {
      *         Black border
      *
      * @type    {Highcharts.ColorType}
+     * @default ${palette.backgroundColor}
      * @product highcharts highmaps
      */
-    borderColor: 'var(--highcharts-background-color)',
+    borderColor: "#ffffff" /* Palette.backgroundColor */,
     /**
      * The width of the border surrounding each slice.
      *
@@ -560,7 +560,7 @@ const PieSeriesDefaults = {
  * it is inherited from [chart.type](#chart.type).
  *
  * @extends   series,plotOptions.pie
- * @excluding cropThreshold, linkedTo, stack, xAxis, yAxis,
+ * @excluding cropThreshold, dataParser, dataURL, linkedTo, stack, xAxis, yAxis,
  *            dataSorting, step, boostThreshold, boostBlending
  * @product   highcharts highmaps
  * @apioption series.pie
@@ -603,7 +603,6 @@ const PieSeriesDefaults = {
  * @sample {highcharts} highcharts/series/data-array-of-objects/
  *         Config objects
  *
- * @basic
  * @type      {Array<number|Array<string,(number|null)>|null|*>}
  * @extends   series.line.data
  * @excluding marker, x

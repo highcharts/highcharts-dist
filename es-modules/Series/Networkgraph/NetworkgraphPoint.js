@@ -5,9 +5,8 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Paweł Fus
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
@@ -15,7 +14,7 @@
 import NodesComposition from '../NodesComposition.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { series: { prototype: seriesProto, prototype: { pointClass: Point } } } = SeriesRegistry;
-import { addEvent, css, defined, extend } from '../../Shared/Utilities.js';
+import { addEvent, css, defined, extend, pick } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class
@@ -63,10 +62,10 @@ class NetworkgraphPoint extends Point {
     getLinkAttributes() {
         const linkOptions = this.series.options.link, pointOptions = this.options;
         return {
-            'stroke-width': (pointOptions.width ?? linkOptions.width),
+            'stroke-width': pick(pointOptions.width, linkOptions.width),
             stroke: (pointOptions.color || linkOptions.color),
             dashstyle: (pointOptions.dashStyle || linkOptions.dashStyle),
-            opacity: (pointOptions.opacity ?? linkOptions.opacity ?? 1)
+            opacity: pick(pointOptions.opacity, linkOptions.opacity, 1)
         };
     }
     /**

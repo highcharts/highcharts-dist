@@ -3,9 +3,8 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Rafał Sebestjański, Piotr Madej
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
@@ -291,7 +290,6 @@ export default SeriesOnPointComposition;
  *              Series on point
  * @sample      {highmaps} maps/demo/map-pies
  *              Pies on a map
- * @requires    highcharts-more
  * @requires    modules/series-on-point
  * @since 10.2.0
  * @type        {object}
@@ -303,6 +301,7 @@ export default SeriesOnPointComposition;
  * In styled mode, the connector can be styled with the
  * `.highcharts-connector-seriesonpoint` class name.
  *
+ * @requires    modules/series-on-point
  * @since 10.2.0
  * @type        {Highcharts.SVGAttributes}
  * @apioption   plotOptions.series.onPoint.connectorOptions
@@ -310,6 +309,7 @@ export default SeriesOnPointComposition;
 /**
  * Color of the connector line. By default it's the series' color.
  *
+ * @requires    modules/series-on-point
  * @since 10.2.0
  * @type        {string}
  * @apioption   plotOptions.series.onPoint.connectorOptions.stroke
@@ -317,6 +317,7 @@ export default SeriesOnPointComposition;
 /**
  * A name for the dash style to use for the connector.
  *
+ * @requires    modules/series-on-point
  * @since 10.2.0
  * @type        {string}
  * @apioption   plotOptions.series.onPoint.connectorOptions.dashstyle
@@ -325,6 +326,7 @@ export default SeriesOnPointComposition;
  * Pixel width of the connector line.
  *
  * @default     1
+ * @requires    modules/series-on-point
  * @type        {number}
  * @since 10.2.0
  * @apioption   plotOptions.series.onPoint.connectorOptions.width
@@ -333,6 +335,7 @@ export default SeriesOnPointComposition;
  * The `id` of the point that we connect the series to. Only points with a given
  * `plotX` and `plotY` values and map points are valid.
  *
+ * @requires   modules/series-on-point
  * @since 10.2.0
  * @type       {string}
  * @apioption  plotOptions.series.onPoint.id
@@ -341,6 +344,7 @@ export default SeriesOnPointComposition;
  * Options allowing to set a position and an offset of the series in the
  * _Series on point_ feature.
  *
+ * @requires    modules/series-on-point
  * @since 10.2.0
  * @type        {object}
  * @apioption   plotOptions.series.onPoint.position
@@ -349,6 +353,7 @@ export default SeriesOnPointComposition;
  * Series center offset from the original x position. If defined, the connector
  * line is drawn connecting original position with new position.
  *
+ * @requires   modules/series-on-point
  * @since 10.2.0
  * @type       {number}
  * @apioption  plotOptions.series.onPoint.position.offsetX
@@ -357,6 +362,7 @@ export default SeriesOnPointComposition;
  * Series center offset from the original y position. If defined, the connector
  * line is drawn from original position to a new position.
  *
+ * @requires   modules/series-on-point
  * @since 10.2.0
  * @type       {number}
  * @apioption  plotOptions.series.onPoint.position.offsetY
@@ -365,6 +371,7 @@ export default SeriesOnPointComposition;
  * X position of the series center. By default, the series is displayed on the
  * point that it is connected to.
  *
+ * @requires   modules/series-on-point
  * @since 10.2.0
  * @type       {number}
  * @apioption  plotOptions.series.onPoint.position.x
@@ -373,6 +380,7 @@ export default SeriesOnPointComposition;
  * Y position of the series center. By default, the series is displayed on the
  * point that it is connected to.
  *
+ * @requires   modules/series-on-point
  * @since 10.2.0
  * @type       {number}
  * @apioption  plotOptions.series.onPoint.position.y

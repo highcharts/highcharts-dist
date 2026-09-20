@@ -3,9 +3,8 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Sebastian Domas
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
@@ -68,7 +67,7 @@ const HistogramSeriesDefaults = {
  * specified, it is inherited from [chart.type](#chart.type).
  *
  * @extends   series,plotOptions.histogram
- * @excluding data, boostThreshold, boostBlending
+ * @excluding data, dataParser, dataURL, boostThreshold, boostBlending
  * @product   highcharts
  * @since     6.0.0
  * @requires  modules/histogram-bellcurve

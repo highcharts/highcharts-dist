@@ -3,9 +3,9 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
+ *
  *
  * */
 'use strict';
@@ -18,7 +18,7 @@ const { isTouchDevice } = H;
 import NavigatorAxisAdditions from '../../Core/Axis/NavigatorAxisComposition.js';
 import NavigatorComposition from './NavigatorComposition.js';
 import Scrollbar from '../Scrollbar/Scrollbar.js';
-import { addEvent, clamp, correctFloat, defined, destroyObjectProperties, erase, extend, find, fireEvent, isArray, isNumber, merge, removeEvent, splat } from '../../Shared/Utilities.js';
+import { addEvent, clamp, correctFloat, defined, destroyObjectProperties, erase, extend, find, fireEvent, isArray, isNumber, merge, pick, removeEvent, splat } from '../../Shared/Utilities.js';
 /* *
  *
  *  Functions
@@ -28,7 +28,7 @@ import { addEvent, clamp, correctFloat, defined, destroyObjectProperties, erase,
  * Finding the min or max of a set of variables where we don't know if they are
  * defined, is a pattern that is repeated several places in Highcharts. Consider
  * making this a global utility method.
- * @internal
+ * @private
  */
 function numExt(extreme, ...args) {
     const numbers = [].filter.call(args, isNumber);
@@ -44,7 +44,7 @@ function numExt(extreme, ...args) {
 /**
  * The Navigator class
  *
- * @internal
+ * @private
  * @class
  * @name Highcharts.Navigator
  *
@@ -79,7 +79,7 @@ class Navigator {
     /**
      * Draw one of the handles on the side of the zoomed range in the navigator.
      *
-     * @internal
+     * @private
      * @function Highcharts.Navigator#drawHandle
      *
      * @param {number} x
@@ -108,7 +108,7 @@ class Navigator {
     /**
      * Render outline around the zoomed range
      *
-     * @internal
+     * @private
      * @function Highcharts.Navigator#drawOutline
      *
      * @param {number} zoomedMin
@@ -196,7 +196,7 @@ class Navigator {
     /**
      * Render outline around the zoomed range
      *
-     * @internal
+     * @private
      * @function Highcharts.Navigator#drawMasks
      *
      * @param {number} zoomedMin
@@ -256,7 +256,7 @@ class Navigator {
      *
      * - handles
      *
-     * @internal
+     * @private
      * @function Highcharts.Navigator#renderElements
      */
     renderElements() {
@@ -358,7 +358,7 @@ class Navigator {
     /**
      * Update navigator
      *
-     * @internal
+     * @private
      * @function Highcharts.Navigator#update
      *
      * @param {Highcharts.NavigatorOptions} options
@@ -415,7 +415,7 @@ class Navigator {
     /**
      * Render the navigator
      *
-     * @internal
+     * @private
      * @function Highcharts.Navigator#render
      * @param {number} min
      *        X axis value minimum
@@ -445,18 +445,18 @@ class Navigator {
             // it. For example hidden series, but visible navigator (#6022).
             if (rendered) {
                 pxMin = 0;
-                pxMax = (xAxis.width ?? scrollbarXAxis.width);
+                pxMax = pick(xAxis.width, scrollbarXAxis.width);
             }
             else {
                 return;
             }
         }
-        navigator.left = (xAxis.left ?? chart.plotLeft + scrollButtonSize +
+        navigator.left = pick(xAxis.left, 
+        // In case of scrollbar only, without navigator
+        chart.plotLeft + scrollButtonSize +
             (inverted ? chart.plotWidth : 0));
-        let zoomedMax = navigator.size = navigatorSize =
-            xAxis.len ??
-                (inverted ? chart.plotHeight : chart.plotWidth) -
-                    2 * scrollButtonSize;
+        let zoomedMax = navigator.size = navigatorSize = pick(xAxis.len, (inverted ? chart.plotHeight : chart.plotWidth) -
+            2 * scrollButtonSize);
         if (inverted) {
             navigatorWidth = scrollbarHeight;
         }
@@ -464,8 +464,8 @@ class Navigator {
             navigatorWidth = navigatorSize + 2 * scrollButtonSize;
         }
         // Get the pixel position of the handles
-        pxMin = (pxMin ?? xAxis.toPixels(min, true));
-        pxMax = (pxMax ?? xAxis.toPixels(max, true));
+        pxMin = pick(pxMin, xAxis.toPixels(min, true));
+        pxMax = pick(pxMax, xAxis.toPixels(max, true));
         // Verify (#1851, #2238)
         if (!isNumber(pxMin) || Math.abs(pxMin) === Infinity) {
             pxMin = 0;
@@ -545,7 +545,7 @@ class Navigator {
      * events are added inside the `renderElements` method by calling the
      * `getPartsEvents` method.
      *
-     * @internal
+     * @private
      * @function Highcharts.Navigator#addMouseEvents
      */
     addMouseEvents() {
@@ -580,7 +580,7 @@ class Navigator {
     /**
      * Generate events for handles and masks
      *
-     * @internal
+     * @private
      * @function Highcharts.Navigator#getPartsEvents
      *
      * @param {string} eventName
@@ -608,7 +608,7 @@ class Navigator {
      *
      * - will directly shift to a new range
      *
-     * @internal
+     * @private
      * @function Highcharts.Navigator#shadesMousedown
      *
      * @param {Highcharts.PointerEventObject} e
@@ -670,7 +670,7 @@ class Navigator {
      * Mousedown on a handle mask.
      * Will store necessary information for drag&drop.
      *
-     * @internal
+     * @private
      * @function Highcharts.Navigator#handlesMousedown
      * @param {Highcharts.PointerEventObject} e
      *        Mouse event
@@ -700,7 +700,7 @@ class Navigator {
     /**
      * Mouse move event based on x/y mouse position.
      *
-     * @internal
+     * @private
      * @function Highcharts.Navigator#onMouseMove
      *
      * @param {Highcharts.PointerEventObject} e
@@ -744,10 +744,11 @@ class Navigator {
                 navigator.render(0, 0, chartX - dragOffset, chartX - dragOffset + range);
             }
             if (navigator.hasDragged &&
-                (navigator.scrollbarOptions?.liveRedraw ?? (
+                pick(navigator.scrollbarOptions?.liveRedraw, 
                 // By default, don't run live redraw on touch
                 // devices or if the chart is in boost.
-                !isTouchDevice && !this.chart.boosted))) {
+                !isTouchDevice &&
+                    !this.chart.boosted)) {
                 e.DOMType = e.type;
                 setTimeout(function () {
                     navigator.onMouseUp(e);
@@ -758,7 +759,7 @@ class Navigator {
     /**
      * Mouse up event based on x/y mouse position.
      *
-     * @internal
+     * @private
      * @function Highcharts.Navigator#onMouseUp
      * @param {Highcharts.PointerEventObject} e
      *        Mouse event
@@ -838,7 +839,7 @@ class Navigator {
     /**
      * Removes the event handlers attached previously with addEvents.
      *
-     * @internal
+     * @private
      * @function Highcharts.Navigator#removeEvents
      */
     removeEvents() {
@@ -851,7 +852,7 @@ class Navigator {
     /**
      * Remove data events.
      *
-     * @internal
+     * @private
      * @function Highcharts.Navigator#removeBaseSeriesEvents
      */
     removeBaseSeriesEvents() {
@@ -871,7 +872,7 @@ class Navigator {
     /**
      * Calculate the navigator xAxis offsets
      *
-     * @internal
+     * @private
      */
     getXAxisOffsets() {
         return (this.chart.inverted ?
@@ -881,7 +882,7 @@ class Navigator {
     /**
      * Initialize the Navigator object
      *
-     * @internal
+     * @private
      * @function Highcharts.Navigator#init
      */
     init(chart) {
@@ -936,22 +937,16 @@ class Navigator {
                 offset: 0,
                 index: yAxisIndex,
                 isInternal: true,
-                reversed: ((navigatorOptions.yAxis &&
-                    navigatorOptions.yAxis.reversed) ??
-                    (chart.yAxis[0] && chart.yAxis[0].reversed) ??
-                    false), // #14060
+                reversed: pick((navigatorOptions.yAxis &&
+                    navigatorOptions.yAxis.reversed), (chart.yAxis[0] && chart.yAxis[0].reversed), false), // #14060
                 zoomEnabled: false
             }, chart.inverted ? {
                 width: height
             } : {
                 height: height
             }), 'yAxis');
-            navigator.xAxis.clippable = false;
-            navigator.yAxis.clippable = false;
             // If we have a base series, initialize the navigator series
-            if (baseSeries ||
-                navigatorOptions.series?.data ||
-                navigatorOptions.series?.dataTable) {
+            if (baseSeries || navigatorOptions.series?.data) {
                 navigator.updateNavigatorSeries(false);
                 // If not, set up an event to listen for added series
             }
@@ -1021,19 +1016,17 @@ class Navigator {
     /**
      * Set the opposite property on navigator
      *
-     * @internal
+     * @private
      */
     setOpposite() {
         const navigatorOptions = this.navigatorOptions, navigatorEnabled = this.navigatorEnabled, chart = this.chart;
-        this.opposite =
-            navigatorOptions.opposite ??
-                Boolean(!navigatorEnabled && chart.inverted); // #6262
+        this.opposite = pick(navigatorOptions.opposite, Boolean(!navigatorEnabled && chart.inverted)); // #6262
     }
     /**
      * Get the union data extremes of the chart - the outer data extremes of the
      * base X axis and the navigator axis.
      *
-     * @internal
+     * @private
      * @function Highcharts.Navigator#getUnionExtremes
      */
     getUnionExtremes(returnFalseOnNoBaseSeries) {
@@ -1041,8 +1034,9 @@ class Navigator {
         let ret;
         if (!returnFalseOnNoBaseSeries || baseAxis.dataMin !== null) {
             ret = {
-                dataMin: (time.parse(navAxisOptions?.min) ?? numExt('min', time.parse(baseAxisOptions.min), baseAxis.dataMin, navAxis.dataMin, navAxis.min)),
-                dataMax: (time.parse(navAxisOptions?.max) ?? numExt('max', time.parse(baseAxisOptions.max), baseAxis.dataMax, navAxis.dataMax, navAxis.max))
+                dataMin: pick(// #4053
+                time.parse(navAxisOptions?.min), numExt('min', time.parse(baseAxisOptions.min), baseAxis.dataMin, navAxis.dataMin, navAxis.min)),
+                dataMax: pick(time.parse(navAxisOptions?.max), numExt('max', time.parse(baseAxisOptions.max), baseAxis.dataMax, navAxis.dataMax, navAxis.max))
             };
         }
         return ret;
@@ -1052,7 +1046,7 @@ class Navigator {
      * of modification we should be able to make this an API method to be called
      * from the outside
      *
-     * @internal
+     * @private
      * @function Highcharts.Navigator#setBaseSeries
      * @param {Highcharts.SeriesOptionsType} [baseSeriesOptions]
      *        Additional series options for a navigator
@@ -1089,7 +1083,7 @@ class Navigator {
      * Update series in the navigator from baseSeries, adding new if does not
      * exist.
      *
-     * @internal
+     * @private
      * @function Highcharts.Navigator.updateNavigatorSeries
      */
     updateNavigatorSeries(addEvents, redraw) {
@@ -1157,31 +1151,26 @@ class Navigator {
                 userNavOptions.dataLabels = splat(userNavOptions.dataLabels);
                 mergedNavSeriesOptions = merge(baseOptions, navSeriesMixin, userNavOptions, baseNavigatorOptions);
                 // Once nav series type is resolved, pick correct pointRange
-                mergedNavSeriesOptions.pointRange = (userNavOptions.pointRange ??
-                    baseNavigatorOptions.pointRange ??
-                    defaultOptions.plotOptions[mergedNavSeriesOptions.type || 'line']?.pointRange);
+                mergedNavSeriesOptions.pointRange = pick(
+                // Strictly set pointRange in options
+                userNavOptions.pointRange, baseNavigatorOptions.pointRange, 
+                // Fallback to default values, e.g. `null` for column
+                defaultOptions.plotOptions[mergedNavSeriesOptions.type || 'line']?.pointRange);
                 // Merge data separately. Do a slice to avoid mutating the
                 // navigator options from base series (#4923).
-                const navigatorSeriesData = baseNavigatorOptions.data || userNavOptions.data, navigatorSeriesDataTable = baseNavigatorOptions.dataTable ||
-                    userNavOptions.dataTable;
+                const navigatorSeriesData = baseNavigatorOptions.data || userNavOptions.data;
                 navigator.hasNavigatorData =
-                    navigator.hasNavigatorData ||
-                        !!navigatorSeriesData ||
-                        !!navigatorSeriesDataTable;
-                mergedNavSeriesOptions.data =
-                    navigatorSeriesData ||
-                        baseOptions.data?.slice(0);
-                mergedNavSeriesOptions.dataTable =
-                    navigatorSeriesDataTable ||
-                        baseOptions.dataTable;
+                    navigator.hasNavigatorData || !!navigatorSeriesData;
+                mergedNavSeriesOptions.data = (navigatorSeriesData ||
+                    baseOptions.data?.slice(0));
                 // Update or add the series
                 if (linkedNavSeries && linkedNavSeries.options) {
                     linkedNavSeries.update(mergedNavSeriesOptions, redraw);
                 }
                 else {
                     base.navigatorSeries = chart.initSeries(mergedNavSeriesOptions);
-                    // Trigger setSortedData with dataSorting enabled (#20318)
-                    fireEvent(base.navigatorSeries, 'afterUpdate');
+                    // Set data on initial run with dataSorting enabled (#20318)
+                    chart.setSortedData();
                     base.navigatorSeries.baseSeries = base; // Store ref
                     navigatorSeries.push(base.navigatorSeries);
                 }
@@ -1190,11 +1179,9 @@ class Navigator {
         // If user has defined data (and no base series) or explicitly defined
         // navigator.series as an array, we create these series on top of any
         // base series.
-        if ((chartNavigatorSeriesOptions?.data ||
-            chartNavigatorSeriesOptions?.dataTable) &&
+        if (chartNavigatorSeriesOptions?.data &&
             !(baseSeries && baseSeries.length) ||
             isArray(chartNavigatorSeriesOptions)) {
-            const colors = chart.options.colors || [];
             navigator.hasNavigatorData = false;
             // Allow navigator.series to be an array
             chartNavigatorSeriesOptions =
@@ -1209,16 +1196,14 @@ class Navigator {
                     // an explicit color as otherwise updates will increment
                     // color counter and we'll get a new color for each
                     // update of the nav series.
-                    color: (chart.series[i] &&
+                    color: chart.series[i] &&
                         !chart.series[i].options.isInternal &&
-                        chart.series[i].color) ||
-                        colors[i] ||
-                        colors[0]
+                        chart.series[i].color ||
+                        chart.options.colors?.[i] ||
+                        chart.options.colors?.[0]
                 }, navSeriesMixin, userSeriesOptions);
                 mergedNavSeriesOptions.data = userSeriesOptions.data;
-                mergedNavSeriesOptions.dataTable = userSeriesOptions.dataTable;
-                if (mergedNavSeriesOptions.data ||
-                    mergedNavSeriesOptions.dataTable) {
+                if (mergedNavSeriesOptions.data) {
                     navigator.hasNavigatorData = true;
                     navigatorSeries.push(chart.initSeries(mergedNavSeriesOptions));
                 }
@@ -1232,7 +1217,7 @@ class Navigator {
      * Add data events.
      * For example when main series is updated we need to recalculate extremes
      *
-     * @internal
+     * @private
      * @function Highcharts.Navigator#addBaseSeriesEvent
      */
     addBaseSeriesEvents() {
@@ -1280,7 +1265,7 @@ class Navigator {
     }
     /**
      * Get minimum from all base series connected to the navigator
-     * @internal
+     * @private
      * @param {number} currentSeriesMin
      *        Minium from the current series
      * @return {number}
@@ -1297,7 +1282,7 @@ class Navigator {
      * extremes should always be the extremes of the union of all series in the
      * chart as well as the navigator series.
      *
-     * @internal
+     * @private
      * @function Highcharts.Navigator#modifyNavigatorAxisExtremes
      */
     modifyNavigatorAxisExtremes() {
@@ -1315,11 +1300,11 @@ class Navigator {
     /**
      * Hook to modify the base axis extremes with information from the Navigator
      *
-     * @internal
+     * @private
      * @function Highcharts.Navigator#modifyBaseAxisExtremes
      */
     modifyBaseAxisExtremes() {
-        const baseXAxis = this, navigator = baseXAxis.chart.navigator, baseExtremes = baseXAxis.getExtremes(), baseMin = baseExtremes.min, baseMax = baseExtremes.max, baseDataMin = baseExtremes.dataMin, baseDataMax = baseExtremes.dataMax, range = baseMax - baseMin, stickToMin = navigator?.stickToMin, stickToMax = navigator?.stickToMax, overscroll = (baseXAxis.ordinal?.convertOverscroll(baseXAxis.options.overscroll) ?? 0), navigatorSeries = navigator.series && navigator.series[0], hasSetExtremes = !!baseXAxis.setExtremes, 
+        const baseXAxis = this, navigator = baseXAxis.chart.navigator, baseExtremes = baseXAxis.getExtremes(), baseMin = baseExtremes.min, baseMax = baseExtremes.max, baseDataMin = baseExtremes.dataMin, baseDataMax = baseExtremes.dataMax, range = baseMax - baseMin, stickToMin = navigator?.stickToMin, stickToMax = navigator?.stickToMax, overscroll = pick(baseXAxis.ordinal?.convertOverscroll(baseXAxis.options.overscroll), 0), navigatorSeries = navigator.series && navigator.series[0], hasSetExtremes = !!baseXAxis.setExtremes, 
         // When the extremes have been set by range selector button, don't
         // stick to min or max. The range selector buttons will handle the
         // extremes. (#5489)
@@ -1362,7 +1347,7 @@ class Navigator {
      * navigator series must reflect it. This is called from the Chart.redraw
      * function before axis and series extremes are computed.
      *
-     * @internal
+     * @private
      * @function Highcharts.Navigator#updateDataHandler
      */
     updatedDataHandler() {
@@ -1371,19 +1356,19 @@ class Navigator {
             Math.round(navigator.zoomedMax) >= Math.round(navigator.size);
         // If the scrollbar is scrolled all the way to the right, keep right as
         // new data comes in, unless user set navigator.stickToMax to false.
-        navigator.stickToMax = (this.chart.options.navigator &&
-            this.chart.options.navigator.stickToMax) ?? shouldStickToMax;
+        navigator.stickToMax = pick(this.chart.options.navigator &&
+            this.chart.options.navigator.stickToMax, shouldStickToMax);
         navigator.stickToMin = navigator.shouldStickToMin(baseSeries, navigator);
         // Set the navigator series data to the new data of the base series
         if (navigatorSeries && !navigator.hasNavigatorData) {
             navigatorSeries.options.pointStart = baseSeries.getColumn('x')[0];
-            navigatorSeries.setData(baseSeries.options.data || baseSeries.options.dataTable, false, void 0, false); // #5414
+            navigatorSeries.setData(baseSeries.options.data, false, void 0, false); // #5414
         }
     }
     /**
      * Detect if the zoomed area should stick to the minimum, #14742.
      *
-     * @internal
+     * @private
      * @function Highcharts.Navigator#shouldStickToMin
      */
     shouldStickToMin(baseSeries, navigator) {
@@ -1409,7 +1394,7 @@ class Navigator {
     /**
      * Add chart events, like redrawing navigator, when chart requires that.
      *
-     * @internal
+     * @private
      * @function Highcharts.Navigator#addChartEvents
      */
     addChartEvents() {
@@ -1448,7 +1433,7 @@ class Navigator {
     /**
      * Destroys allocated elements.
      *
-     * @internal
+     * @private
      * @function Highcharts.Navigator#destroy
      */
     destroy() {
@@ -1463,7 +1448,11 @@ class Navigator {
             erase(this.chart.axes, this.yAxis);
         }
         // Destroy series
-        destroyObjectProperties(this.series || []);
+        (this.series || []).forEach((s) => {
+            if (s.destroy) {
+                s.destroy();
+            }
+        });
         // Destroy properties
         [
             'series', 'xAxis', 'yAxis', 'shades', 'outline', 'scrollbarTrack',
@@ -1491,5 +1480,4 @@ class Navigator {
  *  Default Export
  *
  * */
-/** @internal */
 export default Navigator;

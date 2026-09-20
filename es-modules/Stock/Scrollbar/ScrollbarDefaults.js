@@ -3,9 +3,8 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
@@ -34,15 +33,19 @@
  *
  * @product highstock gantt
  * @optionparent scrollbar
+ *
+ * @private
  */
 const ScrollbarDefaults = {
     /**
-     * The height of the scrollbar. If `buttonsEnabled` is true, the height
+     * The height of the scrollbar. If `buttonsEnabled` is true , the height
      * also applies to the width of the scroll arrows so that they are always
      * squares.
      *
      * @sample stock/scrollbar/style/
      *         Non-default height
+     *
+     * @type    {number}
      */
     height: 10,
     /**
@@ -125,7 +128,7 @@ const ScrollbarDefaults = {
      *
      * @type {Highcharts.ColorType}
      */
-    barBackgroundColor: 'var(--highcharts-neutral-color-20)',
+    barBackgroundColor: "#cccccc" /* Palette.neutralColor20 */,
     /**
      * The width of the bar's border.
      *
@@ -138,7 +141,7 @@ const ScrollbarDefaults = {
      *
      * @type {Highcharts.ColorType}
      */
-    barBorderColor: 'var(--highcharts-neutral-color-20)',
+    barBorderColor: "#cccccc" /* Palette.neutralColor20 */,
     /**
      * The color of the small arrow inside the scrollbar buttons.
      *
@@ -147,7 +150,7 @@ const ScrollbarDefaults = {
      *
      * @type {Highcharts.ColorType}
      */
-    buttonArrowColor: 'var(--highcharts-neutral-color-80)',
+    buttonArrowColor: "#333333" /* Palette.neutralColor80 */,
     /**
      * The color of scrollbar buttons.
      *
@@ -156,7 +159,7 @@ const ScrollbarDefaults = {
      *
      * @type {Highcharts.ColorType}
      */
-    buttonBackgroundColor: 'var(--highcharts-neutral-color-10)',
+    buttonBackgroundColor: "#e6e6e6" /* Palette.neutralColor10 */,
     /**
      * The color of the border of the scrollbar buttons.
      *
@@ -165,7 +168,7 @@ const ScrollbarDefaults = {
      *
      * @type {Highcharts.ColorType}
      */
-    buttonBorderColor: 'var(--highcharts-neutral-color-20)',
+    buttonBorderColor: "#cccccc" /* Palette.neutralColor20 */,
     /**
      * The border width of the scrollbar buttons.
      *
@@ -196,7 +199,7 @@ const ScrollbarDefaults = {
      *
      * @type {Highcharts.ColorType}
      */
-    trackBorderColor: 'var(--highcharts-neutral-color-20)',
+    trackBorderColor: "#cccccc" /* Palette.neutralColor20 */,
     /**
      * The corner radius of the border of the scrollbar track.
      *
@@ -217,5 +220,4 @@ const ScrollbarDefaults = {
  *  Default Export
  *
  * */
-/** @internal */
 export default ScrollbarDefaults;

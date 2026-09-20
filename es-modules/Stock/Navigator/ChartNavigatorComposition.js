@@ -3,16 +3,15 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
 'use strict';
 import H from '../../Core/Globals.js';
 const { isTouchDevice } = H;
-import { addEvent, merge, pushUnique } from '../../Shared/Utilities.js';
+import { addEvent, merge, pick, pushUnique } from '../../Shared/Utilities.js';
 /* *
  *
  *  Constants
@@ -30,14 +29,15 @@ let NavigatorConstructor;
  *  Functions
  *
  * */
-/** @internal */
+/**
+ * @private
+ */
 function compose(ChartClass, NavigatorClass) {
     if (pushUnique(composedMembers, ChartClass)) {
         const chartProto = ChartClass.prototype;
         NavigatorConstructor = NavigatorClass;
         chartProto.callbacks.push(onChartCallback);
-        addEvent(ChartClass, 'afterAddSeries', resetBaseSeries);
-        addEvent(ChartClass, 'afterDrillUp', resetBaseSeries);
+        addEvent(ChartClass, 'afterAddSeries', onChartAfterAddSeries);
         addEvent(ChartClass, 'afterSetChartSize', onChartAfterSetChartSize);
         addEvent(ChartClass, 'afterUpdate', onChartAfterUpdate);
         addEvent(ChartClass, 'beforeRender', onChartBeforeRender);
@@ -46,12 +46,13 @@ function compose(ChartClass, NavigatorClass) {
     }
 }
 /**
- * Reset the base series.
- * @internal
+ * Handle adding new series.
+ * @private
  */
-function resetBaseSeries() {
+function onChartAfterAddSeries() {
     if (this.navigator) {
-        this.navigator.setBaseSeries(void 0, false);
+        // Recompute which series should be shown in navigator, and add them
+        this.navigator.setBaseSeries(null, false);
     }
 }
 /**
@@ -59,7 +60,7 @@ function resetBaseSeries() {
  * final top position of the navigator once the height of the chart, including
  * the legend, is determined. #367. We can't use Chart.getMargins, because
  * labels offsets are not calculated yet.
- * @internal
+ * @private
  */
 function onChartAfterSetChartSize() {
     const legend = this.legend, navigator = this.navigator;
@@ -78,7 +79,7 @@ function onChartAfterSetChartSize() {
             navigator.top = this.plotTop + scrollButtonSize;
         }
         else {
-            navigator.left = (xAxis.left ?? this.plotLeft + scrollButtonSize);
+            navigator.left = pick(xAxis.left, this.plotLeft + scrollButtonSize);
             navigator.top = navigator.navigatorOptions.top ||
                 this.chartHeight -
                     navigator.height -
@@ -94,7 +95,7 @@ function onChartAfterSetChartSize() {
                         legendOptions.enabled &&
                         !legendOptions.floating) ?
                         legend.legendHeight +
-                            (legendOptions.margin ?? 10) :
+                            pick(legendOptions.margin, 10) :
                         0) -
                     (this.titleOffset ? this.titleOffset[2] : 0);
         }
@@ -112,21 +113,21 @@ function onChartAfterSetChartSize() {
 }
 /**
  * Initialize navigator, if no scrolling exists yet.
- * @internal
+ * @private
  */
 function onChartAfterUpdate(event) {
     if (!this.navigator && !this.scroller &&
         (this.options.navigator.enabled ||
             this.options.scrollbar.enabled)) {
         this.scroller = this.navigator = new NavigatorConstructor(this);
-        if (event.redraw ?? true) {
+        if (pick(event.redraw, true)) {
             this.redraw(event.animation); // #7067
         }
     }
 }
 /**
  * Initialize navigator for stock charts
- * @internal
+ * @private
  */
 function onChartBeforeRender() {
     const options = this.options;
@@ -139,7 +140,7 @@ function onChartBeforeRender() {
  * For Stock charts. For x only zooming, do not to create the zoom button
  * because X axis zooming is already allowed by the Navigator and Range
  * selector. (#9285)
- * @internal
+ * @private
  */
 function onChartBeforeShowResetZoom() {
     const chartOptions = this.options, navigator = chartOptions.navigator, rangeSelector = chartOptions.rangeSelector;
@@ -151,7 +152,9 @@ function onChartBeforeShowResetZoom() {
         return false;
     }
 }
-/** @internal */
+/**
+ * @private
+ */
 function onChartCallback(chart) {
     const navigator = chart.navigator;
     // Initialize the navigator
@@ -162,7 +165,7 @@ function onChartCallback(chart) {
 }
 /**
  * Merge options, if no scrolling exists yet
- * @internal
+ * @private
  */
 function onChartUpdate(e) {
     const navigatorOptions = (e.options.navigator || {}), scrollbarOptions = (e.options.scrollbar || {});
@@ -179,9 +182,7 @@ function onChartUpdate(e) {
  *  Default Export
  *
  * */
-/** @internal */
 const ChartNavigatorComposition = {
     compose
 };
-/** @internal */
 export default ChartNavigatorComposition;

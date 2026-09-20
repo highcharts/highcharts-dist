@@ -6,9 +6,8 @@
  *
  *  Chaikin Money Flow indicator for Highcharts Stock
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
@@ -24,7 +23,7 @@ const { sma: SMAIndicator } = SeriesRegistry.seriesTypes;
 /**
  * The CMF series type.
  *
- * @internal
+ * @private
  * @class
  * @name Highcharts.seriesTypes.cmf
  *
@@ -48,7 +47,7 @@ class CMFIndicator extends SMAIndicator {
     /**
      * Checks if the series and volumeSeries are accessible, number of
      * points.x is longer than period, is series has OHLC data
-     * @internal
+     * @private
      * @param {Highcharts.CMFIndicator} this indicator to use.
      * @return {boolean} True if series is valid and can be computed,
      * otherwise false.
@@ -58,7 +57,7 @@ class CMFIndicator extends SMAIndicator {
             (this.volumeSeries =
                 chart.get(options.params.volumeSeriesID))), isSeriesOHLC = (series?.pointArrayMap?.length === 4);
         /**
-         * @internal
+         * @private
          * @param {Highcharts.Series} serie to check length validity on.
          * @return {boolean|undefined} true if length is valid.
          */
@@ -73,7 +72,7 @@ class CMFIndicator extends SMAIndicator {
     }
     /**
      * Returns indicator's data.
-     * @internal
+     * @private
      * @param {Highcharts.CMFIndicator} this indicator to use.
      * @param {Highcharts.Series} series to calculate values from
      * @param {Highcharts.CMFIndicatorParamsOptions} params to pass
@@ -87,7 +86,7 @@ class CMFIndicator extends SMAIndicator {
         return this.getMoneyFlow(series.xData, series.yData, this.volumeSeries.getColumn('y'), params.period);
     }
     /**
-     * @internal
+     * @private
      *
      * @param {Array<number>} xData
      * x timestamp values
@@ -111,7 +110,7 @@ class CMFIndicator extends SMAIndicator {
          * Calculates money flow volume, changes i, nullIndex vars from
          * upper scope!
          *
-         * @internal
+         * @private
          *
          * @param {Array<number>} ohlc
          * OHLC point
@@ -129,7 +128,7 @@ class CMFIndicator extends SMAIndicator {
                 close !== null &&
                 high !== low;
             /**
-             * @internal
+             * @private
              * @param {number} h
              * High value
              * @param {number} l
@@ -184,7 +183,7 @@ class CMFIndicator extends SMAIndicator {
 /**
  * Chaikin Money Flow indicator (cmf).
  *
- * @sample {highstock} stock/indicators/cmf/
+ * @sample stock/indicators/cmf/
  *         Chaikin Money Flow indicator
  *
  * @extends      plotOptions.sma
@@ -214,7 +213,6 @@ SeriesRegistry.registerSeriesType('cmf', CMFIndicator);
  *  Default Export
  *
  * */
-/** @internal */
 export default CMFIndicator;
 /* *
  *
@@ -228,6 +226,7 @@ export default CMFIndicator;
  * @extends   series,plotOptions.cmf
  * @since     6.0.0
  * @product   highstock
+ * @excluding dataParser, dataURL
  * @requires  stock/indicators/indicators
  * @requires  stock/indicators/cmf
  * @apioption series.cmf

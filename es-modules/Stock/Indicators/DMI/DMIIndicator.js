@@ -4,9 +4,8 @@
  *
  *  Directional Movement Index (DMI) indicator for Highcharts Stock
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
@@ -23,7 +22,7 @@ import { correctFloat, extend, isArray, merge } from '../../../Shared/Utilities.
 /**
  * The Directional Movement Index (DMI) series type.
  *
- * @internal
+ * @private
  * @class
  * @name Highcharts.seriesTypes.dmi
  *
@@ -140,7 +139,7 @@ class DMIIndicator extends SMAIndicator {
  * This series requires the `linkedTo` option to be set and should
  * be loaded after the `stock/indicators/indicators.js` file.
  *
- * @sample {highstock} stock/indicators/dmi
+ * @sample stock/indicators/dmi
  *         DMI indicator
  *
  * @extends      plotOptions.sma
@@ -191,7 +190,7 @@ DMIIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
              *
              * @type {Highcharts.ColorString}
              */
-            lineColor: 'var(--highcharts-positive-color)' // Green-ish
+            lineColor: "#06b535" /* Palette.positiveColor */ // Green-ish
         }
     },
     /**
@@ -211,7 +210,7 @@ DMIIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
              *
              * @type {Highcharts.ColorString}
              */
-            lineColor: 'var(--highcharts-negative-color)' // Red-ish
+            lineColor: "#f21313" /* Palette.negativeColor */ // Red-ish
         }
     },
     dataGrouping: {
@@ -233,7 +232,6 @@ SeriesRegistry.registerSeriesType('dmi', DMIIndicator);
  *  Default Export
  *
  * */
-/** @internal */
 export default DMIIndicator;
 /* *
  *
@@ -248,9 +246,9 @@ export default DMIIndicator;
  * @extends   series,plotOptions.dmi
  * @since 9.1.0
  * @product   highstock
- * @excluding allAreas, colorAxis, joinBy, keys, navigatorOptions,
- *            pointInterval, pointIntervalUnit, pointPlacement, pointRange,
- *            pointStart, showInNavigator, stacking
+ * @excluding allAreas, colorAxis,  dataParser, dataURL, joinBy, keys,
+ *            navigatorOptions, pointInterval, pointIntervalUnit,
+ *            pointPlacement, pointRange, pointStart, showInNavigator, stacking
  * @requires  stock/indicators/indicators
  * @requires  stock/indicators/dmi
  * @apioption series.dmi

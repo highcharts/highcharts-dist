@@ -5,9 +5,8 @@
  *
  *  Utility functions for accessibility module.
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
@@ -132,20 +131,11 @@ function escapeStringForHTML(str) {
         .replace(/\//g, '&#x2F;');
 }
 /**
- * Get the shadow root the element lives in, if any. Lookups in the main
- * document do not cross a shadow boundary. (#22682)
+ * Get an element by ID
  * @private
  */
-function getShadowRoot(el) {
-    const root = el?.getRootNode();
-    return root?.host ? root : void 0;
-}
-/**
- * Get an element by ID, from the reference element's shadow root if it has one.
- * @private
- */
-function getElement(id, referenceElement) {
-    return (getShadowRoot(referenceElement) || doc).getElementById(id);
+function getElement(id) {
+    return doc.getElementById(id);
 }
 /**
  * Get a fake mouse event of a given type. If relatedTarget is not given,
@@ -317,7 +307,6 @@ const HTMLUtilities = {
     getElement,
     getFakeMouseEvent,
     getHeadingTagNameForElement,
-    getShadowRoot,
     removeChildNodes,
     removeClass,
     removeElement,

@@ -154,7 +154,6 @@ const Funnel3DSeriesDefaults = {
  * @sample {highcharts} highcharts/series/data-array-of-objects/
  *         Config objects
  *
- * @basic
  * @type      {Array<number|Array<number>|*>}
  * @extends   series.column.data
  * @product   highcharts

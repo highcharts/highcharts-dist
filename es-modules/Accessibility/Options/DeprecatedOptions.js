@@ -5,9 +5,8 @@
  *
  *  Default options for accessibility.
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
@@ -64,6 +63,7 @@
  */
 /* eslint-enable max-len */
 'use strict';
+import { pick } from '../../Shared/Utilities.js';
 import { error } from '../../Core/Utilities.js';
 /* *
  *
@@ -83,7 +83,7 @@ function traverseSetOption(root, optionAsArray, val) {
     let opt = root, prop, i = 0;
     for (; i < optionAsArray.length - 1; ++i) {
         prop = optionAsArray[i];
-        opt = opt[prop] = (opt[prop] ?? {});
+        opt = opt[prop] = pick(opt[prop], {});
     }
     opt[optionAsArray[optionAsArray.length - 1]] = val;
 }

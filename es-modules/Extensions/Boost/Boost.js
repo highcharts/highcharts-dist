@@ -84,19 +84,6 @@ function compose(ChartClass, AxisClass, SeriesClass, seriesTypes, PointClass, Co
                 opacity
             });
         }
-        // Boosted scatter crops its data table on the Y axis, so it must be
-        // reprocessed when the axis extremes change (#24386).
-        if (!this.isPanning) {
-            for (const series of this.series) {
-                if (series.boost &&
-                    series.is('scatter') &&
-                    !series.is('bubble') &&
-                    !series.is('treemap') &&
-                    !series.is('heatmap')) {
-                    series.isDirty = true;
-                }
-            }
-        }
     });
 }
 /**
@@ -174,8 +161,6 @@ export default Boost;
  *         Scatter chart with colored points
  * @sample highcharts/boost/scatter-colorbypoint
  *         Scatter chart with colorByPoint
- * @sample highcharts/boost/scatter-zones
- *         Scatter chart with zones
  * @sample highcharts/boost/area
  *         Area chart
  * @sample highcharts/boost/arearange

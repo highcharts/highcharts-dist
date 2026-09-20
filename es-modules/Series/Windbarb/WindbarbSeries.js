@@ -5,14 +5,14 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
 'use strict';
-import { animObject } from '../../Core/Animation/AnimationUtilities.js';
+import A from '../../Core/Animation/AnimationUtilities.js';
+const { animObject } = A;
 import ApproximationRegistry from '../../Extensions/DataGrouping/ApproximationRegistry.js';
 import H from '../../Core/Globals.js';
 import OnSeriesComposition from '../OnSeriesComposition.js';
@@ -20,7 +20,7 @@ import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { column: ColumnSeries } = SeriesRegistry.seriesTypes;
 import WindbarbPoint from './WindbarbPoint.js';
 import WindbarbSeriesDefaults from './WindbarbSeriesDefaults.js';
-import { extend, merge } from '../../Shared/Utilities.js';
+import { extend, merge, pick } from '../../Shared/Utilities.js';
 /* *
  *
  *  Functions
@@ -74,14 +74,15 @@ class WindbarbSeries extends ColumnSeries {
     // Get presentational attributes.
     pointAttribs(point, state) {
         const options = this.options;
-        let stroke = point?.color || this.color, strokeWidth = options.lineWidth;
+        let stroke = point.color || this.color, strokeWidth = this.options.lineWidth;
         if (state) {
-            stroke = options.states?.[state]?.color || stroke;
-            strokeWidth = (options.states?.[state]?.lineWidthPlus || 0) +
-                (options.states?.[state]?.lineWidth || strokeWidth || 0);
+            stroke = options.states[state].color || stroke;
+            strokeWidth =
+                (options.states[state].lineWidth || strokeWidth) +
+                    (options.states[state].lineWidthPlus || 0);
         }
         return {
-            stroke,
+            'stroke': stroke,
             'stroke-width': strokeWidth
         };
     }
@@ -150,7 +151,7 @@ class WindbarbSeries extends ColumnSeries {
                         .add(this.markerGroup)
                         .addClass('highcharts-point ' +
                         'highcharts-color-' +
-                        (point.colorIndex ?? point.series.colorIndex));
+                        pick(point.colorIndex, point.series.colorIndex));
                 }
                 // Position the graphic
                 point.graphic

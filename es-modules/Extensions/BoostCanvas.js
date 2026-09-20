@@ -1,8 +1,7 @@
 /* *
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *  Author: Torstein Hønsi, Christer Vasseng
  *
  *  This module serves as a fallback for the Boost module in IE9 and IE10. Newer
@@ -22,13 +21,12 @@ import Color from '../Core/Color/Color.js';
 const { parse: color } = Color;
 import H from '../Core/Globals.js';
 const { doc, noop } = H;
-import { addEvent, fireEvent, internalClearTimeout, isNumber, merge, wrap } from '../Shared/Utilities.js';
+import { addEvent, fireEvent, internalClearTimeout, isNumber, merge, pick, wrap } from '../Shared/Utilities.js';
 /* *
  *
  *  Namespace
  *
  * */
-/** @internal */
 var BoostCanvas;
 (function (BoostCanvas) {
     /* *
@@ -240,11 +238,11 @@ var BoostCanvas;
             timeRendering: activeBoostSettings.timeRendering || false,
             timeSeriesProcessing: activeBoostSettings.timeSeriesProcessing || false,
             timeSetup: activeBoostSettings.timeSetup || false
-        }, xData = series.getColumn('x', true), yData = series.getColumn('y', true), rawData = options.data || [], xExtremes = xAxis.getExtremes(), xMin = xExtremes.min, xMax = xExtremes.max, yExtremes = yAxis.getExtremes(), yMin = yExtremes.min, yMax = yExtremes.max, pointTaken = {}, sampling = !!series.sampling, r = options.marker && options.marker.radius, strokeBatch = series.cvsStrokeBatch || 1000, enableMouseTracking = options.enableMouseTracking, threshold = options.threshold, hasThreshold = isNumber(threshold), translatedThreshold = yAxis.getThreshold(threshold), doFill = series.fill, isRange = (series.pointArrayMap &&
+        }, xData = series.getColumn('x', true), yData = series.getColumn('y', true), rawData = options.data, xExtremes = xAxis.getExtremes(), xMin = xExtremes.min, xMax = xExtremes.max, yExtremes = yAxis.getExtremes(), yMin = yExtremes.min, yMax = yExtremes.max, pointTaken = {}, sampling = !!series.sampling, r = options.marker && options.marker.radius, strokeBatch = series.cvsStrokeBatch || 1000, enableMouseTracking = options.enableMouseTracking, threshold = options.threshold, hasThreshold = isNumber(threshold), translatedThreshold = yAxis.getThreshold(threshold), doFill = series.fill, isRange = (series.pointArrayMap &&
             series.pointArrayMap.join(',') === 'low,high'), isStacked = !!options.stacking, cropStart = series.cropStart || 0, loadingOptions = chart.options.loading, requireSorting = series.requireSorting, connectNulls = options.connectNulls, useRaw = !xData, sdata = (isStacked ?
             series.data :
             (xData || rawData)), fillColor = (series.fillOpacity ?
-            Color.parse(series.color).setOpacity((options.fillOpacity ?? 0.75)).get() :
+            Color.parse(series.color).setOpacity(pick(options.fillOpacity, 0.75)).get() :
             series.color), compareX = options.findNearestPointBy === 'x', boost = this.boost || {}, cvsDrawPoint = series.cvsDrawPoint, cvsLineTo = options.lineWidth ? series.cvsLineTo : void 0, cvsMarker = (r && r <= 1 ?
             series.cvsMarkerSquare :
             series.cvsMarkerCircle);
@@ -282,8 +280,7 @@ var BoostCanvas;
         if (rawData.length > 99999) {
             chart.options.loading = merge(loadingOptions, {
                 labelStyle: {
-                    backgroundColor: color('var(--highcharts-background-color)')
-                        .setOpacity(0.75).get(),
+                    backgroundColor: color("#ffffff" /* Palette.backgroundColor */).setOpacity(0.75).get(),
                     padding: '1em',
                     borderRadius: '0.5em'
                 },
@@ -586,5 +583,4 @@ var BoostCanvas;
  *  Default Export
  *
  * */
-/** @internal */
 export default BoostCanvas;

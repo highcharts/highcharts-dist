@@ -3,9 +3,8 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
@@ -46,7 +45,6 @@ const MapSeriesDefaults = {
     animation: false, // Makes the complex shapes slow
     dataLabels: {
         crop: false,
-        distance: 0,
         formatter: function () {
             const { numberFormatter } = this.series.chart;
             const { value } = this.point;
@@ -56,7 +54,7 @@ const MapSeriesDefaults = {
         },
         inside: true, // For the color
         overflow: false,
-        padding: [0, 2],
+        padding: 0,
         verticalAlign: 'middle'
     },
     /**
@@ -90,7 +88,7 @@ const MapSeriesDefaults = {
      *
      * @private
      */
-    nullColor: 'var(--highcharts-neutral-color-3)',
+    nullColor: "#f7f7f7" /* Palette.neutralColor3 */,
     /**
      * Whether to allow pointer interaction like tooltips and mouse events
      * on null points.
@@ -137,12 +135,13 @@ const MapSeriesDefaults = {
      *         Borders demo
      *
      * @type      {Highcharts.ColorType}
+     * @default   #cccccc
      * @product   highmaps
      * @apioption plotOptions.series.borderColor
      *
      * @private
      */
-    borderColor: 'var(--highcharts-neutral-color-20)',
+    borderColor: "#e6e6e6" /* Palette.neutralColor10 */,
     /**
      * The border width of each map area.
      *
@@ -226,22 +225,13 @@ const MapSeriesDefaults = {
              * @apioption plotOptions.series.states.hover.color
              */
             /**
-             * The relative brightness of the point when hovered, relative
-             * to the normal point color.
-             *
-             * @type      {number}
-             * @product   highmaps
-             * @default   0
-             * @apioption plotOptions.series.states.hover.brightness
-             */
-            /**
              * The border color of the point in this state.
              *
              * @type      {Highcharts.ColorType}
              * @product   highmaps
              * @apioption plotOptions.series.states.hover.borderColor
              */
-            borderColor: 'var(--highcharts-neutral-color-60)',
+            borderColor: "#666666" /* Palette.neutralColor60 */,
             /**
              * The border width of the point in this state
              *
@@ -250,6 +240,15 @@ const MapSeriesDefaults = {
              * @apioption plotOptions.series.states.hover.borderWidth
              */
             borderWidth: 2
+            /**
+             * The relative brightness of the point when hovered, relative
+             * to the normal point color.
+             *
+             * @type      {number}
+             * @product   highmaps
+             * @default   0
+             * @apioption plotOptions.series.states.hover.brightness
+             */
         },
         /**
          * @apioption plotOptions.series.states.normal
@@ -274,11 +273,11 @@ const MapSeriesDefaults = {
         select: {
             /**
              * @type      {Highcharts.ColorType}
-             * @default   var(--highcharts-neutral-color-20)
+             * @default   ${palette.neutralColor20}
              * @product   highmaps
              * @apioption plotOptions.series.states.select.color
              */
-            color: 'var(--highcharts-neutral-color-20)'
+            color: "#cccccc" /* Palette.neutralColor20 */
         }
     },
     legendSymbol: 'rectangle'
@@ -303,7 +302,7 @@ const MapSeriesDefaults = {
  * is inherited from [chart.type](#chart.type).
  *
  * @extends   series,plotOptions.map
- * @excluding dragDrop, marker
+ * @excluding dataParser, dataURL, dragDrop, marker
  * @product   highmaps
  * @apioption series.map
  */
@@ -345,7 +344,6 @@ const MapSeriesDefaults = {
  *        }]
  *    ```
  *
- * @basic
  * @type      {Array<number|Array<string,(number|null)>|null|*>}
  * @product   highmaps
  * @apioption series.map.data
@@ -383,16 +381,6 @@ const MapSeriesDefaults = {
  * @since     3.0
  * @product   highmaps
  * @apioption plotOptions.map.colors
- */
-/**
- * Whether to apply a drop shadow to the map shapes. The shadow can be an
- * object configuration containing `color`, `offsetX`, `offsetY`, `opacity`
- * and `width`.
- *
- * @type      {boolean|Highcharts.ShadowOptionsObject}
- * @default   false
- * @product   highmaps
- * @apioption plotOptions.map.shadow
  */
 /**
  * Individual color for the point. By default the color is either used
@@ -470,7 +458,7 @@ const MapSeriesDefaults = {
  * a two dimensional array of the same. The dimensionality must comply with the
  * `type`.
  *
- * @type      {Array<Highcharts.LonLatArray>|Array<Array<Highcharts.LonLatArray>>}
+ * @type      {Array<LonLatArray>|Array<Array<LonLatArray>>}
  * @since 9.3.0
  * @product   highmaps
  * @apioption series.map.data.geometry.coordinates

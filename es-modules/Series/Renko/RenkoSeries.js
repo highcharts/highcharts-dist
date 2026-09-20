@@ -3,9 +3,8 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Paweł Lysy
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
@@ -61,8 +60,6 @@ class RenkoSeries extends ColumnSeries {
         const processedXData = [];
         const processedYData = [];
         const processedLowData = [];
-        const processedColorData = [];
-        const processedUpTrendData = [];
         const xData = this.getColumn('x', true);
         const yData = this.getColumn('y', true);
         if (!this.renkoData || this.renkoData.length > 0) {
@@ -120,15 +117,11 @@ class RenkoSeries extends ColumnSeries {
             processedXData.push(point.x);
             processedYData.push(point.y);
             processedLowData.push(point.low);
-            processedColorData.push(point.color);
-            processedUpTrendData.push(point.upTrend);
         }
-        this.hasProcessedDataTable = true;
+        this.processedData = renkoData;
         modified.setColumn('x', processedXData);
         modified.setColumn('y', processedYData);
         modified.setColumn('low', processedLowData);
-        modified.setColumn('color', processedColorData);
-        modified.setColumn('upTrend', processedUpTrendData);
         return {
             modified,
             cropped: false,

@@ -3,9 +3,8 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
@@ -15,7 +14,7 @@
  *  Imports
  *
  * */
-import { clamp, pushUnique, stableSort } from '../../Shared/Utilities.js';
+import { clamp, pick, pushUnique, stableSort } from '../../Shared/Utilities.js';
 /* *
  *
  *  Namespace
@@ -104,7 +103,7 @@ var RendererUtilities;
         boxes = boxes.map((box) => ({
             size: box.size,
             targets: [box.target],
-            align: (box.align ?? 0.5)
+            align: pick(box.align, 0.5)
         }));
         while (overlapping) {
             // Initial positions: target centered in box

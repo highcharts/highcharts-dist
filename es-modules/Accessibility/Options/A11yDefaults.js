@@ -5,9 +5,8 @@
  *
  *  Default options for accessibility.
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
@@ -458,11 +457,8 @@ const Options = {
          * Alternatively, the HTML element to link can be passed in directly as
          * an HTML node.
          *
-         * When the Exporting module is also loaded, the description
-         * is embedded in the exported SVG as a Dublin Core
-         * RDF `<metadata>` block, so it is preserved in downloaded images
-         * for indexers and machine readers. If you need a visible caption
-         * in the exported image, use the [caption](#caption) feature.
+         * If you need the description to be part of the exported image,
+         * consider using the [caption](#caption) feature.
          *
          * If you need the description to be hidden visually, use the
          * [accessibility.description](#accessibility.description) option.
@@ -523,13 +519,7 @@ const Options = {
          *
          * If the Accessibility module is loaded, this option is included by
          * default as a long description of the chart in the hidden screen
-         * reader information region. When the Exporting module is also loaded,
-         * it is embedded into exported SVGs as a Dublin Core RDF `<metadata>`
-         * block, so the description is preserved in downloaded images
-         * for indexers and machine readers. The embedded value falls back
-         * through [linkedDescription](#accessibility.linkedDescription),
-         * [caption.text](#caption.text), and finally the generated
-         * chart-type description.
+         * reader information region.
          *
          * Note: Since Highcharts now supports captions and linked descriptions,
          * it is preferred to define the description using those methods, as a
@@ -608,11 +598,11 @@ const Options = {
                  * @since   6.0.3
                  */
                 style: {
-                    /**
-                     * @type {Highcharts.ColorType}
-                     */
-                    color: 'var(--highcharts-highlight-color-80)',
+                    /** @internal */
+                    color: "#334eff" /* Palette.highlightColor80 */,
+                    /** @internal */
                     lineWidth: 2,
+                    /** @internal */
                     borderRadius: 3
                 },
                 /**

@@ -1,8 +1,7 @@
 /* *
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
@@ -18,7 +17,7 @@ const { atr: ATRIndicator } = SeriesRegistry.seriesTypes;
 /**
  * The NATR series type.
  *
- * @internal
+ * @private
  * @class
  * @name Highcharts.seriesTypes.natr
  *
@@ -61,7 +60,6 @@ class NATRIndicator extends ATRIndicator {
  * @since        7.0.0
  * @product      highstock
  * @requires     stock/indicators/indicators
- * @requires     stock/indicators/atr
  * @requires     stock/indicators/natr
  * @optionparent plotOptions.natr
  */
@@ -76,7 +74,6 @@ SeriesRegistry.registerSeriesType('natr', NATRIndicator);
  *  Default Export
  *
  * */
-/** @internal */
 export default NATRIndicator;
 /* *
  *
@@ -90,9 +87,10 @@ export default NATRIndicator;
  * @extends   series,plotOptions.natr
  * @since     7.0.0
  * @product   highstock
+ * @excluding dataParser, dataURL
  * @requires  stock/indicators/indicators
  * @requires  stock/indicators/atr
  * @requires  stock/indicators/natr
  * @apioption series.natr
  */
-''; // To include the above in the js output
+''; // To include the above in the js output'

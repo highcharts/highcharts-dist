@@ -3,9 +3,8 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi, Magdalena Gut
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
@@ -16,29 +15,19 @@
  *
  * */
 import '../Column/ColumnSeries.js';
-import { composePatternFill } from '../../Extensions/PatternFill.js';
-import { animObject } from '../../Core/Animation/AnimationUtilities.js';
+import PatternFill from '../../Extensions/PatternFill.js';
+import A from '../../Core/Animation/AnimationUtilities.js';
 import Chart from '../../Core/Chart/Chart.js';
 import PictorialPoint from './PictorialPoint.js';
-import PictorialSeriesDefaults from './PictorialSeriesDefaults.js';
 import PictorialUtilities from './PictorialUtilities.js';
 import Series from '../../Core/Series/Series.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 import StackItem from '../../Core/Axis/Stacking/StackItem.js';
 import SVGRenderer from '../../Core/Renderer/SVG/SVGRenderer.js';
-import { addEvent, defined, merge, objectEach } from '../../Shared/Utilities.js';
-/* *
- *
- *  Composition
- *
- * */
-composePatternFill(Chart, Series, SVGRenderer);
-/* *
- *
- *  Constants
- *
- * */
+import { addEvent, defined, merge, objectEach, pick } from '../../Shared/Utilities.js';
 const ColumnSeries = SeriesRegistry.seriesTypes.column;
+PatternFill.compose(Chart, Series, SVGRenderer);
+const { animObject } = A;
 const { getStackMetrics, invertShadowGroup, rescalePatternFill } = PictorialUtilities;
 /* *
  *
@@ -48,7 +37,7 @@ const { getStackMetrics, invertShadowGroup, rescalePatternFill } = PictorialUtil
 /**
  * The pictorial series type.
  *
- * @internal
+ * @private
  * @class
  * @name Highcharts.seriesTypes.pictorial
  *
@@ -160,7 +149,28 @@ class PictorialSeries extends ColumnSeries {
  *  Static Properties
  *
  * */
-PictorialSeries.defaultOptions = merge(ColumnSeries.defaultOptions, PictorialSeriesDefaults);
+PictorialSeries.defaultOptions = merge(ColumnSeries.defaultOptions, 
+/**
+ * A pictorial chart uses vector images to represents the data.
+ * The shape of the data point is taken from the path parameter.
+ *
+ * @sample       {highcharts} highcharts/demo/pictorial/
+ *               Pictorial chart
+ *
+ * @extends      plotOptions.column
+ * @since 11.0.0
+ * @product      highcharts
+ * @excluding    allAreas, borderRadius,
+ *               centerInCategory, colorAxis, colorKey, connectEnds,
+ *               connectNulls, crisp, compare, compareBase, dataSorting,
+ *               dashStyle, dataAsColumns, linecap, lineWidth, shadow,
+ *               onPoint
+ * @requires     modules/pictorial
+ * @optionparent plotOptions.pictorial
+ */
+{
+    borderWidth: 0
+});
 /* *
  *
  *  Events
@@ -206,9 +216,7 @@ function renderStackShadow(stack) {
         stack.axis.hasData() &&
         series.xAxis.hasData()) {
         const xAxis = series.xAxis, options = stack.axis.options, chart = stack.axis.chart, stackShadow = stack.shadow, xCenter = xAxis.toPixels(stack.x, true), x = chart.inverted ? xAxis.len - xCenter : xCenter, paths = series.options.paths || [], index = stack.x % paths.length, shape = paths[index], width = series.getColumnMetrics &&
-            series.getColumnMetrics().width, { height, y } = getStackMetrics(series.yAxis, shape), shadowOptions = options.stackShadow, strokeWidth = ((shadowOptions && shadowOptions.borderWidth) ??
-            series.options.borderWidth ??
-            1);
+            series.getColumnMetrics().width, { height, y } = getStackMetrics(series.yAxis, shape), shadowOptions = options.stackShadow, strokeWidth = pick(shadowOptions && shadowOptions.borderWidth, series.options.borderWidth, 1);
         if (!stackShadow &&
             shadowOptions &&
             shadowOptions.enabled &&
@@ -230,7 +238,7 @@ function renderStackShadow(stack) {
                         path: {
                             d: shape.definition,
                             fill: shadowOptions.color ||
-                                'var(--highcharts-neutral-color-20)',
+                                '#dedede',
                             strokeWidth: strokeWidth,
                             stroke: shadowOptions.borderColor ||
                                 'transparent'
@@ -241,7 +249,7 @@ function renderStackShadow(stack) {
                         height: height,
                         patternContentUnits: 'objectBoundingBox',
                         backgroundColor: 'none',
-                        color: 'var(--highcharts-neutral-color-20)'
+                        color: '#dedede'
                     }
                 }
             })
@@ -357,9 +365,9 @@ export default PictorialSeries;
  * @extends   series,plotOptions.pictorial
  * @since 11.0.0
  * @product   highcharts
- * @excluding borderRadius, boostBlending, boostThreshold,
+ * @excluding dataParser, borderRadius, boostBlending, boostThreshold,
  *            borderColor, borderWidth, centerInCategory, connectEnds,
- *            connectNulls, crisp, colorKey, dataAsColumns, depth,
+ *            connectNulls, crisp, colorKey, dataURL, dataAsColumns, depth,
  *            dragDrop, edgeColor, edgeWidth, linecap, lineWidth,  marker,
  *            dataSorting, dashStyle, onPoint, relativeXValue, shadow, zoneAxis,
  *            zones
@@ -404,7 +412,6 @@ export default PictorialSeries;
  *    }]
  *    ```
  *
- * @basic
  * @type      {Array<Array<(number|string),number>|Array<(number|string),number,number>|*>}
  * @extends   series.column.data
  *
@@ -497,7 +504,7 @@ export default PictorialSeries;
  *
  * @declare   Highcharts.YAxisOptions
  * @type      {Highcharts.ColorType}
- * @default   var(--highcharts-neutral-color-20)
+ * @default   #dedede
  * @product   highcharts
  * @requires  modules/pictorial
  * @apioption yAxis.stackShadow.color
@@ -507,7 +514,7 @@ export default PictorialSeries;
  *
  * @declare   Highcharts.YAxisOptions
  * @type      {boolean}
- * @default   false
+ * @default   undefined
  * @product   highcharts
  * @requires  modules/pictorial
  * @apioption yAxis.stackShadow.enabled

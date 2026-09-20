@@ -19,7 +19,6 @@ if (defaultOptions.annotations?.types) {
      *
      * @extends      annotations.types.infinityLine
      * @product      highstock
-     * @requires     modules/annotations-advanced
      * @optionparent annotations.types.pitchfork
      */
     {

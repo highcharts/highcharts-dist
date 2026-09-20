@@ -3,9 +3,8 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
@@ -34,16 +33,6 @@ const OHLCSeriesDefaults = {
      * @product   highstock
      * @apioption plotOptions.ohlc.dataGrouping.approximation
      */
-    /**
-     * What type of legend symbol to render for this series. For OHLC series,
-     * the default is `ohlc`, a vertical stem with an open tick on the left
-     * and a close tick on the right.
-     *
-     * @default   ohlc
-     * @product   highstock
-     * @apioption plotOptions.ohlc.legendSymbol
-     */
-    legendSymbol: 'ohlc',
     /**
      * Determines which one of  `open`, `high`, `low`, `close` values should
      * be represented as `point.y`, which is later used to set dataLabel
@@ -80,13 +69,14 @@ const OHLCSeriesDefaults = {
  *
  * @type      {boolean}
  * @product   highstock
- * @apioption plotOptions.series.useOhlcData
+ * @apioption plotOptions.line.useOhlcData
  */
 /**
  * A `ohlc` series. If the [type](#series.ohlc.type) option is not
  * specified, it is inherited from [chart.type](#chart.type).
  *
  * @extends   series,plotOptions.ohlc
+ * @excluding dataParser, dataURL
  * @product   highstock
  * @apioption series.ohlc
  */
@@ -134,7 +124,6 @@ const OHLCSeriesDefaults = {
  *    }]
  *    ```
  *
- * @basic
  * @type      {Array<Array<(number|string),number,number,number>|Array<(number|string),number,number,number,number>|*>}
  * @extends   series.arearange.data
  * @excluding y, marker

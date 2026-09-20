@@ -3,9 +3,8 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Sebastian Bochan, Rafał Sebestjański
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
@@ -17,7 +16,7 @@ const { noop } = H;
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { arearange: AreaRangeSeries, column: ColumnSeries, columnrange: ColumnRangeSeries } = SeriesRegistry.seriesTypes;
 import SVGRenderer from '../../Core/Renderer/SVG/SVGRenderer.js';
-import { extend, merge } from '../../Shared/Utilities.js';
+import { extend, merge, pick } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class
@@ -26,7 +25,7 @@ import { extend, merge } from '../../Shared/Utilities.js';
 /**
  * The dumbbell series type
  *
- * @internal
+ * @private
  * @class
  * @name Highcharts.seriesTypes.dumbbell
  *
@@ -41,23 +40,18 @@ class DumbbellSeries extends AreaRangeSeries {
     /**
      * Get connector line path and styles that connects dumbbell point's low and
      * high values.
-     * @internal
+     * @private
      *
      * @param {Highcharts.Point} point The point to inspect.
      *
      * @return {Highcharts.SVGAttributes} attribs The path and styles.
      */
     getConnectorAttribs(point) {
-        const series = this, chart = series.chart, pointOptions = point.options, seriesOptions = series.options, xAxis = series.xAxis, yAxis = series.yAxis, connectorWidthPlus = (seriesOptions.states &&
+        const series = this, chart = series.chart, pointOptions = point.options, seriesOptions = series.options, xAxis = series.xAxis, yAxis = series.yAxis, connectorWidthPlus = pick(seriesOptions.states &&
             seriesOptions.states.hover &&
-            seriesOptions.states.hover.connectorWidthPlus) ?? 1, dashStyle = (pointOptions.dashStyle ?? seriesOptions.dashStyle), pxThreshold = yAxis.toPixels(seriesOptions.threshold || 0, true), pointHeight = chart.inverted ?
+            seriesOptions.states.hover.connectorWidthPlus, 1), dashStyle = pick(pointOptions.dashStyle, seriesOptions.dashStyle), pxThreshold = yAxis.toPixels(seriesOptions.threshold || 0, true), pointHeight = chart.inverted ?
             yAxis.len - pxThreshold : pxThreshold;
-        let connectorWidth = pointOptions.connectorWidth ??
-            seriesOptions.connectorWidth, connectorColor = pointOptions.connectorColor ??
-            seriesOptions.connectorColor ??
-            pointOptions.color ??
-            (point.zone ? point.zone.color : void 0) ??
-            point.color, pointTop = (point.plotLow ?? point.plotY), pointBottom = (point.plotHigh ?? pointHeight), origProps;
+        let connectorWidth = pick(pointOptions.connectorWidth, seriesOptions.connectorWidth), connectorColor = pick(pointOptions.connectorColor, seriesOptions.connectorColor, pointOptions.color, point.zone ? point.zone.color : void 0, point.color), pointTop = pick(point.plotLow, point.plotY), pointBottom = pick(point.plotHigh, pointHeight), origProps;
         if (typeof pointTop !== 'number') {
             return {};
         }
@@ -87,12 +81,7 @@ class DumbbellSeries extends AreaRangeSeries {
             };
             point.y = point.high;
             point.zone = point.zone ? point.getZone() : void 0;
-            connectorColor =
-                pointOptions.connectorColor ??
-                    seriesOptions.connectorColor ??
-                    pointOptions.color ??
-                    (point.zone ? point.zone.color : void 0) ??
-                    point.color;
+            connectorColor = pick(pointOptions.connectorColor, seriesOptions.connectorColor, pointOptions.color, point.zone ? point.zone.color : void 0, point.color);
             extend(point, origProps);
         }
         const attribs = {
@@ -117,12 +106,12 @@ class DumbbellSeries extends AreaRangeSeries {
     }
     /**
      * Draw connector line that connects dumbbell point's low and high values.
-     * @internal
+     * @private
      * @param {Highcharts.Point} point
      *        The point to inspect.
      */
     drawConnector(point) {
-        const series = this, animationLimit = (series.options.animationLimit ?? 250), verb = point.connector && series.chart.pointCount < animationLimit ?
+        const series = this, animationLimit = pick(series.options.animationLimit, 250), verb = point.connector && series.chart.pointCount < animationLimit ?
             'animate' : 'attr';
         if (!point.connector) {
             point.connector = series.chart.renderer.path()
@@ -137,7 +126,7 @@ class DumbbellSeries extends AreaRangeSeries {
     /**
      * Return the width and x offset of the dumbbell adjusted for grouping,
      * groupPadding, pointPadding, pointWidth etc.
-     * @internal
+     * @private
      */
     getColumnMetrics() {
         const metrics = ColumnSeries.prototype
@@ -148,7 +137,7 @@ class DumbbellSeries extends AreaRangeSeries {
     /**
      * Translate each point to the plot area coordinate system and find
      * shape positions
-     * @internal
+     * @private
      */
     translate() {
         const series = this, inverted = series.chart.inverted;
@@ -175,7 +164,7 @@ class DumbbellSeries extends AreaRangeSeries {
     /**
      * Extend the arearange series' drawPoints method by applying a connector
      * and coloring markers.
-     * @internal
+     * @private
      */
     drawPoints() {
         const series = this, chart = series.chart, pointLength = series.points.length, seriesLowColor = series.lowColor = series.options.lowColor, seriesLowMarker = series.options.lowMarker;
@@ -195,14 +184,7 @@ class DumbbellSeries extends AreaRangeSeries {
             }
             if (lowerGraphic) {
                 zoneColor = point.zone && point.zone.color;
-                lowerGraphicColor =
-                    point.options.lowColor ??
-                        seriesLowMarker?.fillColor ??
-                        seriesLowColor ??
-                        point.options.color ??
-                        zoneColor ??
-                        point.color ??
-                        series.color;
+                lowerGraphicColor = pick(point.options.lowColor, seriesLowMarker?.fillColor, seriesLowColor, point.options.color, zoneColor, point.color, series.color);
                 if (!chart.styledMode) {
                     lowerGraphic.attr({
                         fill: lowerGraphicColor
@@ -216,7 +198,7 @@ class DumbbellSeries extends AreaRangeSeries {
     /**
      * Get presentational attributes.
      *
-     * @internal
+     * @private
      * @function Highcharts.seriesTypes.column#pointAttribs
      *
      * @param {Highcharts.Point} point
@@ -237,7 +219,7 @@ class DumbbellSeries extends AreaRangeSeries {
     }
     /**
      * Set the shape arguments for dumbbells.
-     * @internal
+     * @private
      */
     setShapeArgs() {
         ColumnSeries.prototype.translate.apply(this);
@@ -265,5 +247,4 @@ SeriesRegistry.registerSeriesType('dumbbell', DumbbellSeries);
  *  Default Export
  *
  * */
-/** @internal */
 export default DumbbellSeries;

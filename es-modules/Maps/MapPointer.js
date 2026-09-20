@@ -3,14 +3,13 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
 'use strict';
-import { defined, extend, internalClearTimeout, wrap } from '../Shared/Utilities.js';
+import { defined, extend, internalClearTimeout, pick, wrap } from '../Shared/Utilities.js';
 /* *
  *
  *  Composition
@@ -124,7 +123,7 @@ var MapPointer;
         const mapNavigation = this.chart.options.mapNavigation;
         // Pinch status
         if (mapNavigation &&
-            (mapNavigation.enableTouchZoom ?? mapNavigation.enabled)) {
+            pick(mapNavigation.enableTouchZoom, mapNavigation.enabled)) {
             this.chart.zooming.pinchType = 'xy';
         }
         proceed.apply(this, [].slice.call(arguments, 1));

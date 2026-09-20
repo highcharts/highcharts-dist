@@ -1,8 +1,7 @@
 /* *
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
@@ -18,7 +17,7 @@ import { correctFloat, isArray, merge } from '../../../Shared/Utilities.js';
 /**
  * The DEMA series Type
  *
- * @internal
+ * @private
  * @class
  * @name Highcharts.seriesTypes.dema
  *
@@ -124,7 +123,6 @@ SeriesRegistry.registerSeriesType('dema', DEMAIndicator);
  *  Default Export
  *
  * */
-/** @internal */
 export default DEMAIndicator;
 /* *
  *
@@ -138,7 +136,7 @@ export default DEMAIndicator;
  * @extends   series,plotOptions.dema
  * @since     7.0.0
  * @product   highstock
- * @excluding allAreas, colorAxis, compare, compareBase,
+ * @excluding allAreas, colorAxis, compare, compareBase, dataParser, dataURL,
  *            joinBy, keys, navigatorOptions, pointInterval, pointIntervalUnit,
  *            pointPlacement, pointRange, pointStart, showInNavigator, stacking
  * @requires  stock/indicators/indicators

@@ -3,16 +3,15 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
 'use strict';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { line: LineSeries } = SeriesRegistry.seriesTypes;
-import { merge } from '../../Shared/Utilities.js';
+import { merge, pick } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class
@@ -157,10 +156,10 @@ class SplineSeries extends LineSeries {
         }
         const ret = [
             'C',
-            (lastPoint.rightContX ?? lastPoint.plotX ?? 0),
-            (lastPoint.rightContY ?? lastPoint.plotY ?? 0),
-            (leftContX ?? plotX ?? 0),
-            (leftContY ?? plotY ?? 0),
+            pick(lastPoint.rightContX, lastPoint.plotX, 0),
+            pick(lastPoint.rightContY, lastPoint.plotY, 0),
+            pick(leftContX, plotX, 0),
+            pick(leftContY, plotY, 0),
             plotX,
             plotY
         ];
@@ -206,7 +205,7 @@ export default SplineSeries;
  * not specified, it is inherited from [chart.type](#chart.type).
  *
  * @extends   series,plotOptions.spline
- * @excluding step, boostThreshold, boostBlending
+ * @excluding dataParser, dataURL, step, boostThreshold, boostBlending
  * @product   highcharts highstock
  * @apioption series.spline
  */
@@ -264,7 +263,6 @@ export default SplineSeries;
  * @sample {highcharts} highcharts/series/data-array-of-objects/
  *         Config objects
  *
- * @basic
  * @type      {Array<number|Array<(number|string),(number|null)>|null|*>}
  * @extends   series.line.data
  * @product   highcharts highstock

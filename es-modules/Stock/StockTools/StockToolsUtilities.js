@@ -1,13 +1,13 @@
-/* *
+// SPDX-License-Identifier: LicenseRef-Highcharts
+/**
  *
  *  Events generator for Stock tools
  *
  *  (c) 2009-2026 Highsoft AS
  *  Author: Paweł Fus
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
@@ -24,7 +24,9 @@ import { uniqueKey } from '../../Core/Utilities.js';
  *  Constants
  *
  * */
-/** @internal */
+/**
+ * @private
+ */
 const indicatorsWithAxes = [
     'apo',
     'ad',
@@ -56,7 +58,9 @@ const indicatorsWithAxes = [
     'trix',
     'williamsr'
 ];
-/** @internal */
+/**
+ * @private
+ */
 const indicatorsWithVolume = [
     'ad',
     'cmf',
@@ -79,7 +83,7 @@ const indicatorsWithVolume = [
  * Example: NavigationBindings.utils.addFlagFromForm('url(...)') - will
  * generate function that shows modal in GUI.
  *
- * @internal
+ * @private
  * @function bindingsUtils.addFlagFromForm
  *
  * @param {Highcharts.FlagsShapeValue} type
@@ -151,14 +155,14 @@ function addFlagFromForm(type) {
             },
             // Callback on submit:
             onSubmit: function (data) {
-                navigation.fieldsToOptions(data.fields, seriesOptions.data?.[0]);
+                navigation.fieldsToOptions(data.fields, seriesOptions.data[0]);
                 chart.addSeries(seriesOptions);
             }
         });
     };
 }
 /**
- * @internal
+ * @private
  * @todo
  * Consider using getHoverData(), but always kdTree (columns?)
  */
@@ -199,7 +203,7 @@ function attractToPoint(e, chart) {
 /**
  * Shorthand to check if given yAxis comes from navigator.
  *
- * @internal
+ * @private
  * @function bindingsUtils.isNotNavigatorYAxis
  *
  * @param {Highcharts.Axis} axis
@@ -213,7 +217,7 @@ function isNotNavigatorYAxis(axis) {
 }
 /**
  * Check if any of the price indicators are enabled.
- * @internal
+ * @private
  * @function bindingsUtils.isLastPriceEnabled
  *
  * @param {Array} series
@@ -225,7 +229,9 @@ function isNotNavigatorYAxis(axis) {
 function isPriceIndicatorEnabled(series) {
     return series.some((s) => s.lastVisiblePrice || s.lastPrice);
 }
-/** @internal */
+/**
+ * @private
+ */
 function manageIndicators(data) {
     const chart = this.chart, seriesConfig = {
         linkedTo: data.linkedTo,
@@ -315,7 +321,7 @@ function manageIndicators(data) {
  * between last point in `typeOptions` and current position. It's a value,
  * not pixels height.
  *
- * @internal
+ * @private
  * @function bindingsUtils.updateHeight
  *
  * @param {Highcharts.PointerEventObject} e
@@ -343,7 +349,7 @@ function updateHeight(e, annotation) {
  * Example: NavigationBindings.utils.updateNthPoint(1) - will generate
  * function that updates all consecutive points except point with index=0.
  *
- * @internal
+ * @private
  * @function bindingsUtils.updateNthPoint
  *
  * @param {number} startIndex
@@ -374,7 +380,7 @@ function updateNthPoint(startIndex) {
  * Update size of background (rect) in some annotations: Measure, Simple
  * Rect.
  *
- * @internal
+ * @private
  * @function Highcharts.NavigationBindingsUtilsObject.updateRectSize
  *
  * @param {Highcharts.PointerEventObject} event
@@ -427,7 +433,6 @@ function shallowArraysEqual(a, b) {
  *  Default Export
  *
  * */
-/** @internal */
 const StockToolsUtilities = {
     indicatorsWithAxes,
     indicatorsWithVolume,
@@ -442,5 +447,4 @@ const StockToolsUtilities = {
     updateNthPoint,
     updateRectSize
 };
-/** @internal */
 export default StockToolsUtilities;

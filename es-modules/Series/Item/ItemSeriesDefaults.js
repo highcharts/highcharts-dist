@@ -5,9 +5,8 @@
  *
  *  Item series type for Highcharts
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
@@ -112,7 +111,7 @@ const ItemSeriesDefaults = {
  * it is inherited from [chart.type](#chart.type).
  *
  * @extends   series,plotOptions.item
- * @excluding stack, xAxis, yAxis, dataSorting,
+ * @excluding dataParser, dataURL, stack, xAxis, yAxis, dataSorting,
  *            boostThreshold, boostBlending
  * @product   highcharts
  * @requires  modules/item-series
@@ -156,7 +155,6 @@ const ItemSeriesDefaults = {
  * @sample {highcharts} highcharts/series/data-array-of-objects/
  *         Config objects
  *
- * @basic
  * @type      {Array<number|Array<string,(number|null)>|null|*>}
  * @extends   series.pie.data
  * @exclude   sliced

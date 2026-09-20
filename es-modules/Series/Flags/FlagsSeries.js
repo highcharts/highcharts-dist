@@ -3,9 +3,8 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
@@ -30,7 +29,7 @@ import { addEvent, defined, extend, isNumber, merge, objectEach, wrap } from '..
 /**
  * The Flags series.
  *
- * @internal
+ * @private
  * @class
  * @name Highcharts.seriesTypes.flags
  *
@@ -44,7 +43,7 @@ class FlagsSeries extends ColumnSeries {
      * */
     /**
      * Disable animation, but keep clipping (#8546).
-     * @internal
+     * @private
      */
     animate(init) {
         if (init) {
@@ -53,7 +52,7 @@ class FlagsSeries extends ColumnSeries {
     }
     /**
      * Draw the markers.
-     * @internal
+     * @private
      */
     drawPoints() {
         const series = this, points = series.points, chart = series.chart, renderer = chart.renderer, inverted = chart.inverted, options = series.options, optionsY = options.y, yAxis = series.yAxis, boxesMap = {}, boxes = [], borderRadius = isNumber(options.borderRadius) ?
@@ -195,7 +194,7 @@ class FlagsSeries extends ColumnSeries {
     /**
      * Extend the column trackers with listeners to expand and contract
      * stacks.
-     * @internal
+     * @private
      */
     drawTracker() {
         const series = this, points = series.points;
@@ -238,15 +237,15 @@ class FlagsSeries extends ColumnSeries {
     }
     /**
      * Get presentational attributes
-     * @internal
+     * @private
      */
     pointAttribs(point, state) {
-        const options = this.options, color = point?.color || this.color;
-        let lineColor = options.lineColor, lineWidth = point?.lineWidth, fill = point?.fillColor || options.fillColor;
+        const options = this.options, color = (point && point.color) || this.color;
+        let lineColor = options.lineColor, lineWidth = (point && point.lineWidth), fill = (point && point.fillColor) || options.fillColor;
         if (state) {
-            fill = options.states?.[state]?.fillColor;
-            lineColor = options.states?.[state]?.lineColor;
-            lineWidth = options.states?.[state]?.lineWidth;
+            fill = options.states[state].fillColor;
+            lineColor = options.states[state].lineColor;
+            lineWidth = options.states[state].lineWidth;
         }
         return {
             fill: fill || color,
@@ -255,7 +254,7 @@ class FlagsSeries extends ColumnSeries {
         };
     }
     /**
-     * @internal
+     * @private
      */
     setClip() {
         Series.prototype.setClip.apply(this, arguments);
@@ -286,7 +285,7 @@ extend(FlagsSeries.prototype, {
     buildKDTree: noop,
     /**
      * Inherit the initialization from base Series.
-     * @internal
+     * @private
      */
     init: Series.prototype.init
 });
@@ -296,5 +295,13 @@ SeriesRegistry.registerSeriesType('flags', FlagsSeries);
  *  Default Export
  *
  * */
-/** @internal */
 export default FlagsSeries;
+/* *
+ *
+ *  API Declarations
+ *
+ * */
+/**
+ * @typedef {"circlepin"|"flag"|"squarepin"} Highcharts.FlagsShapeValue
+ */
+''; // Detach doclets above

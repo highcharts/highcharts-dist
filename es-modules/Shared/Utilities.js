@@ -2,9 +2,8 @@
  *
  *  (c) 2009-2026 Highsoft AS
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
@@ -438,13 +437,6 @@ export function extend(a, b) {
         a = {};
     }
     for (n in b) { // eslint-disable-line guard-for-in
-        // Prototype pollution (#14883). Keys like `__proto__` may arrive as
-        // own, enumerable properties through `JSON.parse`, in which case
-        // assigning them would mutate the prototype of the target instead of
-        // adding a property.
-        if (n === '__proto__' || n === 'constructor') {
-            continue;
-        }
         a[n] = b[n];
     }
     return a;
@@ -453,7 +445,7 @@ export function extend(a, b) {
 /**
  * Extend a prototyped class by new members.
  *
- * @deprecated 11.0.0
+ * @deprecated
  * @function Highcharts.extendClass<T>
  *
  * @param {Highcharts.Class<T>} parent
@@ -715,7 +707,7 @@ export function getStyle(el, prop, toInt) {
     const css = win.getComputedStyle(el, void 0); // eslint-disable-line no-undefined
     if (css) {
         style = css.getPropertyValue(prop);
-        if (toInt ?? prop !== 'opacity') {
+        if (pick(toInt, prop !== 'opacity')) {
             style = pInt(style);
         }
     }
@@ -936,7 +928,7 @@ export function merge(extendOrSource, ...sources) {
 /**
  * Take an interval and normalize it to multiples of round numbers.
  *
- * @deprecated 5.0.3
+ * @deprecated
  * @function Highcharts.normalizeTickInterval
  *
  * @param {number} interval
@@ -965,7 +957,7 @@ export function merge(extendOrSource, ...sources) {
 export function normalizeTickInterval(interval, multiples, magnitude, allowDecimals, hasTickAmount) {
     let i, retInterval = interval;
     // Round to a tenfold of 1, 2, 2.5 or 5
-    magnitude = (magnitude ?? getMagnitude(interval));
+    magnitude = pick(magnitude, getMagnitude(interval));
     const normalized = interval / magnitude;
     // Multiples for a linear scale
     if (!multiples) {
@@ -1078,22 +1070,20 @@ export function pad(number, length, padder) {
             .replace('-', '')
             .length).join(padder || '0') + number;
 }
-/* eslint-disable valid-jsdoc */
+/* eslint-disable jsdoc/check-param-names */
 /**
  * Return the first value that is not null or undefined.
  *
- * @deprecated 13.0.2
- * Use nullish coalescing (`??`) or explicit fallback logic instead.
- *
  * @function Highcharts.pick<T>
  *
- * @param {...(T|null|undefined)} args
+ * @param {...Array<T|null|undefined>} items
  *        Variable number of arguments to inspect.
  *
  * @return {T}
  *         The value of the first argument that is not null or undefined.
  */
-export function pick(...args) {
+export function pick() {
+    const args = arguments;
     const length = args.length;
     for (let i = 0; i < length; i++) {
         const arg = args[i];
@@ -1102,7 +1092,7 @@ export function pick(...args) {
         }
     }
 }
-/* eslint-enable valid-jsdoc */
+/* eslint-enable jsdoc/check-param-names */
 /**
  * Shortcut for parseInt
  *

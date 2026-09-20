@@ -1,13 +1,13 @@
-/* *
+// SPDX-License-Identifier: LicenseRef-Highcharts
+/**
  *
  *  Events generator for Stock tools
  *
  *  (c) 2009-2026 Highsoft AS
  *  Author: Paweł Fus
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
@@ -18,13 +18,15 @@ import StockToolsBindings from './StockToolsBindings.js';
 import StockToolsDefaults from './StockToolsDefaults.js';
 import STU from './StockToolsUtilities.js';
 const { isNotNavigatorYAxis, isPriceIndicatorEnabled } = STU;
-import { correctFloat, defined, isNumber } from '../../Shared/Utilities.js';
+import { correctFloat, defined, isNumber, pick } from '../../Shared/Utilities.js';
 /* *
  *
  *  Functions
  *
  * */
-/** @internal */
+/**
+ * @private
+ */
 function compose(NavigationBindingsClass) {
     const navigationProto = NavigationBindingsClass.prototype;
     if (!navigationProto.utils?.manageIndicators) {
@@ -52,7 +54,7 @@ function compose(NavigationBindingsClass) {
  * Get current positions for all yAxes. If new axis does not have position,
  * returned is default height and last available top place.
  *
- * @internal
+ * @private
  * @function Highcharts.NavigationBindings#getYAxisPositions
  *
  * @param {Array<Highcharts.Axis>} yAxes
@@ -74,7 +76,7 @@ function compose(NavigationBindingsClass) {
  */
 function navigationGetYAxisPositions(yAxes, plotHeight, defaultHeight, removedYAxisProps) {
     let allAxesHeight = 0, previousAxisHeight, removedHeight, removedTop;
-    /** @internal */
+    /** @private */
     function isPercentage(prop) {
         return defined(prop) && !isNumber(prop) && prop.match('%');
     }
@@ -84,9 +86,9 @@ function navigationGetYAxisPositions(yAxes, plotHeight, defaultHeight, removedYA
     }
     const positions = yAxes.map((yAxis, index) => {
         let height = correctFloat(isPercentage(yAxis.options.height) ?
-            parseFloat(String(yAxis.options.height)) / 100 :
+            parseFloat(yAxis.options.height) / 100 :
             yAxis.height / plotHeight), top = correctFloat(isPercentage(yAxis.options.top) ?
-            parseFloat(String(yAxis.options.top)) / 100 :
+            parseFloat(yAxis.options.top) / 100 :
             (yAxis.top - yAxis.chart.plotTop) / plotHeight);
         if (!removedHeight) {
             // New axis' height is NaN so we can check if
@@ -124,7 +126,7 @@ function navigationGetYAxisPositions(yAxes, plotHeight, defaultHeight, removedYA
  * axes in the navigator. Because indicator can be removed with it's yAxis
  * in the middle of yAxis array, we need to bind closest yAxes back.
  *
- * @internal
+ * @private
  * @function Highcharts.NavigationBindings#getYAxisResizers
  *
  * @param {Array<Highcharts.Axis>} yAxes
@@ -144,7 +146,7 @@ function navigationGetYAxisResizers(yAxes) {
                 enabled: true,
                 controlledAxis: {
                     next: [
-                        (nextYAxis.options.id ?? nextYAxis.index)
+                        pick(nextYAxis.options.id, nextYAxis.index)
                     ]
                 }
             };
@@ -162,7 +164,7 @@ function navigationGetYAxisResizers(yAxes) {
  * Utility to modify calculated positions according to the remaining/needed
  * space. Later, these positions are used in `yAxis.update({ top, height })`
  *
- * @internal
+ * @private
  * @function Highcharts.NavigationBindings#recalculateYAxisPositions
  * @param {Array<Highcharts.Dictionary<number>>} positions
  * Default positions of all yAxes.
@@ -196,7 +198,7 @@ function navigationRecalculateYAxisPositions(positions, changedSpace, modifyHeig
  * If axis is removed, the current plot area stretches to fit into 100%
  * of the plot area.
  *
- * @internal
+ * @private
  */
 function navigationResizeYAxes(removedYAxisProps) {
     // The height of the new axis before rescaling. In %, but as a number.
@@ -236,9 +238,7 @@ function navigationResizeYAxes(removedYAxisProps) {
  *  Default Export
  *
  * */
-/** @internal */
 const StockTools = {
     compose
 };
-/** @internal */
 export default StockTools;

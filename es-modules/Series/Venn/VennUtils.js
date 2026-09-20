@@ -9,9 +9,8 @@
  *  Layout algorithm by Ben Frederickson:
  *  https://www.benfrederickson.com/better-venn-diagrams/
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
@@ -549,17 +548,12 @@ function nelderMead(fn, initial) {
  * the data or has (value < 1). Adds missing relations between sets in the
  * data as value = 0.
  * @private
- * @param {DataTableCore} dataTable The raw input data.
+ * @param {Array<object>} data The raw input data.
  * @return {Array<object>} Returns an array of valid venn data.
  */
-function processVennData(dataTable, splitter) {
-    const rows = dataTable?.columns ?
-        new Array(dataTable.rowCount)
-            .fill(void 0)
-            .map((_, i) => dataTable
-            .getRowObject(i)) :
-        [];
-    const validSets = rows
+function processVennData(data, splitter) {
+    const d = isArray(data) ? data : [];
+    const validSets = d
         .reduce(function (arr, x) {
         // Check if x is a valid set, and that it is not an duplicate.
         if (x.sets && isValidSet(x) && arr.indexOf(x.sets[0]) === -1) {
@@ -568,7 +562,7 @@ function processVennData(dataTable, splitter) {
         return arr;
     }, [])
         .sort();
-    const mapOfIdToRelation = rows.reduce(function (mapOfIdToRelation, relation) {
+    const mapOfIdToRelation = d.reduce(function (mapOfIdToRelation, relation) {
         if (relation.sets &&
             isValidRelation(relation) &&
             !relation.sets.some(function (set) {

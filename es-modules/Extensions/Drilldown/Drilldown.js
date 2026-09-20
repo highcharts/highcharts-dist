@@ -4,14 +4,14 @@
  *
  *  Author: Torstein Hønsi
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
 'use strict';
-import { animObject, stop } from '../../Core/Animation/AnimationUtilities.js';
+import A from '../../Core/Animation/AnimationUtilities.js';
+const { animObject } = A;
 import Breadcrumbs from '../Breadcrumbs/Breadcrumbs.js';
 import H from '../../Core/Globals.js';
 const { noop } = H;
@@ -223,13 +223,12 @@ class ChartAdditions {
         const chart = (this.chart ||
             this), oldSeries = point.series, xAxis = oldSeries.xAxis, yAxis = oldSeries.yAxis, horizAxis = xAxis && chart.inverted ? yAxis : xAxis, vertAxis = xAxis && chart.inverted ? xAxis : yAxis, colorProp = chart.styledMode ?
             { colorIndex: point.colorIndex ?? oldSeries.colorIndex } :
-            { color: point.color || oldSeries.color }, levelNumber = oldSeries.options._levelNumber ?? 0;
+            { color: point.color || oldSeries.color }, levelNumber = oldSeries.options._levelNumber || 0;
         if (!chart.drilldownLevels) {
             chart.drilldownLevels = [];
         }
         ddOptions = extend(extend({
-            _ddSeriesId: ddSeriesId++,
-            _levelNumber: levelNumber + 1
+            _ddSeriesId: ddSeriesId++
         }, colorProp), ddOptions);
         let levelSeries = [], levelSeriesOptions = [], last;
         // See if we can reuse the registered series from last run
@@ -239,11 +238,12 @@ class ChartAdditions {
         }
         // Record options for all current series
         oldSeries.chart.series.forEach((series) => {
-            var _a, _b;
             if (series.xAxis === xAxis) {
-                (_a = series.options)._ddSeriesId || (_a._ddSeriesId = ddSeriesId++);
+                series.options._ddSeriesId =
+                    series.options._ddSeriesId || ddSeriesId++;
                 series.options.colorIndex = series.colorIndex;
-                (_b = series.options)._levelNumber ?? (_b._levelNumber = levelNumber); // #3182
+                series.options._levelNumber =
+                    series.options._levelNumber || levelNumber; // #3182
                 if (last) {
                     levelSeries = last.levelSeries;
                     levelSeriesOptions = last.levelSeriesOptions;
@@ -256,8 +256,6 @@ class ChartAdditions {
                         _levelNumber: series.options._levelNumber,
                         selected: series.options.selected
                     }, series.userOptions);
-                    const columns = series.dataTable.getColumns();
-                    series.purgedOptions.dataTable = { columns };
                     levelSeriesOptions.push(series.purgedOptions);
                 }
             }
@@ -328,56 +326,27 @@ class ChartAdditions {
                 }
                 if (level.levelNumber === levelToRemove) {
                     level.levelSeries.forEach((series) => {
-                        const levelNumber = series.options?._levelNumber;
                         // Not removed, not added as part of a multi-series
                         // drilldown
                         if (!chart.mapView) {
                             if (series.options &&
-                                levelNumber === levelToRemove) {
+                                series.options._levelNumber === levelToRemove) {
                                 series.remove(false);
                             }
                             // Deal with asynchronous removing of map series
                             // after zooming into
                         }
                         else if (series.options &&
-                            levelNumber === levelToRemove) {
+                            series.options._levelNumber === levelToRemove &&
+                            series.group) {
                             let animOptions = {};
                             if (drilldownOptions) {
                                 animOptions = drilldownOptions.animation;
                             }
-                            const drillAnimOptions = animObject(animOptions);
-                            const hideDataLabels = () => {
-                                const hideGroup = (group) => {
-                                    const element = group?.element;
-                                    if (group && element) {
-                                        stop(group);
-                                        element.setAttribute('opacity', '0');
-                                        element.setAttribute('visibility', 'hidden');
-                                    }
-                                };
-                                hideGroup(series.dataLabelsGroup);
-                                series.dataLabelsGroups?.forEach(hideGroup);
-                            };
-                            let seriesRemoved = false;
-                            const removeSeries = () => {
-                                if (seriesRemoved) {
-                                    return;
-                                }
-                                seriesRemoved = true;
-                                if (series.chart) {
-                                    if (series.group) {
-                                        stop(series.group);
-                                    }
-                                    if (series.dataLabelsGroup) {
-                                        stop(series.dataLabelsGroup);
-                                    }
-                                    series.dataLabelsGroups?.forEach((group) => {
-                                        if (group) {
-                                            stop(group);
-                                        }
-                                    });
-                                    series.remove(false);
-                                }
+                            series.group.animate({
+                                opacity: 0
+                            }, animOptions, () => {
+                                series.remove(false);
                                 // If it is the last series
                                 if (!(level.levelSeries.filter((el) => Object.keys(el).length)).length) {
                                     // We have a reset zoom button. Hide it and
@@ -401,22 +370,7 @@ class ChartAdditions {
                                     }
                                     fireEvent(chart, 'afterApplyDrilldown');
                                 }
-                            };
-                            if (series.group?.element) {
-                                // Hide labels immediately to avoid stale
-                                // labels flashing during map transform.
-                                hideDataLabels();
-                                series.group.animate({
-                                    opacity: 0
-                                }, animOptions, removeSeries);
-                                // If another redraw interrupts the animation,
-                                // ensure the old series is still removed.
-                                syncTimeout(removeSeries, drillAnimOptions.defer +
-                                    drillAnimOptions.duration);
-                            }
-                            else {
-                                removeSeries();
-                            }
+                            });
                         }
                     });
                 }
@@ -435,8 +389,8 @@ class ChartAdditions {
             // (#19725)
             if (!chart.hasCartesianSeries) {
                 chart.axes.forEach((axis) => {
-                    axis.visible = false;
-                    axis.redraw();
+                    axis.destroy(true);
+                    axis.init(chart, merge(axis.userOptions, axis.options));
                 });
             }
             chart.redraw(drilldownOptions?.animation);
@@ -556,13 +510,8 @@ class ChartAdditions {
                 // Reset the zoom level of the upper series
                 if (newSeries?.xAxis) {
                     oldExtremes = level.oldExtremes;
-                    const { xAxis, yAxis } = newSeries;
-                    xAxis.setExtremes(oldExtremes.xMin, oldExtremes.xMax, false);
-                    yAxis.setExtremes(oldExtremes.yMin, oldExtremes.yMax, false);
-                    // Reset visibility after `applyDrilldown` may have set it
-                    // to false
-                    xAxis.visible = xAxis.options.visible;
-                    yAxis.visible = yAxis.options.visible;
+                    newSeries.xAxis.setExtremes(oldExtremes.xMin, oldExtremes.xMax, false);
+                    newSeries.yAxis.setExtremes(oldExtremes.yMin, oldExtremes.yMax, false);
                 }
                 // We have a resetZoomButton tucked away for this level. Attach
                 // it to the chart and show it.
@@ -725,7 +674,6 @@ var Drilldown;
             addEvent(DrilldownChart, 'drillupall', onChartDrillupall);
             addEvent(DrilldownChart, 'render', onChartRender);
             addEvent(DrilldownChart, 'update', onChartUpdate);
-            addEvent(SeriesClass, 'update', onSeriesUpdate);
             highchartsDefaultOptions.drilldown = DrilldownDefaults;
             elementProto.fadeIn = svgElementFadeIn;
             tickProto.drillable = tickDrillable;
@@ -786,12 +734,12 @@ var Drilldown;
             const ddPoints = {};
             axis.ddPoints = ddPoints;
             axis.series.forEach((series) => {
-                const xData = series.getColumn('x'), points = series.points;
+                const xData = series.getColumn('x'), points = series.points, data = series.options.data || [];
                 for (let i = 0, iEnd = xData.length, p; i < iEnd; i++) {
-                    p = series.dataTable.getRowObject(i);
+                    p = data[i];
                     // The `drilldown` property can only be set on an array or an
                     // object
-                    if (defined(p) && typeof p !== 'number') {
+                    if (typeof p !== 'number') {
                         // Convert array to object (#8008)
                         p = series.pointClass.prototype.optionsToObject
                             .call({ series }, p);
@@ -817,15 +765,6 @@ var Drilldown;
         const breadcrumbs = this.breadcrumbs, breadcrumbOptions = e.options.drilldown && e.options.drilldown.breadcrumbs;
         if (breadcrumbs && breadcrumbOptions) {
             breadcrumbs.update(breadcrumbOptions);
-        }
-    }
-    /** @internal */
-    function onSeriesUpdate(e) {
-        const updateOptions = e.options;
-        if (updateOptions &&
-            updateOptions._levelNumber === void 0 &&
-            this.options._levelNumber !== void 0) {
-            updateOptions._levelNumber = this.options._levelNumber;
         }
     }
     /**

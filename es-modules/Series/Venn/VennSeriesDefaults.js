@@ -9,9 +9,8 @@
  *  Layout algorithm by Ben Frederickson:
  *  https://www.benfrederickson.com/better-venn-diagrams/
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
@@ -48,7 +47,7 @@
  * @optionparent plotOptions.venn
  */
 const VennSeriesDefaults = {
-    borderColor: 'var(--highcharts-neutral-color-20)',
+    borderColor: "#cccccc" /* Palette.neutralColor20 */,
     borderDashStyle: 'solid',
     borderWidth: 1,
     brighten: 0,
@@ -86,20 +85,14 @@ const VennSeriesDefaults = {
          */
         hover: {
             opacity: 1,
-            borderColor: 'var(--highcharts-neutral-color-80)'
+            borderColor: "#333333" /* Palette.neutralColor80 */
         },
         /**
          * @excluding halo
          */
         select: {
-            /**
-             * @type {Highcharts.ColorType}
-             */
-            color: 'var(--highcharts-neutral-color-20)',
-            /**
-             * @type {Highcharts.ColorType}
-             */
-            borderColor: 'var(--highcharts-neutral-color-100)',
+            color: "#cccccc" /* Palette.neutralColor20 */,
+            borderColor: "#000000" /* Palette.neutralColor100 */,
             animation: false
         },
         inactive: {
@@ -116,7 +109,7 @@ const VennSeriesDefaults = {
  * not specified, it is inherited from [chart.type](#chart.type).
  *
  * @extends   series,plotOptions.venn
- * @excluding connectEnds, connectNulls, cropThreshold,
+ * @excluding connectEnds, connectNulls, cropThreshold, dataParser, dataURL,
  *            findNearestPointBy, getExtremesFromAll, label, linecap, lineWidth,
  *            linkedTo, marker, negativeColor, pointInterval, pointIntervalUnit,
  *            pointPlacement, pointStart, softThreshold, stack, stacking, steps,
@@ -127,7 +120,6 @@ const VennSeriesDefaults = {
  * @apioption series.venn
  */
 /**
- * @basic
  * @type      {Array<*>}
  * @extends   series.scatter.data
  * @excluding marker, x, y

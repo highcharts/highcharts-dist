@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.0 (2026-09-18)
+ * @license Highcharts JS v12.6.1 (2026-09-20)
  * @module highcharts/modules/arrow-symbols
  * @requires highcharts
  *
@@ -9,12 +9,12 @@
  * (c) 2017-2026 Highsoft AS
  * Author: Lars A. V. Cabrera
  *
- * A commercial license may be required depending on use,
- * see www.highcharts.com/license
+ * A commercial license may be required depending on use.
+ * See www.highcharts.com/license
  */
 'use strict';
 import Highcharts from '../../Core/Globals.js';
-import { composeArrowSymbols } from '../../Extensions/ArrowSymbols.js';
+import ArrowSymbols from '../../Extensions/ArrowSymbols.js';
 const G = Highcharts;
-composeArrowSymbols(G.SVGRenderer);
+ArrowSymbols.compose(G.SVGRenderer);
 export default Highcharts;

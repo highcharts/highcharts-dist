@@ -6,9 +6,8 @@
  *
  *  Author: Wojciech Chmiel
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
@@ -218,20 +217,20 @@ const cluster = {
     },
     /**
      * Options for the cluster marker.
-     *
      * @type      {Highcharts.PointMarkerOptionsObject}
      * @extends   plotOptions.series.marker
      * @excluding enabledThreshold, states
      * @requires  modules/marker-clusters
      */
     marker: {
+        /** @internal */
         symbol: 'cluster',
+        /** @internal */
         radius: 15,
+        /** @internal */
         lineWidth: 0,
-        /**
-         * @type {Highcharts.ColorType}
-         */
-        lineColor: 'var(--highcharts-background-color)'
+        /** @internal */
+        lineColor: "#ffffff" /* Palette.backgroundColor */
     },
     /**
      * Fires when the cluster point is clicked and `drillToCluster` is enabled.
@@ -309,19 +308,23 @@ const cluster = {
      */
     /**
      * Options for the cluster data labels.
-     *
-     * @type     {Highcharts.DataLabelsOptions}
-     * @extends  plotOptions.line.dataLabels
+     * @type    {Highcharts.DataLabelsOptions}
      * @requires modules/marker-clusters
      */
     dataLabels: {
+        /** @internal */
         enabled: true,
+        /** @internal */
         format: '{point.clusterPointsAmount}',
+        /** @internal */
         verticalAlign: 'middle',
+        /** @internal */
         align: 'center',
+        /** @internal */
         style: {
             color: 'contrast'
         },
+        /** @internal */
         inside: true
     }
 };

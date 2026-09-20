@@ -3,17 +3,17 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
 'use strict';
-import { getDeferredAnimation } from '../Animation/AnimationUtilities.js';
+import A from '../Animation/AnimationUtilities.js';
+const { getDeferredAnimation } = A;
 import F from '../Templating.js';
 const { format } = F;
-import { defined, extend, fireEvent, getAlignFactor, isArray, isNumber, isString, merge, objectEach, pInt, splat } from '../../Shared/Utilities.js';
+import { defined, extend, fireEvent, getAlignFactor, isArray, isString, merge, objectEach, pick, pInt, splat } from '../../Shared/Utilities.js';
 /* *
  *
  *  Composition
@@ -46,27 +46,31 @@ var DataLabel;
      * @internal
      */
     function alignDataLabel(point, dataLabel, options, alignTo, isNew) {
-        const series = this, { chart } = this, inverted = this.isCartesian && chart.inverted, { condemned, origin, plotX, plotY } = point, { crop = true, distance, overflow = 'justify', rotation = 0 } = options, alignFactor = getAlignFactor(options.align), verticalAlignFactor = getAlignFactor(options.verticalAlign), justify = rotation === 0 && !condemned && overflow === 'justify', pos = point.pos(), isInsidePlot = defined(plotX) &&
+        const series = this, { chart, enabledDataSorting } = this, inverted = this.isCartesian && chart.inverted, plotX = point.plotX, plotY = point.plotY, rotation = options.rotation || 0, isInsidePlot = defined(plotX) &&
             defined(plotY) &&
             chart.isInsidePlot(plotX, Math.round(plotY), {
                 inverted,
                 paneCoordinates: true,
                 series
-            });
+            }), setStartPos = (alignOptions) => {
+            if (enabledDataSorting && series.xAxis && !justify) {
+                series.setDataLabelStartPos(point, dataLabel, isNew, isInsidePlot, alignOptions);
+            }
+        }, justify = rotation === 0 ? pick(options.overflow, (enabledDataSorting ? 'none' : 'justify')) === 'justify' : false;
         // Math.round for rounding errors (#2683), alignTo to allow column
         // labels (#2700)
         let visible = this.visible &&
-            point.visible &&
+            point.visible !== false &&
             defined(plotX) &&
-            (series.forceDL ||
-                condemned || // Allow it to fade out
+            (point.series.forceDL ||
+                (enabledDataSorting && !justify) ||
                 isInsidePlot ||
                 (
                 // If the data label is inside the align box, it is enough
                 // that parts of the align box is inside the plot area
                 // (#12370). When stacking, it is always inside regardless
                 // of the option (#15148).
-                (options.inside ?? !!this.options.stacking) &&
+                pick(options.inside, !!this.options.stacking) &&
                     alignTo &&
                     chart.isInsidePlot(plotX, inverted ?
                         alignTo.x + 1 :
@@ -75,7 +79,8 @@ var DataLabel;
                         paneCoordinates: true,
                         series
                     })));
-        if (pos) {
+        const pos = point.pos();
+        if (visible && pos) {
             const bBox = dataLabel.getBBox(), unrotatedbBox = dataLabel.getBBox(void 0, 0);
             // The alignment box is a singular point
             alignTo = extend({
@@ -94,68 +99,26 @@ var DataLabel;
                 width: bBox.width,
                 height: bBox.height
             });
-            // Apply the distance
-            let distX = 0, distY = 0;
-            if (isNumber(distance) && !options.inside) {
-                distX = distance * (1 - 2 * alignFactor);
-                distY = distance * (1 - 2 * verticalAlignFactor);
-            }
+            setStartPos(alignTo); // Data sorting
             // Align the label to the adjusted box with for unrotated bBox due
             // to rotationOrigin, which is based on unrotated label
             dataLabel.align(merge(options, {
-                x: (options.x || 0) + distX,
-                y: (options.y || 0) + distY,
                 width: unrotatedbBox.width,
                 height: unrotatedbBox.height
             }), false, alignTo, false);
-            // Record for later use in justifyDataLabel
-            dataLabel.distX = distX;
-            dataLabel.distY = distY;
-            // Modify for rotation
-            dataLabel.alignAttr.x += alignFactor *
+            dataLabel.alignAttr.x += getAlignFactor(options.align) *
                 (unrotatedbBox.width - bBox.width);
-            dataLabel.alignAttr.y += verticalAlignFactor *
+            dataLabel.alignAttr.y += getAlignFactor(options.verticalAlign) *
                 (unrotatedbBox.height - bBox.height);
-            // The placement attributes before justifyDataLabel correction
-            const x = dataLabel.alignAttr.x +
-                (bBox.width - unrotatedbBox.width) / 2, y = dataLabel.alignAttr.y +
-                (bBox.height - unrotatedbBox.height) / 2;
-            // Handle the data label position for entrance animation. Simply
-            // offset the computed position by the difference between current
-            // position and the origin.
-            if (origin) {
-                const originPos = point.pos(false, origin.x, origin.y);
-                if (originPos) {
-                    const offset = [
-                        originPos[0] - pos[0],
-                        originPos[1] - pos[1]
-                    ];
-                    if (series.is('column') || point.plotHigh) {
-                        offset[inverted ? 0 : 1] = 0;
-                    }
-                    dataLabel.attr({
-                        x: x + offset[0],
-                        y: y + offset[1],
-                        // Start at non-zero to avoid overlapping logic treating
-                        // it as hidden
-                        opacity: 0.01
-                    });
-                    dataLabel.placed = true;
-                    isNew = false;
-                }
-            }
-            // Set the position before potential justification
-            const placeAttribs = {
+            dataLabel[dataLabel.placed ? 'animate' : 'attr']({
                 'text-align': dataLabel.alignAttr['text-align'] || 'center',
-                x,
-                y,
+                x: dataLabel.alignAttr.x +
+                    (bBox.width - unrotatedbBox.width) / 2,
+                y: dataLabel.alignAttr.y +
+                    (bBox.height - unrotatedbBox.height) / 2,
                 rotationOriginX: (dataLabel.width || 0) / 2,
                 rotationOriginY: (dataLabel.height || 0) / 2
-            };
-            if (condemned || !visible) {
-                placeAttribs.opacity = 0;
-            }
-            dataLabel[dataLabel.placed ? 'animate' : 'attr'](placeAttribs);
+            });
             // Uncomment this block to visualize the bounding boxes used for
             // determining visibility
             // chart.renderer.rect(
@@ -169,17 +132,17 @@ var DataLabel;
             //     zIndex: 20
             // }).add();
             // chart.renderer.circle(
-            //     chart.plotLeft + (dataLabel.alignAttr.x ?? 0),
-            //     chart.plotTop + (dataLabel.alignAttr.y ?? 0),
+            //     chart.plotLeft + pick(dataLabel.alignAttr.x, 0),
+            //     chart.plotTop + pick(dataLabel.alignAttr.y, 0),
             //     2
             // ).attr({
             //     fill: 'red',
             //     zIndex: 20
             // }).add();
-            if (justify && visible && alignTo.height >= 0) { // #8830
+            if (justify && alignTo.height >= 0) { // #8830
                 this.justifyDataLabel(dataLabel, options, dataLabel.alignAttr, bBox, alignTo, isNew);
             }
-            else if (crop && !condemned) {
+            else if (pick(options.crop, true)) {
                 const { x, y } = dataLabel.alignAttr, correction = 1;
                 // Check if the dataLabel should be visible.
                 visible =
@@ -201,11 +164,19 @@ var DataLabel;
                 });
             }
         }
+        // To use alignAttr property in hideOverlappingLabels
+        if (isNew && enabledDataSorting) {
+            dataLabel.placed = false;
+        }
         // Show or hide based on the final aligned position
-        dataLabel[isNew ? 'attr' : 'animate']({
-            visibility: visible ? 'inherit' : 'hidden'
-        });
-        dataLabel.placed = visible;
+        if (!visible && (!enabledDataSorting || justify)) {
+            dataLabel.hide();
+            dataLabel.placed = false; // Don't animate back in
+        }
+        else {
+            dataLabel.show();
+            dataLabel.placed = true; // Flag for overlapping logic
+        }
     }
     /**
      * Handle the dataLabels.filter option.
@@ -249,6 +220,7 @@ var DataLabel;
             seriesProto.drawDataLabels = drawDataLabels;
             seriesProto.justifyDataLabel = justifyDataLabel;
             seriesProto.mergeArrays = mergeArrays;
+            seriesProto.setDataLabelStartPos = setDataLabelStartPos;
             seriesProto.hasDataLabels = hasDataLabels;
         }
     }
@@ -270,7 +242,7 @@ var DataLabel;
     function initDataLabelsGroup(index, dataLabelsOptions) {
         fireEvent(this, 'initDataLabelsGroup', {
             index,
-            zIndex: dataLabelsOptions?.zIndex
+            zIndex: dataLabelsOptions?.zIndex ?? 6
         });
         // Existing group or first time
         this.dataLabelsGroup = this.dataLabelsGroups?.[index];
@@ -324,7 +296,8 @@ var DataLabel;
         points = points || this.points;
         const series = this, chart = series.chart, seriesOptions = series.options, renderer = chart.renderer, { backgroundColor, plotBackgroundColor } = chart.options.chart, contrastColor = renderer.getContrast((isString(plotBackgroundColor) && plotBackgroundColor) ||
             (isString(backgroundColor) && backgroundColor) ||
-            'var(--highcharts-background-color)'), groupByIndex = [], seriesDlOptions = mergedDataLabelOptions(series);
+            "#000000" /* Palette.neutralColor100 */), seriesDlOptions = mergedDataLabelOptions(series);
+        let pointOptions, dataLabelsGroup;
         // Resolve the animation
         const { animation, defer } = seriesDlOptions[0], animationConfig = defer ?
             getDeferredAnimation(chart, animation, series) :
@@ -332,28 +305,31 @@ var DataLabel;
         fireEvent(this, 'drawDataLabels');
         if (series.hasDataLabels?.()) {
             // Make the labels for each point
-            points.concat(series.condemnedPoints).forEach((point) => {
-                const dataLabels = point.dataLabels || [], pointColor = point.color || series.color, 
+            points.forEach((point) => {
+                const dataLabels = point.dataLabels || [], pointColor = point.color || series.color;
                 // Merge in series options for the point.
-                // @note
-                // dataLabelAttribs (like pointAttribs) would eradicate the
-                // need for dlOptions, and simplify the section below.
+                // @note dataLabelAttribs (like pointAttribs) would eradicate
+                // the need for dlOptions, and simplify the section below.
                 pointOptions = splat(mergeArrays(seriesDlOptions, 
                 // The dlOptions prop is used in treemap
                 point.dlOptions || point.options?.dataLabels));
                 // Handle each individual data label for this point
                 pointOptions.forEach((labelOptions, i) => {
+                    // Create dataLabelsGroup for each data labels config
+                    // (can be multiple)
+                    dataLabelsGroup =
+                        this.initDataLabels(i, animationConfig, labelOptions);
                     // Options for one dataLabel
                     const labelEnabled = (labelOptions.enabled &&
                         (point.visible || point.dataLabelOnHidden) &&
                         // #2282, #4641, #7112, #10049
                         (!point.isNull || point.dataLabelOnNull) &&
-                        applyFilter(point, labelOptions)), { backgroundColor, borderColor, distance, style = {} } = labelOptions, padding = splat(labelOptions.padding || 0);
+                        applyFilter(point, labelOptions)), { backgroundColor, borderColor, distance, style = {} } = labelOptions;
                     let formatString, labelText, rotation, attr = {}, dataLabel = dataLabels[i], isNew = !dataLabel, labelBgColor;
                     if (labelEnabled) {
                         // Create individual options structure that can be
                         // extended without affecting others
-                        formatString = (labelOptions[point.formatPrefix + 'Format'] ?? labelOptions.format);
+                        formatString = pick(labelOptions[point.formatPrefix + 'Format'], labelOptions.format);
                         labelText = defined(formatString) ?
                             format(formatString, point, chart) :
                             (labelOptions[point.formatPrefix + 'Formatter'] ||
@@ -361,22 +337,19 @@ var DataLabel;
                         rotation = labelOptions.rotation;
                         if (!chart.styledMode) {
                             // Determine the color
-                            style.color = (isString(labelOptions.color) ?
-                                labelOptions.color :
-                                void 0) ?? style.color ?? (isString(series.color) ? series.color : void 0) ?? 'var(--highcharts-neutral-color-100)';
+                            style.color = pick(labelOptions.color, style.color, isString(series.color) ? series.color : void 0, "#000000" /* Palette.neutralColor100 */);
                             // Get automated contrast color
                             if (style.color === 'contrast') {
                                 if (backgroundColor !== 'none') {
                                     labelBgColor = backgroundColor;
                                 }
                                 point.contrastColor = renderer.getContrast((labelBgColor !== 'auto' &&
-                                    labelBgColor !== 'contrast' &&
                                     isString(labelBgColor) &&
                                     labelBgColor) ||
                                     (isString(pointColor) ? pointColor : ''));
-                                style.color = ((labelBgColor &&
-                                    labelBgColor !== 'contrast') || // #20007
-                                    labelOptions.inside ||
+                                style.color = (labelBgColor || // #20007
+                                    (!defined(distance) &&
+                                        labelOptions.inside) ||
                                     pInt(distance || 0) < 0 ||
                                     seriesOptions.stacking) ?
                                     point.contrastColor :
@@ -390,11 +363,9 @@ var DataLabel;
                             }
                         }
                         attr = {
-                            r: labelOptions.borderRadius ?? 3,
+                            r: labelOptions.borderRadius || 0,
                             rotation,
-                            padding: padding[0],
-                            paddingLeft: padding[3 % padding.length],
-                            paddingRight: padding[1 % padding.length],
+                            padding: labelOptions.padding,
                             zIndex: 1
                         };
                         if (!chart.styledMode) {
@@ -474,9 +445,6 @@ var DataLabel;
                                 });
                             }
                             fireEvent(dataLabel, 'beforeAddingDataLabel', { labelOptions, point });
-                            // On the first occurrence, create a dataLabelsGroup
-                            // for each data labels config (#24626)
-                            const dataLabelsGroup = groupByIndex[i] = (groupByIndex[i] || this.initDataLabels(i, animationConfig, labelOptions));
                             if (!dataLabel.added) {
                                 dataLabel.add(dataLabelsGroup);
                             }
@@ -517,71 +485,65 @@ var DataLabel;
      * @internal
      */
     function justifyDataLabel(dataLabel, options, alignAttr, bBox, alignTo, isNew) {
-        const chart = this.chart, { align, verticalAlign } = options, { distX = 0, distY = 0 } = dataLabel, padding = dataLabel.box ? 0 : (dataLabel.padding || 0), horizontalAxis = chart.inverted ? this.yAxis : this.xAxis, horizontalAxisShift = horizontalAxis ?
+        const chart = this.chart, align = options.align, verticalAlign = options.verticalAlign, padding = dataLabel.box ? 0 : (dataLabel.padding || 0), horizontalAxis = chart.inverted ? this.yAxis : this.xAxis, horizontalAxisShift = horizontalAxis ?
             horizontalAxis.left - chart.plotLeft : 0, verticalAxis = chart.inverted ? this.xAxis : this.yAxis, verticalAxisShift = verticalAxis ?
             verticalAxis.top - chart.plotTop : 0;
-        let { x = 0, y = 0 } = options, off, justifiedX, justifiedY;
+        let { x = 0, y = 0 } = options, off, justified;
         // Off left
-        off = (alignAttr.x || 0) - distX + padding + horizontalAxisShift;
+        off = (alignAttr.x || 0) + padding + horizontalAxisShift;
         if (off < 0) {
             if (align === 'right' && x >= 0) {
                 options.align = 'left';
                 options.inside = true;
-                x -= distX;
             }
             else {
                 x -= off;
             }
-            justifiedX = true;
+            justified = true;
         }
         // Off right
-        off = (alignAttr.x || 0) + bBox.width - distX - padding +
-            horizontalAxisShift;
+        off = (alignAttr.x || 0) + bBox.width - padding + horizontalAxisShift;
         if (off > chart.plotWidth) {
             if (align === 'left' && x <= 0) {
                 options.align = 'right';
                 options.inside = true;
-                x -= distX;
             }
             else {
                 x += chart.plotWidth - off;
             }
-            justifiedX = true;
+            justified = true;
         }
         // Off top
-        off = (alignAttr.y || 0) - distY + padding + verticalAxisShift;
+        off = alignAttr.y + padding + verticalAxisShift;
         if (off < 0) {
             if (verticalAlign === 'bottom' && y >= 0) {
                 options.verticalAlign = 'top';
                 options.inside = true;
-                y -= distY;
             }
             else {
                 y -= off;
             }
-            justifiedY = true;
+            justified = true;
         }
         // Off bottom
-        off = (alignAttr.y || 0) + bBox.height - distY - padding +
-            verticalAxisShift;
+        off = (alignAttr.y || 0) + bBox.height - padding + verticalAxisShift;
         if (off > chart.plotHeight) {
             if (verticalAlign === 'top' && y <= 0) {
                 options.verticalAlign = 'bottom';
                 options.inside = true;
-                y -= distY;
             }
             else {
                 y += chart.plotHeight - off;
             }
-            justifiedY = true;
+            justified = true;
         }
-        if (justifiedX || justifiedY) {
-            options.x = justifiedX ? x : x + distX;
-            options.y = justifiedY ? y : y + distY;
+        if (justified) {
+            options.x = x;
+            options.y = y;
             dataLabel.placed = !isNew;
             dataLabel.align(options, void 0, alignTo);
         }
-        return justifiedX || justifiedY;
+        return justified;
     }
     /**
      * Merge two objects that can be arrays. If one of them is an array, the
@@ -619,6 +581,44 @@ var DataLabel;
     function mergedDataLabelOptions(series) {
         const plotOptions = series.chart.options.plotOptions;
         return splat(mergeArrays(mergeArrays(plotOptions?.series?.dataLabels, plotOptions?.[series.type]?.dataLabels), series.options.dataLabels));
+    }
+    /**
+     * Set starting position for data label sorting animation.
+     * @internal
+     */
+    function setDataLabelStartPos(point, dataLabel, isNew, isInside, alignOptions) {
+        const chart = this.chart, inverted = chart.inverted, xAxis = this.xAxis, reversed = xAxis.reversed, labelCenter = ((inverted ? dataLabel.height : dataLabel.width) || 0) / 2, pointWidth = point.pointWidth, halfWidth = pointWidth ? pointWidth / 2 : 0;
+        dataLabel.startXPos = inverted ?
+            alignOptions.x :
+            (reversed ?
+                -labelCenter - halfWidth :
+                xAxis.width - labelCenter + halfWidth);
+        dataLabel.startYPos = inverted ?
+            (reversed ?
+                this.yAxis.height - labelCenter + halfWidth :
+                -labelCenter - halfWidth) : alignOptions.y;
+        // We need to handle visibility in case of sorting point outside plot
+        // area
+        if (!isInside) {
+            dataLabel
+                .attr({ opacity: 1 })
+                .animate({ opacity: 0 }, void 0, dataLabel.hide);
+        }
+        else if (dataLabel.visibility === 'hidden') {
+            dataLabel.show();
+            dataLabel
+                .attr({ opacity: 0 })
+                .animate({ opacity: 1 });
+        }
+        // Save start position on first render, but do not change position
+        if (!chart.hasRendered) {
+            return;
+        }
+        // Set start position
+        if (isNew) {
+            dataLabel.attr({ x: dataLabel.startXPos, y: dataLabel.startYPos });
+        }
+        dataLabel.placed = true;
     }
 })(DataLabel || (DataLabel = {}));
 /* *

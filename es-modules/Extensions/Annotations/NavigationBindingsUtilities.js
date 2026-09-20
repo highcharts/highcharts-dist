@@ -3,14 +3,13 @@
  *  (c) 2009-2026 Highsoft AS
  *  Author: Highsoft, Black Label
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
 'use strict';
-import { defined, find, isNumber } from '../../Shared/Utilities.js';
+import { defined, isNumber, pick } from '../../Shared/Utilities.js';
 /* *
  *
  *  Constants
@@ -56,39 +55,13 @@ function getAssignedAxis(coords) {
         const extremes = coord.axis.getExtremes(), axisMin = extremes.min, axisMax = extremes.max, 
         // Correct axis edges when axis has series
         // with pointRange (like column)
-        minPointOffset = (coord.axis.minPointOffset ?? 0);
+        minPointOffset = pick(coord.axis.minPointOffset, 0);
         return isNumber(axisMin) && isNumber(axisMax) &&
             coord.value >= (axisMin - minPointOffset) &&
             coord.value <= (axisMax + minPointOffset) &&
             // Don't count navigator axis
             !coord.axis.options.isInternal;
     })[0]; // If the axes overlap, return the first axis that was found.
-}
-/**
- * Resolve an axis from an annotation option that can reference it either by its
- * index (number) or by its id (string).
- *
- * @internal
- *
- * @param {Highcharts.Chart} chart
- *        The chart instance.
- *
- * @param {'xAxis'|'yAxis'} coll
- *        The axis collection to look in.
- *
- * @param {number|string|undefined} idOrIndex
- *        The axis index or id.
- *
- * @return {Highcharts.Axis|undefined}
- *         The matching axis, or `undefined` if none was found.
- */
-function getAxisFromOptions(chart, coll, idOrIndex) {
-    if (isNumber(idOrIndex)) {
-        return chart[coll][idOrIndex];
-    }
-    return defined(idOrIndex) ?
-        find(chart[coll], (axis) => axis.options.id === idOrIndex) :
-        void 0;
 }
 /**
  * Get field type according to value
@@ -117,11 +90,10 @@ function getFieldType(key, value) {
  *
  * */
 /** @internal */
-const NavigationBindingsUtilities = {
+const NavigationBindingUtilities = {
     annotationsFieldsTypes,
     getAssignedAxis,
-    getAxisFromOptions,
     getFieldType
 };
 /** @internal */
-export default NavigationBindingsUtilities;
+export default NavigationBindingUtilities;

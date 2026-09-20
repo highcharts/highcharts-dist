@@ -3,15 +3,16 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
 'use strict';
-import { animObject } from '../Core/Animation/AnimationUtilities.js';
-import { borderRadiusObject } from '../Extensions/BorderRadius.js';
+import A from '../Core/Animation/AnimationUtilities.js';
+const { animObject } = A;
+import BorderRadius from '../Extensions/BorderRadius.js';
+const { optionsToObject } = BorderRadius;
 import D from '../Core/Defaults.js';
 const { defaultOptions } = D;
 import H from '../Core/Globals.js';
@@ -19,7 +20,7 @@ const { composed } = H;
 import Series from '../Core/Series/Series.js';
 import Pane from '../Extensions/Pane/Pane.js';
 import RadialAxis from '../Core/Axis/RadialAxis.js';
-import { addEvent, clamp, defined, find, isNumber, isObject, merge, pushUnique, relativeLength, splat, wrap } from '../Shared/Utilities.js';
+import { addEvent, clamp, defined, find, isNumber, isObject, merge, pick, pushUnique, relativeLength, splat, wrap } from '../Shared/Utilities.js';
 import { uniqueKey } from '../Core/Utilities.js';
 /* *
  *
@@ -27,7 +28,7 @@ import { uniqueKey } from '../Core/Utilities.js';
  *
  * */
 /**
- * @internal
+ * @private
  */
 function clipCircle(renderer, x, y, r, innerR) {
     const id = uniqueKey(), clipPath = renderer.createElement('clipPath').attr({
@@ -41,7 +42,7 @@ function clipCircle(renderer, x, y, r, innerR) {
 }
 /**
  * Find correct align and vertical align based on an angle in polar chart
- * @internal
+ * @private
  */
 function findAlignments(angle, options) {
     let align, verticalAlign;
@@ -73,7 +74,7 @@ function findAlignments(angle, options) {
 }
 /**
  * #6212 Calculate connectors for spline series in polar chart.
- * @internal
+ * @private
  */
 function getConnectors(segment, index, calculateNeighbours, connectEnds) {
     const smoothing = 1.5, denom = smoothing + 1, addedNumber = connectEnds ? 1 : 0;
@@ -138,7 +139,7 @@ function onChartAfterDrawChartBox() {
 }
 /**
  * If polar has polygonal grid lines, force start and endOnTick on radial axis
- * @internal
+ * @private
  */
 function onChartAfterInit(event) {
     const xAxis = event.args[0].xAxis, yAxis = event.args[0].yAxis, chart = event.args[0].chart;
@@ -169,7 +170,7 @@ function onChartCreateAxes() {
 }
 /**
  * Get selection dimensions
- * @internal
+ * @private
  */
 function onPointerGetSelectionBox(event) {
     const marker = event.args.marker, xAxis = this.chart.xAxis[0], yAxis = this.chart.yAxis[0], inverted = this.chart.inverted, radialAxis = inverted ? yAxis : xAxis, linearAxis = inverted ? xAxis : yAxis;
@@ -186,7 +187,7 @@ function onPointerGetSelectionBox(event) {
 }
 /**
  * Get attrs for Polar selection marker
- * @internal
+ * @private
  */
 function onPointerGetSelectionMarkerAttrs(event) {
     const chart = this.chart;
@@ -313,7 +314,7 @@ function onPointerGetSelectionMarkerAttrs(event) {
     }
 }
 /**
- * @internal
+ * @private
  */
 function onSeriesAfterInit() {
     const chart = this.chart;
@@ -337,7 +338,7 @@ function onSeriesAfterColumnTranslate() {
         chart.polar &&
         chart.inverted) {
         const seriesDefault = defaultOptions.plotOptions?.[this.type]
-            ?.borderRadius, { scope, where = 'end' } = borderRadiusObject(options.borderRadius, isObject(seriesDefault) ? seriesDefault : {});
+            ?.borderRadius, { scope, where = 'end' } = optionsToObject(options.borderRadius, isObject(seriesDefault) ? seriesDefault : {});
         for (const point of this.points) {
             const { shapeArgs } = point;
             if (point.shapeType === 'arc' && shapeArgs) {
@@ -359,7 +360,7 @@ function onSeriesAfterColumnTranslate() {
  * Extend translate. The plotX and plotY values are computed as if the polar
  * chart were a cartesian plane, where plotX denotes the angle in radians
  * and (yAxis.len - plotY) is the pixel distance from center.
- * @internal
+ * @private
  */
 function onSeriesAfterTranslate() {
     if (this.chart.polar && this.xAxis) {
@@ -385,7 +386,7 @@ function onSeriesAfterTranslate() {
             // Treat points below Y axis min as null (#10082)
             if (!chart.hasParallelCoordinates &&
                 !series.yAxis.reversed) {
-                if ((points[i].y ?? Number.MIN_VALUE) < yAxis.min ||
+                if (pick(points[i].y, Number.MIN_VALUE) < yAxis.min ||
                     points[i].x < xAxis.min ||
                     points[i].x > xAxis.max) {
                     // Destroy markers
@@ -430,7 +431,7 @@ function onSeriesAfterTranslate() {
  * Search a k-d tree by the point angle (used for shared tooltips in polar) or
  * the inverted point.
  * charts
- * @internal
+ * @private
  */
 function searchPointByAngleOrInverted(e) {
     const series = this, chart = series.chart, xAxis = series.xAxis, yAxis = series.yAxis, center = xAxis.pane && xAxis.pane.center, plotX = e.chartX - (center && center[0] || 0) - chart.plotLeft, plotY = e.chartY - (center && center[1] || 0) - chart.plotTop;
@@ -444,7 +445,7 @@ function searchPointByAngleOrInverted(e) {
 }
 /**
  * Trim polygonal path
- * @internal
+ * @private
  */
 function trimPath(path, start, end, radialAxis) {
     const tickInterval = radialAxis.tickInterval, ticks = radialAxis.tickPositions;
@@ -466,7 +467,7 @@ function trimPath(path, start, end, radialAxis) {
 /**
  * Extend chart.get to also search in panes. Used internally in
  * responsiveness and chart.update.
- * @internal
+ * @private
  */
 function wrapChartGet(proceed, id) {
     return find(this.pane || [], (pane) => (
@@ -475,10 +476,10 @@ function wrapChartGet(proceed, id) {
 }
 /**
  * Align column data labels outside the columns. #1199.
- * @internal
+ * @private
  */
 function wrapColumnSeriesAlignDataLabel(proceed, point, dataLabel, options, alignTo, isNew) {
-    const chart = this.chart, inside = (options.inside ?? !!this.options.stacking);
+    const chart = this.chart, inside = pick(options.inside, !!this.options.stacking);
     let angle, shapeArgs, labelPos;
     if (chart.polar) {
         angle = point.rectPlotX / Math.PI * 180;
@@ -515,9 +516,9 @@ function wrapColumnSeriesAlignDataLabel(proceed, point, dataLabel, options, alig
                     y: point.tooltipPos[1]
                 });
             }
-            options.align = (options.align ?? 'center');
+            options.align = pick(options.align, 'center');
             options.verticalAlign =
-                (options.verticalAlign ?? 'middle');
+                pick(options.verticalAlign, 'middle');
         }
         Series.prototype.alignDataLabel.call(this, point, dataLabel, options, alignTo, isNew);
         // Hide label of a point (only inverted) that is outside the
@@ -536,10 +537,10 @@ function wrapColumnSeriesAlignDataLabel(proceed, point, dataLabel, options, alig
 }
 /**
  * Extend the column prototype's translate method
- * @internal
+ * @private
  */
 function onAfterColumnTranslate() {
-    const series = this, { chart, options, xAxis, yAxis } = series, stacking = options.stacking, { center, reversed } = yAxis, { endAngleRad, startAngleRad } = xAxis, visibleRange = endAngleRad - startAngleRad;
+    const series = this, options = series.options, stacking = options.stacking, chart = series.chart, xAxis = series.xAxis, yAxis = series.yAxis, reversed = yAxis.reversed, center = yAxis.center, startAngleRad = xAxis.startAngleRad, endAngleRad = xAxis.endAngleRad, visibleRange = endAngleRad - startAngleRad;
     let threshold = options.threshold, thresholdAngleRad = 0, points, point, i, yMin, yMax, start = 0, end = 0, tooltipPos, pointX, pointY, stackValues, stack, barX, innerR, r;
     // Postprocess plot coordinates
     if (xAxis.isRadial) {
@@ -637,7 +638,8 @@ function onAfterColumnTranslate() {
                 innerR = Math.max(barX, 0);
                 r = Math.max(barX + (point.pointWidth || 0), 0);
                 // Handle border radius
-                const brOption = borderRadiusObject(options.borderRadius), borderRadius = relativeLength(brOption.radius, r - innerR);
+                const brOption = options.borderRadius, brValue = typeof brOption === 'object' ?
+                    brOption.radius : brOption, borderRadius = relativeLength(brValue || 0, r - innerR);
                 point.shapeArgs = {
                     x: center[0],
                     y: center[1],
@@ -690,7 +692,7 @@ function onAfterColumnTranslate() {
 /**
  * Extend getSegmentPath to allow connecting ends across 0 to provide a
  * closed circle in line-like series.
- * @internal
+ * @private
  */
 function wrapLineSeriesGetGraphPath(proceed, points) {
     const series = this;
@@ -744,7 +746,7 @@ function wrapLineSeriesGetGraphPath(proceed, points) {
 }
 /**
  * Extend getCoordinates to prepare for polar axis values
- * @internal
+ * @private
  */
 function wrapPointerGetCoordinates(proceed, e) {
     const chart = this.chart;
@@ -775,7 +777,7 @@ function wrapPointerGetCoordinates(proceed, e) {
 }
 /**
  * Prevent zooming on mobile devices
- * @internal
+ * @private
  */
 function wrapPointerPinch(proceed, e) {
     if (this.chart.polar) {
@@ -785,7 +787,7 @@ function wrapPointerPinch(proceed, e) {
 }
 /**
  * Define the animate method for regular series
- * @internal
+ * @private
  */
 function wrapSeriesAnimate(proceed, init) {
     const series = this, chart = this.chart, group = this.group, markerGroup = this.markerGroup, center = this.xAxis && this.xAxis.center, plotLeft = chart.plotLeft, plotTop = chart.plotTop;
@@ -795,8 +797,7 @@ function wrapSeriesAnimate(proceed, init) {
         if (series.isRadialBar) {
             if (!init) {
                 // Run the pie animation for radial bars
-                series.startAngleRad =
-                    series.translatedThreshold ?? series.xAxis.startAngleRad;
+                series.startAngleRad = pick(series.translatedThreshold, series.xAxis.startAngleRad);
                 H.seriesTypes.pie.prototype.animate.call(series, init);
             }
         }
@@ -864,7 +865,7 @@ function wrapSeriesAnimate(proceed, init) {
 }
 /**
  * Overridden method for calculating a spline from one point to the next
- * @internal
+ * @private
  */
 function wrapSplineSeriesGetPointSpline(proceed, segment, point, i) {
     let ret, connectors;
@@ -901,19 +902,21 @@ function wrapSplineSeriesGetPointSpline(proceed, segment, point, i) {
 }
 /**
  * Extend the point pos method to calculate point positions for the polar chart.
- * @internal
+ * @private
  */
-function wrapPointPos(proceed, chartCoordinates, plotX = this.plotX, plotY = this.plotY) {
-    const { series } = this, { chart } = series || {};
-    if (chart?.polar &&
-        isNumber(plotX) &&
-        isNumber(plotY)) {
-        return [
-            plotX + (chartCoordinates ? chart.plotLeft : 0),
-            plotY + (chartCoordinates ? chart.plotTop : 0)
-        ];
+function wrapPointPos(proceed, chartCoordinates, plotY = this.plotY) {
+    if (!this.destroyed) {
+        const { plotX, series } = this, { chart } = series;
+        if (chart.polar &&
+            isNumber(plotX) &&
+            isNumber(plotY)) {
+            return [
+                plotX + (chartCoordinates ? chart.plotLeft : 0),
+                plotY + (chartCoordinates ? chart.plotTop : 0)
+            ];
+        }
+        return proceed.call(this, chartCoordinates, plotY);
     }
-    return proceed.call(this, chartCoordinates, plotX, plotY);
 }
 /* *
  *
@@ -923,7 +926,7 @@ function wrapPointPos(proceed, chartCoordinates, plotX = this.plotX, plotY = thi
 /**
  * Extensions for polar charts. Additionally, much of the geometry required
  * for polar charts is gathered in RadialAxes.js.
- * @internal
+ * @private
  */
 class PolarAdditions {
     /* *
@@ -932,7 +935,7 @@ class PolarAdditions {
      *
      * */
     static compose(AxisClass, ChartClass, PointerClass, SeriesClass, TickClass, PointClass, AreaSplineRangeSeriesClass, ColumnSeriesClass, LineSeriesClass, SplineSeriesClass) {
-        Pane.compose(ChartClass, PointerClass);
+        Pane.compose(ChartClass, PointerClass, SeriesClass);
         RadialAxis.compose(AxisClass, TickClass);
         if (pushUnique(composed, 'Polar')) {
             const chartProto = ChartClass.prototype, pointProto = PointClass.prototype, pointerProto = PointerClass.prototype, seriesProto = SeriesClass.prototype;
@@ -991,7 +994,7 @@ class PolarAdditions {
      * */
     arc(low, high, start, end) {
         const series = this.series, center = series.xAxis.center, len = series.yAxis.len, paneInnerR = center[3] / 2;
-        let r = len - high + paneInnerR, innerR = len - (low ?? len) + paneInnerR;
+        let r = len - high + paneInnerR, innerR = len - pick(low, len) + paneInnerR;
         // Prevent columns from shooting through the pane's center
         if (series.yAxis.reversed) {
             if (r < 0) {
@@ -1014,7 +1017,7 @@ class PolarAdditions {
     /**
      * Translate a point's plotX and plotY from the internal angle and radius
      * measures to true plotX, plotY coordinates
-     * @internal
+     * @private
      */
     toXY(point) {
         const series = this.series, chart = series.chart, xAxis = series.xAxis, yAxis = series.yAxis, plotX = point.plotX, inverted = chart.inverted, pointY = point.y;
@@ -1042,7 +1045,7 @@ class PolarAdditions {
         // points. Otherwise, use a standard k-d tree to get the nearest point
         // in two dimensions.
         if (series.kdByAngle) {
-            clientX = ((plotX / Math.PI * 180) + (xAxis.pane.options.startAngle || 0)) % 360;
+            clientX = ((plotX / Math.PI * 180) + xAxis.pane.options.startAngle) % 360;
             if (clientX < 0) { // #2665
                 clientX += 360;
             }
@@ -1058,5 +1061,4 @@ class PolarAdditions {
  *  Default Export
  *
  * */
-/** @internal */
 export default PolarAdditions;

@@ -1,8 +1,7 @@
 /* *
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
@@ -20,7 +19,7 @@ import { extend, isArray, merge } from '../../../Shared/Utilities.js';
 /**
  * The Stochastic series type.
  *
- * @internal
+ * @private
  * @class
  * @name Highcharts.seriesTypes.stochastic
  *
@@ -119,7 +118,7 @@ class StochasticIndicator extends SMAIndicator {
  * Stochastic oscillator. This series requires the `linkedTo` option to be
  * set and should be loaded after the `stock/indicators/indicators.js` file.
  *
- * @sample {highstock} stock/indicators/stochastic
+ * @sample stock/indicators/stochastic
  *         Stochastic oscillator
  *
  * @extends      plotOptions.sma
@@ -196,7 +195,6 @@ SeriesRegistry.registerSeriesType('stochastic', StochasticIndicator);
  *  Default Export
  *
  * */
-/** @internal */
 export default StochasticIndicator;
 /* *
  *
@@ -210,9 +208,9 @@ export default StochasticIndicator;
  * @extends   series,plotOptions.stochastic
  * @since     6.0.0
  * @product   highstock
- * @excluding allAreas, colorAxis, joinBy, keys, navigatorOptions,
- *            pointInterval, pointIntervalUnit, pointPlacement, pointRange,
- *            pointStart, showInNavigator, stacking
+ * @excluding allAreas, colorAxis,  dataParser, dataURL, joinBy, keys,
+ *            navigatorOptions, pointInterval, pointIntervalUnit,
+ *            pointPlacement, pointRange, pointStart, showInNavigator, stacking
  * @requires  stock/indicators/indicators
  * @requires  stock/indicators/stochastic
  * @apioption series.stochastic

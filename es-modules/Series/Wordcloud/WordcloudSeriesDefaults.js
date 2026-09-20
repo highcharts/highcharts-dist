@@ -5,9 +5,8 @@
  *  (c) 2016-2026 Highsoft AS
  *  Authors: Jon Arild Nygård
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  * */
 'use strict';
@@ -51,6 +50,7 @@ const WordcloudSeriesDefaults = {
      */
     allowExtendPlayingField: true,
     animation: {
+        /** @internal */
         duration: 500
     },
     borderWidth: 0,
@@ -174,7 +174,6 @@ const WordcloudSeriesDefaults = {
  *    }]
  *    ```
  *
- * @basic
  * @type      {Array<Array<string,number>|*>}
  * @extends   series.line.data
  * @excluding drilldown, marker, x, y

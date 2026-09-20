@@ -19,7 +19,6 @@ if (defaultOptions.annotations?.types) {
      *
      * @extends      annotations.types.crookedLine
      * @product      highstock
-     * @requires     modules/annotations-advanced
      * @optionparent annotations.types.fibonacci
      */
     {
@@ -64,7 +63,7 @@ if (defaultOptions.annotations?.types) {
             /**
              * The color of line.
              */
-            lineColor: 'var(--highcharts-neutral-color-40)',
+            lineColor: "#999999" /* Palette.neutralColor40 */,
             /**
              * An array of colors for the lines.
              */
@@ -87,7 +86,7 @@ if (defaultOptions.annotations?.types) {
             overflow: 'none',
             shape: 'rect',
             style: {
-                color: 'var(--highcharts-neutral-color-80)'
+                color: "#333333" /* Palette.neutralColor80 */
             },
             verticalAlign: 'middle',
             y: 0

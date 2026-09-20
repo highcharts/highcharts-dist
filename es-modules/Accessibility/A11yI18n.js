@@ -5,16 +5,15 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Øystein Moseng
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
 'use strict';
 import F from '../Core/Templating.js';
 const { format } = F;
-import { getNestedProperty } from '../Shared/Utilities.js';
+import { getNestedProperty, pick } from '../Shared/Utilities.js';
 /* *
  *
  *  Composition
@@ -80,13 +79,13 @@ var A11yI18nComposition;
             const pluralEnd = (statement.slice(pluralStart).indexOf(')') + pluralStart), pluralStatement = statement.substring(pluralStart + 8, pluralEnd), pluralArguments = pluralStatement.split(','), num = Number(getNestedProperty(pluralArguments[0], ctx));
             switch (num) {
                 case 0:
-                    result = (pluralArguments[4] ?? pluralArguments[1]);
+                    result = pick(pluralArguments[4], pluralArguments[1]);
                     break;
                 case 1:
-                    result = (pluralArguments[2] ?? pluralArguments[1]);
+                    result = pick(pluralArguments[2], pluralArguments[1]);
                     break;
                 case 2:
-                    result = (pluralArguments[3] ?? pluralArguments[1]);
+                    result = pick(pluralArguments[3], pluralArguments[1]);
                     break;
                 default:
                     result = pluralArguments[1];
@@ -192,7 +191,7 @@ var A11yI18nComposition;
      * A `Chart` instance with a time object and numberFormatter, passed on to
      * format().
      *
-     * @deprecated 11.1.0
+     * @deprecated
      *
      * @return {string}
      * The formatted string.

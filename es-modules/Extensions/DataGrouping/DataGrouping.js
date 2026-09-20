@@ -3,9 +3,8 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
@@ -17,7 +16,7 @@ import F from '../../Core/Templating.js';
 const { format } = F;
 import H from '../../Core/Globals.js';
 const { composed } = H;
-import { addEvent, extend, isNumber, pushUnique } from '../../Shared/Utilities.js';
+import { addEvent, extend, isNumber, pick, pushUnique } from '../../Shared/Utilities.js';
 /* *
  *
  *  Functions
@@ -67,7 +66,7 @@ function onTooltipHeaderFormatter(e) {
         else if (!xDateFormat && dateTimeLabelFormats && xAxis.dateTime) {
             xDateFormat = xAxis.dateTime.getXDateFormat(point.x, tooltipOptions.dateTimeLabelFormats);
         }
-        const groupStart = series.groupMap?.[point.index].groupStart ?? point.key, groupEnd = groupStart + (currentDataGrouping?.totalRange || 0) - 1;
+        const groupStart = pick(series.groupMap?.[point.index].groupStart, point.key), groupEnd = groupStart + (currentDataGrouping?.totalRange || 0) - 1;
         formattedKey = time.dateFormat(xDateFormat, groupStart);
         if (xDateFormatEnd) {
             formattedKey += time.dateFormat(xDateFormatEnd, groupEnd);
@@ -136,7 +135,7 @@ export default DataGroupingComposition;
  * @interface Highcharts.DataGroupingResultObject
  */ /**
 * @name Highcharts.DataGroupingResultObject#modified
-* @type {Highcharts.DataTable}
+* @type {Highcharts.DataTableCore}
 */ /**
 * @name Highcharts.DataGroupingResultObject#groupMap
 * @type {Array<DataGroupingInfoObject>}
@@ -393,12 +392,6 @@ export default DataGroupingComposition;
  * @apioption  plotOptions.series.dataGrouping.lastAnchor
  */
 /**
- * Deprecated. Use
- * [anchor](#plotOptions.series.dataGrouping.anchor), or
- * [firstAnchor](#plotOptions.series.dataGrouping.firstAnchor) and
- * [lastAnchor](#plotOptions.series.dataGrouping.lastAnchor)
- * instead.
- *
  * Normally, a group is indexed by the start of that group, so for example
  * when 30 daily values are grouped into one month, that month's x value
  * will be the 1st of the month. This apparently shifts the data to
@@ -408,7 +401,7 @@ export default DataGroupingComposition;
  *
  * @type      {boolean}
  * @default   false
- * @deprecated 9.1.0
+ * @deprecated
  * @apioption plotOptions.series.dataGrouping.smoothed
  */
 /**

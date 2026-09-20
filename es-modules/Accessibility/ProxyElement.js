@@ -9,9 +9,8 @@
  *  The ProxyElement class represents such an element, and deals with
  *  overlay positioning and mirroring events for the target.
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
@@ -174,7 +173,6 @@ class ProxyElement {
             margin: 0,
             display: 'block',
             position: 'absolute',
-            'pointer-events': 'none',
             '-ms-filter': 'progid:DXImageTransform.Microsoft.Alpha(Opacity=1)'
         });
     }

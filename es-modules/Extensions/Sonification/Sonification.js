@@ -5,9 +5,8 @@
  *
  *  Sonification module.
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
@@ -27,7 +26,7 @@ import SonificationSpeaker from './SonificationSpeaker.js';
 import SynthPatch from './SynthPatch.js';
 import InstrumentPresets from './InstrumentPresets.js';
 import timelineFromChart from './TimelineFromChart.js';
-import { addEvent, extend, fireEvent, internalClearTimeout, merge } from '../../Shared/Utilities.js';
+import { addEvent, extend, fireEvent, internalClearTimeout, merge, pick } from '../../Shared/Utilities.js';
 /**
  * The Sonification class. This class represents a chart's sonification
  * capabilities. A chart automatically gets an instance of this class when
@@ -371,7 +370,7 @@ class Sonification {
         if (this.audioContext && this.audioDestination) {
             this.timeline = timelineFromChart(this.audioContext, this.audioDestination, this.chart);
             const sOpts = this.chart.options.sonification;
-            this.timeline.setMasterVolume(((sOpts && sOpts.masterVolume) ?? 1));
+            this.timeline.setMasterVolume(pick(sOpts && sOpts.masterVolume, 1));
         }
         if (events.afterUpdate) {
             events.afterUpdate({ chart: this.chart, timeline: this.timeline });

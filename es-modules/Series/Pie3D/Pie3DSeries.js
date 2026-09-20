@@ -5,9 +5,8 @@
  *
  *  3D pie series
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
@@ -17,7 +16,7 @@ const { composed, deg2rad } = H;
 import Pie3DPoint from './Pie3DPoint.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { pie: PieSeries } = SeriesRegistry.seriesTypes;
-import { extend, pushUnique } from '../../Shared/Utilities.js';
+import { extend, pick, pushUnique } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class
@@ -40,7 +39,7 @@ class Pie3DSeries extends PieSeries {
      *
      * */
     /**
-     * @internal
+     * @private
      */
     addPoint() {
         super.addPoint.apply(this, arguments);
@@ -50,7 +49,7 @@ class Pie3DSeries extends PieSeries {
         }
     }
     /**
-     * @internal
+     * @private
      */
     animate(init) {
         if (!this.chart.is3d()) {
@@ -65,12 +64,8 @@ class Pie3DSeries extends PieSeries {
             // Initialize the animation
             if (init) {
                 // Scale down the group and place it in the center
-                group.oldtranslateX =
-                    group.oldtranslateX ??
-                        group.translateX;
-                group.oldtranslateY =
-                    group.oldtranslateY ??
-                        group.translateY;
+                group.oldtranslateX = pick(group.oldtranslateX, group.translateX);
+                group.oldtranslateY = pick(group.oldtranslateY, group.translateY);
                 attribs = {
                     translateX: center[0],
                     translateY: center[1],
@@ -99,7 +94,7 @@ class Pie3DSeries extends PieSeries {
         }
     }
     /**
-     * @internal
+     * @private
      */
     getDataLabelPosition(point, distance) {
         const labelPosition = super.getDataLabelPosition(point, distance);
@@ -122,18 +117,18 @@ class Pie3DSeries extends PieSeries {
         return labelPosition;
     }
     /**
-     * @internal
+     * @private
      */
     pointAttribs(point) {
         const attr = super.pointAttribs.apply(this, arguments), options = this.options;
         if (this.chart.is3d() && !this.chart.styledMode) {
             attr.stroke = options.edgeColor || point.color || this.color;
-            attr['stroke-width'] = (options.edgeWidth ?? 1);
+            attr['stroke-width'] = pick(options.edgeWidth, 1);
         }
         return attr;
     }
     /**
-     * @internal
+     * @private
      */
     translate() {
         super.translate.apply(this, arguments);
@@ -169,7 +164,7 @@ class Pie3DSeries extends PieSeries {
         }
     }
     /**
-     * @internal
+     * @private
      */
     drawTracker() {
         super.drawTracker.apply(this, arguments);

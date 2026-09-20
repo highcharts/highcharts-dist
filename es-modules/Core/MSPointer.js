@@ -3,9 +3,8 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
@@ -13,7 +12,7 @@
 import H from './Globals.js';
 const { charts, composed, doc, noop, win } = H;
 import Pointer from './Pointer.js';
-import { addEvent, attr, css, defined, objectEach, pushUnique, removeEvent } from '../Shared/Utilities.js';
+import { addEvent, attr, css, defined, objectEach, pick, pushUnique, removeEvent } from '../Shared/Utilities.js';
 /* *
  *
  *  Constants
@@ -191,7 +190,7 @@ class MSPointer extends Pointer {
         const tooltip = this.chart.tooltip;
         super.setDOMEvents();
         if (this.hasZoom ||
-            ((tooltip?.options.followTouchMove) ?? true)) {
+            pick((tooltip?.options.followTouchMove), true)) {
             this.batchMSEvents(addEvent);
         }
     }

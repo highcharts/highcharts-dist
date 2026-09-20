@@ -3,9 +3,8 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Sebastian Domas
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
@@ -34,7 +33,7 @@ const binsNumberFormulas = {
 };
 /**
  * Returns a function for mapping number to the closed (right opened) bins
- * @internal
+ * @private
  * @param {Array<number>} bins
  * Width of the bins
  */
@@ -54,7 +53,7 @@ function fitToBinLeftClosed(bins) {
  * */
 /**
  * Histogram class
- * @internal
+ * @private
  * @class
  * @name Highcharts.seriesTypes.histogram
  * @augments Highcharts.Series
@@ -65,9 +64,6 @@ class HistogramSeries extends ColumnSeries {
      *  Functions
      *
      * */
-    /**
-     * @internal
-     */
     binsNumber(data) {
         const binsNumberOption = this.options.binsNumber;
         const binsNumber = binsNumberFormulas[binsNumberOption] ||
@@ -78,11 +74,8 @@ class HistogramSeries extends ColumnSeries {
                 binsNumberOption :
                 binsNumberFormulas['square-root'](data)));
     }
-    /**
-     * @internal
-     */
     setData(data, redraw = true, animation, updatePoints) {
-        let alteredData = [];
+        let alteredData;
         if (typeof data !== 'undefined' && data.length > 0) {
             // Support data array of objects (#24073).
             data = data.map(function (item) {
@@ -92,9 +85,6 @@ class HistogramSeries extends ColumnSeries {
         }
         super.setData.call(this, alteredData, redraw, animation, updatePoints);
     }
-    /**
-     * @internal
-     */
     derivedData(baseData, binsNumber, binWidth) {
         const series = this, max = correctFloat(arrayMax(baseData)), 
         // Float correction needed, because first frequency value is not
@@ -144,9 +134,6 @@ class HistogramSeries extends ColumnSeries {
         data[data.length - 1].x2 = max;
         return data;
     }
-    /**
-     * @internal
-     */
     setDerivedData() {
         const yData = this.baseSeries?.getColumn('y');
         if (!yData?.length) {

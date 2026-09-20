@@ -1,8 +1,7 @@
 /* *
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  * */
 'use strict';
@@ -15,13 +14,17 @@ import { isArray, merge } from '../../../Shared/Utilities.js';
  *
  * */
 // Utils:
-/** @internal */
+/**
+ * @private
+ */
 function sumArray(array) {
     return array.reduce(function (prev, cur) {
         return prev + cur;
     }, 0);
 }
-/** @internal */
+/**
+ * @private
+ */
 function meanDeviation(arr, sma) {
     const len = arr.length;
     let sum = 0, i;
@@ -38,7 +41,7 @@ function meanDeviation(arr, sma) {
 /**
  * The CCI series type.
  *
- * @internal
+ * @private
  * @class
  * @name Highcharts.seriesTypes.cci
  *
@@ -93,7 +96,7 @@ class CCIIndicator extends SMAIndicator {
  * Commodity Channel Index (CCI). This series requires `linkedTo` option to
  * be set.
  *
- * @sample {highstock} stock/indicators/cci
+ * @sample stock/indicators/cci
  *         CCI indicator
  *
  * @extends      plotOptions.sma
@@ -117,7 +120,6 @@ SeriesRegistry.registerSeriesType('cci', CCIIndicator);
  *  Default Export
  *
  * */
-/** @internal */
 export default CCIIndicator;
 /* *
  *
@@ -130,6 +132,7 @@ export default CCIIndicator;
  *
  * @extends   series,plotOptions.cci
  * @since     6.0.0
+ * @excluding dataParser, dataURL
  * @product   highstock
  * @requires  stock/indicators/indicators
  * @requires  stock/indicators/cci

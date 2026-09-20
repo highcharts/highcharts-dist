@@ -3,20 +3,65 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
 'use strict';
 import ColumnRangePoint from './ColumnRangePoint.js';
-import ColumnRangeSeriesDefaults from './ColumnRangeSeriesDefaults.js';
 import H from '../../Core/Globals.js';
 const { noop } = H;
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { seriesTypes: { arearange: AreaRangeSeries, column: ColumnSeries, column: { prototype: columnProto } } } = SeriesRegistry;
-import { addEvent, clamp, extend, isNumber, merge } from '../../Shared/Utilities.js';
+import { addEvent, clamp, extend, isNumber, merge, pick } from '../../Shared/Utilities.js';
+/* *
+ *
+ *  Constants
+ *
+ * */
+/**
+ * The column range is a cartesian series type with higher and lower
+ * Y values along an X axis. To display horizontal bars, set
+ * [chart.inverted](#chart.inverted) to `true`.
+ *
+ * @sample {highcharts|highstock} highcharts/demo/columnrange/
+ *         Inverted column range
+ *
+ * @extends      plotOptions.column
+ * @since        2.3.0
+ * @excluding    negativeColor, stacking, softThreshold, threshold
+ * @product      highcharts highstock
+ * @requires     highcharts-more
+ * @optionparent plotOptions.columnrange
+ */
+const columnRangeOptions = {
+    borderRadius: {
+        where: 'all'
+    },
+    /**
+     * Extended data labels for range series types. Range series data labels
+     * have no `x` and `y` options. Instead, they have `xLow`, `xHigh`,
+     * `yLow` and `yHigh` options to allow the higher and lower data label
+     * sets individually.
+     *
+     * @declare   Highcharts.SeriesAreaRangeDataLabelsOptionsObject
+     * @extends   plotOptions.arearange.dataLabels
+     * @since     2.3.0
+     * @product   highcharts highstock
+     * @apioption plotOptions.columnrange.dataLabels
+     */
+    pointRange: null,
+    legendSymbol: 'rectangle',
+    /** @ignore-option */
+    marker: null,
+    states: {
+        hover: {
+            /** @ignore-option */
+            halo: false
+        }
+    }
+};
 /* *
  *
  *  Class
@@ -25,7 +70,7 @@ import { addEvent, clamp, extend, isNumber, merge } from '../../Shared/Utilities
 /**
  * The ColumnRangeSeries class
  *
- * @internal
+ * @private
  * @class
  * @name Highcharts.seriesTypes.columnrange
  *
@@ -74,17 +119,17 @@ class ColumnRangeSeries extends AreaRangeSeries {
     translate3dShapes() {
         return columnProto.translate3dShapes.apply(this, arguments);
     }
-    /**
-     * Translate data points from raw values x and y to plotX and plotY
-     * @internal
-     */
     afterColumnTranslate() {
+        /**
+         * Translate data points from raw values x and y to plotX and plotY
+         * @private
+         */
         const yAxis = this.yAxis, xAxis = this.xAxis, startAngleRad = xAxis.startAngleRad, chart = this.chart, isRadial = this.xAxis.isRadial, safeDistance = Math.max(chart.chartWidth, chart.chartHeight) + 999;
         let height, heightDifference, start, y;
         // eslint-disable-next-line valid-jsdoc
         /**
          * Don't draw too far outside plot area (#6835)
-         * @internal
+         * @private
          */
         function safeBounds(pixelPos) {
             return clamp(pixelPos, -safeDistance, safeDistance);
@@ -97,9 +142,7 @@ class ColumnRangeSeries extends AreaRangeSeries {
                 point.plotLow = safeBounds(plotY);
                 // Adjust shape
                 y = point.plotHigh;
-                height =
-                    (point.rectPlotY ?? point.plotY) -
-                        point.plotHigh;
+                height = pick(point.rectPlotY, point.plotY) - point.plotHigh;
                 // Adjust for minPointLength
                 if (Math.abs(height) < minPointLength) {
                     heightDifference = (minPointLength - height);
@@ -145,7 +188,7 @@ class ColumnRangeSeries extends AreaRangeSeries {
  *  Static Properties
  *
  * */
-ColumnRangeSeries.defaultOptions = merge(ColumnSeries.defaultOptions, AreaRangeSeries.defaultOptions, ColumnRangeSeriesDefaults);
+ColumnRangeSeries.defaultOptions = merge(ColumnSeries.defaultOptions, AreaRangeSeries.defaultOptions, columnRangeOptions);
 addEvent(ColumnRangeSeries, 'afterColumnTranslate', function () {
     ColumnRangeSeries.prototype.afterColumnTranslate.apply(this);
 }, { order: 5 });
@@ -168,5 +211,91 @@ SeriesRegistry.registerSeriesType('columnrange', ColumnRangeSeries);
  *  Default Export
  *
  * */
-/** @internal */
 export default ColumnRangeSeries;
+/* *
+ *
+ *  API Options
+ *
+ * */
+/**
+ * A `columnrange` series. If the [type](#series.columnrange.type)
+ * option is not specified, it is inherited from
+ * [chart.type](#chart.type).
+ *
+ * @extends   series,plotOptions.columnrange
+ * @excluding dataParser, dataURL, stack, stacking
+ * @product   highcharts highstock
+ * @requires  highcharts-more
+ * @apioption series.columnrange
+ */
+/**
+ * An array of data points for the series. For the `columnrange` series
+ * type, points can be given in the following ways:
+ *
+ * 1. An array of arrays with 3 or 2 values. In this case, the values correspond
+ *    to `x,low,high`. If the first value is a string, it is applied as the name
+ *    of the point, and the `x` value is inferred. The `x` value can also be
+ *    omitted, in which case the inner arrays should be of length 2\. Then the
+ *    `x` value is automatically calculated, either starting at 0 and
+ *    incremented by 1, or from `pointStart` and `pointInterval` given in the
+ *    series options.
+ *    ```js
+ *    data: [
+ *        [0, 4, 2],
+ *        [1, 2, 1],
+ *        [2, 9, 10]
+ *    ]
+ *    ```
+ *
+ * 2. An array of objects with named values. The following snippet shows only a
+ *    few settings, see the complete options set below. If the total number of
+ *    data points exceeds the series'
+ *    [turboThreshold](#series.columnrange.turboThreshold), this option is not
+ *    available.
+ *    ```js
+ *    data: [{
+ *        x: 1,
+ *        low: 0,
+ *        high: 4,
+ *        name: "Point2",
+ *        color: "#00FF00"
+ *    }, {
+ *        x: 1,
+ *        low: 5,
+ *        high: 3,
+ *        name: "Point1",
+ *        color: "#FF00FF"
+ *    }]
+ *    ```
+ *
+ * @sample {highcharts} highcharts/series/data-array-of-arrays/
+ *         Arrays of numeric x and y
+ * @sample {highcharts} highcharts/series/data-array-of-arrays-datetime/
+ *         Arrays of datetime x and y
+ * @sample {highcharts} highcharts/series/data-array-of-name-value/
+ *         Arrays of point.name and y
+ * @sample {highcharts} highcharts/series/data-array-of-objects/
+ *         Config objects
+ *
+ * @type      {Array<Array<(number|string),number>|Array<(number|string),number,number>|*>}
+ * @extends   series.arearange.data
+ * @excluding marker
+ * @product   highcharts highstock
+ * @apioption series.columnrange.data
+ */
+/**
+ * @extends   series.columnrange.dataLabels
+ * @product   highcharts highstock
+ * @apioption series.columnrange.data.dataLabels
+ */
+/**
+ * @excluding halo, lineWidth, lineWidthPlus, marker
+ * @product   highcharts highstock
+ * @apioption series.columnrange.states.hover
+ */
+/**
+ * @excluding halo, lineWidth, lineWidthPlus, marker
+ * @product   highcharts highstock
+ * @apioption series.columnrange.states.select
+ */
+''; // Adds doclets above into transpiled

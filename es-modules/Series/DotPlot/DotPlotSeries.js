@@ -5,14 +5,13 @@
  *
  *  Dot plot series type for Highcharts
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
 /**
- * @internal
+ * @private
  * @todo
  * - Check update, remove etc.
  * - Custom icons like persons, carts etc. Either as images, font icons or
@@ -22,14 +21,14 @@
 import DotPlotSeriesDefaults from './DotPlotSeriesDefaults.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { column: ColumnSeries } = SeriesRegistry.seriesTypes;
-import { extend, isNumber, merge } from '../../Shared/Utilities.js';
+import { extend, isNumber, merge, pick } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class
  *
  * */
 /**
- * @internal
+ * @private
  * @class
  * @name Highcharts.seriesTypes.dotplot
  *
@@ -59,8 +58,7 @@ class DotPlotSeries extends ColumnSeries {
         const height = (totalHeight * slotsPerBar) / total;
         for (const point of series.points) {
             const pointMarkerOptions = point.marker || {}, symbol = (pointMarkerOptions.symbol ||
-                seriesMarkerOptions.symbol), radius = pointMarkerOptions.radius ??
-                seriesMarkerOptions.radius, isSquare = symbol !== 'rect', width = isSquare ? height : slotWidth, shapeArgs = point.shapeArgs || {}, startX = (shapeArgs.x || 0) + ((shapeArgs.width || 0) -
+                seriesMarkerOptions.symbol), radius = pick(pointMarkerOptions.radius, seriesMarkerOptions.radius), isSquare = symbol !== 'rect', width = isSquare ? height : slotWidth, shapeArgs = point.shapeArgs || {}, startX = (shapeArgs.x || 0) + ((shapeArgs.width || 0) -
                 slotsPerBar * width) / 2, positiveYValue = Math.abs(point.y ?? 0), shapeY = (shapeArgs.y || 0), shapeHeight = (shapeArgs.height || 0);
             let graphics, x = startX, y = point.negative ? shapeY : shapeY + shapeHeight - height, slotColumn = 0;
             point.graphics = graphics = point.graphics || [];
@@ -137,5 +135,4 @@ SeriesRegistry.registerSeriesType('dotplot', DotPlotSeries);
  *  Default Export
  *
  * */
-/** @internal */
 export default DotPlotSeries;

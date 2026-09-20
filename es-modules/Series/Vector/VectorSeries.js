@@ -5,19 +5,19 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
 'use strict';
-import { animObject } from '../../Core/Animation/AnimationUtilities.js';
+import A from '../../Core/Animation/AnimationUtilities.js';
+const { animObject } = A;
 import H from '../../Core/Globals.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { series: Series, seriesTypes: { scatter: ScatterSeries } } = SeriesRegistry;
 import VectorSeriesDefaults from './VectorSeriesDefaults.js';
-import { arrayMax, extend, merge } from '../../Shared/Utilities.js';
+import { arrayMax, extend, merge, pick } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class
@@ -117,7 +117,7 @@ class VectorSeries extends ScatterSeries {
                         .add(this.markerGroup)
                         .addClass('highcharts-point ' +
                         'highcharts-color-' +
-                        (point.colorIndex ?? point.series.colorIndex));
+                        pick(point.colorIndex, point.series.colorIndex));
                 }
                 point.graphic
                     .attr({
@@ -144,12 +144,13 @@ class VectorSeries extends ScatterSeries {
         const options = this.options;
         let stroke = point?.color || this.color, strokeWidth = this.options.lineWidth;
         if (state) {
-            stroke = options.states?.[state]?.color || stroke;
-            strokeWidth = (options.states?.[state]?.lineWidthPlus || 0) +
-                (options.states?.[state]?.lineWidth || strokeWidth || 0);
+            stroke = options.states[state].color || stroke;
+            strokeWidth =
+                (options.states[state].lineWidth || strokeWidth) +
+                    (options.states[state].lineWidthPlus || 0);
         }
         return {
-            stroke,
+            'stroke': stroke,
             'stroke-width': strokeWidth
         };
     }
@@ -169,17 +170,17 @@ class VectorSeries extends ScatterSeries {
 VectorSeries.defaultOptions = merge(ScatterSeries.defaultOptions, VectorSeriesDefaults);
 extend(VectorSeries.prototype, {
     /**
-     * @internal
+     * @ignore
      * @deprecated
      */
     drawGraph: H.noop,
     /**
-     * @internal
+     * @ignore
      * @deprecated
      */
     getSymbol: H.noop,
     /**
-     * @internal
+     * @ignore
      * @deprecated
      */
     markerAttribs: H.noop,

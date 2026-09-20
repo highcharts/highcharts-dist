@@ -3,15 +3,14 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
 'use strict';
 import DataGroupingDefaults from './DataGroupingDefaults.js';
-import { addEvent, extend, merge } from '../../Shared/Utilities.js';
+import { addEvent, extend, merge, pick } from '../../Shared/Utilities.js';
 /* *
  *
  *  Variables
@@ -79,8 +78,7 @@ function getGroupPixelWidth() {
             // same group pixel width (#334)
             groupPixelWidth = Math.max(groupPixelWidth, 
             // Fallback to commonOptions (#9693)
-            (dgOptions.groupPixelWidth ??
-                DataGroupingDefaults.common.groupPixelWidth));
+            pick(dgOptions.groupPixelWidth, DataGroupingDefaults.common.groupPixelWidth));
             dataLength = (series[i].dataTable.getModified() ||
                 series[i].dataTable).rowCount;
             // Execute grouping if the amount of points is greater than the
@@ -124,7 +122,7 @@ function onAfterSetScale() {
 function setDataGrouping(dataGrouping, redraw) {
     const axis = this;
     let i;
-    redraw = (redraw ?? true);
+    redraw = pick(redraw, true);
     if (!dataGrouping) {
         dataGrouping = {
             forced: false,

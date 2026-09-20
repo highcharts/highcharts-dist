@@ -1,18 +1,17 @@
 /* *
  *
  *  (c) 2010-2026 Highsoft AS
- *  Authors: Paweł Lysy, Grzegorz Blachliński
+ *  Author: Paweł Lysy Grzegorz Blachliński
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
 'use strict';
 import Point from '../../Core/Series/Point.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-import { extend } from '../../Shared/Utilities.js';
+import { extend, pick } from '../../Shared/Utilities.js';
 const { seriesTypes: { column: { prototype: { pointClass: ColumnPoint } } } } = SeriesRegistry;
 /* *
  *
@@ -63,7 +62,7 @@ class LinkPoint extends ColumnPoint {
         animation, runEvent);
         this.visible = this.toNode.visible;
         extend(this, oldOptions);
-        if (redraw ?? true) {
+        if (pick(redraw, true)) {
             this.series.chart.redraw(animation);
         }
     }

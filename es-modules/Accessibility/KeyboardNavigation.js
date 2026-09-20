@@ -5,9 +5,8 @@
  *
  *  Main keyboard navigation handling.
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
@@ -110,7 +109,7 @@ class KeyboardNavigation {
      * @private
      */
     updateExitAnchor() {
-        const endMarkerId = `highcharts-end-of-chart-marker-${this.chart.index}`, endMarker = getElement(endMarkerId, this.chart.renderTo);
+        const endMarkerId = `highcharts-end-of-chart-marker-${this.chart.index}`, endMarker = getElement(endMarkerId);
         this.removeExitAnchor();
         if (endMarker) {
             this.makeElementAnExitAnchor(endMarker);

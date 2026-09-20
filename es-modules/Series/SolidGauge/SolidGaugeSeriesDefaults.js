@@ -5,9 +5,8 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
@@ -27,7 +26,6 @@
  * @extends      plotOptions.gauge
  * @excluding    dial, pivot, wrap
  * @product      highcharts
- * @requires     highcharts-more
  * @requires     modules/solid-gauge
  * @optionparent plotOptions.solidgauge
  */
@@ -46,14 +44,14 @@ const SolidGaugeSeriesDefaults = {
      * @apioption plotOptions.solidgauge.borderRadius
      */
     /**
-     * The inner radius for points in a solid gauge. Can be given either as a
-     * pixel value (number), or as a percentage string, like `"50%"`. Defaults
-     * to match the `pane.innerSize`.
+     * The inner radius for points in a solid gauge. Can be given only in
+     * percentage, either as a number or a string like `"50%"`.
      *
      * @sample {highcharts} highcharts/plotoptions/solidgauge-radius/
      *         Individual radius and innerRadius
      *
      * @type      {string}
+     * @default   "60%"
      * @since     4.1.6
      * @product   highcharts
      * @apioption plotOptions.solidgauge.innerRadius
@@ -84,9 +82,8 @@ const SolidGaugeSeriesDefaults = {
      * @apioption plotOptions.solidgauge.overshoot
      */
     /**
-     * The outer radius for points in a solid gauge. Can be given either as a
-     * pixel value (number), or as a percentage string, like `"100%"`. Defaults
-     * to match the `pane.size`.
+     * The outer radius for points in a solid gauge. Can be given only in
+     * percentage, either as a number or a string like `"100%"`.
      *
      * @sample {highcharts} highcharts/plotoptions/solidgauge-radius/
      *         Individual radius and innerRadius
@@ -129,7 +126,6 @@ const SolidGaugeSeriesDefaults = {
      */
     colorByPoint: true,
     dataLabels: {
-        verticalAlign: 'middle',
         y: 0
     }
 };
@@ -140,13 +136,12 @@ const SolidGaugeSeriesDefaults = {
  *
  * @extends   series,plotOptions.solidgauge
  * @excluding animationLimit, boostThreshold, connectEnds, connectNulls,
- *            cropThreshold, dashStyle, dial,
+ *            cropThreshold, dashStyle, dataParser, dataURL, dial,
  *            findNearestPointBy, getExtremesFromAll, marker, negativeColor,
  *            pointPlacement, pivot, shadow, softThreshold, stack, stacking,
  *            states, step, threshold, turboThreshold, wrap, zoneAxis, zones,
  *            dataSorting, boostBlending
  * @product   highcharts
- * @requires  highcharts-more
  * @requires  modules/solid-gauge
  * @apioption series.solidgauge
  */
@@ -184,16 +179,14 @@ const SolidGaugeSeriesDefaults = {
  * @sample {highcharts} highcharts/series/data-array-of-objects/
  *         Config objects
  *
- * @basic
  * @type      {Array<number|null|*>}
  * @extends   series.gauge.data
  * @product   highcharts
  * @apioption series.solidgauge.data
  */
 /**
- * The inner radius of an individual point in a solid gauge. Can be given either
- * as a pixel value (number), or as a percentage string, like `"50%"`. Defaults
- * to match the `pane.innerSize` or the series-level `innerRadius` if set.
+ * The inner radius of an individual point in a solid gauge. Can be given only
+ * in percentage, either as a number or a string like `"50%"`.
  *
  * @sample {highcharts} highcharts/plotoptions/solidgauge-radius/
  *         Individual radius and innerRadius
@@ -204,9 +197,8 @@ const SolidGaugeSeriesDefaults = {
  * @apioption series.solidgauge.data.innerRadius
  */
 /**
- * The outer radius of an individual point in a solid gauge. Can be given either
- * as a pixel value (number), or as a percentage string, like `"100%"`. Defaults
- * to match the `pane.size` or the series-level `radius` if set.
+ * The outer radius of an individual point in a solid gauge. Can be
+ * given only in percentage, either as a number or a string like `"100%"`.
  *
  * @sample {highcharts} highcharts/plotoptions/solidgauge-radius/
  *         Individual radius and innerRadius

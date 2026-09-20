@@ -1,8 +1,8 @@
 /* *
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
+ *
  *
  * */
 'use strict';
@@ -19,7 +19,7 @@ import { correctFloat, extend, isArray, merge } from '../../../Shared/Utilities.
 /**
  * The AO series type
  *
- * @internal
+ * @private
  * @class
  * @name Highcharts.seriesTypes.ao
  *
@@ -132,7 +132,7 @@ AOIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
      * @type  {Highcharts.ColorType}
      * @since 7.0.0
      */
-    greaterBarColor: 'var(--highcharts-positive-color)',
+    greaterBarColor: "#06b535" /* Palette.positiveColor */,
     /**
      * Color of the Awesome oscillator series bar that is lower than the
      * previous one. Note that if a `color` is defined, the `color`
@@ -144,7 +144,7 @@ AOIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
      * @type  {Highcharts.ColorType}
      * @since 7.0.0
      */
-    lowerBarColor: 'var(--highcharts-negative-color)',
+    lowerBarColor: "#f21313" /* Palette.negativeColor */,
     threshold: 0,
     groupPadding: 0.2,
     pointPadding: 0.2,
@@ -173,7 +173,6 @@ SeriesRegistry.registerSeriesType('ao', AOIndicator);
  *  Default Export
  *
  * */
-/** @internal */
 export default AOIndicator;
 /* *
  *
@@ -187,7 +186,7 @@ export default AOIndicator;
  * @extends   series,plotOptions.ao
  * @since     7.0.0
  * @product   highstock
- * @excluding allAreas, colorAxis, joinBy, keys,
+ * @excluding allAreas, colorAxis, dataParser, dataURL, joinBy, keys,
  *            navigatorOptions, pointInterval, pointIntervalUnit,
  *            pointPlacement, pointRange, pointStart, showInNavigator, stacking
  * @requires  stock/indicators/indicators

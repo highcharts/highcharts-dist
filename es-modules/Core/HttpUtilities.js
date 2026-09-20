@@ -3,9 +3,8 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Christer Vasseng, Torstein Hønsi
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
@@ -29,7 +28,7 @@ import { discardElement, objectEach } from '../Shared/Utilities.js';
  * @return {false | undefined}
  * Returns false, if error occurred.
  */
-export function ajax(settings) {
+function ajax(settings) {
     const headers = {
         json: 'application/json',
         xml: 'application/xml',

@@ -3,9 +3,8 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Mateusz Bernacik
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
@@ -15,7 +14,6 @@
  *  Constants
  *
  * */
-/** @internal */
 const standaloneNavigatorDefaults = {
     chart: {
         height: 70,
@@ -64,5 +62,4 @@ const standaloneNavigatorDefaults = {
  *  Default Export
  *
  * */
-/** @internal */
 export default standaloneNavigatorDefaults;

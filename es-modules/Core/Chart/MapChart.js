@@ -3,9 +3,8 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
@@ -15,7 +14,7 @@ import D from '../Defaults.js';
 const { getOptions } = D;
 import SVGRenderer from '../Renderer/SVG/SVGRenderer.js';
 import '../../Maps/MapSymbols.js';
-import { isNumber, merge } from '../../Shared/Utilities.js';
+import { isNumber, merge, pick } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class
@@ -45,10 +44,9 @@ class MapChart extends Chart {
      * @param {Highcharts.Options} userOptions
      *        Custom options.
      *
-     * @param {Function|true} [callback]
+     * @param {Function} [callback]
      *        Function to run when the chart has loaded and all external
-     *        images are loaded. Set to `true` to return a promise that
-     *        resolves when the chart is ready.
+     *        images are loaded.
      *
      *
      * @emits Highcharts.MapChart#event:init
@@ -65,11 +63,9 @@ class MapChart extends Chart {
                 type: 'map'
             },
             credits: {
-                mapText: (defaultCreditsOptions.mapText ??
-                    ' \u00a9 <a href="{geojson.copyrightUrl}">' +
-                        '{geojson.copyrightShort}</a>'),
-                mapTextFull: defaultCreditsOptions.mapTextFull ??
-                    '{geojson.copyright}'
+                mapText: pick(defaultCreditsOptions.mapText, ' \u00a9 <a href="{geojson.copyrightUrl}">' +
+                    '{geojson.copyrightShort}</a>'),
+                mapTextFull: pick(defaultCreditsOptions.mapTextFull, '{geojson.copyright}')
             },
             mapView: {}, // Required to enable Chart.mapView
             tooltip: {
@@ -86,7 +82,7 @@ class MapChart extends Chart {
      *
      * Deprecated as of v9.3 in favor of [MapView.zoomBy](https://api.highcharts.com/class-reference/Highcharts.MapView#zoomBy).
      *
-     * @deprecated 9.3.0
+     * @deprecated
      * @function Highcharts.Chart#mapZoom
      *
      * @param {number} [howMuch]
@@ -126,6 +122,11 @@ class MapChart extends Chart {
     /**
      * A wrapper for the chart's update function that will additionally run
      * recommendMapView on chart.map change.
+     *
+     * @function Highcharts.MapChart#update
+     *
+     * @param {Highcharts.Options} options
+     *        The chart options.
      */
     update(options) {
         // Calculate and set the recommended map view if map option is set
@@ -191,8 +192,7 @@ class MapChart extends Chart {
      * The chart object.
      */
     function mapChart(a, b, c) {
-        const chart = new MapChart(a, b, c);
-        return chart.promise ?? chart;
+        return new MapChart(a, b, c);
     }
     MapChart.mapChart = mapChart;
     /* eslint-enable jsdoc/check-param-names */

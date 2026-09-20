@@ -3,9 +3,8 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
@@ -40,7 +39,7 @@ const HeikinAshiDefaults = {
  *
  * @type      {*}
  * @extends   series,plotOptions.heikinashi
- * @excluding marker
+ * @excluding dataParser, dataURL, marker
  * @product   highstock
  * @requires  modules/heikinashi
  * @apioption series.heikinashi
@@ -89,7 +88,6 @@ const HeikinAshiDefaults = {
  *    }]
  *    ```
  *
- * @basic
  * @type      {Array<Array<(number|string),number,number,number>|Array<(number|string),number,number,number,number>|*>}
  * @extends   series.candlestick.data
  * @excluding y

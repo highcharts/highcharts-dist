@@ -1,8 +1,7 @@
 /* *
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
@@ -20,7 +19,7 @@ import { correctFloat, defined, extend, merge } from '../../../Shared/Utilities.
 /**
  * The MACD series type.
  *
- * @internal
+ * @private
  * @class
  * @name Highcharts.seriesTypes.macd
  *
@@ -233,7 +232,7 @@ class MACDIndicator extends SMAIndicator {
  * `linkedTo` option to be set and should be loaded after the
  * `stock/indicators/indicators.js`.
  *
- * @sample {highstock} stock/indicators/macd
+ * @sample stock/indicators/macd
  *         MACD indicator
  *
  * @extends      plotOptions.sma
@@ -264,7 +263,7 @@ MACDIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
      */
     signalLine: {
         /**
-         * @sample {highstock} stock/indicators/macd-zones
+         * @sample stock/indicators/macd-zones
          *         Zones in MACD
          *
          * @extends plotOptions.macd.zones
@@ -288,7 +287,7 @@ MACDIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
      */
     macdLine: {
         /**
-         * @sample {highstock} stock/indicators/macd-zones
+         * @sample stock/indicators/macd-zones
          *         Zones in MACD
          *
          * @extends plotOptions.macd.zones
@@ -350,7 +349,6 @@ SeriesRegistry.registerSeriesType('macd', MACDIndicator);
  *  Default Export
  *
  * */
-/** @internal */
 export default MACDIndicator;
 /* *
  *
@@ -364,6 +362,7 @@ export default MACDIndicator;
  * @extends   series,plotOptions.macd
  * @since     6.0.0
  * @product   highstock
+ * @excluding dataParser, dataURL
  * @requires  stock/indicators/indicators
  * @requires  stock/indicators/macd
  * @apioption series.macd

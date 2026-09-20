@@ -3,9 +3,8 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *  Sand-Signika theme for Highcharts JS
  *
@@ -29,44 +28,33 @@ var SandSignikaTheme;
      *
      * */
     SandSignikaTheme.options = {
-        palette: {
-            light: {
-                backgroundColor: '#f7f7f7',
-                colors: [
-                    '#f45b5b', '#8085e9', '#8d4654', '#7798BF',
-                    '#aaeeee', '#ff0066', '#eeaaee', '#55BF3B',
-                    '#DF5353', '#7798BF', '#aaeeee'
-                ]
-            }
-        },
+        colors: [
+            '#f45b5b', '#8085e9', '#8d4654', '#7798BF', '#aaeeee',
+            '#ff0066', '#eeaaee', '#55BF3B', '#DF5353', '#7798BF', '#aaeeee'
+        ],
         chart: {
-            backgroundColor: 'light-dark(transparent, #141414)',
+            backgroundColor: null,
             style: {
                 fontFamily: 'Signika, serif'
             }
         },
         title: {
             style: {
-                color: 'var(--highcharts-neutral-color-100)',
+                color: 'black',
                 fontSize: '16px',
                 fontWeight: 'bold'
             }
         },
         subtitle: {
             style: {
-                color: 'var(--highcharts-neutral-color-100)'
+                color: 'black'
             }
         },
         tooltip: {
-            borderWidth: 0,
-            // Inverted tooltip colors
-            backgroundColor: 'var(--highcharts-neutral-color-80)',
-            style: {
-                color: 'var(--highcharts-background-color)'
-            }
+            borderWidth: 0
         },
         legend: {
-            backgroundColor: 'var(--highcharts-neutral-color-10)',
+            backgroundColor: '#E0E0E8',
             itemStyle: {
                 fontWeight: 'bold',
                 fontSize: '13px'
@@ -75,47 +63,48 @@ var SandSignikaTheme;
         xAxis: {
             labels: {
                 style: {
-                    color: 'var(--highcharts-neutral-color-60)'
+                    color: '#6e6e70'
                 }
             }
         },
         yAxis: {
             labels: {
                 style: {
-                    color: 'var(--highcharts-neutral-color-60)'
+                    color: '#6e6e70'
                 }
             }
         },
         plotOptions: {
             series: {
-                shadow: true,
-                dataLabels: {
-                    color: 'light-dark(#000, #fff)',
-                    style: {
-                        textOutline: 'none'
-                    }
-                }
+                shadow: true
+            },
+            candlestick: {
+                lineColor: '#404048'
             },
             map: {
                 shadow: false
             }
         },
         // Highcharts Stock specific
-        global: {
-            buttonTheme: {
-                fill: 'light-dark(#fff, #000)',
-                stroke: 'var(--highcharts-neutral-color-20)',
-                states: {
-                    select: {
-                        fill: 'var(--highcharts-neutral-color-10)'
-                    }
-                }
+        navigator: {
+            xAxis: {
+                gridLineColor: '#D0D0D8'
             }
         },
         rangeSelector: {
             buttonTheme: {
-                'stroke-width': 1
+                fill: 'white',
+                stroke: '#C0C0C8',
+                'stroke-width': 1,
+                states: {
+                    select: {
+                        fill: '#D0D0D8'
+                    }
+                }
             }
+        },
+        scrollbar: {
+            trackBorderColor: '#C0C0C8'
         }
     };
     /* *

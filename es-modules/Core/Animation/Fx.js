@@ -3,9 +3,8 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
@@ -117,22 +116,24 @@ class Fx {
      */
     update() {
         const elem = this.elem, prop = this.prop, // If destroyed, it is null
-        now = this.now ?? 1, step = this.options.step;
+        now = this.now, step = this.options.step;
         // Animation setter defined from outside
         if (this[prop + 'Setter']) {
             this[prop + 'Setter']();
             // Other animations on SVGElement
         }
-        else if (elem && elem.attr) {
+        else if (elem.attr) {
             if (elem.element) {
-                elem.attr(prop, now, void 0, true);
+                elem.attr(prop, now, null, true);
             }
             // HTML styles, raw HTML content like container size
         }
-        else if (elem) {
-            elem.style[prop] = now + (this.unit || '');
+        else {
+            elem.style[prop] = now + this.unit;
         }
-        step?.call(elem, now, this);
+        if (step) {
+            step.call(elem, now, this);
+        }
     }
     /**
      * Run an animation.
@@ -150,10 +151,12 @@ class Fx {
      *
      */
     run(from, to, unit) {
-        const { elem, options } = this, { complete, curAnim = {} } = options, timer = (gotoEnd) => (timer.stopped ? false : this.step(gotoEnd)), requestAnimationFrame = win.requestAnimationFrame ||
+        const self = this, options = self.options, timer = function (gotoEnd) {
+            return timer.stopped ? false : self.step(gotoEnd);
+        }, requestAnimationFrame = win.requestAnimationFrame ||
             function (step) {
                 setTimeout(step, 13);
-            }, step = () => {
+            }, step = function () {
             for (let i = 0; i < Fx.timers.length; i++) {
                 if (!Fx.timers[i]()) {
                     Fx.timers.splice(i--, 1);
@@ -163,11 +166,11 @@ class Fx {
                 requestAnimationFrame(step);
             }
         };
-        if (from === to && !elem['forceAnimate:' + this.prop]) {
-            delete curAnim[this.prop];
-            if (complete &&
-                Object.keys(curAnim).length === 0) {
-                complete.call(elem);
+        if (from === to && !this.elem['forceAnimate:' + this.prop]) {
+            delete options.curAnim[this.prop];
+            if (options.complete &&
+                Object.keys(options.curAnim).length === 0) {
+                options.complete.call(this.elem);
             }
         }
         else { // #7166
@@ -177,7 +180,7 @@ class Fx {
             this.unit = unit;
             this.now = this.start;
             this.pos = 0;
-            timer.elem = elem;
+            timer.elem = this.elem;
             timer.prop = this.prop;
             if (timer() && Fx.timers.push(timer) === 1) {
                 requestAnimationFrame(step);
@@ -198,8 +201,7 @@ class Fx {
     step(gotoEnd) {
         const t = +new Date(), options = this.options, elem = this.elem, complete = options.complete, duration = options.duration, curAnim = options.curAnim;
         let ret, done;
-        // #2616, element is destroyed
-        if (elem?.attr && !elem.element) {
+        if (!!elem.attr && !elem.element) { // #2616, element is destroyed
             ret = false;
         }
         else if (gotoEnd || t >= duration + this.startTime) {
@@ -231,7 +233,6 @@ class Fx {
      * Prepare start and end values so that the path can be animated one to one.
      *
      * @function Highcharts.Fx#initPath
-     * @internal
      *
      * @param {Highcharts.SVGElement} elem
      *        The SVGElement item.

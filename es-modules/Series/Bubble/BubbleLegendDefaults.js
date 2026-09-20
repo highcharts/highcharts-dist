@@ -4,9 +4,8 @@
  *
  *  Author: Paweł Potaczek
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
@@ -166,7 +165,7 @@ const BubbleLegendDefaults = {
             /** @ignore-option */
             fontSize: '0.9em',
             /** @ignore-option */
-            color: 'var(--highcharts-neutral-color-100)'
+            color: "#000000" /* Palette.neutralColor100 */
         },
         /**
          * The x position offset of the label relative to the
