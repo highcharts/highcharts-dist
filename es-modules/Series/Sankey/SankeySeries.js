@@ -5,8 +5,9 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -23,9 +24,9 @@ const { parse: color } = Color;
 import TU from '../TreeUtilities.js';
 const { getLevelOptions, getNodeWidth } = TU;
 import SVGElement from '../../Core/Renderer/SVG/SVGElement.js';
-import TextPath from '../../Extensions/TextPath.js';
-import { clamp, crisp, extend, isObject, merge, pick, relativeLength, stableSort } from '../../Shared/Utilities.js';
-TextPath.compose(SVGElement);
+import { composeTextPath } from '../../Extensions/TextPath.js';
+import { clamp, crisp, extend, isObject, merge, relativeLength, stableSort } from '../../Shared/Utilities.js';
+composeTextPath(SVGElement);
 /* *
  *
  *  Class
@@ -93,16 +94,23 @@ class SankeySeries extends ColumnSeries {
      * Order the nodes, starting with the root node(s). (#9818)
      * @private
      */
-    order(node, level) {
+    order(node, level, visited) {
         const series = this;
-        // Prevents circular recursion:
-        if (typeof node.level === 'undefined') {
+        // Watch the visited nodes
+        if (!visited) {
+            visited = new Set();
+        }
+        // Prevents circular recursion, but updates level if a longer
+        // path is found from a different branch
+        if (typeof node.level === 'undefined' || node.level < level) {
             node.level = level;
+            visited.add(node);
             for (const link of node.linksFrom) {
-                if (link.toNode) {
-                    series.order(link.toNode, level + 1);
+                if (link.toNode && !visited.has(link.toNode)) {
+                    series.order(link.toNode, level + 1, visited);
                 }
             }
+            visited.delete(node);
         }
     }
     /**
@@ -166,9 +174,15 @@ class SankeySeries extends ColumnSeries {
             'linkOpacity',
             'opacity'
         ].reduce((obj, key) => {
-            obj[key] = pick(stateOptions[key], options[key], levelOptions[key], series.options[key]);
+            obj[key] =
+                stateOptions[key] ??
+                    options[key] ??
+                    levelOptions[key] ??
+                    series.options[key];
             return obj;
-        }, {}), color = pick(stateOptions.color, options.color, values.colorByPoint ? point.color : levelOptions.color);
+        }, {}), color = stateOptions.color ??
+            options.color ??
+            (values.colorByPoint ? point.color : levelOptions.color);
         // Node attributes
         if (point.isNode) {
             return {
@@ -254,21 +268,24 @@ class SankeySeries extends ColumnSeries {
         }
     }
     /**
-     * Run translation operations for one link.
-     * @private
+     * Get the Y position of a link.
+     * @internal
      */
-    translateLink(point) {
-        const getY = (node, fromOrTo) => {
-            const linkTop = (node.offset(point, fromOrTo) *
-                translationFactor);
-            const y = Math.min(node.nodeY + linkTop, 
-            // Prevent links from spilling below the node (#12014)
-            node.nodeY + (node.shapeArgs && node.shapeArgs.height || 0) - linkHeight);
-            return y;
-        };
-        const fromNode = point.fromNode, toNode = point.toNode, chart = this.chart, { inverted } = chart, translationFactor = this.translationFactor, options = this.options, linkColorMode = pick(point.linkColorMode, options.linkColorMode), curvy = ((chart.inverted ? -this.colDistance : this.colDistance) *
+    getY(point, node, fromOrTo, linkHeight) {
+        const linkTop = (node.offset(point, fromOrTo) || 0) * this.translationFactor;
+        const y = Math.min(node.nodeY + linkTop, 
+        // Prevent links from spilling below the node (#12014)
+        node.nodeY + (node.shapeArgs && node.shapeArgs.height || 0) - linkHeight);
+        return y;
+    }
+    /**
+     * Run translation operations for one link.
+     * @internal
+     */
+    translateLink(point, linkToY) {
+        const fromNode = point.fromNode, toNode = point.toNode, chart = this.chart, { inverted } = chart, translationFactor = this.translationFactor, options = this.options, linkColorMode = (point.linkColorMode ?? options.linkColorMode), curvy = ((chart.inverted ? -this.colDistance : this.colDistance) *
             options.curveFactor), nodeLeft = fromNode.nodeX, right = toNode.nodeX, outgoing = point.outgoing;
-        let linkHeight = Math.max(point.weight * translationFactor, this.options.minLinkWidth), fromY = getY(fromNode, 'linksFrom'), toY = getY(toNode, 'linksTo'), nodeW = this.nodeWidth, straight = right > nodeLeft + nodeW;
+        let linkHeight = Math.max((point.weight || 0) * translationFactor, this.options.minLinkWidth || 0), fromY = this.getY(point, fromNode, 'linksFrom', linkHeight), toY = linkToY || this.getY(point, toNode, 'linksTo', linkHeight), nodeW = this.nodeWidth, straight = right > nodeLeft + nodeW;
         if (chart.inverted) {
             fromY = chart.plotSizeY - fromY;
             toY = (chart.plotSizeY || 0) - toY;
@@ -387,10 +404,10 @@ class SankeySeries extends ColumnSeries {
     }
     /**
      * Run translation operations for one node.
-     * @private
+     * @internal
      */
     translateNode(node, column) {
-        const translationFactor = this.translationFactor, chart = this.chart, options = this.options, { borderRadius, borderWidth = 0 } = options, sum = node.getSum(), nodeHeight = Math.max(Math.round(sum * translationFactor), this.options.minLinkWidth), nodeWidth = Math.round(this.nodeWidth), nodeOffset = column.sankeyColumn.offset(node, translationFactor), fromNodeTop = crisp(pick(nodeOffset.absoluteTop, (column.sankeyColumn.top(translationFactor) +
+        const translationFactor = this.translationFactor, chart = this.chart, options = this.options, { borderRadius, borderWidth = 0 } = options, sum = node.getSum(), nodeHeight = Math.max(Math.round(sum * translationFactor), this.options.minLinkWidth), nodeWidth = Math.round(this.nodeWidth), nodeOffset = column.sankeyColumn.offset(node, translationFactor), fromNodeTop = crisp((nodeOffset.absoluteTop ?? (column.sankeyColumn.top(translationFactor) +
             nodeOffset.relativeTop)), borderWidth), left = crisp(this.colDistance * node.column +
             borderWidth / 2, borderWidth) + relativeLength(node.options[chart.inverted ?
             'offsetVertical' :
@@ -407,9 +424,9 @@ class SankeySeries extends ColumnSeries {
             let x = nodeLeft, y = fromNodeTop, width = node.options.width || options.width || nodeWidth, height = node.options.height || options.height || nodeHeight;
             // Border radius should not greater than half the height of the node
             // #18956
-            const r = clamp(relativeLength((typeof borderRadius === 'object' ?
+            const r = clamp(relativeLength((isObject(borderRadius) ?
                 borderRadius.radius :
-                borderRadius || 0), width), 0, nodeHeight / 2);
+                borderRadius) || 0, width), 0, nodeHeight / 2);
             if (chart.inverted) {
                 x = nodeLeft - nodeWidth;
                 y = chart.plotSizeY - fromNodeTop - nodeHeight;
@@ -424,6 +441,8 @@ class SankeySeries extends ColumnSeries {
                 }),
                 zIndex: void 0
             };
+            // Delete so it doesn't override anything on merge.
+            delete node.dlOptions.zIndex;
             // Pass test in drawPoints
             node.plotX = 1;
             node.plotY = 1;
@@ -542,7 +561,7 @@ export default SankeySeries;
 * @see {@link https://jsfiddle.net/gh/get/library/pure/highcharts/highcharts/tree/master/samples/highcharts/plotoptions/sankey-node-column/|Highcharts-Demo:}
 *         Specified node offset
 *
-* @deprecated
+* @deprecated 9.3.0
 * @name Highcharts.SankeyNodeObject#offset
 * @type {number|string}
 * @default 0

@@ -1,7 +1,8 @@
 /* *
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -18,7 +19,7 @@ import { extend, isArray, merge } from '../../../Shared/Utilities.js';
 /**
  * The Price Envelopes series type.
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.priceenvelopes
  *
@@ -91,7 +92,7 @@ class PriceEnvelopesIndicator extends SMAIndicator {
  * This series requires the `linkedTo` option to be set and should be loaded
  * after the `stock/indicators/indicators.js` file.
  *
- * @sample stock/indicators/price-envelopes
+ * @sample {highstock} stock/indicators/price-envelopes
  *         Price envelopes
  *
  * @extends      plotOptions.sma
@@ -121,6 +122,17 @@ PriceEnvelopesIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
          */
         bottomBand: 0.1
     },
+    /**
+     * Option for fill color between lines in Price Envelopes Indicator.
+     *
+     * @sample {highstock} stock/indicators/indicator-area-fill
+     *      Background fill between lines.
+     *
+     * @type      {Highcharts.Color}
+     * @since 11.0.0
+     * @apioption plotOptions.priceenvelopes.fillColor
+     *
+     */
     /**
      * Bottom line options.
      */
@@ -153,17 +165,6 @@ PriceEnvelopesIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
     dataGrouping: {
         approximation: 'averages'
     }
-    /**
-     * Option for fill color between lines in Price Envelopes Indicator.
-     *
-     * @sample {highstock} stock/indicators/indicator-area-fill
-     *      Background fill between lines.
-     *
-     * @type      {Highcharts.Color}
-     * @since 11.0.0
-     * @apioption plotOptions.priceenvelopes.fillColor
-     *
-     */
 });
 extend(PriceEnvelopesIndicator.prototype, {
     areaLinesNames: ['top', 'bottom'],
@@ -181,6 +182,7 @@ SeriesRegistry.registerSeriesType('priceenvelopes', PriceEnvelopesIndicator);
  *  Default Export
  *
  * */
+/** @internal */
 export default PriceEnvelopesIndicator;
 /* *
  *
@@ -193,7 +195,6 @@ export default PriceEnvelopesIndicator;
  *
  * @extends   series,plotOptions.priceenvelopes
  * @since     6.0.0
- * @excluding dataParser, dataURL
  * @product   highstock
  * @requires  stock/indicators/indicators
  * @requires  stock/indicators/price-envelopes

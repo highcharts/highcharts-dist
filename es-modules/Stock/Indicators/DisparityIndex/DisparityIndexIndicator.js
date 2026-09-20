@@ -4,8 +4,9 @@
  *
  *  Disparity Index technical indicator for Highcharts Stock
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -21,7 +22,7 @@ import { correctFloat, defined, extend, isArray, merge } from '../../../Shared/U
 /**
  * The Disparity Index series type.
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.disparityindex
  *
@@ -83,7 +84,7 @@ class DisparityIndexIndicator extends SMAIndicator {
  * This series requires the `linkedTo` option to be set and should
  * be loaded after the `stock/indicators/indicators.js` file.
  *
- * @sample stock/indicators/disparity-index
+ * @sample {highstock} stock/indicators/disparity-index
  *         Disparity Index indicator
  *
  * @extends      plotOptions.sma
@@ -127,6 +128,7 @@ SeriesRegistry.registerSeriesType('disparityindex', DisparityIndexIndicator);
  *  Default Export
  *
  * */
+/** @internal */
 export default DisparityIndexIndicator;
 /* *
  *
@@ -141,9 +143,9 @@ export default DisparityIndexIndicator;
  * @extends   series,plotOptions.disparityindex
  * @since 9.1.0
  * @product   highstock
- * @excluding allAreas, colorAxis,  dataParser, dataURL, joinBy, keys,
- *            navigatorOptions, pointInterval, pointIntervalUnit,
- *            pointPlacement, pointRange, pointStart, showInNavigator, stacking
+ * @excluding allAreas, colorAxis, joinBy, keys, navigatorOptions,
+ *            pointInterval, pointIntervalUnit, pointPlacement, pointRange,
+ *            pointStart, showInNavigator, stacking
  * @requires  stock/indicators/indicators
  * @requires  stock/indicators/disparity-index
  * @apioption series.disparityindex

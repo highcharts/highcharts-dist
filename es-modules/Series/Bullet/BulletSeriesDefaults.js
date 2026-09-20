@@ -96,7 +96,7 @@ const BulletSeriesDefaults = {
  * @extends   series,plotOptions.bullet
  * @since     6.0.0
  * @product   highcharts
- * @excluding dataParser, dataURL, marker, boostThreshold,
+ * @excluding marker, boostThreshold,
  *            boostBlending
  * @requires  modules/bullet
  * @apioption series.bullet
@@ -141,6 +141,7 @@ const BulletSeriesDefaults = {
  *    }]
  *    ```
  *
+ * @basic
  * @type      {Array<Array<(number|string),number>|Array<(number|string),number,number>|*>}
  * @extends   series.column.data
  * @since     6.0.0

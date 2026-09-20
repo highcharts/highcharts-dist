@@ -3,8 +3,9 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -14,7 +15,7 @@ import MU from '../../Maps/MapUtilities.js';
 const { boundsFromPath } = MU;
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const ScatterPoint = SeriesRegistry.seriesTypes.scatter.prototype.pointClass;
-import { extend, internalClearTimeout, isNumber, pick } from '../../Shared/Utilities.js';
+import { extend, internalClearTimeout, isNumber } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class
@@ -54,8 +55,8 @@ class MapPoint extends ScatterPoint {
      * Extend the Point object to split paths.
      * @private
      */
-    applyOptions(options, x) {
-        const series = this.series, point = super.applyOptions(options, x), joinBy = series.joinBy;
+    applyOptions(options, x, isMock) {
+        const series = this.series, point = super.applyOptions(options, x, isMock), joinBy = series.joinBy;
         if (series.mapData && series.mapMap) {
             const joinKey = joinBy[1], mapKey = super.getNestedProperty(joinKey), mapPoint = typeof mapKey !== 'undefined' &&
                 series.mapMap[mapKey];
@@ -89,8 +90,10 @@ class MapPoint extends ScatterPoint {
             }
             else {
                 const propMiddleX = properties?.['hc-middle-x'], propMiddleY = properties?.['hc-middle-y'];
-                bounds.midX = (bounds.x1 + (bounds.x2 - bounds.x1) * pick(this.middleX, isNumber(propMiddleX) ? propMiddleX : 0.5));
-                let middleYFraction = pick(this.middleY, isNumber(propMiddleY) ? propMiddleY : 0.5);
+                bounds.midX = (bounds.x1 + (bounds.x2 - bounds.x1) * (this.middleX ??
+                    (isNumber(propMiddleX) ? propMiddleX : 0.5)));
+                let middleYFraction = this.middleY ??
+                    (isNumber(propMiddleY) ? propMiddleY : 0.5);
                 // No geographic geometry, only path given => flip
                 if (!this.geometry) {
                     middleYFraction = 1 - middleYFraction;

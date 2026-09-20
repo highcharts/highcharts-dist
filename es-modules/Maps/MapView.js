@@ -3,8 +3,9 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -19,7 +20,7 @@ const { topo2geo } = GeoJSONComposition;
 import MU from './MapUtilities.js';
 const { boundsFromPath } = MU;
 import Projection from './Projection.js';
-import { addEvent, clamp, crisp, fireEvent, isArray, isNumber, isObject, isString, merge, pick, pushUnique, relativeLength } from '../Shared/Utilities.js';
+import { addEvent, clamp, crisp, fireEvent, isArray, isNumber, isObject, isString, merge, pushUnique, relativeLength } from '../Shared/Utilities.js';
 /* *
  *
  *  Constants
@@ -206,7 +207,7 @@ class MapView {
          * The current center of the view in terms of `[longitude, latitude]`.
          * @name Highcharts.MapView#center
          * @readonly
-         * @type {LonLatArray}
+         * @type {Highcharts.LonLatArray}
          */
         this.center = o.center;
         this.options = o;
@@ -282,7 +283,7 @@ class MapView {
     fitToBounds(bounds, padding, redraw = true, animation) {
         const b = bounds || this.getProjectedBounds();
         if (b) {
-            const pad = pick(padding, bounds ? 0 : this.options.padding), fullField = this.getField(false), padArr = isArray(pad) ? pad : [pad, pad, pad, pad];
+            const pad = padding ?? (bounds ? 0 : this.options.padding), fullField = this.getField(false), padArr = isArray(pad) ? pad : [pad, pad, pad, pad];
             this.padding = [
                 relativeLength(padArr[0], fullField.height),
                 relativeLength(padArr[1], fullField.width),
@@ -925,7 +926,7 @@ class MapView {
             this.fitToBounds(void 0, void 0, false);
         }
         if (redraw) {
-            this.chart.redraw(animation);
+            this.redraw(animation);
         }
     }
     /**

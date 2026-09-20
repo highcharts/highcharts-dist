@@ -3,8 +3,9 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -15,12 +16,12 @@ const { defaultOptions } = D;
 import Color from '../../Color/Color.js';
 import H from '../../Globals.js';
 const { charts, deg2rad, doc, isFirefox, isMS, isWebKit, noop, SVG_NS, symbolSizes, win } = H;
-import RendererRegistry from '../RendererRegistry.js';
+import Palette from '../../Color/Palette.js';
 import SVGElement from './SVGElement.js';
 import SVGLabel from './SVGLabel.js';
 import Symbols from './Symbols.js';
 import TextBuilder from './TextBuilder.js';
-import { addEvent, attr, createElement, crisp, css, defined, destroyObjectProperties, extend, isArray, isNumber, isObject, isString, merge, pick, pInt, replaceNested } from '../../../Shared/Utilities.js';
+import { addEvent, attr, createElement, crisp, css, defined, destroyObjectProperties, extend, isArray, isNumber, isObject, isString, merge, pInt, replaceNested } from '../../../Shared/Utilities.js';
 import { uniqueKey } from '../../Utilities.js';
 /* *
  *
@@ -146,7 +147,7 @@ class SVGRenderer {
      * does, it will avoid setting presentational attributes in some cases, but
      * not when set explicitly through `.attr` and `.css` etc.
      */
-    constructor(container, width, height, style, forExport, allowHTML, styledMode) {
+    constructor(container, width, height, style, forExport, allowHTML, styledMode, palette, chartIndex) {
         /** @internal */
         this.x = 0;
         /** @internal */
@@ -157,9 +158,6 @@ class SVGRenderer {
             version: '1.1',
             'class': 'highcharts-root'
         }), element = boxWrapper.element;
-        if (!styledMode) {
-            boxWrapper.css(this.getStyle(style || {}));
-        }
         container.appendChild(element);
         // Always use ltr on the container, otherwise text-anchor will be
         // flipped and text appear outside labels, buttons, tooltip etc (#3482)
@@ -174,17 +172,23 @@ class SVGRenderer {
         this.url = this.getReferenceURL();
         // Add description
         const desc = this.createElement('desc').add();
-        desc.element.appendChild(doc.createTextNode('Created with Highcharts 12.6.1'));
+        desc.element.appendChild(doc.createTextNode('Created with Highcharts 13.1.1'));
         this.defs = this.createElement('defs').add();
         this.allowHTML = allowHTML;
         this.forExport = forExport;
         this.styledMode = styledMode;
+        this.chartIndex = chartIndex || 0;
         this.gradients = {}; // Object where gradient SvgElements are stored
         this.cache = {}; // Cache for numerical bounding boxes
         this.cacheKeys = [];
         this.asyncCounter = 0;
         this.rootFontSize = boxWrapper.getStyle('font-size');
         renderer.setSize(width, height, false);
+        if (!styledMode) {
+            boxWrapper.css(this.getStyle(style || {}));
+            // Create the palette
+            this.palette = new Palette(this, palette || defaultOptions.palette);
+        }
         // Issue 110 workaround:
         // In Firefox, if a div is positioned by percentage, its pixel position
         // may land between pixels. The container itself doesn't display this,
@@ -385,7 +389,7 @@ class SVGRenderer {
         if (renderer.unSubPixelFix) {
             renderer.unSubPixelFix();
         }
-        renderer.alignedObjects = null;
+        renderer.alignedObjects.length = 0;
         return null;
     }
     /**
@@ -437,10 +441,10 @@ class SVGRenderer {
                 .map((key) => `${key}-${shadowOptions[key]}`)
         ].join('-').toLowerCase().replace(/[^a-z\d\-]/g, ''), options = merge({
             color: '#000000',
-            offsetX: 1,
-            offsetY: 1,
-            opacity: 0.15,
-            width: 5
+            offsetX: 0,
+            offsetY: 2,
+            opacity: 0.05,
+            width: 6
         }, shadowOptions);
         if (!this.defs.element.querySelector(`#${id}`)) {
             this.definition({
@@ -954,7 +958,7 @@ class SVGRenderer {
                         this.attr('height')
                 });
             },
-            duration: pick(animate, true) ? void 0 : 0
+            duration: (animate ?? true) ? void 0 : 0
         });
         renderer.alignElements();
     }
@@ -1112,8 +1116,8 @@ class SVGRenderer {
             // The image width is not always the same as the symbol width. The
             // image may be centered within the symbol, as is the case when
             // image shapes are used as label backgrounds, for example in flags.
-            img.imgwidth = pick(options?.width, symbolSizes[imageSrc]?.width);
-            img.imgheight = pick(options?.height, symbolSizes[imageSrc]?.height);
+            img.imgwidth = (options?.width ?? symbolSizes[imageSrc]?.width);
+            img.imgheight = (options?.height ?? symbolSizes[imageSrc]?.height);
             /**
              * Set the size and position
              */
@@ -1231,7 +1235,7 @@ class SVGRenderer {
      * // Leave only the lower right quarter visible
      * circle.clip(clipRect);
      *
-     * @deprecated
+     * @deprecated 11.2.0
      *
      * @function Highcharts.SVGRenderer#clipRect
      *
@@ -1696,17 +1700,17 @@ extend(SVGRenderer.prototype, {
      * Dummy function for plugins, called every time the renderer is updated.
      * Prior to Highcharts 5, this was used for the canvg renderer.
      *
-     * @deprecated
+     * @deprecated 5.0.0
      * @function Highcharts.SVGRenderer#draw
      */
     draw: noop
 });
 /* *
  *
- *  Registry
+ *  Compatibility
  *
  * */
-RendererRegistry.registerRendererType('svg', SVGRenderer, true);
+H.Renderer = SVGRenderer;
 /* *
  *
  *  Export Default
@@ -1796,7 +1800,7 @@ export default SVGRenderer;
 * The shadow color.
 * @name    Highcharts.ShadowOptionsObject#color
 * @type    {Highcharts.ColorString|undefined}
-* @default ${palette.neutralColor100}
+* @default var(--highcharts-neutral-color-100)
 */ /**
 * The horizontal offset from the element.
 *

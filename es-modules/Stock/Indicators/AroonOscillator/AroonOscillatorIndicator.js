@@ -1,7 +1,8 @@
 /* *
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -18,7 +19,7 @@ import { extend, merge } from '../../../Shared/Utilities.js';
 /**
  * The Aroon Oscillator series type.
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.aroonoscillator
  *
@@ -93,6 +94,7 @@ SeriesRegistry.registerSeriesType('aroonoscillator', AroonOscillatorIndicator);
  *  Default Export
  *
  * */
+/** @internal */
 export default AroonOscillatorIndicator;
 /* *
  *
@@ -106,8 +108,8 @@ export default AroonOscillatorIndicator;
  * @extends   series,plotOptions.aroonoscillator
  * @since     7.0.0
  * @product   highstock
- * @excluding allAreas, aroonDown, colorAxis, compare, compareBase, dataParser,
- *            dataURL, joinBy, keys, navigatorOptions, pointInterval,
+ * @excluding allAreas, aroonDown, colorAxis, compare, compareBase,
+ *            joinBy, keys, navigatorOptions, pointInterval,
  *            pointIntervalUnit, pointPlacement, pointRange, pointStart,
  *            showInNavigator, stacking
  * @requires  stock/indicators/indicators

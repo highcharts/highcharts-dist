@@ -3,8 +3,9 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -15,6 +16,7 @@ import ErrorBarSeriesDefaults from './ErrorBarSeriesDefaults.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { arearange: AreaRangeSeries } = SeriesRegistry.seriesTypes;
 import { addEvent, extend, merge } from '../../Shared/Utilities.js';
+import RangeDataLabel from '../RangeDataLabel.js';
 /* *
  *
  *  Class
@@ -23,7 +25,7 @@ import { addEvent, extend, merge } from '../../Shared/Utilities.js';
 /**
  * Errorbar series type
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.errorbar
  *
@@ -43,14 +45,9 @@ class ErrorBarSeries extends BoxPlotSeries {
             ColumnSeries.prototype.getColumnMetrics.call(series));
     }
     drawDataLabels() {
-        const series = this, valKey = series.pointValKey;
+        // Error bars draw upper/lower labels via the area range option adapter.
         if (AreaRangeSeries) {
-            AreaRangeSeries.prototype.drawDataLabels.call(series);
-            // Arearange drawDataLabels does not reset point.y to high,
-            // but to low after drawing (#4133)
-            for (const point of series.points) {
-                point.y = point[valKey];
-            }
+            AreaRangeSeries.prototype.drawDataLabels.call(this);
         }
     }
     toYData(point) {
@@ -63,7 +60,7 @@ class ErrorBarSeries extends BoxPlotSeries {
  *  Static Properties
  *
  * */
-ErrorBarSeries.defaultOptions = merge(BoxPlotSeries.defaultOptions, ErrorBarSeriesDefaults);
+ErrorBarSeries.defaultOptions = merge(BoxPlotSeries.defaultOptions, ErrorBarSeriesDefaults, { dataLabels: { formatter: RangeDataLabel.formatter } });
 addEvent(ErrorBarSeries, 'afterTranslate', function () {
     for (const point of this.points) {
         point.plotLow = point.plotY;
@@ -80,4 +77,5 @@ SeriesRegistry.registerSeriesType('errorbar', ErrorBarSeries);
  *  Default Export
  *
  * */
+/** @internal */
 export default ErrorBarSeries;

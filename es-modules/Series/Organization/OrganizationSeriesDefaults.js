@@ -5,8 +5,9 @@
  *  (c) 2018-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -34,6 +35,7 @@
  * @excluding    allowPointSelect, curveFactor, dataSorting
  * @since        7.1.0
  * @product      highcharts
+ * @requires     modules/sankey
  * @requires     modules/organization
  * @optionparent plotOptions.organization
  */
@@ -43,7 +45,7 @@ const OrganizationSeriesDefaults = {
      *
      * @type {Highcharts.ColorString}
      */
-    borderColor: "#666666" /* Palette.neutralColor60 */,
+    borderColor: 'var(--highcharts-neutral-color-60)',
     /**
      * The border radius of the node cards.
      *
@@ -58,7 +60,7 @@ const OrganizationSeriesDefaults = {
      * @sample   highcharts/series-organization/link-options
      *           Square links
      *
-     * @deprecated
+     * @deprecated 10.3.0
      * @apioption series.organization.linkRadius
      */
     /**
@@ -83,7 +85,7 @@ const OrganizationSeriesDefaults = {
          *
          * @type {Highcharts.ColorString}
          */
-        color: "#666666" /* Palette.neutralColor60 */,
+        color: 'var(--highcharts-neutral-color-60)',
         /**
          * The line width of the links connecting nodes, in pixels.
          *
@@ -193,8 +195,14 @@ const OrganizationSeriesDefaults = {
                     this.point.name + '</h4>';
             }
             if (title) {
-                html += '<p ' + styleAttr(titleStyle) + '>' +
-                    (title || '') + '</p>';
+                html += '<p ' + styleAttr(titleStyle) + '>' + title + '</p>';
+            }
+            else {
+                // Required to prevent a glitch in iOS Safari, where text would
+                // flow outside the box if the title is missing (#25043)
+                html += `<p aria-hidden="true"
+                        style="line-height:0;margin:1px;font-size:1px;opacity:0"
+                    >.</p>`;
             }
             if (description) {
                 html += '<p ' + styleAttr(descriptionStyle) + '>' +
@@ -205,17 +213,22 @@ const OrganizationSeriesDefaults = {
             return html;
         },
         style: {
-            /** @internal */
             fontWeight: 'normal',
-            /** @internal */
             fontSize: '0.9em',
-            /** @internal */
             textAlign: 'left'
         },
         useHTML: true,
+        /**
+         * @extends plotOptions.series.dataLabels.textPath
+         */
         linkTextPath: {
+            /**
+             * @default { startOffset: '95%', textAnchor: 'end' }
+             */
             attributes: {
+                /** @ignore */
                 startOffset: '95%',
+                /** @ignore */
                 textAnchor: 'end'
             }
         }
@@ -247,9 +260,10 @@ const OrganizationSeriesDefaults = {
      * @sample highcharts/series-organization/hanging-shrink
      *         Every indent decreases the nodes' width
      *
-     * @type {Highcharts.OrganizationHangingIndentTranslationValue}
-     * @since 10.0.0
+     * @declare Highcharts.OrganizationHangingIndentTranslationValue
      * @default inherit
+     * @since   10.0.0
+     * @type    {"inherit"|"cumulative"|"shrink"}
      *
      * @private
      */
@@ -273,7 +287,7 @@ const OrganizationSeriesDefaults = {
      * [link.color](#plotOptions.organization.link.color).
      *
      * @type {Highcharts.ColorString}
-     * @deprecated
+     * @deprecated 10.3.0
      * @apioption series.organization.linkColor
      * @private
      */
@@ -285,7 +299,7 @@ const OrganizationSeriesDefaults = {
      * @sample   highcharts/series-organization/link-options
      *           Square links
      *
-     * @deprecated
+     * @deprecated 10.3.0
      * @apioption series.organization.linkLineWidth
      * @private
      */
@@ -456,6 +470,7 @@ const OrganizationSeriesDefaults = {
  *     }]
  *  ```
  *
+ * @basic
  * @type      {Array<*>}
  * @extends   series.sankey.data
  * @product   highcharts

@@ -3,8 +3,9 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -19,7 +20,7 @@ import RangeSelectorDefaults from '../../Stock/RangeSelector/RangeSelectorDefaul
 import ScrollbarDefaults from '../../Stock/Scrollbar/ScrollbarDefaults.js';
 import StockUtilities from '../../Stock/Utilities/StockUtilities.js';
 const { setFixedRange } = StockUtilities;
-import { addEvent, clamp, crisp, defined, extend, find, isNumber, isString, merge, pick, splat } from '../../Shared/Utilities.js';
+import { addEvent, clamp, crisp, defined, extend, find, isNumber, isString, merge, splat } from '../../Shared/Utilities.js';
 /* *
  *
  *  Functions
@@ -67,7 +68,9 @@ function getForcedAxisOptions(type, chartOptions) {
     if (type === 'xAxis') {
         // Always disable startOnTick:true on the main axis when the navigator
         // is enabled (#1090)
-        const navigatorEnabled = pick(chartOptions.navigator?.enabled, NavigatorDefaults.enabled, true);
+        const navigatorEnabled = chartOptions.navigator?.enabled ??
+            NavigatorDefaults.enabled ??
+            true;
         const axisOptions = {
             type: 'datetime',
             categories: void 0
@@ -109,10 +112,10 @@ class StockChart extends Chart {
      * @param {Highcharts.Options} userOptions
      *        Custom options.
      *
-     * @param {Function} [callback]
+     * @param {Function|true} [callback]
      *        Function to run when the chart has loaded and all external
-     *        images are loaded.
-     *
+     *        images are loaded. Set to `true` to return a promise that
+     *        resolves when the chart is ready.
      *
      * @emits Highcharts.StockChart#event:init
      * @emits Highcharts.StockChart#event:afterInit
@@ -121,7 +124,9 @@ class StockChart extends Chart {
         const defaultOptions = getOptions(), xAxisOptions = userOptions.xAxis, yAxisOptions = userOptions.yAxis, 
         // Always disable startOnTick:true on the main axis when the
         // navigator is enabled (#1090)
-        navigatorEnabled = pick(userOptions.navigator?.enabled, NavigatorDefaults.enabled, true);
+        navigatorEnabled = userOptions.navigator?.enabled ??
+            NavigatorDefaults.enabled ??
+            true;
         // Avoid doing these twice
         userOptions.xAxis = userOptions.yAxis = void 0;
         const options = merge({
@@ -142,17 +147,17 @@ class StockChart extends Chart {
             },
             scrollbar: {
                 // #4988 - check if setOptions was called
-                enabled: pick(ScrollbarDefaults.enabled, true)
+                enabled: (ScrollbarDefaults.enabled ?? true)
             },
             rangeSelector: {
                 // #4988 - check if setOptions was called
-                enabled: pick(RangeSelectorDefaults.rangeSelector.enabled, true)
+                enabled: RangeSelectorDefaults.rangeSelector.enabled ?? true
             },
             title: {
                 text: null
             },
             tooltip: {
-                split: pick(defaultOptions.tooltip?.split, true),
+                split: (defaultOptions.tooltip?.split ?? true),
                 crosshairs: true
             },
             legend: {
@@ -238,7 +243,6 @@ addEvent(Chart, 'update', function (e) {
             addEvent(AxisClass, 'afterDrawCrosshair', onAxisAfterDrawCrosshair);
             addEvent(AxisClass, 'afterHideCrosshair', onAxisAfterHideCrosshair);
             addEvent(AxisClass, 'autoLabelAlign', onAxisAutoLabelAlign);
-            addEvent(AxisClass, 'destroy', onAxisDestroy);
             addEvent(AxisClass, 'getPlotLinePath', onAxisGetPlotLinePath);
             ChartClass.prototype.setFixedRange = setFixedRange;
             seriesProto.forceCropping = seriesForceCropping;
@@ -286,8 +290,8 @@ addEvent(Chart, 'update', function (e) {
                 axis.series[0] && this.series[0].colorIndex))
                 .attr({
                 align: options.align || align,
-                padding: pick(options.padding, 8),
-                r: pick(options.borderRadius, 3),
+                padding: (options.padding ?? 8),
+                r: (options.borderRadius ?? 3),
                 zIndex: 2
             })
                 .add(axis.labelGroup);
@@ -297,12 +301,12 @@ addEvent(Chart, 'update', function (e) {
                     .attr({
                     fill: options.backgroundColor ||
                         point?.series?.color || // #14888
-                        "#666666" /* Palette.neutralColor60 */,
+                        'var(--highcharts-neutral-color-60)',
                     stroke: options.borderColor || '',
                     'stroke-width': options.borderWidth || 0
                 })
                     .css(extend({
-                    color: "#ffffff" /* Palette.backgroundColor */,
+                    color: 'var(--highcharts-background-color)',
                     fontWeight: 'normal',
                     fontSize: '0.7em',
                     textAlign: 'center'
@@ -415,33 +419,28 @@ addEvent(Chart, 'update', function (e) {
      * @internal
      */
     function onAxisAutoLabelAlign(e) {
-        const axis = this, chart = axis.chart, options = axis.options, panes = chart._labelPanes = chart._labelPanes || {}, labelOptions = options.labels;
-        if (chart.options.isStock && axis.coll === 'yAxis') {
-            const key = options.top + ',' + options.height;
-            // Do it only for the first Y axis of each pane
-            if (!panes[key] && labelOptions.enabled) {
-                if (labelOptions.distance === 15 && // Default
-                    axis.side === 1) {
-                    labelOptions.distance = 0;
+        const axis = this, chart = axis.chart, options = axis.options, labelOptions = options.labels;
+        // Returns true if this is the first yAxis in the pane
+        const isFirstYAxisInPane = () => {
+            let foundOther = false;
+            for (const otherAxis of chart.yAxis) {
+                if (otherAxis === axis && !foundOther) {
+                    return true;
                 }
-                if (typeof labelOptions.align === 'undefined') {
-                    labelOptions.align = 'right';
+                if (otherAxis !== axis &&
+                    otherAxis.options.top === options.top &&
+                    otherAxis.options.height === options.height) {
+                    foundOther = true;
                 }
-                panes[key] = axis;
-                e.align = 'right';
-                e.preventDefault();
             }
-        }
-    }
-    /**
-     * Clear axis from label panes. (#6071)
-     * @internal
-     */
-    function onAxisDestroy() {
-        const axis = this, chart = axis.chart, key = (axis.options &&
-            (axis.options.top + ',' + axis.options.height));
-        if (key && chart._labelPanes && chart._labelPanes[key] === axis) {
-            delete chart._labelPanes[key];
+            return false;
+        };
+        if (chart.options.isStock &&
+            axis.coll === 'yAxis' &&
+            isFirstYAxisInPane() &&
+            labelOptions.enabled) {
+            e.align = 'right';
+            e.preventDefault();
         }
     }
     /**
@@ -449,17 +448,18 @@ addEvent(Chart, 'update', function (e) {
      * @internal
      */
     function onAxisGetPlotLinePath(e) {
-        const axis = this, series = (axis.isLinked && !axis.series && axis.linkedParent ?
+        const axis = this, axisOptions = axis.options, series = (!axis.series && axis.linkedParent ?
             axis.linkedParent.series :
-            axis.series), { chart, horiz } = axis, renderer = chart.renderer, result = [], { acrossPanes = true, force, translatedValue, value } = e, allPerpendicularAxes = (axis.isXAxis ? chart.yAxis : chart.xAxis) || [], 
+            axis.series), { chart, horiz } = axis, renderer = chart.renderer, result = [], { acrossPanes = true, force, translatedValue, value } = e, allPerpendicularAxes = (axis.isXAxis ? chart.yAxis : chart.xAxis) || [], crossingPosName = horiz ? 'top' : 'left', crossingLenName = horiz ? 'height' : 'width', hasCrossingBounds = defined(axisOptions[crossingPosName]) ||
+            defined(axisOptions[crossingLenName]), 
         /**
          * Return the other axis based on either the axis option or on
          * related series.
          * @internal
          */
         getAxis = (coll) => {
-            const otherColl = coll === 'xAxis' ? 'yAxis' : 'xAxis', opt = axis.options[otherColl];
-            if (acrossPanes && !axis.options.isInternal) {
+            const otherColl = coll === 'xAxis' ? 'yAxis' : 'xAxis', opt = axisOptions[otherColl];
+            if (acrossPanes && !axisOptions.isInternal) {
                 return allPerpendicularAxes.filter((a) => !a.options.isInternal);
             }
             // Other axis indexed by number
@@ -481,7 +481,7 @@ addEvent(Chart, 'update', function (e) {
         }
         let axes = [], // #3416 need a default array
         uniqueAxes, transVal;
-        if (chart.options.isStock &&
+        if ((chart.options.isStock || hasCrossingBounds) &&
             // Ignore in case of colorAxis or zAxis. #3360, #3524, #6720
             (axis.coll === 'xAxis' || axis.coll === 'yAxis')) {
             e.preventDefault();
@@ -511,7 +511,7 @@ addEvent(Chart, 'update', function (e) {
                     uniqueAxes.push(axis2);
                 }
             }
-            transVal = pick(translatedValue, axis.translate(value || 0, void 0, void 0, e.old));
+            transVal = translatedValue ?? axis.translate(value || 0, void 0, void 0, e.old);
             if (isNumber(transVal)) {
                 let skip, pos = horiz ?
                     transVal + axis.pos :
@@ -527,14 +527,16 @@ addEvent(Chart, 'update', function (e) {
                     }
                 }
                 if (!skip) {
-                    const crossingPosName = horiz ? 'top' : 'left', crossingLenName = horiz ? 'height' : 'width';
-                    if (!acrossPanes &&
-                        // If the perpendicular position is set explicitly on
-                        // the axis, use it. For example, if `top` and `height`
-                        // options are set on a horizontal x-axis, the grid
-                        // lines should conform to that position.
-                        (axis.options[crossingPosName] ||
-                            axis.options[crossingLenName])) {
+                    if (
+                    // If the perpendicular position is set explicitly on
+                    // the axis, use it. For example, if `top` and `height`
+                    // options are set on a horizontal x-axis, the grid
+                    // lines should conform to that position.
+                    hasCrossingBounds &&
+                        // In parallel coordinates, the axis height/width is 0,
+                        // so we need to skip that, #24442.
+                        axis[crossingLenName] > 0 &&
+                        !acrossPanes) {
                         pushSegment(pos, axis[crossingPosName], axis[crossingPosName] + axis[crossingLenName]);
                     }
                     else {
@@ -588,7 +590,7 @@ addEvent(Chart, 'update', function (e) {
     function seriesForceCropping() {
         const series = this, chart = series.chart, options = series.options, dataGroupingOptions = options.dataGrouping, groupingEnabled = (series.allowDG !== false &&
             dataGroupingOptions &&
-            pick(dataGroupingOptions.enabled, chart.options.isStock));
+            (dataGroupingOptions.enabled ?? chart.options.isStock));
         return groupingEnabled;
     }
     /* eslint-disable jsdoc/check-param-names */
@@ -625,7 +627,8 @@ addEvent(Chart, 'update', function (e) {
      *         The chart object.
      */
     function stockChart(a, b, c) {
-        return new StockChart(a, b, c);
+        const chart = new StockChart(a, b, c);
+        return chart.promise ?? chart;
     }
     StockChart.stockChart = stockChart;
     /* eslint-enable jsdoc/check-param-names */

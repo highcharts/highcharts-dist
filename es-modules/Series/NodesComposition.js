@@ -5,7 +5,7 @@
 'use strict';
 import SeriesRegistry from '../Core/Series/SeriesRegistry.js';
 const { series: { prototype: seriesProto, prototype: { pointClass: { prototype: pointProto } } } } = SeriesRegistry;
-import { defined, extend, find, merge, pick } from '../Shared/Utilities.js';
+import { addEvent, defined, extend, find, merge } from '../Shared/Utilities.js';
 /* *
  *
  *  Composition
@@ -33,9 +33,21 @@ var NodesComposition;
         pointProto.update = updateNode;
         seriesProto.destroy = destroy;
         seriesProto.setData = setData;
+        addEvent(SeriesClass, 'afterUpdate', afterUpdate);
         return SeriesClass;
     }
     NodesComposition.compose = compose;
+    /**
+     * Destroy data labels on nodes.
+     * @private
+     */
+    function afterUpdate() {
+        if (!this.hasDataLabels?.() && this.nodes) { // #23385
+            for (const node of this.nodes) {
+                node.destroyElements({ dataLabel: 1 });
+            }
+        }
+    }
     /**
      * Create a single node that holds information on incoming and outgoing
      * links.
@@ -100,13 +112,10 @@ var NodesComposition;
         // For use in formats
         node.name = node.name || node.options.id || '';
         // Mass is used in networkgraph:
-        node.mass = pick(
-        // Node:
-        node.options.mass, node.options.marker && node.options.marker.radius, 
-        // Series:
-        this.options.marker && this.options.marker.radius, 
-        // Default:
-        4);
+        node.mass = (node.options.mass ??
+            (node.options.marker && node.options.marker.radius) ??
+            (this.options.marker && this.options.marker.radius) ??
+            4);
         return node;
     }
     NodesComposition.createNode = createNode;
@@ -149,7 +158,9 @@ var NodesComposition;
                 point.fromNode = nodeLookup[point.from];
                 // Point color defaults to the fromNode's color
                 if (chart.styledMode) {
-                    point.colorIndex = pick(point.options.colorIndex, nodeLookup[point.from].colorIndex);
+                    point.colorIndex =
+                        point.options.colorIndex ??
+                            nodeLookup[point.from].colorIndex;
                 }
                 else {
                     point.color =
@@ -247,7 +258,7 @@ var NodesComposition;
             else {
                 this.series.options.nodes = [nodeConfig];
             }
-            if (pick(redraw, true)) {
+            if (redraw ?? true) {
                 this.series.chart.redraw(animation);
             }
         }

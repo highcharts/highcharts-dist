@@ -3,13 +3,16 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
 'use strict';
-import { addEvent, getMagnitude, normalizeTickInterval } from '../../Shared/Utilities.js';
+import H from '../Globals.js';
+const { composed } = H;
+import { addEvent, getMagnitude, normalizeTickInterval, pushUnique } from '../../Shared/Utilities.js';
 import { timeUnits } from '../Utilities.js';
 /* *
  *
@@ -33,8 +36,7 @@ var DateTimeAxis;
      * @internal
      */
     function compose(AxisClass) {
-        if (!AxisClass.keepProps.includes('dateTime')) {
-            AxisClass.keepProps.push('dateTime');
+        if (pushUnique(composed, 'Axis.DateTime')) {
             const axisProto = AxisClass.prototype;
             axisProto.getTimeTicks = getTimeTicks;
             addEvent(AxisClass, 'afterSetType', onAfterSetType);

@@ -1,7 +1,8 @@
 /* *
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -18,7 +19,7 @@ import { error } from '../../../Core/Utilities.js';
 /**
  * The APO series type.
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.apo
  *
@@ -121,6 +122,7 @@ SeriesRegistry.registerSeriesType('apo', APOIndicator);
  *  Default Export
  *
  * */
+/** @internal */
 export default APOIndicator;
 /* *
  *
@@ -134,7 +136,7 @@ export default APOIndicator;
  * @extends   series,plotOptions.apo
  * @since     7.0.0
  * @product   highstock
- * @excluding allAreas, colorAxis, dataParser, dataURL, joinBy, keys,
+ * @excluding allAreas, colorAxis, joinBy, keys,
  *            navigatorOptions, pointInterval, pointIntervalUnit,
  *            pointPlacement, pointRange, pointStart, showInNavigator, stacking
  * @requires  stock/indicators/indicators

@@ -5,8 +5,9 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -22,7 +23,8 @@ import { downloadURL, getBlobFromContent } from '../../Shared/DownloadURL.js';
 import ExportDataDefaults from './ExportDataDefaults.js';
 import G from '../../Core/Globals.js';
 const { composed, doc, win } = G;
-import { addEvent, defined, extend, find, fireEvent, isNumber, pick, pushUnique } from '../../Shared/Utilities.js';
+import { addEvent, defined, extend, find, fireEvent, isNumber, pushUnique } from '../../Shared/Utilities.js';
+import { error } from '../../Core/Utilities.js';
 /* *
  *
  *  Composition
@@ -157,6 +159,10 @@ var ExportData;
      * @requires modules/export-data
      */
     function downloadCSV() {
+        if (!this.chart.series.some(isExportableSeries)) {
+            error('Warning: No data to export', false, this.chart);
+            return;
+        }
         this.wrapLoading(() => {
             const csv = this.getCSV(true);
             downloadURL(getBlobFromContent(csv, 'text/csv') ||
@@ -176,6 +182,10 @@ var ExportData;
      * @requires modules/export-data
      */
     function downloadXLS() {
+        if (!this.chart.series.some(isExportableSeries)) {
+            error('Warning: No data to export', false, this.chart);
+            return;
+        }
         this.wrapLoading(() => {
             const uri = 'data:application/vnd.ms-excel;base64,', template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" ' +
                 'xmlns:x="urn:schemas-microsoft-com:office:excel" ' +
@@ -219,11 +229,11 @@ var ExportData;
      */
     function getCSV(useLocalDecimalPoint) {
         let csv = '';
-        const rows = this.getDataRows(), csvOptions = this.options?.csv, decimalPoint = pick(csvOptions?.decimalPoint, csvOptions?.itemDelimiter !== ',' && useLocalDecimalPoint ?
+        const rows = this.getDataRows(), csvOptions = this.options?.csv, decimalPoint = csvOptions?.decimalPoint ?? (csvOptions?.itemDelimiter !== ',' && useLocalDecimalPoint ?
             (1.1).toLocaleString()[1] :
             '.'), 
         // Use ';' for direct to Excel
-        itemDelimiter = pick(csvOptions?.itemDelimiter, decimalPoint === ',' ? ';' : ','), 
+        itemDelimiter = csvOptions?.itemDelimiter ?? (decimalPoint === ',' ? ';' : ','), 
         // '\n' isn't working with the js csv data extraction
         lineDelimiter = csvOptions?.lineDelimiter;
         // Transform the rows to CSV
@@ -343,10 +353,7 @@ var ExportData;
         chart.series.forEach(function (series) {
             const keys = series.options.keys, xAxis = series.xAxis, pointArrayMap = keys || getPointArray(series, xAxis), valueCount = pointArrayMap.length, xTaken = !series.requireSorting && {}, xAxisIndex = xAxes.indexOf(xAxis);
             let categoryAndDatetimeMap = getCategoryAndDateTimeMap(series, pointArrayMap), mockSeries, j;
-            if (series.options.includeInDataExport !== false &&
-                !series.options.isInternal &&
-                series.visible !== false // #55
-            ) {
+            if (isExportableSeries(series)) {
                 // Build a lookup for X axis index and the position of the first
                 // series that belongs to that X axis. Includes -1 for non-axis
                 // series types like pies.
@@ -377,9 +384,11 @@ var ExportData;
                     // Allows correct date formatting for string date, #23654.
                     xAxis: series.xAxis
                 };
-                // Export directly from options.data because we need the
-                // uncropped data (#7913), and we need to support Boost (#7026).
-                series.options.data?.forEach(function eachData(options, pIdx) {
+                // Export raw data because we need the uncropped data (#7913),
+                // and we need to support Boost (#7026).
+                const data = new Array(series.dataTable.rowCount)
+                    .fill(void 0).map((_, i) => series.dataTable.getRowObject(i)), xColumn = series.getColumn('x');
+                (data || []).forEach(function eachData(options, pIdx) {
                     const mockPoint = { series: mockSeries };
                     let key, prop, val;
                     // In parallel coordinates chart, each data point is
@@ -387,7 +396,7 @@ var ExportData;
                     if (hasParallelCoords) {
                         categoryAndDatetimeMap = getCategoryAndDateTimeMap(series, pointArrayMap, pIdx);
                     }
-                    series.pointClass.prototype.applyOptions.apply(mockPoint, [options]);
+                    series.pointClass.prototype.applyOptions.call(mockPoint, options, xColumn[pIdx]);
                     const name = series.data[pIdx] && series.data[pIdx].name;
                     key = (mockPoint.x ?? '') + ',' + name;
                     j = 0;
@@ -441,15 +450,13 @@ var ExportData;
                         val =
                             series.pointClass.prototype.getNestedProperty.apply(mockPoint, [prop]);
                         // Allow values from nested properties (#20470)
-                        rows[key][i + j] = pick(
-                        // Y axis category if present
-                        categoryAndDatetimeMap.categoryMap[prop][val], 
-                        // Datetime yAxis
-                        categoryAndDatetimeMap.dateTimeValueAxisMap[prop] ?
-                            time.dateFormat(csvOptions.dateFormat, val) :
-                            null, 
-                        // Linear/log yAxis
-                        val);
+                        rows[key][i + j] =
+                            categoryAndDatetimeMap.categoryMap[prop][val] ??
+                                (categoryAndDatetimeMap
+                                    .dateTimeValueAxisMap[prop] ?
+                                    time.dateFormat(csvOptions.dateFormat, val) :
+                                    null) ??
+                                val;
                         j++;
                     }
                 });
@@ -496,7 +503,10 @@ var ExportData;
                         category = time.dateFormat(csvOptions.dateFormat, row.x);
                     }
                     else if (xAxis.categories) {
-                        category = pick(xAxis.names[row.x], xAxis.categories[row.x], row.x);
+                        category =
+                            xAxis.names[row.x] ??
+                                xAxis.categories[row.x] ??
+                                row.x;
                     }
                     else {
                         category = row.x;
@@ -577,7 +587,7 @@ var ExportData;
      */
     function getTableAST(useLocalDecimalPoint) {
         let rowLength = 0;
-        const treeChildren = [], exporting = this, chart = exporting.chart, options = chart.options, decimalPoint = useLocalDecimalPoint ? (1.1).toLocaleString()[1] : '.', useMultiLevelHeaders = pick(exporting.options.useMultiLevelHeaders, true), rows = exporting.getDataRows(useMultiLevelHeaders), topHeaders = useMultiLevelHeaders ? rows.shift() : null, subHeaders = rows.shift(), 
+        const treeChildren = [], exporting = this, chart = exporting.chart, options = chart.options, decimalPoint = useLocalDecimalPoint ? (1.1).toLocaleString()[1] : void 0, useMultiLevelHeaders = exporting.options.useMultiLevelHeaders ?? true, rows = exporting.getDataRows(useMultiLevelHeaders), topHeaders = useMultiLevelHeaders ? rows.shift() : null, subHeaders = rows.shift(), 
         // Compare two rows for equality
         isRowEqual = function (row1, row2) {
             let i = row1.length;
@@ -595,7 +605,8 @@ var ExportData;
         }, 
         // Get table cell HTML from value
         getCellHTMLFromValue = function (tagName, classes, attributes, value) {
-            let textContent = pick(value, ''), className = 'highcharts-text' + (classes ? ' ' + classes : '');
+            const children = [];
+            let textContent = (value ?? ''), className = 'highcharts-text' + (classes ? ' ' + classes : '');
             // Convert to string if number
             if (typeof textContent === 'number') {
                 textContent = chart.numberFormatter(textContent, -1, decimalPoint, tagName === 'th' ? '' : void 0);
@@ -604,12 +615,33 @@ var ExportData;
             else if (!value) {
                 className = 'highcharts-empty';
             }
+            if (tagName === 'th' && attributes.scope === 'col') {
+                children.push({
+                    tagName: 'button',
+                    textContent,
+                    style: {
+                        color: 'inherit',
+                        borderWidth: 0,
+                        backgroundColor: 'transparent',
+                        cursor: 'pointer',
+                        padding: 0,
+                        fontSize: 'inherit',
+                        fontWeight: 'inherit'
+                    }
+                });
+            }
             attributes = extend({ 'class': className }, attributes);
-            return {
+            const result = {
                 tagName,
-                attributes,
-                textContent
+                attributes
             };
+            if (children.length > 0) {
+                result.children = children;
+            }
+            else {
+                result.textContent = textContent;
+            }
+            return result;
         }, 
         // Get table header markup from row data
         getTableHeaderHTML = function (topheaders, subheaders, rowLength) {
@@ -675,7 +707,9 @@ var ExportData;
                 const trChildren = [];
                 for (i = 0, len = subheaders.length; i < len; ++i) {
                     if (typeof subheaders[i] !== 'undefined') {
-                        trChildren.push(getCellHTMLFromValue('th', null, { scope: 'col' }, subheaders[i]));
+                        trChildren.push(getCellHTMLFromValue('th', null, {
+                            scope: 'col'
+                        }, subheaders[i]));
                     }
                 }
                 theadChildren.push({
@@ -750,6 +784,20 @@ var ExportData;
         this.toggleDataTable(false);
     }
     /**
+     * Whether the series contributes columns to the exported data.
+     *
+     * @internal
+     *
+     * @requires modules/exporting
+     * @requires modules/export-data
+     */
+    function isExportableSeries(series) {
+        return (series.options.includeInDataExport !== false &&
+            !series.options.isInternal &&
+            series.visible !== false // #55
+        );
+    }
+    /**
      * Toggle showing data table.
      *
      * @internal
@@ -764,7 +812,7 @@ var ExportData;
     function toggleDataTable(show) {
         const chart = this.chart, 
         // Create the div
-        createContainer = (show = pick(show, !this.isDataTableVisible)) &&
+        createContainer = (show = (show ?? !this.isDataTableVisible)) &&
             !this.dataTableDiv;
         if (createContainer) {
             this.dataTableDiv = doc.createElement('div');
@@ -857,11 +905,22 @@ var ExportData;
      * @requires modules/export-data
      */
     function onChartAfterViewData() {
-        const exporting = this.exporting, dataTableDiv = exporting?.dataTableDiv, getCellValue = (tr, index) => tr.children[index].textContent, comparer = (index, ascending) => (a, b) => {
-            const sort = (v1, v2) => (v1 !== '' && v2 !== '' && !isNaN(v1) && !isNaN(v2) ?
-                v1 - v2 :
-                v1.toString().localeCompare(v2));
-            return sort(getCellValue(ascending ? a : b, index), getCellValue(ascending ? b : a, index));
+        const exporting = this.exporting, dataTableDiv = exporting?.dataTableDiv, langOptions = this.options.lang, decimalPoint = langOptions?.decimalPoint || '.', thousandsSep = langOptions?.thousandsSep || ',', getCellValue = (tr, index) => tr.children[index].textContent || '', parseNumber = (value) => {
+            if (!value) {
+                return null;
+            }
+            let normalized = value;
+            if (thousandsSep) {
+                normalized = normalized.split(thousandsSep).join('');
+            }
+            normalized = normalized.replace(decimalPoint, '.');
+            const number = Number(normalized);
+            return isNumber(number) ? number : null;
+        }, comparer = (index, ascending) => (a, b) => {
+            const valA = getCellValue(ascending ? a : b, index), valB = getCellValue(ascending ? b : a, index), numA = parseNumber(valA), numB = parseNumber(valB);
+            return numA !== null && numB !== null ?
+                numA - numB :
+                valA.localeCompare(valB);
         };
         if (dataTableDiv && exporting.options.allowTableSorting) {
             const row = dataTableDiv.querySelector('thead tr');
@@ -875,19 +934,25 @@ var ExportData;
                                 !exporting.ascendingOrderInTable)).forEach((tr) => {
                                 tableBody?.appendChild(tr);
                             });
-                            headers.forEach((th) => {
+                            headers.forEach((header) => {
                                 [
                                     'highcharts-sort-ascending',
                                     'highcharts-sort-descending'
                                 ].forEach((className) => {
-                                    if (th.classList.contains(className)) {
-                                        th.classList.remove(className);
+                                    if (header.classList.contains(className)) {
+                                        header.classList.remove(className);
                                     }
                                 });
+                                if (header !== th) {
+                                    header.removeAttribute('aria-sort');
+                                }
                             });
                             th.classList.add(exporting.ascendingOrderInTable ?
                                 'highcharts-sort-ascending' :
                                 'highcharts-sort-descending');
+                            th.setAttribute('aria-sort', exporting.ascendingOrderInTable ?
+                                'ascending' :
+                                'descending');
                         }
                     });
                 });
@@ -936,6 +1001,10 @@ export default ExportData;
  *  API Declarations
  *
  * */
+/**
+ * @class
+ * @name Highcharts.Exporting
+ */
 /**
  * Function callback to execute while data rows are processed for exporting.
  * This allows the modification of data rows before processed into the final

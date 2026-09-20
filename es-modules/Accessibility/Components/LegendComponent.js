@@ -5,14 +5,14 @@
  *
  *  Accessibility component for chart legend.
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
 'use strict';
-import A from '../../Core/Animation/AnimationUtilities.js';
-const { animObject } = A;
+import { animObject } from '../../Core/Animation/AnimationUtilities.js';
 import H from '../../Core/Globals.js';
 const { doc } = H;
 import Legend from '../../Core/Legend/Legend.js';
@@ -21,7 +21,7 @@ import KeyboardNavigationHandler from '../KeyboardNavigationHandler.js';
 import CU from '../Utils/ChartUtilities.js';
 const { getChartTitle } = CU;
 import HU from '../Utils/HTMLUtilities.js';
-import { addEvent, fireEvent, isNumber, pick, syncTimeout } from '../../Shared/Utilities.js';
+import { addEvent, fireEvent, isNumber, syncTimeout } from '../../Shared/Utilities.js';
 const { stripHTMLTagsFromString: stripHTMLTags, addClass, removeClass } = HU;
 /* *
  *
@@ -118,7 +118,7 @@ class LegendComponent extends AccessibilityComponent {
                 this.chart.renderer &&
                 component.recreateProxies()) {
                 syncTimeout(() => component.proxyProvider
-                    .updateGroupProxyElementPositions('legend'), animObject(pick(this.chart.renderer.globalAnimation, true)).duration);
+                    .updateGroupProxyElementPositions('legend'), animObject((this.chart.renderer.globalAnimation ?? true)).duration);
             }
         });
     }

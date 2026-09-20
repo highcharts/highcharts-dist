@@ -3,8 +3,9 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -148,6 +149,8 @@ const ColumnSeriesDefaults = {
      *          0.25
      * @sample {highcharts} highcharts/plotoptions/column-pointpadding-none/
      *         0 for tightly packed columns
+     * @sample {highcharts} highcharts/plotoptions/pie-pointpadding/
+     *         Pie point padding plugin
      *
      * @product highcharts highstock gantt
      */
@@ -186,13 +189,16 @@ const ColumnSeriesDefaults = {
      * The minimal height for a column or width for a bar. By default,
      * 0 values are not shown. To visualize a 0 (or close to zero) point,
      * set the minimal point length to a pixel value like 3\. In stacked
-     * column charts, minPointLength might not be respected for tightly
-     * packed values.
+     * column charts, the length is applied to each point in isolation, so
+     * tightly packed values may overlap. See the stacked sample below for a
+     * plugin that lays out the stack as a whole instead.
      *
      * @sample {highcharts} highcharts/plotoptions/column-minpointlength/
      *         Zero base value
      * @sample {highcharts} highcharts/plotoptions/column-minpointlength-pos-and-neg/
      *         Positive and negative close to zero values
+     * @sample {highcharts} highcharts/plotoptions/column-minpointlength-stacked/
+     *         Stack-aware minimum length
      *
      * @product highcharts highstock gantt
      */
@@ -270,7 +276,7 @@ const ColumnSeriesDefaults = {
              *
              * @product highcharts highstock gantt
              */
-            brightness: 0.1
+            brightness: 0.2
         },
         /**
          * Options for the selected point. These settings override the
@@ -288,7 +294,7 @@ const ColumnSeriesDefaults = {
              * @default #cccccc
              * @product highcharts highstock gantt
              */
-            color: "#cccccc" /* Palette.neutralColor20 */,
+            color: 'var(--highcharts-neutral-color-20)',
             /**
              * A specific border color for the selected point.
              *
@@ -296,7 +302,7 @@ const ColumnSeriesDefaults = {
              * @default #000000
              * @product highcharts highstock gantt
              */
-            borderColor: "#000000" /* Palette.neutralColor100 */
+            borderColor: 'var(--highcharts-neutral-color-100)'
         }
     },
     dataLabels: {
@@ -356,14 +362,14 @@ const ColumnSeriesDefaults = {
      * @default   #ffffff
      * @product   highcharts highstock gantt
      */
-    borderColor: "#ffffff" /* Palette.backgroundColor */
+    borderColor: 'var(--highcharts-background-color)'
 };
 /**
  * A `column` series. If the [type](#series.column.type) option is
  * not specified, it is inherited from [chart.type](#chart.type).
  *
  * @extends   series,plotOptions.column
- * @excluding connectNulls, dataParser, dataURL, gapSize, gapUnit, linecap,
+ * @excluding connectNulls, gapSize, gapUnit, linecap,
  *            lineWidth, marker, connectEnds, step
  * @product   highcharts highstock
  * @apioption series.column
@@ -422,6 +428,7 @@ const ColumnSeriesDefaults = {
  * @sample {highcharts} highcharts/series/data-array-of-objects/
  *         Config objects
  *
+ * @basic
  * @type      {Array<number|Array<(number|string),(number|null)>|null|*>}
  * @extends   series.line.data
  * @excluding marker
@@ -478,12 +485,12 @@ const ColumnSeriesDefaults = {
  */
 /**
  * @excluding halo, lineWidth, lineWidthPlus, marker
- * @product   highcharts highstock
+ * @product   highcharts highstock gantt
  * @apioption series.column.states.hover
  */
 /**
  * @excluding halo, lineWidth, lineWidthPlus, marker
- * @product   highcharts highstock
+ * @product   highcharts highstock gantt
  * @apioption series.column.states.select
  */
 /**

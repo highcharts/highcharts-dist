@@ -3,13 +3,14 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
 'use strict';
-import { attr, fireEvent, isNumber, isString, objectEach, pick } from '../Shared/Utilities.js';
+import { attr, fireEvent, isNumber, isString, objectEach } from '../Shared/Utilities.js';
 import H from './Globals.js';
 const { charts, win } = H;
 /* *
@@ -112,7 +113,8 @@ export function insertItem(item, collection) {
         !collection[i] ||
             // Handle index option, the element to insert has lower index
             (isNumber(indexOption) &&
-                indexOption < pick(collection[i].options.index, collection[i]._i)) ||
+                indexOption < (collection[i].options.index ??
+                    collection[i]._i)) ||
             // Insert the new item before other internal items
             // (navigator)
             collection[i].options.isInternal) {
@@ -198,7 +200,7 @@ export const uniqueKey = (function () {
  * State of the serial mode.
  */
 export function useSerialIds(mode) {
-    return (serialMode = pick(mode, serialMode));
+    return (serialMode = (mode ?? serialMode));
 }
 /* *
  *
@@ -233,11 +235,12 @@ if (win.jQuery) {
     * @param {Highcharts.Options} [options]
     *        The chart options structure.
     *
-    * @param {Highcharts.ChartCallbackFunction} [callback]
+    * @param {Highcharts.ChartCallbackFunction|true} [callback]
     *        Function to run when the chart has loaded and all external
     *        images are loaded. Defining a
     *        [chart.events.load](https://api.highcharts.com/highcharts/chart.events.load)
-    *        handler is equivalent.
+    *        handler is equivalent. Set to `true` to return a promise that
+    *        resolves when the chart is ready.
     *
     * @return {JQuery}
     *         The current JQuery selector.
@@ -418,7 +421,7 @@ if (win.jQuery) {
  * Generic dictionary in TypeScript notation.
  * Use the native `AnyRecord` instead.
  *
- * @deprecated
+ * @deprecated 8.1.2
  * @interface Highcharts.Dictionary<T>
  */ /**
 * @name Highcharts.Dictionary<T>#[key:string]

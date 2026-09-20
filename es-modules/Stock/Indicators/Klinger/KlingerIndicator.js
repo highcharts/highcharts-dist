@@ -1,7 +1,8 @@
 /* *
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -19,7 +20,7 @@ import { error } from '../../../Core/Utilities.js';
 /**
  * The Klinger oscillator series type.
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.klinger
  *
@@ -144,7 +145,7 @@ class KlingerIndicator extends SMAIndicator {
  * Klinger oscillator. This series requires the `linkedTo` option to be set
  * and should be loaded after the `stock/indicators/indicators.js` file.
  *
- * @sample stock/indicators/klinger
+ * @sample {highstock} stock/indicators/klinger
  *         Klinger oscillator
  *
  * @extends      plotOptions.sma
@@ -228,6 +229,7 @@ SeriesRegistry.registerSeriesType('klinger', KlingerIndicator);
  *  Default Export
  *
  * */
+/** @internal */
 export default KlingerIndicator;
 /* *
  *

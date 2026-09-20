@@ -83,8 +83,27 @@ declare module "../highcharts" {
         valueSuffix?: string;
     }
     /**
+     * (Highcharts) Enable or disable the initial animation when a series is
+     * displayed for the `dataLabels`. The animation can also be set as a
+     * configuration object. Please note that this option only applies to the
+     * initial animation.
+     *
+     * For other animations, see chart.animation and the animation parameter
+     * under the API methods. The following properties are supported:
+     *
+     * - `defer`: The animation delay time in milliseconds.
+     */
+    interface PlotGaugeDataLabelsAnimationOptions {
+        /**
+         * (Highcharts) The animation delay time in milliseconds. Set to `0` to
+         * render the data labels immediately. As `undefined` inherits defer
+         * time from the series.animation.defer.
+         */
+        defer?: number;
+    }
+    /**
      * (Highcharts) Data labels for the gauge. For gauges, the data labels are
-     * enabled by default and shown in a bordered box below the point.
+     * enabled by default and shown in the center.
      */
     interface PlotGaugeDataLabelsOptions {
         /**
@@ -123,15 +142,23 @@ declare module "../highcharts" {
          */
         animation?: (boolean|Highcharts.PlotGaugeDataLabelsAnimationOptions|Partial<Highcharts.AnimationOptionsObject>);
         /**
-         * (Highcharts) The background color or gradient for the data label.
-         * Setting it to `auto` will use the point's color.
+         * (Highcharts) The background color or gradient for the data label. In
+         * addition to regular colors, there are two special setting for this
+         * option:
+         *
+         * - `auto` will set the background color the point's color.
+         *
+         * - `contrast` will set it to a contrast against the text color, with
+         * an opacity allowing to see the underlying content. The contrast is
+         * great enough to ensure readability for the text according to
+         * accessibility standards.
          */
         backgroundColor?: Highcharts.ColorType;
         /**
          * (Highcharts) The border color for the data label. Setting it to
          * `auto` will use the point's color. Defaults to `undefined`.
          */
-        borderColor?: string;
+        borderColor?: Highcharts.ColorType;
         /**
          * (Highcharts) The border radius in pixels for the data label.
          */
@@ -174,6 +201,13 @@ declare module "../highcharts" {
          * the defer time set in plotOptions.series.animation.
          */
         defer?: boolean;
+        /**
+         * (Highcharts, Highstock, Gantt) The distance of the data label from
+         * the data point. Note that the `padding` setting also affects the
+         * rendered distance, but is not visible unless the data label has a
+         * border or background.
+         */
+        distance?: number;
         /**
          * (Highcharts) Enable or disable the data labels.
          */
@@ -244,6 +278,10 @@ declare module "../highcharts" {
         /**
          * (Highcharts) When either the `borderWidth` or the `backgroundColor`
          * is set, this is the padding within the box.
+         *
+         * An array of numbers sets padding for the respective sides. An array
+         * of two numbers repeats the values for the horizontal and vertical
+         * sides.
          */
         padding?: number;
         /**
@@ -283,7 +321,10 @@ declare module "../highcharts" {
          * well, in which cases it can be disabled by setting it to `"none"`.
          * When `useHTML` is true, the `textOutline` will not be picked up. In
          * this, case, the same effect can be achieved through the `text-shadow`
-         * CSS property.
+         * CSS property. As a complementary or alternative to the `textOutline`,
+         * a `dataLabels.backgroundColor` can be used. It provides a more calm
+         * impression and ensures readable text label, at the cost of a risk of
+         * overshadowing the underlying chart elements.
          *
          * For some series types, where each point has an extent, like for
          * example tree maps, the data label may overflow the point. There are
@@ -292,7 +333,7 @@ declare module "../highcharts" {
          * to `ellipsis`, which will keep the text on one line plus it will
          * break inside long words.
          */
-        style?: Highcharts.CSSObject;
+        style?: (Highcharts.CSSObject|Highcharts.PlotGaugeDataLabelsStyleOptions);
         /**
          * (Highcharts) Options for a label text which should follow marker's
          * shape. Border and background are disabled for a label that follows a
@@ -300,6 +341,10 @@ declare module "../highcharts" {
          *
          * **Note:** Only SVG-based renderer supports this option. Setting
          * `useHTML` to true will disable this option.
+         *
+         * Text path support is not bundled into `highcharts.js`, and requires
+         * the `modules/textpath.js` file. However, it is included in the script
+         * files of those series types that use it by default.
          */
         textPath?: Highcharts.DataLabelsTextPathOptionsObject;
         /**
@@ -323,14 +368,137 @@ declare module "../highcharts" {
          * in pixels.
          */
         y?: number;
+        /**
+         * (Highcharts) The z index of the data labels group. Does not apply
+         * below series level options.
+         *
+         * Use a `zIndex` of 6 to display it above the series, or use a `zIndex`
+         * of 2 to display it behind the series.
+         */
         zIndex?: number;
+    }
+    /**
+     * (Highcharts) Styles for the label. The default `color` setting is
+     * `"contrast"`, which is a pseudo color that Highcharts picks up and
+     * applies the maximum contrast to the underlying point item, for example
+     * the bar in a bar chart.
+     *
+     * The `textOutline` is a pseudo property that applies an outline of the
+     * given width with the given color, which by default is the maximum
+     * contrast to the text. So a bright text color will result in a black text
+     * outline for maximum readability on a mixed background. In some cases,
+     * especially with grayscale text, the text outline doesn't work well, in
+     * which cases it can be disabled by setting it to `"none"`. When `useHTML`
+     * is true, the `textOutline` will not be picked up. In this, case, the same
+     * effect can be achieved through the `text-shadow` CSS property. As a
+     * complementary or alternative to the `textOutline`, a
+     * `dataLabels.backgroundColor` can be used. It provides a more calm
+     * impression and ensures readable text label, at the cost of a risk of
+     * overshadowing the underlying chart elements.
+     *
+     * For some series types, where each point has an extent, like for example
+     * tree maps, the data label may overflow the point. There are two
+     * strategies for handling overflow. By default, the text will wrap to
+     * multiple lines. The other strategy is to set `style.textOverflow` to
+     * `ellipsis`, which will keep the text on one line plus it will break
+     * inside long words.
+     */
+    interface PlotGaugeDataLabelsStyleOptions {
+        fontSize?: number;
+    }
+    /**
+     * (Highcharts) Options for the dial or arrow pointer of the gauge.
+     *
+     * In styled mode, the dial is styled with the `.highcharts-gauge-series
+     * .highcharts-dial` rule.
+     */
+    interface PlotGaugeDialOptions {
+        /**
+         * (Highcharts) The background or fill color of the gauge's dial.
+         */
+        backgroundColor?: Highcharts.ColorType;
+        /**
+         * (Highcharts) The length of the dial's base part, relative to the
+         * total radius or length of the dial. Accepts a pixel value if given as
+         * a number, or a percentage value if given as a percentage string. If
+         * the base length is greater than 0, the dial's base will have an even
+         * width, before it narrows in to the top.
+         */
+        baseLength?: (number|string);
+        /**
+         * (Highcharts) The width of the base of the gauge dial. The base is the
+         * part closest to the pivot, defined by baseLength. Accepts a pixel
+         * value if given as a number, or a percentage value if given as a
+         * percentage string.
+         */
+        baseWidth?: (number|string);
+        /**
+         * (Highcharts) The border color or stroke of the gauge's dial. By
+         * default, the borderWidth is 0, so this must be set in addition to a
+         * custom border color.
+         */
+        borderColor?: Highcharts.ColorType;
+        /**
+         * (Highcharts) The border radius of the gauge dial
+         */
+        borderRadius?: (number|string);
+        /**
+         * (Highcharts) The width of the gauge dial border in pixels.
+         */
+        borderWidth?: number;
+        /**
+         * (Highcharts) An array with an SVG path for the custom dial.
+         */
+        path?: Highcharts.SVGPathArray;
+        /**
+         * (Highcharts) The radius or length of the dial, relative to the radius
+         * of the gauge itself. Accepts a pixel value if given as a number, or a
+         * percentage value if given as a percentage string.
+         */
+        radius?: (number|string);
+        /**
+         * (Highcharts) The length of the dial's rear end, the part that extends
+         * out on the other side of the pivot. Accepts a pixel value if given as
+         * a number, or a percentage value of the dial's length if given as a
+         * percentage string.
+         */
+        rearLength?: (number|string);
+        /**
+         * (Highcharts) The width of the top of the dial, closest to the
+         * perimeter. The pivot narrows in from the base to the top. Accepts a
+         * pixel value if given as a number, or a percentage of the dial radius
+         * if given as a percentage string.
+         */
+        topWidth?: (number|string);
     }
     /**
      * (Highcharts, Highstock, Gantt) Styles for the series label. The color
      * defaults to the series color, or a contrast color if `onArea`.
      */
     interface PlotGaugeLabelStyleOptions {
-        fontSize?: (number|string);
+        fontSize?: number;
+        fontWeight?: string;
+    }
+    /**
+     * (Highcharts) Options for the connector in the _Series on point_ feature.
+     *
+     * In styled mode, the connector can be styled with the
+     * `.highcharts-connector-seriesonpoint` class name.
+     */
+    interface PlotGaugeOnPointConnectorOptions {
+        /**
+         * (Highcharts) A name for the dash style to use for the connector.
+         */
+        dashstyle?: string;
+        /**
+         * (Highcharts) Color of the connector line. By default it's the series'
+         * color.
+         */
+        stroke?: string;
+        /**
+         * (Highcharts) Pixel width of the connector line.
+         */
+        width?: number;
     }
     /**
      * (Highcharts) Options for the _Series on point_ feature. Only `pie` and
@@ -356,6 +524,34 @@ declare module "../highcharts" {
          * series in the _Series on point_ feature.
          */
         position?: (object|Highcharts.PlotGaugeOnPointPositionOptions);
+    }
+    /**
+     * (Highcharts) Options allowing to set a position and an offset of the
+     * series in the _Series on point_ feature.
+     */
+    interface PlotGaugeOnPointPositionOptions {
+        /**
+         * (Highcharts) Series center offset from the original x position. If
+         * defined, the connector line is drawn connecting original position
+         * with new position.
+         */
+        offsetX?: number;
+        /**
+         * (Highcharts) Series center offset from the original y position. If
+         * defined, the connector line is drawn from original position to a new
+         * position.
+         */
+        offsetY?: number;
+        /**
+         * (Highcharts) X position of the series center. By default, the series
+         * is displayed on the point that it is connected to.
+         */
+        x?: number;
+        /**
+         * (Highcharts) Y position of the series center. By default, the series
+         * is displayed on the point that it is connected to.
+         */
+        y?: number;
     }
     /**
      * (Highcharts) Gauges are circular plots displaying one or more values with
@@ -445,7 +641,7 @@ declare module "../highcharts" {
          * `.highcharts-series-{n}` class, or individual classes given by the
          * `className` option.
          */
-        color?: Highcharts.ColorType;
+        color?: string;
         /**
          * (Highcharts) Styled mode only. A specific color index to use for the
          * series, so its graphic representations are given the class name
@@ -481,9 +677,51 @@ declare module "../highcharts" {
         custom?: Highcharts.Dictionary<any>;
         /**
          * (Highcharts) Data labels for the gauge. For gauges, the data labels
-         * are enabled by default and shown in a bordered box below the point.
+         * are enabled by default and shown in the center.
          */
         dataLabels?: (Highcharts.PlotGaugeDataLabelsOptions|Array<Highcharts.PlotGaugeDataLabelsOptions>);
+        /**
+         * (Highcharts) The mapping between the data table and the series data
+         * points. This is used in conjunction with the `dataTable` option (on
+         * chart or series level) to map columns from the data table to the
+         * properties of the data points. The keys of the `dataMapping` object
+         * correspond to the properties of the data points (e.g. `x`, `y`,
+         * `name`), and the values are objects that specify which column from
+         * which data table to use for that property.
+         *
+         * The keys can also be nested paths, for example `dataLabel.format`, to
+         * map to nested properties of the data points.
+         *
+         * The values can also be strings, in which case they are interpreted as
+         * column id's from the first data table.
+         *
+         * A typical use case is that multiple series share a common column,
+         * like `name` or `x`. In this case, to avoid repetition, the common
+         * column can be applied in `plotOptions.series.dataMapping` and the
+         * individual series can specify only the columns that are unique to
+         * them.
+         *
+         * The series name defaults to the column ID of the main data column in
+         * the mapping. The main data column is typically the `y` data for
+         * cartesian series, or `value` for map series. For example, if the
+         * mapping is `{ y: 'Cost' }`, the series name will be `Cost`. (see
+         * online documentation for example)
+         *
+         * If the columns of the DataTable have keys matching the series keys,
+         * the data mapping is not necessary. For example, this DataTable will
+         * connect directly to the series' `x` and `y` keys: (see online
+         * documentation for example)
+         */
+        dataMapping?: Highcharts.DataMappingOptionsObject;
+        /**
+         * (Highcharts) Options for a specific series-level data table or an
+         * array of data tables. The `dataTable` option can be either a
+         * configuration object or an instance of the `DataTable` class. If a
+         * `DataTable` instance is passed, it will be used directly. If a
+         * configuration object or an array is passed, a new `DataTable`
+         * instance will be created based on the provided configuration.
+         */
+        dataTable?: (Highcharts.DataTable|Highcharts.DataTableOptionsObject|Array<(Highcharts.DataTable|Highcharts.DataTableOptionsObject)>);
         /**
          * (Highcharts) Deprecated. Use
          * plotOptions.series.accessibility.description instead.
@@ -655,6 +893,8 @@ declare module "../highcharts" {
          *
          * Same as accessibility.point.descriptionFormat, but for an individual
          * series. Overrides the chart wide configuration.
+         *
+         * @deprecated 12.6.0
          */
         pointDescriptionFormat?: Function;
         /**
@@ -769,6 +1009,7 @@ declare module "../highcharts" {
          * technical limitations.
          */
         stickyTracking?: boolean;
+        threshold?: number;
         /**
          * (Highcharts) A configuration object for the tooltip rendering of each
          * single series. Properties are inherited from tooltip, but only the
@@ -782,8 +1023,11 @@ declare module "../highcharts" {
         /**
          * (Highcharts) When this option is `true`, the dial will wrap around
          * the axes. For instance, in a full-range gauge going from 0 to 360, a
-         * value of 400 will point to 40\. When `wrap` is `false`, the dial
-         * stops at 360.
+         * value of 400 will point to 40. When `wrap` is `false`, the dial stops
+         * at 360.
+         *
+         * Defaults to `undefined`, which is equivalent to `true` when the axis
+         * ranges over 360 degrees, and `false` when less.
          */
         wrap?: boolean;
         /**
@@ -794,6 +1038,91 @@ declare module "../highcharts" {
          * **Note**: This option works only for non-cartesian series.
          */
         zoomEnabled?: boolean;
+    }
+    /**
+     * (Highcharts) Options for the pivot or the center point of the gauge.
+     *
+     * In styled mode, the pivot is styled with the `.highcharts-gauge-series
+     * .highcharts-pivot` rule.
+     */
+    interface PlotGaugePivotOptions {
+        /**
+         * (Highcharts) The background color or fill of the pivot.
+         */
+        backgroundColor?: Highcharts.ColorType;
+        /**
+         * (Highcharts) The border or stroke color of the pivot.
+         */
+        borderColor?: Highcharts.ColorType;
+        /**
+         * (Highcharts) The border or stroke width of the pivot.
+         */
+        borderWidth?: number;
+        /**
+         * (Highcharts) The radius of the pivot, the center point of the gauge.
+         * Accepts a pixel value if given as a number, or a percentage of the
+         * full gauge radius if given as a percentage string.
+         */
+        radius?: (number|string);
+    }
+    /**
+     * (Highcharts, Highstock, Gantt) For series on datetime axes, the date
+     * format in the tooltip's header will by default be guessed based on the
+     * closest data points. This member gives the default string representations
+     * used for each unit. For an overview of the string or object
+     * configuration, see dateFormat.
+     */
+    interface PlotGaugeTooltipDateTimeLabelFormatsOptions {
+        day?: string;
+        hour?: string;
+        millisecond?: string;
+        minute?: string;
+        month?: string;
+        second?: string;
+        week?: string;
+        year?: string;
+    }
+    /**
+     * (Highcharts) Options for the tooltip header when tooltip.split is
+     * enabled. The header is the box containing the X value in a split tooltip.
+     */
+    interface PlotGaugeTooltipHeaderOptions {
+        /**
+         * (Highcharts) Background color for the tooltip header when
+         * tooltip.split is enabled.
+         */
+        backgroundColor?: Highcharts.ColorType;
+        /**
+         * (Highcharts) Border color for the tooltip header when tooltip.split
+         * is enabled.
+         */
+        borderColor?: Highcharts.ColorType;
+        /**
+         * (Highcharts) The width of the border for the tooltip header when
+         * tooltip.split is enabled.
+         */
+        borderWidth?: number;
+        /**
+         * (Highcharts) Distance between the plot area and the header (except
+         * the chevron) in a split tooltip, in pixels. The default value makes
+         * the header text align with the axis labels.
+         */
+        distance?: number;
+        /**
+         * (Highcharts) The name of a symbol to use for the border around the
+         * tooltip header. Applies only when tooltip.split is enabled.
+         *
+         * Custom callbacks for symbol path generation can also be added to
+         * `Highcharts.SVGRenderer.prototype.symbols` the same way as for
+         * series.marker.symbol.
+         */
+        shape?: string;
+        /**
+         * (Highcharts) CSS styles for the tooltip header. The default is `{
+         * fontSize: '1em' }`, ensuring that the header text is the same size as
+         * the axis labels.
+         */
+        style?: object;
     }
     /**
      * (Highcharts) Positioning options for fixed tooltip, taking effect only
@@ -847,5 +1176,62 @@ declare module "../highcharts" {
          * `undefined` inherits defer time from the series.animation.defer.
          */
         defer?: number;
+    }
+    /**
+     * (Highcharts) A `gauge` series. If the type option is not specified, it is
+     * inherited from chart.type.
+     *
+     * Configuration options for the series are given in three levels:
+     *
+     * 1. Options for all series in a chart are defined in the
+     * plotOptions.series object.
+     *
+     * 2. Options for all `gauge` series are defined in plotOptions.gauge.
+     *
+     * 3. Options for one single series are given in the series instance array.
+     * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - type option should always be set, otherwise a broad set of unsupported
+     * options is allowed.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
+     *
+     * You have to extend the `SeriesGaugeOptions` via an interface to allow
+     * custom properties: ``` declare interface SeriesGaugeOptions {
+     * customProperty: string; }
+     *
+     */
+    interface SeriesGaugeOptions extends Highcharts.PlotGaugeOptions, Highcharts.SeriesOptions {
+        /**
+         * (Highcharts) An array of data points for the series. For the `gauge`
+         * series type, points can be given in the following ways:
+         *
+         * 1. An array of numerical values. In this case, the numerical values
+         * will be interpreted as `y` options. Example: (see online
+         * documentation for example)
+         *
+         * 2. An array of objects with named values. The following snippet shows
+         * only a few settings, see the complete options set below. If the total
+         * number of data points exceeds the series' turboThreshold, this option
+         * is not available. (see online documentation for example)
+         *
+         * The typical gauge only contains a single data value.
+         */
+        data?: Array<(number|null|Highcharts.PointOptionsObject)>;
+        /**
+         * Not available
+         */
+        stack?: undefined;
+        /**
+         * (Highcharts, Highstock, Highmaps, Gantt) This property is only in
+         * TypeScript non-optional and might be `undefined` in series objects
+         * from unknown sources.
+         */
+        type: "gauge";
     }
 }

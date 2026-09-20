@@ -3,13 +3,14 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
 import SVGElement from './SVGElement.js';
-import { defined, extend, getAlignFactor, isNumber, merge, pick, removeEvent } from '../../../Shared/Utilities.js';
+import { defined, extend, getAlignFactor, isNumber, merge, removeEvent } from '../../../Shared/Utilities.js';
 /* *
  *
  *  Class
@@ -135,6 +136,9 @@ class SVGLabel extends SVGElement {
             else if ('textOverflow' in textStyles) {
                 this.updateBoxSize();
             }
+            if ('color' in textStyles) {
+                this.updateBackground();
+            }
         }
         return SVGElement.prototype.css.call(this, styles);
     }
@@ -176,7 +180,7 @@ class SVGLabel extends SVGElement {
         if ((this.textStr && this.bBox.width === 0 && this.bBox.height === 0) || this.rotation) {
             this.updateBoxSize();
         }
-        const { padding, height = 0, translateX = 0, translateY = 0, width = 0 } = this, paddingLeft = pick(this.paddingLeft, padding), rotation = rot ?? (this.rotation || 0);
+        const { padding, height = 0, translateX = 0, translateY = 0, width = 0 } = this, paddingLeft = (this.paddingLeft ?? padding), rotation = rot ?? (this.rotation || 0);
         let bBox = {
             width,
             height,
@@ -217,6 +221,7 @@ class SVGLabel extends SVGElement {
             this.updateBoxSize();
             this.doUpdate = false;
         }
+        this.updateBackground();
     }
     /**
      * After the text element is added, get the desired size of the border
@@ -228,7 +233,7 @@ class SVGLabel extends SVGElement {
         this.attr({
             // Alignment is available now  (#3295, 0 not rendered if given
             // as a value)
-            text: pick(this.textStr, ''),
+            text: (this.textStr ?? ''),
             x: this.x || 0,
             y: this.y || 0
         });
@@ -282,6 +287,14 @@ class SVGLabel extends SVGElement {
         }
         this.updateTextPadding();
         this.reAlign();
+    }
+    updateBackground() {
+        if (this.fill === 'contrast') {
+            this.box?.attr({
+                fill: this.renderer.getContrast(this.text.styles.color || '#000'),
+                'fill-opacity': 0.65
+            });
+        }
     }
     /**
      * This function runs after the label is added to the DOM (when the bounding
@@ -376,8 +389,8 @@ class SVGLabel extends SVGElement {
     /** @internal */
     getPaddedWidth() {
         const padding = this.padding;
-        const paddingLeft = pick(this.paddingLeft, padding);
-        const paddingRight = pick(this.paddingRight, padding);
+        const paddingLeft = (this.paddingLeft ?? padding);
+        const paddingRight = (this.paddingRight ?? padding);
         return ((this.widthSetting || this.bBox.width || 0) +
             paddingLeft +
             paddingRight);

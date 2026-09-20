@@ -3,8 +3,9 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -68,7 +69,7 @@ class AST {
             if (AST.allowedAttributes.indexOf(key) === -1) {
                 valid = false;
             }
-            if (['background', 'dynsrc', 'href', 'lowsrc', 'src']
+            if (['background', 'dynsrc', 'href', 'lowsrc', 'src', 'xlink:href']
                 .indexOf(key) !== -1) {
                 valid = isString(val) && AST.allowedReferences.some((ref) => val.indexOf(ref) === 0);
             }
@@ -272,7 +273,9 @@ class AST {
             doc.body.innerHTML = markup;
         }
         const appendChildNodes = (node, addTo) => {
-            const tagName = node.nodeName.toLowerCase();
+            // Preserve the camelCase of SVG tags via localName (#24702).
+            const tagName = node.localName ||
+                node.nodeName.toLowerCase();
             // Add allowed tags
             const astNode = {
                 tagName
@@ -344,6 +347,7 @@ AST.allowedAttributes = [
     'aria-readonly',
     'aria-roledescription',
     'aria-selected',
+    'aria-sort',
     'class',
     'clip-path',
     'color',
@@ -385,6 +389,8 @@ AST.allowedAttributes = [
     'src',
     'startOffset',
     'stdDeviation',
+    'stop-color',
+    'stop-opacity',
     'stroke-linecap',
     'stroke-width',
     'stroke',
@@ -501,7 +507,6 @@ AST.allowedTags = [
     'span',
     'stop',
     'strong',
-    'style',
     'sub',
     'sup',
     'svg',

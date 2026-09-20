@@ -5,8 +5,9 @@
  *  (c) 2021-2026 Highsoft AS
  *  Author: Piotr Madej, Grzegorz Blachliński
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -29,6 +30,7 @@
  * @extends      plotOptions.sankey
  * @since 10.0.0
  * @product      highcharts
+ * @requires     modules/sankey
  * @requires     modules/arc-diagram
  * @exclude      curveFactor, connectEnds, connectNulls, colorAxis, colorKey,
  *               dataSorting, dragDrop, getExtremesFromAll, legendSymbolColor,
@@ -84,7 +86,7 @@ const ArcDiagramSeriesDefaults = {
         linkTextPath: {
             /**
              * @type    {Highcharts.SVGAttributes}
-             * @default {"startOffset":"25%"}
+             * @default { startOffset: '25%' }
              */
             attributes: {
                 /**
@@ -225,6 +227,7 @@ const ArcDiagramSeriesDefaults = {
  *     }]
  *  ```
  *
+ * @basic
  * @type      {Array<*>}
  * @extends   series.sankey.data
  * @product   highcharts

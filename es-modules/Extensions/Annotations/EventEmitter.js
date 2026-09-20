@@ -3,15 +3,16 @@
  *  (c) 2009-2026 Highsoft AS
  *  Author: Highsoft, Black Label
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
 'use strict';
 import H from '../../Core/Globals.js';
 const { doc, isTouchDevice } = H;
-import { addEvent, fireEvent, objectEach, pick, removeEvent } from '../../Shared/Utilities.js';
+import { addEvent, fireEvent, objectEach, removeEvent } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class
@@ -200,7 +201,8 @@ class EventEmitter {
         emitter.removeMouseUp = addEvent(doc, isTouchDevice || firesTouchEvents ? 'touchend' : 'mouseup', function () {
             // Sometimes the target is the annotation and sometimes its the
             // controllable
-            const annotation = pick(emitter.target && emitter.target.annotation, emitter.target);
+            const annotation = ((emitter.target && emitter.target.annotation) ??
+                emitter.target);
             if (annotation) {
                 // Keep annotation selected after dragging control point
                 annotation.cancelClick = emitter.hasDragged;
@@ -209,8 +211,7 @@ class EventEmitter {
             emitter.chart.hasDraggedAnnotation = false;
             if (emitter.hasDragged) {
                 // ControlPoints vs Annotation:
-                fireEvent(pick(annotation, // #15952
-                emitter), 'afterUpdate');
+                fireEvent((annotation ?? emitter), 'afterUpdate');
             }
             emitter.hasDragged = false;
             emitter.onMouseUp();

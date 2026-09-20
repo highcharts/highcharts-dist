@@ -4,8 +4,9 @@
  *
  *  Author: Sebastian Domas
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -23,7 +24,7 @@ import { correctFloat, isNumber, merge } from '../../Shared/Utilities.js';
 /**
  * Bell curve class
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.bellcurve
  *
@@ -35,14 +36,14 @@ class BellcurveSeries extends AreaSplineSeries {
      *  Static Functions
      *
      * */
-    /** @private */
+    /** @internal */
     static mean(data) {
         const length = data.length, sum = data.reduce(function (sum, value) {
             return (sum += value);
         }, 0);
         return length > 0 && sum / length;
     }
-    /** @private */
+    /** @internal */
     static standardDeviation(data, average) {
         const len = data.length;
         average = isNumber(average) ?
@@ -53,7 +54,7 @@ class BellcurveSeries extends AreaSplineSeries {
         }, 0);
         return len > 1 && Math.sqrt(sum / (len - 1));
     }
-    /** @private */
+    /** @internal */
     static normalDensity(x, mean, standardDeviation) {
         const translation = x - mean;
         return Math.exp(-(translation * translation) /
@@ -65,7 +66,7 @@ class BellcurveSeries extends AreaSplineSeries {
      *
      * */
     setData(data, redraw = true, animation, updatePoints) {
-        let alteredData;
+        let alteredData = [];
         if (typeof data !== 'undefined' && data.length > 0) {
             // Support data array of objects (#24073).
             data = data
@@ -75,7 +76,11 @@ class BellcurveSeries extends AreaSplineSeries {
                 .filter(isNumber);
             this.setMean(data);
             this.setStandardDeviation(data);
-            alteredData = this.derivedData(this.mean || 0, this.standardDeviation || 0);
+            if (isNumber(this.mean) &&
+                isNumber(this.standardDeviation) &&
+                this.standardDeviation > 0) {
+                alteredData = this.derivedData(this.mean, this.standardDeviation);
+            }
         }
         super.setData.call(this, alteredData, redraw, animation, updatePoints);
     }
@@ -95,12 +100,12 @@ class BellcurveSeries extends AreaSplineSeries {
         }
     }
     setMean(data) {
-        const series = this;
-        series.mean = correctFloat(BellcurveSeries.mean(data || []));
+        const mean = BellcurveSeries.mean(data || []);
+        this.mean = isNumber(mean) ? correctFloat(mean) : void 0;
     }
     setStandardDeviation(data) {
-        const series = this;
-        series.standardDeviation = correctFloat(BellcurveSeries.standardDeviation(data || [], series.mean));
+        const sd = BellcurveSeries.standardDeviation(data || [], this.mean);
+        this.standardDeviation = isNumber(sd) ? correctFloat(sd) : void 0;
     }
 }
 /* *
@@ -116,4 +121,5 @@ SeriesRegistry.registerSeriesType('bellcurve', BellcurveSeries);
  *  Default Export
  *
  * */
+/** @internal */
 export default BellcurveSeries;

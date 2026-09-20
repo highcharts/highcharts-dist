@@ -7,7 +7,9 @@ import Annotation from '../Annotation.js';
 import ControlPoint from '../ControlPoint.js';
 import D from '../../../Core/Defaults.js';
 const { defaultOptions } = D;
-import { defined, extend, isNumber, merge, pick } from '../../../Shared/Utilities.js';
+import NBU from '../NavigationBindingsUtilities.js';
+const { getAxisFromOptions } = NBU;
+import { defined, extend, isNumber, merge } from '../../../Shared/Utilities.js';
 if (defaultOptions.annotations?.types) {
     /**
      * Options for the measure annotation type.
@@ -17,6 +19,7 @@ if (defaultOptions.annotations?.types) {
      * @sample highcharts/annotations-advanced/measure/
      *         Measure
      * @product highstock
+     * @requires modules/annotations-advanced
      * @optionparent annotations.types.measure
      */
     defaultOptions.annotations.types.measure = {
@@ -137,7 +140,7 @@ if (defaultOptions.annotations?.types) {
                  */
                 style: {
                     fontSize: '0.7em',
-                    color: "#333333" /* Palette.neutralColor80 */
+                    color: 'var(--highcharts-neutral-color-80)'
                 },
                 /**
                  * Formatter function for the label text.
@@ -193,7 +196,10 @@ if (defaultOptions.annotations?.types) {
         },
         controlPointOptions: {
             positioner: function (target) {
-                const cpIndex = this.index, chart = target.chart, options = target.options, typeOptions = options.typeOptions, selectType = typeOptions.selectType, controlPointOptions = options.controlPointOptions, inverted = chart.inverted, xAxis = chart.xAxis[typeOptions.xAxis], yAxis = chart.yAxis[typeOptions.yAxis], ext = getExtremes(target.xAxisMin, target.xAxisMax, target.yAxisMin, target.yAxisMax);
+                const cpIndex = this.index, chart = target.chart, options = target.options, typeOptions = options.typeOptions, selectType = typeOptions.selectType, controlPointOptions = options.controlPointOptions, inverted = chart.inverted, xAxis = getAxisFromOptions(chart, 'xAxis', typeOptions.xAxis), yAxis = getAxisFromOptions(chart, 'yAxis', typeOptions.yAxis), ext = getExtremes(target.xAxisMin, target.xAxisMax, target.yAxisMin, target.yAxisMax);
+                if (!xAxis || !yAxis) {
+                    return { x: 0, y: 0 };
+                }
                 let targetX = target.xAxisMax, targetY = target.yAxisMax, x, y;
                 if (selectType === 'x') {
                     targetY = (ext.yAxisMax + ext.yAxisMin) / 2;
@@ -330,7 +336,11 @@ function getPointPos(axis, value, offset) {
  * @internal
  */
 function init() {
-    const options = this.options.typeOptions, chart = this.chart, inverted = chart.inverted, xAxis = chart.xAxis[options.xAxis], yAxis = chart.yAxis[options.yAxis], bg = options.background, width = inverted ? bg.height : bg.width, height = inverted ? bg.width : bg.height, selectType = options.selectType, top = inverted ? xAxis.left : yAxis.top, // #13664
+    const options = this.options.typeOptions, chart = this.chart, inverted = chart.inverted, xAxis = getAxisFromOptions(chart, 'xAxis', options.xAxis), yAxis = getAxisFromOptions(chart, 'yAxis', options.yAxis), bg = options.background, width = inverted ? bg.height : bg.width, height = inverted ? bg.width : bg.height, selectType = options.selectType;
+    if (!xAxis || !yAxis) {
+        return;
+    }
+    const top = inverted ? xAxis.left : yAxis.top, // #13664
     left = inverted ? yAxis.top : xAxis.left; // #13664
     this.startXMin = options.point.x;
     this.startYMin = options.point.y;
@@ -412,7 +422,10 @@ function min() {
  *        Flag if shape is resized.
  */
 function recalculate(resize) {
-    const options = this.options.typeOptions, xAxis = this.chart.xAxis[options.xAxis], yAxis = this.chart.yAxis[options.yAxis], offsetX = this.offsetX, offsetY = this.offsetY;
+    const options = this.options.typeOptions, xAxis = getAxisFromOptions(this.chart, 'xAxis', options.xAxis), yAxis = getAxisFromOptions(this.chart, 'yAxis', options.yAxis), offsetX = this.offsetX, offsetY = this.offsetY;
+    if (!xAxis || !yAxis) {
+        return;
+    }
     this.xAxisMin = getPointPos(xAxis, this.startXMin, offsetX);
     this.xAxisMax = getPointPos(xAxis, this.startXMax, offsetX);
     this.yAxisMin = getPointPos(yAxis, this.startYMin, offsetY);
@@ -438,7 +451,10 @@ function recalculate(resize) {
  */
 function updateStartPoints(redraw, resize, cpIndex, dx, dy) {
     var _a;
-    const options = this.options.typeOptions, selectType = options.selectType, xAxis = this.chart.xAxis[options.xAxis], yAxis = this.chart.yAxis[options.yAxis], startXMin = this.startXMin, startXMax = this.startXMax, startYMin = this.startYMin, startYMax = this.startYMax, offsetX = this.offsetX, offsetY = this.offsetY;
+    const options = this.options.typeOptions, selectType = options.selectType, xAxis = getAxisFromOptions(this.chart, 'xAxis', options.xAxis), yAxis = getAxisFromOptions(this.chart, 'yAxis', options.yAxis), startXMin = this.startXMin, startXMax = this.startXMax, startYMin = this.startYMin, startYMax = this.startYMax, offsetX = this.offsetX, offsetY = this.offsetY;
+    if (!xAxis || !yAxis) {
+        return;
+    }
     if (resize) {
         if (selectType === 'x') {
             if (cpIndex === 0) {
@@ -509,8 +525,8 @@ class Measure extends Annotation {
      * Overrides default setter to get axes from typeOptions.
      */
     setClipAxes() {
-        this.clipXAxis = this.chart.xAxis[this.options.typeOptions.xAxis];
-        this.clipYAxis = this.chart.yAxis[this.options.typeOptions.yAxis];
+        this.clipXAxis = getAxisFromOptions(this.chart, 'xAxis', this.options.typeOptions.xAxis);
+        this.clipYAxis = getAxisFromOptions(this.chart, 'yAxis', this.options.typeOptions.yAxis);
     }
     /**
      * Get points configuration objects for shapes.
@@ -602,8 +618,8 @@ class Measure extends Annotation {
                     return {
                         x: annotation.xAxisMin,
                         y: annotation.yAxisMin,
-                        xAxis: pick(typeOptions.xAxis, options.xAxis),
-                        yAxis: pick(typeOptions.yAxis, options.yAxis)
+                        xAxis: (typeOptions.xAxis ?? options.xAxis),
+                        yAxis: (typeOptions.yAxis ?? options.yAxis)
                     };
                 },
                 text: (formatter?.call(this, this) ||
@@ -636,10 +652,13 @@ class Measure extends Annotation {
      * Add internal crosshair shapes (on top and bottom).
      */
     addCrosshairs() {
-        const chart = this.chart, options = this.options.typeOptions, point = this.options.typeOptions.point, xAxis = chart.xAxis[options.xAxis], yAxis = chart.yAxis[options.yAxis], inverted = chart.inverted, defaultOptions = {
+        const chart = this.chart, options = this.options.typeOptions, point = this.options.typeOptions.point, xAxis = getAxisFromOptions(chart, 'xAxis', options.xAxis), yAxis = getAxisFromOptions(chart, 'yAxis', options.yAxis), inverted = chart.inverted, defaultOptions = {
             point: point,
             type: 'path'
         };
+        if (!xAxis || !yAxis) {
+            return;
+        }
         let xAxisMin = xAxis.toPixels(this.xAxisMin), xAxisMax = xAxis.toPixels(this.xAxisMax), yAxisMin = yAxis.toPixels(this.yAxisMin), yAxisMax = yAxis.toPixels(this.yAxisMax), pathH = [], pathV = [], crosshairOptionsX, crosshairOptionsY, temp;
         if (inverted) {
             temp = xAxisMin;

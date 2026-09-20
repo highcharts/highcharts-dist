@@ -6,13 +6,14 @@
  *  Class representing a Synth Patch, used by Instruments in the
  *  sonification.js module.
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
 'use strict';
-import { clamp, defined, pick } from '../../Shared/Utilities.js';
+import { clamp, defined } from '../../Shared/Utilities.js';
 /**
  * Get the multiplier value from a pitch tracked multiplier. The parameter
  * specifies the multiplier at ca 3200Hz. It is 1 at ca 50Hz. In between
@@ -190,7 +191,7 @@ class Oscillator {
         }
     }
     setFreqAtTime(time, frequency, glideDuration = 0) {
-        const opts = this.options, f = clamp(pick(opts.fixedFrequency, frequency) *
+        const opts = this.options, f = clamp((opts.fixedFrequency ?? frequency) *
             (opts.freqMultiplier || 1), 0, 21000), oscTarget = this.getOscTarget(), timeConstant = glideDuration / 5000;
         if (oscTarget) {
             oscTarget.cancelScheduledValues(time);
@@ -279,7 +280,7 @@ class Oscillator {
             opts.releaseEnvelope && opts.releaseEnvelope.length;
         if (needsGainNode) {
             this.gainNode = new GainNode(this.audioContext, {
-                gain: pick(opts.volume, 1)
+                gain: (opts.volume ?? 1)
             });
         }
         // We always need VM gain, so make that
@@ -543,7 +544,7 @@ export default SynthPatch;
 * @type {number|undefined}
 */
 /**
- * @typedef {Highcharts.Record<"t"|"vol",number>} Highcharts.SynthEnvelopePoint
+ * @typedef {Record<"t"|"vol",number>} Highcharts.SynthEnvelopePoint
  * @requires modules/sonification
  */
 /**

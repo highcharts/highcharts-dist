@@ -3,8 +3,9 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Sebastian Bochan
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -12,7 +13,7 @@
 import ColumnPyramidSeriesDefaults from './ColumnPyramidSeriesDefaults.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { column: ColumnSeries } = SeriesRegistry.seriesTypes;
-import { clamp, merge, pick } from '../../Shared/Utilities.js';
+import { clamp, merge } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class
@@ -21,7 +22,7 @@ import { clamp, merge, pick } from '../../Shared/Utilities.js';
 /**
  * The ColumnPyramidSeries class
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.columnpyramid
  *
@@ -35,12 +36,12 @@ class ColumnPyramidSeries extends ColumnSeries {
      * */
     /**
      * Overrides the column translate method
-     * @private
+     * @internal
      */
     translate() {
         const series = this, chart = series.chart, options = series.options, dense = series.dense =
-            series.closestPointRange * series.xAxis.transA < 2, borderWidth = series.borderWidth = pick(options.borderWidth, dense ? 0 : 1 // #3635
-        ), yAxis = series.yAxis, threshold = options.threshold, minPointLength = pick(options.minPointLength, 5), metrics = series.getColumnMetrics(), pointWidth = metrics.width, pointXOffset = series.pointXOffset = metrics.offset;
+            series.closestPointRange * series.xAxis.transA < 2, borderWidth = series.borderWidth =
+            options.borderWidth ?? (dense ? 0 : 1), yAxis = series.yAxis, threshold = options.threshold, minPointLength = (options.minPointLength ?? 5), metrics = series.getColumnMetrics(), pointWidth = metrics.width, pointXOffset = series.pointXOffset = metrics.offset;
         let translatedThreshold = series.translatedThreshold =
             yAxis.getThreshold(threshold), 
         // Postprocessed for border width
@@ -60,7 +61,7 @@ class ColumnPyramidSeries extends ColumnSeries {
         super.translate();
         // Record the new values
         for (const point of series.points) {
-            const yBottom = pick(point.yBottom, translatedThreshold), safeDistance = 999 + Math.abs(yBottom), plotY = clamp(point.plotY, -safeDistance, yAxis.len + safeDistance), 
+            const yBottom = (point.yBottom ?? translatedThreshold), safeDistance = 999 + Math.abs(yBottom), plotY = clamp(point.plotY, -safeDistance, yAxis.len + safeDistance), 
             // Don't draw too far outside plot area
             // (#1303, #2241, #4264)
             barW = seriesBarW / 2, barY = Math.min(plotY, yBottom), barH = Math.max(plotY, yBottom) - barY;
@@ -176,4 +177,5 @@ SeriesRegistry.registerSeriesType('columnpyramid', ColumnPyramidSeries);
  *  Default Export
  *
  * */
+/** @internal */
 export default ColumnPyramidSeries;

@@ -82,8 +82,30 @@ declare module "../highcharts.src" {
          */
         valueSuffix?: string;
     }
+    /**
+     * (Highcharts) A collection of attributes for the buttons. The object takes
+     * SVG attributes like `fill`, `stroke`, `stroke-width`, as well as `style`,
+     * a collection of CSS properties for the text.
+     *
+     * The object can also be extended with states, so you can set
+     * presentational options for `hover`, `select` or `disabled` button states.
+     */
+    interface PlotSunburstBreadcrumbsButtonThemeOptions {
+        style?: Highcharts.PlotSunburstBreadcrumbsButtonThemeStyleOptions;
+    }
     interface PlotSunburstBreadcrumbsButtonThemeStyleOptions {
         color?: string;
+    }
+    interface PlotSunburstBreadcrumbsEventsOptions {
+        /**
+         * (Highcharts) Fires when clicking on a breadcrumb button. Two
+         * arguments are passed to the function. First is the click event.
+         * Second is the breadcrumb options for the clicked button. (see online
+         * documentation for example)
+         *
+         * Return false to stop default buttons click action.
+         */
+        click?: Highcharts.BreadcrumbsClickCallbackFunction;
     }
     /**
      * (Highcharts) Options for the breadcrumbs, the navigation at the top
@@ -168,6 +190,33 @@ declare module "../highcharts.src" {
         zIndex?: number;
     }
     /**
+     * (Highcharts, Highmaps) Positioning for the button row. The breadcrumbs
+     * buttons will be aligned properly for the default chart layout (title,
+     * subtitle, legend, range selector) for the custom chart layout set the
+     * position properties.
+     */
+    interface PlotSunburstBreadcrumbsPositionOptions {
+        /**
+         * (Highcharts, Highmaps) Horizontal alignment of the breadcrumbs
+         * buttons.
+         */
+        align?: Highcharts.AlignValue;
+        /**
+         * (Highcharts, Highmaps) Vertical alignment of the breadcrumbs buttons.
+         */
+        verticalAlign?: Highcharts.VerticalAlignValue;
+        /**
+         * (Highcharts, Highmaps) The X offset of the breadcrumbs button group.
+         */
+        x?: number;
+        /**
+         * (Highcharts, Highmaps) The Y offset of the breadcrumbs button group.
+         * When `undefined`, and `floating` is `false`, the `y` position is
+         * adapted so that the breadcrumbs are rendered outside the target area.
+         */
+        y?: (number|undefined);
+    }
+    /**
      * (Highcharts) Options object for Breadcrumbs separator.
      */
     interface PlotSunburstBreadcrumbsSeparatorOptions {
@@ -179,6 +228,16 @@ declare module "../highcharts.src" {
          */
         style?: (Highcharts.CSSObject|Highcharts.PlotSunburstBreadcrumbsSeparatorStyleOptions);
         text?: string;
+    }
+    /**
+     * (Highcharts) CSS styles for the breadcrumbs separator.
+     *
+     * In styled mode, the breadcrumbs separators are styled by the
+     * `.highcharts-separator` rule with its different states.
+     */
+    interface PlotSunburstBreadcrumbsSeparatorStyleOptions {
+        color?: string;
+        fontSize?: number;
     }
     /**
      * (Highcharts, Highstock, Highmaps, Gantt) Enable or disable the initial
@@ -200,6 +259,51 @@ declare module "../highcharts.src" {
         defer?: number;
     }
     /**
+     * (Highcharts, Highstock, Highmaps, Gantt) Styles for the label. The
+     * default `color` setting is `"contrast"`, which is a pseudo color that
+     * Highcharts picks up and applies the maximum contrast to the underlying
+     * point item, for example the bar in a bar chart.
+     *
+     * The `textOutline` is a pseudo property that applies an outline of the
+     * given width with the given color, which by default is the maximum
+     * contrast to the text. So a bright text color will result in a black text
+     * outline for maximum readability on a mixed background. In some cases,
+     * especially with grayscale text, the text outline doesn't work well, in
+     * which cases it can be disabled by setting it to `"none"`. When `useHTML`
+     * is true, the `textOutline` will not be picked up. In this, case, the same
+     * effect can be achieved through the `text-shadow` CSS property. As a
+     * complementary or alternative to the `textOutline`, a
+     * `dataLabels.backgroundColor` can be used. It provides a more calm
+     * impression and ensures readable text label, at the cost of a risk of
+     * overshadowing the underlying chart elements.
+     *
+     * For some series types, where each point has an extent, like for example
+     * tree maps, the data label may overflow the point. There are two
+     * strategies for handling overflow. By default, the text will wrap to
+     * multiple lines. The other strategy is to set `style.textOverflow` to
+     * `ellipsis`, which will keep the text on one line plus it will break
+     * inside long words.
+     */
+    interface PlotSunburstDataLabelsStyleOptions {
+        textOverflow?: string;
+    }
+    /**
+     * (Highcharts) Can set a `colorVariation` on all points which lies on the
+     * same level.
+     */
+    interface PlotSunburstLevelsColorVariationOptions {
+        /**
+         * (Highcharts) The key of a color variation. Currently supports
+         * `brightness` only.
+         */
+        key?: string;
+        /**
+         * (Highcharts) The ending value of a color variation. The last sibling
+         * will receive this value.
+         */
+        to?: number;
+    }
+    /**
      * (Highcharts, Highstock, Highmaps, Gantt) Enable or disable the initial
      * animation when a series is displayed for the `dataLabels`. The animation
      * can also be set as a configuration object. Please note that this option
@@ -217,6 +321,58 @@ declare module "../highcharts.src" {
          * `undefined` inherits defer time from the series.animation.defer.
          */
         defer?: number;
+    }
+    /**
+     * (Highcharts, Highstock, Highmaps, Gantt) Styles for the label. The
+     * default `color` setting is `"contrast"`, which is a pseudo color that
+     * Highcharts picks up and applies the maximum contrast to the underlying
+     * point item, for example the bar in a bar chart.
+     *
+     * The `textOutline` is a pseudo property that applies an outline of the
+     * given width with the given color, which by default is the maximum
+     * contrast to the text. So a bright text color will result in a black text
+     * outline for maximum readability on a mixed background. In some cases,
+     * especially with grayscale text, the text outline doesn't work well, in
+     * which cases it can be disabled by setting it to `"none"`. When `useHTML`
+     * is true, the `textOutline` will not be picked up. In this, case, the same
+     * effect can be achieved through the `text-shadow` CSS property. As a
+     * complementary or alternative to the `textOutline`, a
+     * `dataLabels.backgroundColor` can be used. It provides a more calm
+     * impression and ensures readable text label, at the cost of a risk of
+     * overshadowing the underlying chart elements.
+     *
+     * For some series types, where each point has an extent, like for example
+     * tree maps, the data label may overflow the point. There are two
+     * strategies for handling overflow. By default, the text will wrap to
+     * multiple lines. The other strategy is to set `style.textOverflow` to
+     * `ellipsis`, which will keep the text on one line plus it will break
+     * inside long words.
+     */
+    interface PlotSunburstLevelsDataLabelsStyleOptions {
+        textOverflow?: string;
+    }
+    /**
+     * (Highcharts) Determines the width of the ring per level.
+     */
+    interface PlotSunburstLevelSizeOptions {
+        /**
+         * (Highcharts) How to interpret `levelSize.value`.
+         *
+         * - `percentage` gives a width relative to result of outer radius minus
+         * inner radius.
+         *
+         * - `pixels` gives the ring a fixed width in pixels.
+         *
+         * - `weight` takes the remaining width after percentage and pixels, and
+         * distributes it across all "weighted" levels. The value relative to
+         * the sum of all weights determines the width.
+         */
+        unit?: Highcharts.OptionsUnitValue;
+        /**
+         * (Highcharts) The value used for calculating the width of the ring.
+         * Its' affect is determined by `levelSize.unit`.
+         */
+        value?: number;
     }
     /**
      * (Highcharts) Set options on specific levels. Takes precedence over series
@@ -264,10 +420,37 @@ declare module "../highcharts.src" {
          */
         level?: number;
         /**
+         * (Highcharts) Whether the `level` number is absolute, or relative to
+         * the currently visible root. Overrides the series option of the same
+         * name for this level.
+         */
+        levelIsConstant?: boolean;
+        /**
          * (Highcharts) Can set a `levelSize` on all points which lies on the
          * same level.
          */
         levelSize?: object;
+    }
+    /**
+     * (Highcharts) Options for the connector in the _Series on point_ feature.
+     *
+     * In styled mode, the connector can be styled with the
+     * `.highcharts-connector-seriesonpoint` class name.
+     */
+    interface PlotSunburstOnPointConnectorOptions {
+        /**
+         * (Highcharts) A name for the dash style to use for the connector.
+         */
+        dashstyle?: string;
+        /**
+         * (Highcharts) Color of the connector line. By default it's the series'
+         * color.
+         */
+        stroke?: string;
+        /**
+         * (Highcharts) Pixel width of the connector line.
+         */
+        width?: number;
     }
     /**
      * (Highcharts) Options for the _Series on point_ feature. Only `pie` and
@@ -293,6 +476,34 @@ declare module "../highcharts.src" {
          * series in the _Series on point_ feature.
          */
         position?: (object|Highcharts.PlotSunburstOnPointPositionOptions);
+    }
+    /**
+     * (Highcharts) Options allowing to set a position and an offset of the
+     * series in the _Series on point_ feature.
+     */
+    interface PlotSunburstOnPointPositionOptions {
+        /**
+         * (Highcharts) Series center offset from the original x position. If
+         * defined, the connector line is drawn connecting original position
+         * with new position.
+         */
+        offsetX?: number;
+        /**
+         * (Highcharts) Series center offset from the original y position. If
+         * defined, the connector line is drawn from original position to a new
+         * position.
+         */
+        offsetY?: number;
+        /**
+         * (Highcharts) X position of the series center. By default, the series
+         * is displayed on the point that it is connected to.
+         */
+        x?: number;
+        /**
+         * (Highcharts) Y position of the series center. By default, the series
+         * is displayed on the point that it is connected to.
+         */
+        y?: number;
     }
     /**
      * (Highcharts) A Sunburst displays hierarchical data, where a level in the
@@ -325,6 +536,14 @@ declare module "../highcharts.src" {
          * (Highcharts) Accessibility options for a series.
          */
         accessibility?: Highcharts.SeriesAccessibilityOptionsObject;
+        /**
+         * (Highcharts) When enabled the user can click on a point which is a
+         * parent and zoom in on its children. Deprecated and replaced by
+         * allowTraversingTree.
+         *
+         * @deprecated 7.0.3
+         */
+        allowDrillToNode?: boolean;
         /**
          * (Highcharts) Allow this series' points to be selected by clicking on
          * the graphic (columns, point markers, pie slices, map areas etc).
@@ -472,6 +691,48 @@ declare module "../highcharts.src" {
          */
         dataLabels?: (Highcharts.SeriesSunburstDataLabelsOptionsObject|Array<Highcharts.SeriesSunburstDataLabelsOptionsObject>);
         /**
+         * (Highcharts) The mapping between the data table and the series data
+         * points. This is used in conjunction with the `dataTable` option (on
+         * chart or series level) to map columns from the data table to the
+         * properties of the data points. The keys of the `dataMapping` object
+         * correspond to the properties of the data points (e.g. `x`, `y`,
+         * `name`), and the values are objects that specify which column from
+         * which data table to use for that property.
+         *
+         * The keys can also be nested paths, for example `dataLabel.format`, to
+         * map to nested properties of the data points.
+         *
+         * The values can also be strings, in which case they are interpreted as
+         * column id's from the first data table.
+         *
+         * A typical use case is that multiple series share a common column,
+         * like `name` or `x`. In this case, to avoid repetition, the common
+         * column can be applied in `plotOptions.series.dataMapping` and the
+         * individual series can specify only the columns that are unique to
+         * them.
+         *
+         * The series name defaults to the column ID of the main data column in
+         * the mapping. The main data column is typically the `y` data for
+         * cartesian series, or `value` for map series. For example, if the
+         * mapping is `{ y: 'Cost' }`, the series name will be `Cost`. (see
+         * online documentation for example)
+         *
+         * If the columns of the DataTable have keys matching the series keys,
+         * the data mapping is not necessary. For example, this DataTable will
+         * connect directly to the series' `x` and `y` keys: (see online
+         * documentation for example)
+         */
+        dataMapping?: Highcharts.DataMappingOptionsObject;
+        /**
+         * (Highcharts) Options for a specific series-level data table or an
+         * array of data tables. The `dataTable` option can be either a
+         * configuration object or an instance of the `DataTable` class. If a
+         * `DataTable` instance is passed, it will be used directly. If a
+         * configuration object or an array is passed, a new `DataTable`
+         * instance will be created based on the provided configuration.
+         */
+        dataTable?: (Highcharts.DataTable|Highcharts.DataTableOptionsObject|Array<(Highcharts.DataTable|Highcharts.DataTableOptionsObject)>);
+        /**
          * (Highcharts) Deprecated. Use
          * plotOptions.series.accessibility.description instead.
          *
@@ -579,6 +840,8 @@ declare module "../highcharts.src" {
          *
          * Same as accessibility.point.descriptionFormat, but for an individual
          * series. Overrides the chart wide configuration.
+         *
+         * @deprecated 12.6.0
          */
         pointDescriptionFormat?: Function;
         /**
@@ -672,6 +935,10 @@ declare module "../highcharts.src" {
         startAngle?: number;
         /**
          * (Highcharts) A collection of options for different series states.
+         *
+         * In addition to the options documented under each state, any option
+         * from the parent series type can be set, with exception of `data` and
+         * `states`.
          */
         states?: Highcharts.SeriesStatesOptionsObject;
         /**
@@ -697,6 +964,14 @@ declare module "../highcharts.src" {
          */
         tooltip?: Highcharts.SeriesTooltipOptionsObject;
         /**
+         * (Highcharts) Options for the button appearing when traversing down in
+         * a sunburst. Since v9.3.3 the `traverseUpButton` is replaced by
+         * `breadcrumbs`.
+         *
+         * @deprecated 9.3.3
+         */
+        traverseUpButton?: Highcharts.PlotSunburstTraverseUpButtonOptions;
+        /**
          * (Highcharts) Set the initial visibility of the series.
          */
         visible?: boolean;
@@ -710,10 +985,98 @@ declare module "../highcharts.src" {
         zoomEnabled?: boolean;
     }
     /**
-     * (Highcharts) Animation when not hovering over the marker.
+     * (Highcharts, Highstock) Animation setting for hovering the graph in
+     * line-type series.
+     */
+    interface PlotSunburstStatesHoverAnimationOptions {
+        /**
+         * (Highcharts, Highstock) The duration of the hover animation in
+         * milliseconds. By default the hover state animates quickly in, and
+         * slowly back to normal.
+         */
+        duration?: number;
+    }
+    /**
+     * (Highcharts, Highstock) Animation when not hovering over the marker.
      */
     interface PlotSunburstStatesInactiveAnimationOptions {
+        /**
+         * (Highcharts, Highstock) The duration of the hover animation in
+         * milliseconds. By default the hover state animates quickly in, and
+         * slowly back to normal.
+         */
         duration?: number;
+    }
+    /**
+     * (Highcharts, Highstock) Animation setting for hovering the graph in
+     * line-type series.
+     */
+    interface PlotSunburstStatesSelectAnimationOptions {
+        /**
+         * (Highcharts, Highstock) The duration of the hover animation in
+         * milliseconds. By default the hover state animates quickly in, and
+         * slowly back to normal.
+         */
+        duration?: number;
+    }
+    /**
+     * (Highcharts, Highstock, Gantt) For series on datetime axes, the date
+     * format in the tooltip's header will by default be guessed based on the
+     * closest data points. This member gives the default string representations
+     * used for each unit. For an overview of the string or object
+     * configuration, see dateFormat.
+     */
+    interface PlotSunburstTooltipDateTimeLabelFormatsOptions {
+        day?: string;
+        hour?: string;
+        millisecond?: string;
+        minute?: string;
+        month?: string;
+        second?: string;
+        week?: string;
+        year?: string;
+    }
+    /**
+     * (Highcharts) Options for the tooltip header when tooltip.split is
+     * enabled. The header is the box containing the X value in a split tooltip.
+     */
+    interface PlotSunburstTooltipHeaderOptions {
+        /**
+         * (Highcharts) Background color for the tooltip header when
+         * tooltip.split is enabled.
+         */
+        backgroundColor?: Highcharts.ColorType;
+        /**
+         * (Highcharts) Border color for the tooltip header when tooltip.split
+         * is enabled.
+         */
+        borderColor?: Highcharts.ColorType;
+        /**
+         * (Highcharts) The width of the border for the tooltip header when
+         * tooltip.split is enabled.
+         */
+        borderWidth?: number;
+        /**
+         * (Highcharts) Distance between the plot area and the header (except
+         * the chevron) in a split tooltip, in pixels. The default value makes
+         * the header text align with the axis labels.
+         */
+        distance?: number;
+        /**
+         * (Highcharts) The name of a symbol to use for the border around the
+         * tooltip header. Applies only when tooltip.split is enabled.
+         *
+         * Custom callbacks for symbol path generation can also be added to
+         * `Highcharts.SVGRenderer.prototype.symbols` the same way as for
+         * series.marker.symbol.
+         */
+        shape?: string;
+        /**
+         * (Highcharts) CSS styles for the tooltip header. The default is `{
+         * fontSize: '1em' }`, ensuring that the header text is the same size as
+         * the axis labels.
+         */
+        style?: object;
     }
     /**
      * (Highcharts) Positioning options for fixed tooltip, taking effect only
@@ -750,6 +1113,52 @@ declare module "../highcharts.src" {
         y?: number;
     }
     /**
+     * (Highcharts) Options for the button appearing when traversing down in a
+     * sunburst. Since v9.3.3 the `traverseUpButton` is replaced by
+     * `breadcrumbs`.
+     *
+     * @deprecated 9.3.3
+     */
+    interface PlotSunburstTraverseUpButtonOptions {
+        /**
+         * (Highcharts) The position of the button.
+         *
+         * @deprecated 9.3.3
+         */
+        position?: Highcharts.PlotSunburstTraverseUpButtonPositionOptions;
+    }
+    /**
+     * (Highcharts) The position of the button.
+     *
+     * @deprecated 9.3.3
+     */
+    interface PlotSunburstTraverseUpButtonPositionOptions {
+        /**
+         * (Highcharts) Horizontal alignment of the button.
+         *
+         * @deprecated 9.3.3
+         */
+        align?: Highcharts.AlignValue;
+        /**
+         * (Highcharts) Vertical alignment of the button.
+         *
+         * @deprecated 9.3.3
+         */
+        verticalAlign?: Highcharts.VerticalAlignValue;
+        /**
+         * (Highcharts) Horizontal offset of the button.
+         *
+         * @deprecated 9.3.3
+         */
+        x?: number;
+        /**
+         * (Highcharts) Vertical offset of the button.
+         *
+         * @deprecated 9.3.3
+         */
+        y?: number;
+    }
+    /**
      * (Highcharts) Enable or disable the initial animation when a series is
      * displayed for the `dataLabels`. The animation can also be set as a
      * configuration object. Please note that this option only applies to the
@@ -773,5 +1182,66 @@ declare module "../highcharts.src" {
      */
     interface SeriesSunburstDataMarkerStatesHoverAnimationOptions {
         duration?: number;
+    }
+    /**
+     * (Highcharts, Highmaps) Animation when hovering over the marker.
+     */
+    interface SeriesSunburstDataMarkerStatesSelectAnimationOptions {
+        duration?: number;
+    }
+    /**
+     * (Highcharts) A `sunburst` series. If the type option is not specified, it
+     * is inherited from chart.type.
+     *
+     * Configuration options for the series are given in three levels:
+     *
+     * 1. Options for all series in a chart are defined in the
+     * plotOptions.series object.
+     *
+     * 2. Options for all `sunburst` series are defined in plotOptions.sunburst.
+     *
+     * 3. Options for one single series are given in the series instance array.
+     * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - type option should always be set, otherwise a broad set of unsupported
+     * options is allowed.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
+     *
+     * You have to extend the `SeriesSunburstOptions` via an interface to allow
+     * custom properties: ``` declare interface SeriesSunburstOptions {
+     * customProperty: string; }
+     *
+     */
+    interface SeriesSunburstOptions extends Highcharts.PlotSunburstOptions, Highcharts.SeriesOptions {
+        /**
+         * (Highcharts) An array of data points for the series. For the
+         * `treemap` series type, points can be given in the following ways:
+         *
+         * 1. An array of numerical values. In this case, the numerical values
+         * will be interpreted as `value` options. Example: (see online
+         * documentation for example)
+         *
+         * 2. An array of objects with named values. The following snippet shows
+         * only a few settings, see the complete options set below. If the total
+         * number of data points exceeds the series' turboThreshold, this option
+         * is not available. (see online documentation for example)
+         */
+        data?: Array<(number|null|Highcharts.PointOptionsObject)>;
+        /**
+         * Not available
+         */
+        stack?: undefined;
+        /**
+         * (Highcharts, Highstock, Highmaps, Gantt) This property is only in
+         * TypeScript non-optional and might be `undefined` in series objects
+         * from unknown sources.
+         */
+        type: "sunburst";
     }
 }

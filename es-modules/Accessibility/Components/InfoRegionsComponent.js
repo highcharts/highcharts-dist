@@ -5,8 +5,9 @@
  *
  *  Accessibility component for chart info region and table.
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -24,8 +25,8 @@ const { format } = F;
 import H from '../../Core/Globals.js';
 const { doc } = H;
 import HU from '../Utils/HTMLUtilities.js';
-const { addClass, getElement, getHeadingTagNameForElement, stripHTMLTagsFromString, visuallyHideElement } = HU;
-import { attr, pick, replaceNested } from '../../Shared/Utilities.js';
+const { addClass, getElement, getHeadingTagNameForElement, getShadowRoot, stripHTMLTagsFromString, visuallyHideElement } = HU;
+import { attr, replaceNested } from '../../Shared/Utilities.js';
 /* *
  *
  *  Functions
@@ -239,7 +240,11 @@ class InfoRegionsComponent extends AccessibilityComponent {
         if (typeof linkedDescOption !== 'string') {
             return linkedDescOption;
         }
-        const query = format(linkedDescOption, this.chart), queryMatch = doc.querySelectorAll(query);
+        const query = format(linkedDescOption, this.chart), shadowRoot = getShadowRoot(this.chart.renderTo), shadowMatch = shadowRoot?.querySelectorAll(query), 
+        // The description may also live outside the shadow root (#22682)
+        queryMatch = shadowMatch?.length ?
+            shadowMatch :
+            doc.querySelectorAll(query);
         if (queryMatch.length === 1) {
             return queryMatch[0];
         }
@@ -270,11 +275,11 @@ class InfoRegionsComponent extends AccessibilityComponent {
             AST.setElementHTML(hiddenDiv, content);
             sectionDiv.appendChild(hiddenDiv);
             region.insertIntoDOM(sectionDiv, chart);
+            // Apply inline hidden styles too as the class alone depends on
+            // `highcharts.css` being loaded
+            visuallyHideElement(hiddenDiv);
             if (chart.styledMode) {
                 addClass(hiddenDiv, 'highcharts-visually-hidden');
-            }
-            else {
-                visuallyHideElement(hiddenDiv);
             }
             unhideChartElementFromAT(chart, hiddenDiv);
             if (region.afterInserted) {
@@ -411,7 +416,7 @@ class InfoRegionsComponent extends AccessibilityComponent {
      * @private
      */
     getEndOfChartMarkerText() {
-        const endMarkerId = `highcharts-end-of-chart-marker-${this.chart.index}`, endMarker = getElement(endMarkerId);
+        const endMarkerId = `highcharts-end-of-chart-marker-${this.chart.index}`, endMarker = getElement(endMarkerId, this.chart.renderTo);
         if (endMarker) {
             return endMarker.outerHTML;
         }
@@ -448,8 +453,8 @@ class InfoRegionsComponent extends AccessibilityComponent {
      * @param {string} sonifyButtonId
      */
     initSonifyButton(sonifyButtonId) {
-        const el = this.sonifyButton = getElement(sonifyButtonId);
         const chart = this.chart;
+        const el = this.sonifyButton = getElement(sonifyButtonId, chart.renderTo);
         const defaultHandler = (e) => {
             if (el) {
                 el.setAttribute('aria-hidden', 'true');
@@ -485,11 +490,11 @@ class InfoRegionsComponent extends AccessibilityComponent {
      * @param {string} tableButtonId
      */
     initDataTableButton(tableButtonId) {
-        const el = this.viewDataTableButton = getElement(tableButtonId), chart = this.chart, tableId = tableButtonId.replace('hc-linkto-', '');
+        const chart = this.chart, el = this.viewDataTableButton = getElement(tableButtonId, chart.renderTo), tableId = tableButtonId.replace('hc-linkto-', '');
         if (el) {
             attr(el, {
                 tabindex: -1,
-                'aria-expanded': !!getElement(tableId)
+                'aria-expanded': !!getElement(tableId, chart.renderTo)
             });
             el.onclick = chart.options.accessibility
                 .screenReaderSection.onViewDataTableClick ||
@@ -505,9 +510,11 @@ class InfoRegionsComponent extends AccessibilityComponent {
     getAxesDescription() {
         const chart = this.chart, shouldDescribeColl = function (collectionKey, defaultCondition) {
             const axes = chart[collectionKey];
-            return axes.length > 1 || axes[0] &&
-                pick(axes[0].options.accessibility &&
-                    axes[0].options.accessibility.enabled, defaultCondition);
+            const axisA11yEnabled = axes[0] ?
+                (axes[0].options.accessibility &&
+                    axes[0].options.accessibility.enabled) :
+                void 0;
+            return axes.length > 1 || (axisA11yEnabled ?? defaultCondition);
         }, hasNoMap = !!chart.types &&
             chart.types.indexOf('map') < 0 &&
             chart.types.indexOf('treemap') < 0 &&

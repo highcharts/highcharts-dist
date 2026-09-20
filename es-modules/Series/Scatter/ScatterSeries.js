@@ -3,8 +3,9 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -46,14 +47,15 @@ class ScatterSeries extends LineSeries {
             return rand - Math.floor(rand);
         }
         if (jitter) {
-            this.points.forEach(function (point, i) {
-                ['x', 'y'].forEach(function (dim, j) {
+            this.points.forEach((point, i) => {
+                ['x', 'y'].forEach((dim, j) => {
                     if (jitter[dim] && !point.isNull) {
-                        const plotProp = `plot${dim.toUpperCase()}`, axis = series[`${dim}Axis`], translatedJitter = jitter[dim] *
-                            axis.transA;
+                        const plotProp = `plot${dim.toUpperCase()}`, axis = series[`${dim}Axis`];
                         if (axis && !axis.logarithmic) {
                             // Identify the outer bounds of the jitter range
-                            const min = Math.max(0, (point[plotProp] || 0) - translatedJitter), max = Math.min(axis.len, (point[plotProp] || 0) + translatedJitter);
+                            // (#25054)
+                            const translatedJitter = jitter[dim] * axis.transA *
+                                (axis.reversed ? -1 : 1), min = (point[plotProp] || 0) - translatedJitter, max = (point[plotProp] || 0) + translatedJitter;
                             // Find a random position within this range
                             point[plotProp] = min +
                                 (max - min) * unrandom(i + j * len);

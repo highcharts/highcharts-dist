@@ -4,8 +4,9 @@
  *
  *  Authors: Jon Arild Nygård / Øystein Moseng
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -26,7 +27,7 @@ import TreemapSeriesDefaults from './TreemapSeriesDefaults.js';
 import TreemapUtilities from './TreemapUtilities.js';
 import TU from '../TreeUtilities.js';
 const { getColor, getLevelOptions, updateRootId } = TU;
-import { addEvent, arrayMax, clamp, correctFloat, crisp, defined, extend, fireEvent, isArray, isNumber, isObject, isString, merge, pick, pushUnique, splat, stableSort } from '../../Shared/Utilities.js';
+import { addEvent, arrayMax, clamp, correctFloat, crisp, defined, extend, fireEvent, isArray, isNumber, isObject, isString, merge, pushUnique, splat, stableSort } from '../../Shared/Utilities.js';
 import { error } from '../../Core/Utilities.js';
 Series.keepProps.push('simulation', 'hadOutsideDataLabels');
 /* *
@@ -341,9 +342,9 @@ class TreemapSeries extends ScatterSeries {
      * The rectangular area of the parent.
      */
     calculateChildrenAreas(parent, area) {
-        const series = this, options = series.options, mapOptionsToLevel = series.mapOptionsToLevel, level = mapOptionsToLevel[parent.level + 1], algorithm = pick((level?.layoutAlgorithm &&
+        const series = this, options = series.options, mapOptionsToLevel = series.mapOptionsToLevel, level = mapOptionsToLevel[parent.level + 1], algorithm = ((level?.layoutAlgorithm &&
             series[level?.layoutAlgorithm] &&
-            level.layoutAlgorithm), options.layoutAlgorithm), alternate = options.alternateStartingDirection, 
+            level.layoutAlgorithm) ?? options.layoutAlgorithm), alternate = options.alternateStartingDirection, 
         // Collect all children which should be included
         children = parent.children.filter((n) => parent.isGroup || !n.ignore), groupPadding = level?.groupPadding ?? options.groupPadding ?? 0, rootNode = series.nodeMap[series.rootNode];
         if (!algorithm) {
@@ -559,7 +560,7 @@ class TreemapSeries extends ScatterSeries {
                 const { height = 0, width = 0 } = point.shapeArgs;
                 if (width > 32 && height > 16 && point.shouldDraw()) {
                     const dataLabelWidth = width -
-                        2 * (options.padding || padding || 0);
+                        2 * (splat(options.padding)[0] || splat(padding)[0] || 0);
                     style.width = `${dataLabelWidth}px`;
                     style.lineClamp ?? (style.lineClamp = Math.floor(height / 16));
                     // Only set this in traversal mode, with zooming data labels
@@ -583,6 +584,8 @@ class TreemapSeries extends ScatterSeries {
             point.dlOptions = merge(options, point.options.dataLabels, {
                 zIndex: void 0
             });
+            // Delete so it doesn't override anything on merge.
+            delete point.dlOptions.zIndex;
         }
         super.drawDataLabels(points);
     }
@@ -723,7 +726,7 @@ class TreemapSeries extends ScatterSeries {
      */
     getListOfParents(data, existingIds) {
         const arr = isArray(data) ? data : [], ids = isArray(existingIds) ? existingIds : [], listOfParents = arr.reduce(function (prev, curr, i) {
-            const parent = pick(curr.parent, '');
+            const parent = (curr.parent ?? '');
             if (typeof prev[parent] === 'undefined') {
                 prev[parent] = [];
             }
@@ -874,15 +877,18 @@ class TreemapSeries extends ScatterSeries {
     pointAttribs(point, state) {
         const series = this, mapOptionsToLevel = (isObject(series.mapOptionsToLevel) ?
             series.mapOptionsToLevel :
-            {}), level = point && mapOptionsToLevel[point.node.level] || {}, options = this.options, stateOptions = state && options.states && options.states[state] || {}, className = point?.getClassName() || '', 
+            {}), level = point?.node && mapOptionsToLevel[point.node.level] || {}, options = this.options, stateOptions = state && options.states && options.states[state] || {}, className = point?.node && point.getClassName() || '', 
         // Set attributes by precedence. Point trumps level trumps series.
-        // Stroke width uses pick because it can be 0.
+        // Stroke width uses nullish coalescing because it can be 0.
         attr = {
             'stroke': (point && point.borderColor) ||
                 level.borderColor ||
                 stateOptions.borderColor ||
                 options.borderColor,
-            'stroke-width': pick(point && point.borderWidth, level.borderWidth, stateOptions.borderWidth, options.borderWidth),
+            'stroke-width': ((point && point.borderWidth) ??
+                level.borderWidth ??
+                stateOptions.borderWidth ??
+                options.borderWidth),
             'dashstyle': point?.borderDashStyle ||
                 level.borderDashStyle ||
                 stateOptions.borderDashStyle ||
@@ -1023,7 +1029,7 @@ class TreemapSeries extends ScatterSeries {
         const series = this, eventArgs = extend({
             newRootId: id,
             previousRootId: series.rootNode,
-            redraw: pick(redraw, true),
+            redraw: (redraw ?? true),
             series: series
         }, eventArguments);
         /**
@@ -1080,7 +1086,7 @@ class TreemapSeries extends ScatterSeries {
         // Sort the children
         stableSort(children, (a, b) => ((a.sortIndex || 0) - (b.sortIndex || 0)));
         // Set the values
-        let val = pick(point?.simulatedValue, point?.options.value, childrenTotal);
+        let val = point?.simulatedValue ?? point?.options.value ?? childrenTotal;
         if (point) {
             point.value = val;
         }
@@ -1094,14 +1100,14 @@ class TreemapSeries extends ScatterSeries {
             children: children,
             childrenTotal: childrenTotal,
             // Ignore this node if point is not visible
-            ignore: !(pick(point?.visible, true) && (val > 0)),
+            ignore: !((point?.visible ?? true) && (val > 0)),
             isLeaf: tree.visible && !(series.type === 'treegraph' ?
                 children.length > 0 :
                 childrenTotal),
             isGroup: point?.isGroup,
             levelDynamic: (tree.level - (levelIsConstant ? 0 : nodeRoot.level)),
-            name: pick(point?.name, ''),
-            sortIndex: pick(point?.sortIndex, -val),
+            name: (point?.name ?? ''),
+            sortIndex: (point?.sortIndex ?? -val),
             val: val
         });
         return tree;

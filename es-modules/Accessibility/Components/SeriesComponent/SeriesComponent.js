@@ -5,8 +5,9 @@
  *
  *  Accessibility component for series and points.
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -17,7 +18,7 @@ const { hideSeriesFromAT } = ChartUtilities;
 import ForcedMarkers from './ForcedMarkers.js';
 import NewDataAnnouncer from './NewDataAnnouncer.js';
 import SeriesDescriber from './SeriesDescriber.js';
-const { describeSeries } = SeriesDescriber;
+const { compose: composeSeriesDescriber, describeSeries } = SeriesDescriber;
 import SeriesKeyboardNavigation from './SeriesKeyboardNavigation.js';
 /* *
  *
@@ -43,6 +44,7 @@ class SeriesComponent extends AccessibilityComponent {
     static compose(ChartClass, PointClass, SeriesClass) {
         NewDataAnnouncer.compose(SeriesClass);
         ForcedMarkers.compose(SeriesClass);
+        composeSeriesDescriber(PointClass);
         SeriesKeyboardNavigation.compose(ChartClass, PointClass, SeriesClass);
     }
     /* *

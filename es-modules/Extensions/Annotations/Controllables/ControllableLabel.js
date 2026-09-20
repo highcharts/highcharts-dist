@@ -7,7 +7,7 @@ import Controllable from './Controllable.js';
 import F from '../../../Core/Templating.js';
 const { format } = F;
 import MockPoint from '../MockPoint.js';
-import { extend, getAlignFactor, isNumber, pick } from '../../../Shared/Utilities.js';
+import { extend, getAlignFactor, isNumber } from '../../../Shared/Utilities.js';
 /* *
  *
  *  Functions
@@ -296,7 +296,7 @@ class ControllableLabel extends Controllable {
             if (itemOptions.distance && tooltip) {
                 itemPosition = tooltip.getPosition.call({
                     chart,
-                    distance: pick(itemOptions.distance, 16),
+                    distance: (itemOptions.distance ?? 16),
                     getPlayingField: tooltip.getPlayingField,
                     pointer: tooltip.pointer
                 }, width, height, {

@@ -6,8 +6,9 @@
  *
  *  Authors: Jon Arild Nygård
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -124,6 +125,14 @@ const SunburstSeriesDefaults = {
      * @apioption plotOptions.sunburst.levels.level
      */
     /**
+     * Whether the `level` number is absolute, or relative to the currently
+     * visible root. Overrides the series option of the same name for this
+     * level.
+     *
+     * @type      {boolean}
+     * @apioption plotOptions.sunburst.levels.levelIsConstant
+     */
+    /**
      * Can set a `levelSize` on all points which lies on the same level.
      *
      * @type      {Object}
@@ -134,7 +143,7 @@ const SunburstSeriesDefaults = {
      * zoom in on its children. Deprecated and replaced by
      * [allowTraversingTree](#plotOptions.sunburst.allowTraversingTree).
      *
-     * @deprecated
+     * @deprecated 7.0.3
      * @type      {boolean}
      * @default   false
      * @since     6.0.0
@@ -209,7 +218,6 @@ const SunburstSeriesDefaults = {
          */
         rotationMode: 'circular',
         style: {
-            /** @internal */
             textOverflow: 'ellipsis'
         }
     },
@@ -274,7 +282,7 @@ const SunburstSeriesDefaults = {
      *
      * @extends   plotOptions.treemap.traverseUpButton
      * @since     6.0.0
-     * @deprecated
+     * @deprecated 9.3.3
      * @apioption plotOptions.sunburst.traverseUpButton
      *
      */
@@ -296,13 +304,14 @@ const SunburstSeriesDefaults = {
  * not specified, it is inherited from [chart.type](#chart.type).
  *
  * @extends   series,plotOptions.sunburst
- * @excluding dataParser, dataURL, stack, dataSorting, boostThreshold,
+ * @excluding stack, dataSorting, boostThreshold,
  *            boostBlending
  * @product   highcharts
  * @requires  modules/sunburst
  * @apioption series.sunburst
  */
 /**
+ * @basic
  * @type      {Array<number|null|*>}
  * @extends   series.treemap.data
  * @excluding x, y

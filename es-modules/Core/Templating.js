@@ -3,8 +3,9 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -13,12 +14,12 @@ import D from './Defaults.js';
 const { defaultOptions, defaultTime } = D;
 import G from './Globals.js';
 const { pageLang } = G;
-import { extend, getNestedProperty, isArray, isNumber, isObject, isString, pick, ucfirst } from '../Shared/Utilities.js';
+import { correctFloat, extend, getNestedProperty, isArray, isNumber, isObject, isString, ucfirst } from '../Shared/Utilities.js';
 /** @internal */
 const helpers = {
     // Built-in helpers
     add: (a, b) => a + b,
-    divide: (a, b) => (b !== 0 ? a / b : ''),
+    divide: (a, b) => (b !== 0 ? correctFloat(a / b) : ''),
     // eslint-disable-next-line eqeqeq
     eq: (a, b) => a == b,
     each: function (arr) {
@@ -36,7 +37,7 @@ const helpers = {
     'if': (condition) => !!condition,
     le: (a, b) => a <= b,
     lt: (a, b) => a < b,
-    multiply: (a, b) => a * b,
+    multiply: (a, b) => correctFloat(a * b, 15),
     // eslint-disable-next-line eqeqeq
     ne: (a, b) => a != b,
     subtract: (a, b) => a - b,
@@ -131,13 +132,11 @@ function dateFormat(format, timestamp, upperCaseFirst) {
  *         The formatted string.
  */
 function format(str = '', ctx, owner) {
-    // eslint-disable-next-line prefer-regex-literals
-    const regex = new RegExp('\\{([\\p{L}\\p{M}\\d:\\.,;\\-\\/<>\\[\\]%_@+"\'’= #\\(\\)]+)\\}', 'gu'), 
+    const regex = /\{([^{}]+)\}/g, 
     // The sub expression regex is the same as the top expression regex,
     // but except parens and block helpers (#), and surrounded by parens
     // instead of curly brackets.
-    // eslint-disable-next-line prefer-regex-literals
-    subRegex = new RegExp('\\(([\\p{L}\\p{M}\\d:\\.,;\\-\\/<>\\[\\]%_@+"\'= ]+)\\)', 'gu'), matches = [], floatRegex = /f$/, decRegex = /\.(\d)/, lang = owner?.options?.lang || defaultOptions.lang, time = owner?.time || defaultTime, numberFormatter = owner?.numberFormatter || numberFormat.bind(owner);
+    subRegex = /\(([^()]+)\)/g, matches = [], floatRegex = /f$/, decRegex = /\.(\d)/, lang = owner?.options?.lang || defaultOptions.lang, time = owner?.time || defaultTime, numberFormatter = owner?.numberFormatter || numberFormat.bind(owner);
     /*
      * Get a literal or variable value inside a template expression. May be
      * extended with other types like string or null if needed, but keep it
@@ -291,7 +290,7 @@ function format(str = '', ctx, owner) {
                 replacement = `"${replacement}"`;
             }
         }
-        str = str.replace(match.find, pick(replacement, ''));
+        str = str.replace(match.find, (replacement ?? ''));
     });
     return hasSub ? format(str, ctx, owner) : str;
 }
@@ -408,9 +407,7 @@ export default Templating;
  * API Declarations
  * */
 /**
- * @interface Highcharts.Templating
- *
- * The Highcharts.Templating interface provides a structure for defining
+ * The Highcharts.TemplatingObject interface provides a structure for defining
  * helpers. Helpers can be used as conditional blocks or functions within
  * expressions. Highcharts includes several built-in helpers and supports
  * the addition of custom helpers.
@@ -418,14 +415,19 @@ export default Templating;
  * @see [More information](
  * https://www.highcharts.com/docs/chart-concepts/templating#helpers)
  *
- * @example
- * // Define a custom helper to return the absolute value of a number
- * Highcharts.Templating.helpers.abs = value => Math.abs(value);
- *
- * // Usage in a format string
- * format: 'Absolute value: {abs point.y}'
- *
- * @name Highcharts.Templating#helpers
- * @type {Record<string, Function>}
- */
+ * @interface Highcharts.TemplatingObject
+ */ /**
+* @example
+* // Define a custom helper to return the absolute value of a number
+* Highcharts.Templating.helpers.abs = value => Math.abs(value);
+*
+* // Usage in a format string
+* format: 'Absolute value: {abs point.y}'
+*
+* @name Highcharts.TemplatingObject#helpers
+* @type {Record<string, Function>}
+*/ /**
+* @name Highcharts.Templating
+* @type {Highcharts.TemplatingObject}
+*/
 (''); // Keeps doclets above in file

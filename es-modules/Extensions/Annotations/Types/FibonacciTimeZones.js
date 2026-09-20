@@ -2,8 +2,9 @@
  *
  *  (c) 2009-2026 Highsoft AS
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *  Author: Rafał Sebestjański
  *
@@ -28,6 +29,7 @@ if (defaultOptions.annotations?.types) {
      * @extends      annotations.types.crookedLine
      * @since        9.3.0
      * @product      highstock
+     * @requires     modules/annotations-advanced
      * @optionparent annotations.types.fibonacciTimeZones
      */
     {
@@ -47,7 +49,7 @@ if (defaultOptions.annotations?.types) {
                  * @since     9.3.0
                  * @apioption annotations.types.fibonacciTimeZones.typeOptions.line.stroke
                  */
-                stroke: "#333333" /* Palette.neutralColor80 */,
+                stroke: 'var(--highcharts-neutral-color-80)',
                 /**
                  * The width of the lines.
                  *

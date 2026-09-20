@@ -3,8 +3,9 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -27,22 +28,14 @@ const { isTouchDevice } = H;
  */
 const exporting = {
     /**
-     * Experimental setting to allow HTML inside the chart (added through
-     * the `useHTML` options), directly in the exported image. This allows
-     * you to preserve complicated HTML structures like tables or bi-directional
-     * text in exported charts.
+     * Allow HTML inside the chart (added through the `useHTML` options),
+     * directly in the exported image. This allows you to preserve complicated
+     * HTML structures like tables or bi-directional text in exported charts.
      *
-     * Disclaimer: The HTML is rendered in a `foreignObject` tag in the
-     * generated SVG. The official export server is based on PhantomJS,
-     * which supports this, but other SVG clients, like Batik, does not
-     * support it. This also applies to downloaded SVG that you want to
-     * open in a desktop client.
-     *
-     * @type      {boolean}
-     * @default   false
      * @since     4.1.8
      * @apioption exporting.allowHTML
      */
+    allowHTML: true,
     /**
      * Allows the end user to sort the data table by clicking on column headers.
      *
@@ -78,6 +71,8 @@ const exporting = {
      *         Added data labels
      * @sample {highstock} highcharts/exporting/chartoptions-data-labels/
      *         Added data labels
+     * @sample highcharts/palette/exporting-light
+     *         Dark chart with light export
      *
      * @type      {Highcharts.Options}
      * @apioption exporting.chartOptions
@@ -103,6 +98,13 @@ const exporting = {
      * exception is thrown instead. Receives two parameters, the exporting
      * options, and the error from the module.
      *
+     * Since v13, PDF client-side export dependencies are opt-in. If `jsPDF` and
+     * `svg2pdf` are not present on `window` and `exporting.libURL` is not
+     * defined, a console warning is emitted on chart load. When fallback is
+     * disabled and no `exporting.error` handler is defined, the thrown error
+     * will use the underlying error message when available (for example,
+     * missing `jsPDF`/`svg2pdf`) instead of always throwing error `#28`.
+     *
      * @see [fallbackToExportServer](#exporting.fallbackToExportServer)
      *
      * @type      {Highcharts.ExportingErrorCallbackFunction}
@@ -121,6 +123,13 @@ const exporting = {
      * It is recommended to define the [exporting.error](#exporting.error)
      * handler if disabling fallback, in order to notify users in case export
      * fails.
+     *
+     * Since v13, PDF client-side export dependencies are not auto-loaded unless
+     * `exporting.libURL` is defined (or the scripts are already present on
+     * the page). If dependencies are missing and no `exporting.libURL` is
+     * configured, a console warning is emitted on chart load. Disabling
+     * fallback without defining `exporting.error` will throw the underlying
+     * error message when available.
      *
      * @type      {boolean}
      * @default   true
@@ -153,7 +162,7 @@ const exporting = {
      * modify the request, now use [fetchOptions](#exporting.fetchOptions)
      * instead.
      *
-     * @deprecated
+     * @deprecated 11.3.0
      * @type      {Highcharts.HTMLAttributes}
      * @since     3.0.8
      * @apioption exporting.formAttributes
@@ -181,13 +190,14 @@ const exporting = {
      * external libraries (including [optional dependencies](https://www.highcharts.com/docs/getting-started/optional-dependencies))
      * loaded through `exporting.libURL`. These libraries are not licensed or
      * warrantied under the Highcharts license.
+     * Since v13, this option has no default and must be configured explicitly.
+     * To load dependencies from the Highcharts CDN, set it to
+     * `https://code.highcharts.com/{version}/lib/`.
      *
      * @type      {string}
-     * @default   https://code.highcharts.com/{version}/lib
      * @since     5.0.0
      * @apioption exporting.libURL
      */
-    libURL: 'https://code.highcharts.com/12.6.1/lib/',
     /**
      * Whether the chart should be exported using the browser's built-in
      * capabilities, allowing offline exports without requiring access to the
@@ -754,7 +764,7 @@ const navigation = {
          * @type  {Highcharts.ColorType}
          * @since 2.0
          */
-        symbolFill: "#666666" /* Palette.neutralColor60 */,
+        symbolFill: 'var(--highcharts-neutral-color-60)',
         /**
          * The color of the symbol's stroke or line.
          *
@@ -764,7 +774,7 @@ const navigation = {
          * @type  {Highcharts.ColorString}
          * @since 2.0
          */
-        symbolStroke: "#666666" /* Palette.neutralColor60 */,
+        symbolStroke: 'var(--highcharts-neutral-color-60)',
         /**
          * The pixel stroke width of the symbol on the button.
          *
@@ -793,11 +803,43 @@ const navigation = {
              *
              * @type {Highcharts.ColorType}
              */
-            fill: "#ffffff" /* Palette.backgroundColor */,
+            fill: 'var(--highcharts-background-color)',
             /**
              * Padding for the button.
              */
             padding: 5,
+            /**
+             * Tri-state button styles.
+             *
+             * @sample highcharts/navigation/buttonoptions-theme/
+             *         Theming the buttons
+             *
+             * @apioption navigation.buttonOptions.theme.states
+             */
+            /**
+             * SVG attributes for the disabled state of the button.
+             *
+             * @type      {Highcharts.SVGAttributes}
+             * @apioption navigation.buttonOptions.theme.states.disabled
+             */
+            /**
+             * SVG attributes for the hovered state of the button.
+             *
+             * @type      {Highcharts.SVGAttributes}
+             * @apioption navigation.buttonOptions.theme.states.hover
+             */
+            /**
+             * SVG attributes for the selected state of the button.
+             *
+             * @type      {Highcharts.SVGAttributes}
+             * @apioption navigation.buttonOptions.theme.states.select
+             */
+            /**
+             * CSS styling for the button's text or symbol.
+             *
+             * @type      {Highcharts.CSSObject}
+             * @apioption navigation.buttonOptions.theme.style
+             */
             /**
              * Default stroke for the buttons.
              *
@@ -830,7 +872,7 @@ const navigation = {
         /** @ignore-option */
         borderRadius: '3px',
         /** @ignore-option */
-        background: "#ffffff" /* Palette.backgroundColor */,
+        background: 'var(--highcharts-background-color)',
         /** @ignore-option */
         padding: '0.5em'
     },
@@ -856,7 +898,7 @@ const navigation = {
         /** @ignore-option */
         borderRadius: '3px',
         /** @ignore-option */
-        color: "#333333" /* Palette.neutralColor80 */,
+        color: 'var(--highcharts-neutral-color-80)',
         /** @ignore-option */
         padding: '0.5em',
         /** @ignore-option */
@@ -881,7 +923,7 @@ const navigation = {
      */
     menuItemHoverStyle: {
         /** @ignore-option */
-        background: "#f2f2f2" /* Palette.neutralColor5 */
+        background: 'var(--highcharts-neutral-color-5)'
     }
 };
 /* *

@@ -2,8 +2,9 @@
  *
  *  (c) 2009-2026 Highsoft AS
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  *  Authors:
@@ -17,7 +18,7 @@
 'use strict';
 import DataModifier from '../Modifiers/DataModifier.js';
 import DataTable from '../DataTable.js';
-import { addEvent, fireEvent, merge, pick } from '../../Shared/Utilities.js';
+import { addEvent, fireEvent, merge } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class
@@ -162,7 +163,7 @@ class DataConnector {
     getColumnOrder() {
         const connector = this, columns = connector.metadata.columns, names = Object.keys(columns || {});
         if (names.length) {
-            return names.sort((a, b) => (pick(columns[a].index, 0) - pick(columns[b].index, 0)));
+            return names.sort((a, b) => ((columns[a].index ?? 0) - (columns[b].index ?? 0)));
         }
     }
     /**
@@ -238,6 +239,9 @@ class DataConnector {
             // options, otherwise take the data modifier options from the
             // connector options.
             const dataModifierOptions = tableOptionsArray?.find((dataTable) => dataTable.key === key)?.dataModifier ?? this.options?.dataModifier;
+            if (!dataModifierOptions) {
+                continue;
+            }
             const ModifierClass = (dataModifierOptions &&
                 DataModifier.types[dataModifierOptions.type]);
             await table.setModifier(ModifierClass ?

@@ -3,8 +3,9 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *  Grid-light theme for Highcharts JS
  *
@@ -27,12 +28,18 @@ var GridLightTheme;
      *
      * */
     GridLightTheme.options = {
-        colors: [
-            '#7cb5ec', '#f7a35c', '#90ee7e', '#7798BF', '#aaeeee', '#ff0066',
-            '#eeaaee', '#55BF3B', '#DF5353', '#7798BF', '#aaeeee'
-        ],
+        palette: {
+            colorScheme: 'light',
+            light: {
+                neutralColor: '#111100',
+                colors: [
+                    '#7cb5ec', '#f7a35c', '#90ee7e', '#7798BF',
+                    '#aaeeee', '#ff0066', '#eeaaee', '#55BF3B',
+                    '#DF5353', '#7798BF', '#aaeeee'
+                ]
+            }
+        },
         chart: {
-            backgroundColor: null,
             style: {
                 fontFamily: 'Dosis, sans-serif'
             }
@@ -46,11 +53,15 @@ var GridLightTheme;
         },
         tooltip: {
             borderWidth: 0,
-            backgroundColor: 'rgba(219,219,216,0.8)',
-            shadow: false
+            shadow: false,
+            // Inverted colors
+            backgroundColor: 'var(--highcharts-neutral-color-80)',
+            style: {
+                color: 'var(--highcharts-background-color)'
+            }
         },
         legend: {
-            backgroundColor: '#F0F0EA',
+            backgroundColor: 'var(--highcharts-neutral-color-5)',
             itemStyle: {
                 fontWeight: 'bold',
                 fontSize: '13px'
@@ -75,11 +86,6 @@ var GridLightTheme;
                 style: {
                     fontSize: '12px'
                 }
-            }
-        },
-        plotOptions: {
-            candlestick: {
-                lineColor: '#404048'
             }
         }
     };

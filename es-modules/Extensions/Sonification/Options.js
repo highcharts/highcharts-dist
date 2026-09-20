@@ -5,8 +5,9 @@
  *
  *  Default options for sonification.
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -911,6 +912,7 @@ const Options = {
         /**
          * The text for the MIDI download menu item in the export menu.
          *
+         * @type {string}
          * @requires modules/sonification
          * @since 11.0.0
          * @apioption lang.downloadMIDI
@@ -919,6 +921,7 @@ const Options = {
         /**
          * The text for the Play as sound menu item in the export menu.
          *
+         * @type {string}
          * @requires modules/sonification
          * @since 11.0.0
          * @apioption lang.playAsSound

@@ -4,8 +4,9 @@
  *
  *  Authors: Jon Arild Nygård
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -15,7 +16,7 @@
  *  Imports
  *
  * */
-import { extend, isNumber, pick } from '../Shared/Utilities.js';
+import { extend, isNumber } from '../Shared/Utilities.js';
 /* *
  *
  *  Functions
@@ -73,7 +74,7 @@ function getNode(id, parent, level, data, mapOfIdToChildren, options) {
     }
     // Call getNode recursively on the children. Calculate the height of the
     // node, and the number of descendants.
-    const children = ((mapOfIdToChildren[id] || [])).map((child) => {
+    const children = (mapOfIdToChildren[id] || []).map((child) => {
         const node = getNode(child.id, id, (level + 1), child, mapOfIdToChildren, options), childStart = child.start || NaN, childEnd = (child.milestone === true ?
             childStart :
             child.end ||
@@ -93,8 +94,8 @@ function getNode(id, parent, level, data, mapOfIdToChildren, options) {
     });
     // Calculate start and end for point if it is not already explicitly set.
     if (data) {
-        data.start = pick(data.start, start);
-        data.end = pick(data.end, end);
+        data.start ?? (data.start = start);
+        data.end ?? (data.end = end);
     }
     extend(node, {
         children: children,

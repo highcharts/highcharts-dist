@@ -13,7 +13,7 @@
  * Can be used for any type of component that reserves the graphic property,
  * and provides a shouldDraw on its context.
  *
- * @private
+ * @internal
  *
  * @todo add type checking.
  * @todo export this function to enable usage
@@ -74,7 +74,9 @@ function draw(point, params) {
  *  Default Export
  *
  * */
+/** @internal */
 const DrawPointUtilities = {
     draw
 };
+/** @internal */
 export default DrawPointUtilities;

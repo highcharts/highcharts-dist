@@ -5,8 +5,9 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Paweł Fus
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -24,9 +25,9 @@ import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { series: Series, seriesTypes: { column: { prototype: columnProto }, line: { prototype: lineProto } } } = SeriesRegistry;
 import D from '../SimulationSeriesUtilities.js';
 const { initDataLabels, initDataLabelsDefer } = D;
-import TextPath from '../../Extensions/TextPath.js';
-import { addEvent, defined, extend, merge, pick } from '../../Shared/Utilities.js';
-TextPath.compose(SVGElement);
+import { composeTextPath } from '../../Extensions/TextPath.js';
+import { addEvent, defined, extend, merge } from '../../Shared/Utilities.js';
+composeTextPath(SVGElement);
 /* *
  *
  *  Class
@@ -160,7 +161,9 @@ class NetworkgraphSeries extends Series {
         for (i = this.nodes.length - 1; i >= 0; i--) {
             node = this.nodes[i];
             node.degree = node.getDegree();
-            node.radius = pick(node.marker && node.marker.radius, this.options.marker && this.options.marker.radius, 0);
+            node.radius = ((node.marker && node.marker.radius) ??
+                (this.options.marker && this.options.marker.radius) ??
+                0);
             node.key = node.name;
             // If node exists, but it's not available in nodeLookup,
             // then it's leftover from previous runs (e.g. setData)
@@ -242,18 +245,21 @@ class NetworkgraphSeries extends Series {
      */
     pointAttribs(point, state) {
         // By default, only `selected` state is passed on
-        const pointState = state || point && point.state || 'normal', stateOptions = this.options.states[pointState];
+        const pointState = state || point && point.state || 'normal', stateOptions = this.options.states?.[pointState];
         let attribs = Series.prototype.pointAttribs.call(this, point, pointState);
         if (point && !point.isNode) {
             attribs = point.getLinkAttributes();
-            // For link, get prefixed names:
+            // For link, get nested names:
             if (stateOptions) {
                 attribs = {
-                    // TO DO: API?
-                    stroke: stateOptions.linkColor || attribs.stroke,
-                    dashstyle: (stateOptions.linkDashStyle || attribs.dashstyle),
-                    opacity: pick(stateOptions.linkOpacity, attribs.opacity),
-                    'stroke-width': stateOptions.linkColor ||
+                    stroke: stateOptions.link?.color || attribs.stroke,
+                    dashstyle: stateOptions.link?.dashStyle ||
+                        attribs.dashstyle,
+                    // Deprecated linkOpacity, but keep for backwards compat.
+                    opacity: stateOptions.linkOpacity ??
+                        stateOptions.link?.opacity ??
+                        attribs.opacity,
+                    'stroke-width': stateOptions.link?.width ||
                         attribs['stroke-width']
                 };
             }

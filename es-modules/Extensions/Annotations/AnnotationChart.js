@@ -3,13 +3,14 @@
  *  (c) 2009-2026 Highsoft AS
  *  Author: Highsoft, Black Label
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
 'use strict';
-import { addEvent, erase, find, fireEvent, isArray, isObject, pick, wrap } from '../../Shared/Utilities.js';
+import { addEvent, erase, find, fireEvent, isArray, isObject, wrap } from '../../Shared/Utilities.js';
 /* *
  *
  *  Functions
@@ -34,7 +35,7 @@ import { addEvent, erase, find, fireEvent, isArray, isObject, pick, wrap } from 
 function chartAddAnnotation(options, redraw) {
     const annotation = this.initAnnotation(options);
     this.options.annotations.push(annotation.options);
-    if (pick(redraw, true)) {
+    if (redraw ?? true) {
         annotation.redraw();
         annotation.graphic.attr({
             opacity: 1
@@ -71,7 +72,8 @@ function chartCallback() {
             {}).columnHeaderFormatter, 
         // If second row doesn't have xValues
         // then it is a title row thus multiple level header is in use.
-        multiLevelHeaders = !event.dataRows[1].xValues, annotationHeader = (chart.options.lang &&
+        // The row is missing altogether when the chart has no data, #25090.
+        multiLevelHeaders = !event.dataRows[1]?.xValues, annotationHeader = (chart.options.lang &&
             chart.options.lang.exportData &&
             chart.options.lang.exportData.annotationHeader), columnHeaderFormatter = function (index) {
             let s;

@@ -1,7 +1,8 @@
 /* *
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  * */
 'use strict';
@@ -17,7 +18,7 @@ import { error } from '../../../Core/Utilities.js';
 /**
  * The AD series type.
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.ad
  *
@@ -84,7 +85,7 @@ class ADIndicator extends SMAIndicator {
  * Accumulation Distribution (AD). This series requires `linkedTo` option to
  * be set.
  *
- * @sample stock/indicators/accumulation-distribution
+ * @sample {highstock} stock/indicators/accumulation-distribution
  *         Accumulation/Distribution indicator
  *
  * @extends      plotOptions.sma
@@ -120,6 +121,7 @@ SeriesRegistry.registerSeriesType('ad', ADIndicator);
  *  Default Export
  *
  * */
+/** @internal */
 export default ADIndicator;
 /* *
  *
@@ -132,7 +134,6 @@ export default ADIndicator;
  *
  * @extends   series,plotOptions.ad
  * @since     6.0.0
- * @excluding dataParser, dataURL
  * @product   highstock
  * @requires  stock/indicators/indicators
  * @requires  stock/indicators/accumulation-distribution

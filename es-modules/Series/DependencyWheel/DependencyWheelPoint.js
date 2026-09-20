@@ -5,8 +5,9 @@
  *  (c) 2018-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -19,6 +20,7 @@ import { pInt, wrap } from '../../Shared/Utilities.js';
  *  Class
  *
  * */
+/** @internal */
 class DependencyWheelPoint extends SankeyPoint {
     /* *
      *
@@ -26,8 +28,22 @@ class DependencyWheelPoint extends SankeyPoint {
      *
      * */
     /**
+     * Return the sum of incoming links wieght and outgoing links weightTo.
+     * @internal
+     */
+    getSumTo() {
+        let sum = 0;
+        for (const link of this.linksFrom) {
+            sum += link.weightTo || link.weight || 0;
+        }
+        for (const link of this.linksTo) {
+            sum += link.weight || 0;
+        }
+        return sum;
+    }
+    /**
      * Return a text path that the data label uses.
-     * @private
+     * @internal
      */
     getDataLabelPath(label) {
         const point = this, renderer = point.series.chart.renderer, shapeArgs = point.shapeArgs, upperHalf = point.angle < 0 || point.angle > Math.PI, start = shapeArgs.start || 0, end = shapeArgs.end || 0;
@@ -73,4 +89,5 @@ class DependencyWheelPoint extends SankeyPoint {
  *  Default Export
  *
  * */
+/** @internal */
 export default DependencyWheelPoint;

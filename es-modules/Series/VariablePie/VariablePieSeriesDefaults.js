@@ -5,8 +5,9 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Grzegorz Blachliński
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -92,8 +93,9 @@ const VariablePieSeriesDefaults = {
      * @sample {highcharts} highcharts/variable-radius-pie/sizeby/
      *         Difference between area and radius sizeBy
      *
-     * @type  {Highcharts.VariablePieSizeByValue}
-     * @since 6.0.0
+     * @declare Highcharts.VariablePieSizeByValue
+     * @since   6.0.0
+     * @type    {"area"|"radius"}
      */
     sizeBy: 'area',
     tooltip: {
@@ -105,7 +107,7 @@ const VariablePieSeriesDefaults = {
  * specified, it is inherited from [chart.type](#chart.type).
  *
  * @extends   series,plotOptions.variablepie
- * @excluding dataParser, dataURL, stack, xAxis, yAxis, dataSorting,
+ * @excluding stack, xAxis, yAxis, dataSorting,
  *            boostThreshold, boostBlending
  * @product   highcharts
  * @requires  modules/variable-pie
@@ -153,6 +155,7 @@ const VariablePieSeriesDefaults = {
  * @sample {highcharts} highcharts/series/data-array-of-objects/
  *         Config objects
  *
+ * @basic
  * @type      {Array<Array<(number|string),number>|*>}
  * @extends   series.pie.data
  * @excluding marker, x

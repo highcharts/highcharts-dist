@@ -3,15 +3,16 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
 'use strict';
 import H from '../Globals.js';
-const { isTouchDevice } = H;
-import { addEvent, correctFloat, defined, isNumber, pick } from '../../Shared/Utilities.js';
+const { composed, isTouchDevice } = H;
+import { addEvent, correctFloat, defined, isNumber, pushUnique } from '../../Shared/Utilities.js';
 /* *
  *
  *  Functions
@@ -76,8 +77,7 @@ class NavigatorAxisAdditions {
      *
      * */
     static compose(AxisClass) {
-        if (!AxisClass.keepProps.includes('navigatorAxis')) {
-            AxisClass.keepProps.push('navigatorAxis');
+        if (pushUnique(composed, 'Axis.Navigator')) {
             addEvent(AxisClass, 'init', onAxisInit);
             addEvent(AxisClass, 'setExtremes', onAxisSetExtremes);
         }
@@ -107,7 +107,7 @@ class NavigatorAxisAdditions {
      */
     toFixedRange(pxMin, pxMax, fixedMin, fixedMax) {
         const axis = this.axis, halfPointRange = (axis.pointRange || 0) / 2;
-        let newMin = pick(fixedMin, axis.translate(pxMin, true, !axis.horiz)), newMax = pick(fixedMax, axis.translate(pxMax, true, !axis.horiz));
+        let newMin = fixedMin ?? axis.translate(pxMin, true, !axis.horiz), newMax = fixedMax ?? axis.translate(pxMax, true, !axis.horiz);
         // Add/remove half point range to/from the extremes (#1172)
         if (!defined(fixedMin)) {
             newMin = correctFloat(newMin + halfPointRange);

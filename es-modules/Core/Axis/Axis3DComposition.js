@@ -5,8 +5,9 @@
  *
  *  Extension for 3d axes
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -15,11 +16,11 @@ import Axis3DDefaults from './Axis3DDefaults.js';
 import D from '../Defaults.js';
 const { defaultOptions } = D;
 import H from '../Globals.js';
-const { deg2rad } = H;
+const { composed, deg2rad } = H;
 import Math3D from '../Math3D.js';
 const { perspective, perspective3D, shapeArea } = Math3D;
 import Tick3D from './Tick3DComposition.js';
-import { addEvent, merge, pick, wrap } from '../../Shared/Utilities.js';
+import { addEvent, merge, pushUnique, wrap } from '../../Shared/Utilities.js';
 /* *
  *
  *  Functions
@@ -29,8 +30,9 @@ import { addEvent, merge, pick, wrap } from '../../Shared/Utilities.js';
 function onAxisAfterSetOptions() {
     const axis = this, chart = axis.chart, options = axis.options;
     if (chart.is3d?.() && axis.coll !== 'colorAxis') {
-        options.tickWidth = pick(options.tickWidth, 0);
-        options.gridLineWidth = pick(options.gridLineWidth, 1);
+        this.clippable = false;
+        options.tickWidth = (options.tickWidth ?? 0);
+        options.gridLineWidth = (options.gridLineWidth ?? 1);
     }
 }
 /** @internal */
@@ -164,14 +166,13 @@ function wrapAxisGetSlotWidth(proceed, tick) {
         chart.frameShapes &&
         chart.is3d() &&
         gridGroup &&
-        tick &&
-        tick.label) {
-        const firstGridLine = (gridGroup.element.childNodes[0].getBBox()), frame3DLeft = chart.frameShapes.left.getBBox(), options3d = chart.options.chart.options3d, origin = {
+        tick?.label) {
+        const options3d = chart.options.chart.options3d, origin = {
             x: chart.plotWidth / 2,
             y: chart.plotHeight / 2,
             z: options3d.depth / 2,
-            vd: (pick(options3d.depth, 1) *
-                pick(options3d.viewDistance, 0))
+            vd: ((options3d.depth ?? 1) *
+                (options3d.viewDistance ?? 0))
         }, index = tickPositions.indexOf(tick.pos), prevTick = ticks[tickPositions[index - 1]], nextTick = ticks[tickPositions[index + 1]];
         let labelPos, prevLabelPos, nextLabelPos;
         // Check whether the tick is not the first one and previous tick
@@ -198,15 +199,15 @@ function wrapAxisGetSlotWidth(proceed, tick) {
             z: null
         };
         labelPos = perspective3D(labelPos, origin, origin.vd);
-        // If tick is first one, check whether next label position is
-        // already calculated, then return difference between the first and
-        // the second label. If there is no next label position calculated,
-        // return the difference between the first grid line and left 3d
-        // frame.
+        // If the tick is the first one, check whether the next label position
+        // is already calculated, then return the difference between the first
+        // and the second label. If there is no next label position calculated,
+        // return the difference between the first grid line and left 3d frame.
         return Math.abs(prevLabelPos ?
-            labelPos.x - prevLabelPos.x : nextLabelPos ?
-            nextLabelPos.x - labelPos.x :
-            firstGridLine.x - frame3DLeft.x);
+            labelPos.x - prevLabelPos.x :
+            nextLabelPos ?
+                nextLabelPos.x - labelPos.x :
+                axis.len / (tickPositions.length + 1));
     }
     return proceed.apply(axis, [].slice.call(arguments, 1));
 }
@@ -239,9 +240,8 @@ class Axis3DAdditions {
      */
     static compose(AxisClass, TickClass) {
         Tick3D.compose(TickClass);
-        if (!AxisClass.keepProps.includes('axis3D')) {
+        if (pushUnique(composed, 'Axis.3D')) {
             merge(true, defaultOptions.xAxis, Axis3DDefaults);
-            AxisClass.keepProps.push('axis3D');
             addEvent(AxisClass, 'init', onAxisInit);
             addEvent(AxisClass, 'afterSetOptions', onAxisAfterSetOptions);
             addEvent(AxisClass, 'drawCrosshair', onAxisDrawCrosshair);
@@ -286,7 +286,9 @@ class Axis3DAdditions {
             !chart.is3d()) {
             return pos;
         }
-        const alpha = deg2rad * chart.options.chart.options3d.alpha, beta = deg2rad * chart.options.chart.options3d.beta, positionMode = pick(isTitle && axis.options.title.position3d, axis.options.labels.position3d), skew = pick(isTitle && axis.options.title.skew3d, axis.options.labels.skew3d), frame = chart.chart3d.frame3d, plotLeft = chart.plotLeft, plotRight = chart.plotWidth + plotLeft, plotTop = chart.plotTop, plotBottom = chart.plotHeight + plotTop;
+        const alpha = deg2rad * chart.options.chart.options3d.alpha, beta = deg2rad * chart.options.chart.options3d.beta, positionMode = ((isTitle && axis.options.title.position3d) ??
+            axis.options.labels.position3d), skew = ((isTitle && axis.options.title.skew3d) ??
+            axis.options.labels.skew3d), frame = chart.chart3d.frame3d, plotLeft = chart.plotLeft, plotRight = chart.plotWidth + plotLeft, plotTop = chart.plotTop, plotBottom = chart.plotHeight + plotTop;
         let offsetX = 0, offsetY = 0, vecX, vecY = { x: 0, y: 1, z: 0 }, 
         // Indicates that we are labelling an X or Z axis on the "back" of
         // the chart

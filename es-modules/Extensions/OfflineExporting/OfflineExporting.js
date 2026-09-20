@@ -5,8 +5,9 @@
  *  (c) 2015-2026 Highsoft AS
  *  Author: Torstein Hønsi / Øystein Moseng
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -19,6 +20,7 @@ import { downloadURL, getScript } from '../../Shared/DownloadURL.js';
 import G from '../../Core/Globals.js';
 const { composed, doc, win } = G;
 import OfflineExportingDefaults from './OfflineExportingDefaults.js';
+import { error } from '../../Core/Utilities.js';
 import { addEvent, extend, pushUnique } from '../../Shared/Utilities.js';
 /* *
  *
@@ -29,9 +31,58 @@ var OfflineExporting;
 (function (OfflineExporting) {
     /* *
      *
+     *  Constants
+     *
+     * */
+    const invalidLibURLErrorPrefix = 'Invalid exporting.libURL:';
+    /* *
+     *
      *  Functions
      *
      * */
+    /**
+     * Check if the PDF export dependencies are already loaded on window.
+     *
+     * @private
+     */
+    function hasPdfDependencies() {
+        return !!(win &&
+            win.jspdf?.jsPDF &&
+            win.svg2pdf);
+    }
+    /**
+     * Validate and normalize an opt-in libURL.
+     *
+     * @private
+     */
+    function normalizeOptInLibURL(optInLibURL) {
+        if (!optInLibURL) {
+            return void 0;
+        }
+        const normalizedLibURL = optInLibURL.slice(-1) !== '/' ?
+            optInLibURL + '/' :
+            optInLibURL;
+        let isValidLibURL;
+        if (win.URL?.canParse) {
+            isValidLibURL = win.URL.canParse(normalizedLibURL, doc.baseURI);
+        }
+        else {
+            try {
+                // The baseURI allows both absolute and relative paths.
+                const parsedURL = new win.URL(normalizedLibURL, doc.baseURI);
+                isValidLibURL = !!parsedURL.href;
+            }
+            catch {
+                isValidLibURL = false;
+            }
+        }
+        if (!isValidLibURL) {
+            throw new Error(`${invalidLibURLErrorPrefix} "${optInLibURL}". ` +
+                'Provide a valid URL or path to the jsPDF and svg2pdf ' +
+                'scripts.');
+        }
+        return normalizedLibURL;
+    }
     /**
      * Composition function.
      *
@@ -48,6 +99,7 @@ var OfflineExporting;
         // Add the downloadSVG event to the Exporting class for local PDF export
         addEvent(ExportingClass, 'downloadSVG', async function (e) {
             const { svg, exportingOptions, exporting, preventDefault } = e;
+            const chart = exporting?.chart;
             // Check if PDF export is requested
             if (exportingOptions?.type === 'application/pdf') {
                 // Prevent the default export behavior
@@ -55,25 +107,40 @@ var OfflineExporting;
                 // Run the PDF local export
                 try {
                     // Get the final image options
-                    const { type, filename, scale, libURL } = G.Exporting.prepareImageOptions(exportingOptions);
+                    const { type, filename, scale } = G.Exporting.prepareImageOptions(exportingOptions);
+                    const optInLibURL = exportingOptions.libURL ||
+                        chart?.options.exporting?.libURL;
+                    const normalizedLibURL = normalizeOptInLibURL(optInLibURL);
                     // Local PDF download
                     if (type === 'application/pdf') {
-                        // Must load pdf libraries first if not found. Don't
-                        // destroy the object URL yet since we are doing
-                        // things asynchronously
-                        if (!win.jspdf?.jsPDF) {
-                            // Get jspdf
-                            await getScript(`${libURL}jspdf.js`);
-                            // Get svg2pdf
-                            await getScript(`${libURL}svg2pdf.js`);
+                        if (!hasPdfDependencies()) {
+                            if (!normalizedLibURL) {
+                                throw new Error('PDF export requires jsPDF and svg2pdf.');
+                            }
+                            // Must load pdf libraries first if not found.
+                            // Don't destroy the object URL yet since we are
+                            // doing things asynchronously
+                            if (!win.jspdf?.jsPDF) {
+                                await getScript(`${normalizedLibURL}jspdf.js`);
+                            }
+                            if (!win.svg2pdf) {
+                                await getScript(`${normalizedLibURL}svg2pdf.js`);
+                            }
                         }
                         // Call the PDF download if SVG element found
                         await downloadPDF(svg, scale, filename, exportingOptions?.pdfFont);
                     }
                 }
-                catch (error) {
+                catch (caughtError) {
+                    const exportError = caughtError;
+                    if (exportingOptions?.fallbackToExportServer !==
+                        false &&
+                        exportError.message.indexOf(invalidLibURLErrorPrefix) === 0) {
+                        error(`${exportError.message} Falling back to ` +
+                            'export server.', false, chart);
+                    }
                     // Try to fallback to the server
-                    await exporting?.fallbackToServer(exportingOptions, error);
+                    await exporting?.fallbackToServer(exportingOptions, exportError);
                 }
             }
         });
@@ -81,6 +148,17 @@ var OfflineExporting;
         if (!pushUnique(composed, 'OfflineExporting')) {
             return;
         }
+        addEvent(Chart, 'load', function () {
+            // The load event also runs for server-export chart copies.
+            // Skip warnings in that case.
+            if (this.renderer.forExport || hasPdfDependencies()) {
+                return;
+            }
+            if (!this.options.exporting?.libURL) {
+                error('Warning: exporting.libURL not defined, PDF client side ' +
+                    'export will not work', false, this);
+            }
+        });
         // Adding wrappers for the deprecated functions
         extend(Chart.prototype, {
             exportChartLocal: async function (exportingOptions, chartOptions) {
@@ -96,6 +174,10 @@ var OfflineExporting;
     }
     OfflineExporting.compose = compose;
     /**
+     * Deprecated. Use
+     * [Exporting.downloadSVG](https://api.highcharts.com/class-reference/Highcharts.Exporting#downloadSVG)
+     * instead.
+     *
      * Get data URL to an image of an SVG and call download on it options
      * object:
      * - **filename:** Name of resulting downloaded file without extension.
@@ -106,11 +188,10 @@ var OfflineExporting;
      * - **scale:** Scaling factor of downloaded image compared to source.
      * Default is `1`.
      * - **libURL:** URL pointing to location of dependency scripts to download
-     * on demand. Default is the exporting.libURL option of the global
-     * Highcharts options pointing to our server.
+     * on demand.
      *
      * @function Highcharts.downloadSVGLocal
-     * @deprecated
+     * @deprecated 11.4.4
      *
      * @param {string} svg
      * The generated SVG
@@ -310,17 +391,44 @@ var OfflineExporting;
             // nodes
             titleElements = el.getElementsByTagName('title');
             [].forEach.call(titleElements, function (titleElement) {
-                el.removeChild(titleElement);
+                titleElement.remove();
             });
             // Remove all .highcharts-text-outline elements, #17170
             outlineElements =
                 el.getElementsByClassName('highcharts-text-outline');
             while (outlineElements.length > 0) {
-                const outline = outlineElements[0];
-                if (outline.parentNode) {
-                    outline.parentNode.removeChild(outline);
+                outlineElements[0].remove();
+            }
+        });
+        // Work around jsPDF's missing support for color(srgb r g b) format
+        // (#25001)
+        const srgbColorRegex = /color\(\s*srgb\s+([\d.]+)[, ]+([\d.]+)[, ]+([\d.]+)(?:\s*\/\s*([\d.]+))?\s*\)/; // eslint-disable-line max-len
+        const convertColorSRGBToRGB = (srgbColor) => {
+            if (srgbColor?.startsWith('color(srgb')) {
+                const rgba = srgbColor.match(srgbColorRegex);
+                if (rgba) {
+                    const toChannel = (value) => Math.round(Math.max(0, Math.min(1, parseFloat(value))) *
+                        255), toAlpha = (value) => Math.max(0, Math.min(1, parseFloat(value))), r = toChannel(rgba[1]), g = toChannel(rgba[2]), b = toChannel(rgba[3]), alpha = rgba[4];
+                    if (alpha !== void 0) {
+                        return `rgba(${r}, ${g}, ${b}, ${toAlpha(alpha)})`;
+                    }
+                    return `rgb(${r}, ${g}, ${b})`;
                 }
             }
+        };
+        Array.from(dummySVGContainer.querySelectorAll('*')).forEach((el) => {
+            ['color', 'fill', 'stop-color', 'stroke'].forEach((prop) => {
+                // Handle attributes
+                const attrRGB = convertColorSRGBToRGB(el.getAttribute(prop));
+                if (attrRGB) {
+                    el.setAttribute(prop, attrRGB);
+                }
+                // Handle style properties
+                const styleRGB = convertColorSRGBToRGB(el.style?.[prop]);
+                if (styleRGB) {
+                    el.style[prop] = styleRGB;
+                }
+            });
         });
         return dummySVGContainer.querySelector('svg');
     }

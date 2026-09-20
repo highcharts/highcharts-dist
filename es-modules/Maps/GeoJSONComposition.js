@@ -3,8 +3,9 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -30,7 +31,7 @@ var GeoJSONComposition;
     /**
      * Deprecated. Use `MapView.lonLatToProjectedUnits` instead.
      *
-     * @deprecated
+     * @deprecated 10.0.0
      *
      * @requires modules/map
      *
@@ -48,7 +49,7 @@ var GeoJSONComposition;
     /**
      * Deprecated. Use `MapView.projectedUnitsToLonLat` instead.
      *
-     * @deprecated
+     * @deprecated 10.0.0
      *
      * @requires modules/map
      *
@@ -548,4 +549,17 @@ export default GeoJSONComposition;
 * Second point's Y of the bounding box.
 * @name Highcharts.MapBounds#y2
 */
-''; // Detach doclets above
+/**
+ * A latitude/longitude object.
+ *
+ * @interface Highcharts.MapLonLatObject
+ */ /**
+* The latitude.
+* @name Highcharts.MapLonLatObject#lat
+* @type {number}
+*/ /**
+* The longitude.
+* @name Highcharts.MapLonLatObject#lon
+* @type {number}
+*/
+''; // Keep doclets above

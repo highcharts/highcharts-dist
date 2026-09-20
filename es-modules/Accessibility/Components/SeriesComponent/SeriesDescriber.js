@@ -5,8 +5,9 @@
  *
  *  Place descriptions on a series and its points.
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -17,14 +18,37 @@ import ChartUtilities from '../../Utils/ChartUtilities.js';
 const { getAxisDescription, getSeriesFirstPointElement, getSeriesA11yElement, unhideChartElementFromAT } = ChartUtilities;
 import F from '../../../Core/Templating.js';
 const { format, numberFormat } = F;
+import H from '../../../Core/Globals.js';
+const { composed } = H;
 import HTMLUtilities from '../../Utils/HTMLUtilities.js';
 const { reverseChildNodes, stripHTMLTagsFromString: stripHTMLTags } = HTMLUtilities;
-import { defined, find, isString, isNumber, pick } from '../../../Shared/Utilities.js';
+import { defined, find, isString, isNumber, pushUnique, wrap } from '../../../Shared/Utilities.js';
 /* *
  *
  *  Functions
  *
  * */
+/**
+ * @private
+ */
+function compose(PointClass) {
+    if (pushUnique(composed, 'A11y.SD')) {
+        wrap(PointClass.prototype, 'applyOptions', pointApplyOptions);
+    }
+}
+/**
+ * Discard the mock graphic once the point is no longer null, so that the
+ * series can draw a real marker for it, #25299.
+ * @private
+ */
+function pointApplyOptions(proceed, ...args) {
+    const point = proceed.apply(this, args);
+    if (point.hasMockGraphic && !point.isNull) {
+        point.graphic = point.graphic?.destroy();
+        delete point.hasMockGraphic;
+    }
+    return point;
+}
 /**
  * @private
  */
@@ -76,11 +100,11 @@ function addMockPointElement(point) {
     const series = point.series, firstPointWithGraphic = findFirstPointWithGraphic(point), firstGraphic = firstPointWithGraphic && firstPointWithGraphic.graphic, parentGroup = firstGraphic ?
         firstGraphic.parentGroup :
         series.graph || series.group, mockPos = firstPointWithGraphic ? {
-        x: pick(point.plotX, firstPointWithGraphic.plotX, 0),
-        y: pick(point.plotY, firstPointWithGraphic.plotY, 0)
+        x: (point.plotX ?? firstPointWithGraphic.plotX ?? 0),
+        y: (point.plotY ?? firstPointWithGraphic.plotY ?? 0)
     } : {
-        x: pick(point.plotX, 0),
-        y: pick(point.plotY, 0)
+        x: (point.plotX ?? 0),
+        y: (point.plotY ?? 0)
     }, mockElement = makeMockElement(point, mockPos);
     if (parentGroup && parentGroup.element) {
         point.graphic = mockElement;
@@ -192,7 +216,7 @@ function getPointXDescription(point) {
  */
 function getPointArrayMapValueDescription(point, prefix, suffix) {
     const pre = prefix || '', suf = suffix || '', keyToValStr = function (key) {
-        const num = pointNumberToString(point, pick(point[key], point.options[key]));
+        const num = pointNumberToString(point, (point[key] ?? point.options[key]));
         return num !== void 0 ?
             key + ': ' + pre + num + suf :
             num;
@@ -252,9 +276,10 @@ function getPointAnnotationDescription(point) {
 function getPointValueDescription(point) {
     const series = point.series, chart = series.chart, seriesA11yOptions = series.options.accessibility, seriesValueDescFormat = seriesA11yOptions && seriesA11yOptions.point &&
         seriesA11yOptions.point.valueDescriptionFormat, pointValueDescriptionFormat = seriesValueDescFormat ||
-        chart.options.accessibility.point.valueDescriptionFormat, showXDescription = pick(series.xAxis &&
+        chart.options.accessibility.point.valueDescriptionFormat, showXDescription = ((series.xAxis &&
         series.xAxis.options.accessibility &&
-        series.xAxis.options.accessibility.enabled, !chart.angular && series.type !== 'flowmap'), xDesc = showXDescription ? getPointXDescription(point) : '', context = {
+        series.xAxis.options.accessibility.enabled) ??
+        (!chart.angular && series.type !== 'flowmap')), xDesc = showXDescription ? getPointXDescription(point) : '', context = {
         point: point,
         index: defined(point.index) ? (point.index + 1) : '',
         xDescription: xDesc,
@@ -339,8 +364,10 @@ function defaultSeriesDescriptionFormatter(series) {
         seriesNumber,
         series,
         chart
-    }, combinationSuffix = chartTypes.length > 1 ? 'Combination' : '', summary = chart.langFormat('accessibility.series.summary.' + series.type + combinationSuffix, summaryContext) || chart.langFormat('accessibility.series.summary.default' + combinationSuffix, summaryContext), axisDescription = (shouldDescribeAxis('yAxis') ? ' ' + yAxisInfo + '.' : '') + (shouldDescribeAxis('xAxis') ? ' ' + xAxisInfo + '.' : ''), formatStr = pick(series.options.accessibility &&
-        series.options.accessibility.descriptionFormat, chart.options.accessibility.series.descriptionFormat, '');
+    }, combinationSuffix = chartTypes.length > 1 ? 'Combination' : '', summary = chart.langFormat('accessibility.series.summary.' + series.type + combinationSuffix, summaryContext) || chart.langFormat('accessibility.series.summary.default' + combinationSuffix, summaryContext), axisDescription = (shouldDescribeAxis('yAxis') ? ' ' + yAxisInfo + '.' : '') + (shouldDescribeAxis('xAxis') ? ' ' + xAxisInfo + '.' : ''), formatStr = ((series.options.accessibility &&
+        series.options.accessibility.descriptionFormat) ??
+        chart.options.accessibility.series.descriptionFormat ??
+        '');
     return format(formatStr, {
         seriesDescription: summary,
         authorDescription: (description ? ' ' + description : ''),
@@ -407,6 +434,7 @@ function describeSeries(series) {
  *
  * */
 const SeriesDescriber = {
+    compose,
     defaultPointDescriptionFormatter,
     defaultSeriesDescriptionFormatter,
     describeSeries

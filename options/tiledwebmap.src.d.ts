@@ -6,6 +6,82 @@
 import * as Highcharts from "../highcharts.src";
 declare module "../highcharts.src" {
     /**
+     * (Highmaps) Point accessibility options for a series.
+     */
+    interface PlotTiledwebmapAccessibilityPointOptions {
+        /**
+         * (Highmaps) Date format to use for points on datetime axes when
+         * describing them to screen reader users.
+         *
+         * Defaults to the same format as in tooltip.
+         *
+         * For an overview of the replacement codes, see dateFormat.
+         */
+        dateFormat?: string;
+        /**
+         * (Highmaps) Formatter function to determine the date/time format used
+         * with points on datetime axes when describing them to screen reader
+         * users. Receives one argument, `point`, referring to the point to
+         * describe. Should return a date format string compatible with
+         * dateFormat.
+         */
+        dateFormatter?: Highcharts.ScreenReaderFormatterCallbackFunction<Highcharts.Point>;
+        /**
+         * (Highmaps) Whether or not to describe points with the value `null` to
+         * assistive technology, such as screen readers.
+         */
+        describeNull?: boolean;
+        /**
+         * (Highmaps) A format string to use instead of the default for point
+         * descriptions.
+         *
+         * The context of the format string is the point instance.
+         *
+         * As opposed to accessibility.point.valueDescriptionFormat, this option
+         * replaces the whole description.
+         */
+        descriptionFormat?: string;
+        /**
+         * (Highmaps) Formatter function to use instead of the default for point
+         * descriptions. Same as `accessibility.point.descriptionFormatter`, but
+         * applies to a series instead of the whole chart.
+         *
+         * Note: Prefer using accessibility.point.valueDescriptionFormat instead
+         * if possible, as default functionality such as describing annotations
+         * will be preserved.
+         */
+        descriptionFormatter?: Highcharts.ScreenReaderFormatterCallbackFunction<Highcharts.Point>;
+        /**
+         * (Highmaps) Decimals to use for the values in the point descriptions.
+         * Uses tooltip.valueDecimals if not defined.
+         */
+        valueDecimals?: number;
+        /**
+         * (Highmaps) Format to use for describing the values of data points to
+         * assistive technology - including screen readers. The point context is
+         * available as `{point}`.
+         *
+         * Other available context variables include `{index}`, `{value}`, and
+         * `{xDescription}`.
+         *
+         * Additionally, the series name, annotation info, and description added
+         * in `point.accessibility.description` is added by default if relevant.
+         * To override this, use the accessibility.point.descriptionFormatter
+         * option.
+         */
+        valueDescriptionFormat?: string;
+        /**
+         * (Highmaps) Prefix to add to the values in the point descriptions.
+         * Uses tooltip.valuePrefix if not defined.
+         */
+        valuePrefix?: string;
+        /**
+         * (Highmaps) Suffix to add to the values in the point descriptions.
+         * Uses tooltip.valueSuffix if not defined.
+         */
+        valueSuffix?: string;
+    }
+    /**
      * (Highmaps) A tiledwebmap series allows user to display dynamically joined
      * individual images (tiles) and join them together to create a map.
      *
@@ -48,6 +124,48 @@ declare module "../highcharts.src" {
          * own event callbacks and formatter callbacks.
          */
         custom?: Highcharts.Dictionary<any>;
+        /**
+         * (Highmaps) The mapping between the data table and the series data
+         * points. This is used in conjunction with the `dataTable` option (on
+         * chart or series level) to map columns from the data table to the
+         * properties of the data points. The keys of the `dataMapping` object
+         * correspond to the properties of the data points (e.g. `x`, `y`,
+         * `name`), and the values are objects that specify which column from
+         * which data table to use for that property.
+         *
+         * The keys can also be nested paths, for example `dataLabel.format`, to
+         * map to nested properties of the data points.
+         *
+         * The values can also be strings, in which case they are interpreted as
+         * column id's from the first data table.
+         *
+         * A typical use case is that multiple series share a common column,
+         * like `name` or `x`. In this case, to avoid repetition, the common
+         * column can be applied in `plotOptions.series.dataMapping` and the
+         * individual series can specify only the columns that are unique to
+         * them.
+         *
+         * The series name defaults to the column ID of the main data column in
+         * the mapping. The main data column is typically the `y` data for
+         * cartesian series, or `value` for map series. For example, if the
+         * mapping is `{ y: 'Cost' }`, the series name will be `Cost`. (see
+         * online documentation for example)
+         *
+         * If the columns of the DataTable have keys matching the series keys,
+         * the data mapping is not necessary. For example, this DataTable will
+         * connect directly to the series' `x` and `y` keys: (see online
+         * documentation for example)
+         */
+        dataMapping?: Highcharts.DataMappingOptionsObject;
+        /**
+         * (Highmaps) Options for a specific series-level data table or an array
+         * of data tables. The `dataTable` option can be either a configuration
+         * object or an instance of the `DataTable` class. If a `DataTable`
+         * instance is passed, it will be used directly. If a configuration
+         * object or an array is passed, a new `DataTable` instance will be
+         * created based on the provided configuration.
+         */
+        dataTable?: (Highcharts.DataTable|Highcharts.DataTableOptionsObject|Array<(Highcharts.DataTable|Highcharts.DataTableOptionsObject)>);
         /**
          * (Highmaps) Deprecated. Use
          * plotOptions.series.accessibility.description instead.
@@ -102,6 +220,8 @@ declare module "../highcharts.src" {
          *
          * Same as accessibility.point.descriptionFormat, but for an individual
          * series. Overrides the chart wide configuration.
+         *
+         * @deprecated 12.6.0
          */
         pointDescriptionFormat?: Function;
         /**
@@ -127,6 +247,10 @@ declare module "../highcharts.src" {
         skipKeyboardNavigation?: boolean;
         /**
          * (Highmaps) A collection of options for different series states.
+         *
+         * In addition to the options documented under each state, any option
+         * from the parent series type can be set, with exception of `data` and
+         * `states`.
          */
         states?: Highcharts.SeriesStatesOptionsObject;
         /**
@@ -147,10 +271,34 @@ declare module "../highcharts.src" {
         zoomEnabled?: boolean;
     }
     /**
-     * (Highmaps) Animation when not hovering over the marker.
+     * (Highmaps) Provider options for the series.
      */
-    interface PlotTiledwebmapStatesInactiveAnimationOptions {
-        duration?: number;
+    interface PlotTiledwebmapProviderOptions {
+        /**
+         * (Highmaps) API key for providers that require using one.
+         */
+        apiKey?: string;
+        /**
+         * (Highmaps) Subdomain required by each provider. Check the providers
+         * documentation for available subdomains.
+         */
+        subdomain?: string;
+        /**
+         * (Highmaps) Set a tiles theme. Check the providers documentation for
+         * official list of available themes.
+         */
+        theme?: string;
+        /**
+         * (Highmaps) Provider type to pull data (tiles) from.
+         */
+        type?: string;
+        /**
+         * (Highmaps) Custom URL for providers not specified in providers type.
+         * Available variables to use in URL are: `{x}`, `{y}`, `{z}` or
+         * `{zoom}`. Remember to always specify a projection, when using a
+         * custom URL.
+         */
+        url?: string;
     }
     /**
      * (Highmaps) A `tiledwebmap` series. The type option is not specified, it
@@ -199,14 +347,6 @@ declare module "../highcharts.src" {
          * Not available
          */
         colors?: undefined;
-        /**
-         * Not available
-         */
-        dataParser?: undefined;
-        /**
-         * Not available
-         */
-        dataURL?: undefined;
         /**
          * Not available
          */

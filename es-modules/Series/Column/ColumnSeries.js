@@ -3,14 +3,14 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
 'use strict';
-import A from '../../Core/Animation/AnimationUtilities.js';
-const { animObject } = A;
+import { animObject } from '../../Core/Animation/AnimationUtilities.js';
 import Color from '../../Core/Color/Color.js';
 const { parse: color } = Color;
 import ColumnSeriesDefaults from './ColumnSeriesDefaults.js';
@@ -18,7 +18,7 @@ import H from '../../Core/Globals.js';
 const { noop } = H;
 import Series from '../../Core/Series/Series.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-import { clamp, crisp, defined, extend, fireEvent, isArray, isNumber, merge, objectEach, pick } from '../../Shared/Utilities.js';
+import { clamp, crisp, defined, extend, fireEvent, isArray, isNumber, merge, objectEach } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class
@@ -60,16 +60,16 @@ class ColumnSeries extends Series {
                 // Make sure the columns don't cover the axis line during
                 // entrance animation
                 translatedThreshold += reversed ?
-                    -Math.floor(clipOffset[0]) :
-                    Math.ceil(clipOffset[2]);
+                    -Math.floor(clipOffset[inverted ? 1 : 0]) :
+                    Math.ceil(clipOffset[inverted ? 3 : 2]);
                 attr.translateX = translatedThreshold - yAxis.len;
             }
             else {
                 // Make sure the columns don't cover the axis line during
                 // entrance animation
                 translatedThreshold += reversed ?
-                    Math.ceil(clipOffset[0]) :
-                    -Math.floor(clipOffset[2]);
+                    Math.ceil(clipOffset[inverted ? 1 : 0]) :
+                    -Math.floor(clipOffset[inverted ? 3 : 2]);
                 attr.translateY = translatedThreshold;
             }
             // Apply final clipping (used in Highcharts Stock) (#7083)
@@ -167,7 +167,7 @@ class ColumnSeries extends Series {
             xAxis.tickInterval ||
             1), // #2610
         xAxis.len // #1535
-        ), groupPadding = categoryWidth * options.groupPadding, groupWidth = categoryWidth - 2 * groupPadding, pointOffsetWidth = groupWidth / (columnCount || 1), pointWidth = Math.min(options.maxPointWidth || xAxis.len, pick(options.pointWidth, pointOffsetWidth * (1 - 2 * options.pointPadding))), pointPadding = (pointOffsetWidth - pointWidth) / 2, 
+        ), groupPadding = categoryWidth * options.groupPadding, groupWidth = categoryWidth - 2 * groupPadding, pointOffsetWidth = groupWidth / (columnCount || 1), pointWidth = Math.min(options.maxPointWidth || xAxis.len, (options.pointWidth ?? pointOffsetWidth * (1 - 2 * options.pointPadding))), pointPadding = (pointOffsetWidth - pointWidth) / 2, 
         // #1251, #3737
         colIndex = (series.columnIndex || 0) + (reverseStacks ? 1 : 0), pointXOffset = pointPadding +
             (groupPadding +
@@ -322,7 +322,7 @@ class ColumnSeries extends Series {
         }
         Series.prototype.translate.apply(series);
         // Record the new values
-        series.points.forEach(function (point) {
+        series.points.concat(series.condemnedPoints).forEach(function (point) {
             const yBottom = point.yBottom ?? translatedThreshold, safeDistance = 999 + Math.abs(yBottom), plotX = point.plotX || 0, 
             // Don't draw too far outside plot area (#1303, #2241,
             // #4264)
@@ -417,13 +417,13 @@ class ColumnSeries extends Series {
      */
     pointAttribs(point, state) {
         const options = this.options, p2o = this.pointAttrToOptions || {}, strokeOption = p2o.stroke || 'borderColor', strokeWidthOption = p2o['stroke-width'] || 'borderWidth';
-        let stateOptions, zone, brightness, fill = (point && point.color) || this.color, 
+        let stateOptions, zone, brightness, fill = point?.color || this.color, 
         // Set to fill when borderColor null:
-        stroke = ((point && point[strokeOption]) ||
+        stroke = (point?.[strokeOption] ||
             options[strokeOption] ||
-            fill), dashstyle = (point && point.options.dashStyle) || options.dashStyle, strokeWidth = (point && point[strokeWidthOption]) ||
-            options[strokeWidthOption] ||
-            this[strokeWidthOption] || 0, opacity = (point?.isNull && options.nullInteraction) ?
+            fill), dashstyle = point?.options.dashStyle || options.dashStyle, strokeWidth = point?.[strokeWidthOption] ??
+            options[strokeWidthOption] ??
+            this[strokeWidthOption] ?? 1, opacity = (point?.isNull && options.nullInteraction) ?
             0 :
             (point?.opacity ?? options.opacity ?? 1);
         // Handle zone colors
@@ -442,7 +442,7 @@ class ColumnSeries extends Series {
         }
         // Select or hover states
         if (state && point) {
-            stateOptions = merge(options.states[state], 
+            stateOptions = merge(options.states?.[state], 
             // #6401
             point.options.states?.[state] || {});
             brightness = stateOptions.brightness;
@@ -452,16 +452,15 @@ class ColumnSeries extends Series {
                         .brighten(stateOptions.brightness)
                         .get()) || fill;
             stroke = stateOptions[strokeOption] || stroke;
-            strokeWidth =
-                stateOptions[strokeWidthOption] || strokeWidth;
+            strokeWidth = stateOptions[strokeWidthOption] || strokeWidth;
             dashstyle = stateOptions.dashStyle || dashstyle;
-            opacity = pick(stateOptions.opacity, opacity);
+            opacity = stateOptions.opacity ?? opacity;
         }
         const ret = {
-            fill: fill,
-            stroke: stroke,
+            fill,
+            stroke,
             'stroke-width': strokeWidth,
-            opacity: opacity
+            opacity: point?.condemned ? 0 : opacity
         };
         if (dashstyle) {
             ret.dashstyle = dashstyle;
@@ -476,13 +475,14 @@ class ColumnSeries extends Series {
      * @internal
      * @function Highcharts.seriesTypes.column#drawPoints
      */
-    drawPoints(points = this.points) {
-        const series = this, chart = this.chart, options = series.options, nullInteraction = options.nullInteraction, renderer = chart.renderer, animationLimit = options.animationLimit || 250;
+    drawPoints(points) {
+        points || (points = this.points.concat(this.condemnedPoints));
+        const series = this, chart = this.chart, options = series.options, nullInteraction = options.nullInteraction, { styledMode, renderer } = chart, animationLimit = options.animationLimit || 250;
         let shapeArgs;
         // Draw the columns
         points.forEach(function (point) {
             const plotY = point.plotY;
-            let graphic = point.graphic, hasGraphic = !!graphic, verb = graphic && chart.pointCount < animationLimit ?
+            let graphic = point.graphic, shouldUpdate = !!graphic, verb = graphic && chart.pointCount < animationLimit ?
                 'animate' : 'attr';
             if (isNumber(plotY) && (point.y !== null || nullInteraction)) {
                 shapeArgs = point.shapeArgs;
@@ -491,41 +491,38 @@ class ColumnSeries extends Series {
                 if (graphic && point.hasNewShapeType()) {
                     graphic = graphic.destroy();
                 }
-                // Set starting position for point sliding animation.
-                if (series.enabledDataSorting) {
-                    point.startXPos = series.xAxis.reversed ?
-                        -(shapeArgs ? (shapeArgs.width || 0) : 0) :
-                        series.xAxis.width;
-                }
                 if (!graphic) {
-                    point.graphic = graphic =
-                        renderer[point.shapeType](shapeArgs)
-                            .add(point.group || series.group);
-                    if (graphic &&
-                        series.enabledDataSorting &&
-                        chart.hasRendered &&
+                    let initialAttr = shapeArgs;
+                    // New points fade in from old axis position
+                    if (point.origin &&
                         chart.pointCount < animationLimit) {
-                        graphic.attr({
-                            x: point.startXPos
-                        });
-                        hasGraphic = true;
+                        initialAttr = merge(shapeArgs, point.getOrigin(point.origin, shapeArgs));
+                        if (!styledMode) {
+                            initialAttr.opacity = 0;
+                            initialAttr['stroke-width'] = 0;
+                        }
+                        shouldUpdate = true;
                         verb = 'animate';
                     }
+                    // Create new graphic
+                    point.graphic = graphic =
+                        renderer[point.shapeType](initialAttr).add(point.group || series.group);
                 }
-                if (graphic && hasGraphic) { // Update
+                // Update existing graphic, either because it pre-existed, or
+                // because we created it in a temporary position
+                if (shouldUpdate) {
                     graphic[verb](merge(shapeArgs));
                 }
                 // Presentational
-                if (!chart.styledMode) {
-                    graphic[verb](series.pointAttribs(point, (point.selected && 'select')))
+                if (!styledMode) {
+                    graphic[verb](series.pointAttribs(point, point.selected ? 'select' : ''))
                         .shadow(point.allowShadow !== false && options.shadow);
                 }
-                if (graphic) {
-                    graphic.addClass(point.getClassName(), true);
-                    graphic.attr({
-                        visibility: point.visible ? 'inherit' : 'hidden'
-                    });
-                }
+                graphic
+                    .addClass(point.getClassName(), true)
+                    .attr({
+                    visibility: point.visible ? 'inherit' : 'hidden'
+                });
             }
             else if (graphic) {
                 point.graphic = graphic.destroy(); // #1269
@@ -642,6 +639,7 @@ SeriesRegistry.registerSeriesType('column', ColumnSeries);
  *  Default Export
  *
  * */
+/** @internal */
 export default ColumnSeries;
 /* *
  *

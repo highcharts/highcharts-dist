@@ -1,10 +1,11 @@
 /* *
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Paweł Lysy Grzegorz Blachliński
+ *  Authors: Paweł Lysy, Grzegorz Blachliński
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -65,7 +66,7 @@ class TreegraphPoint extends TreemapPoint {
             }
             const { x, y } = this.getCollapseBtnPosition(btnOptions), fill = (btnOptions.fillColor ||
                 point.color ||
-                "#cccccc" /* Palette.neutralColor20 */);
+                'var(--highcharts-neutral-color-20)');
             point.collapseButton = chart.renderer
                 .label(point.collapsed ? '+' : '-', x, y, shape)
                 .attr({
@@ -76,7 +77,8 @@ class TreegraphPoint extends TreemapPoint {
                 rotation: chart.inverted ? 90 : 0,
                 rotationOriginX: width / 2,
                 rotationOriginY: height / 2,
-                stroke: btnOptions.lineColor || "#ffffff" /* Palette.backgroundColor */,
+                stroke: btnOptions.lineColor ||
+                    'var(--highcharts-background-color)',
                 'stroke-width': btnOptions.lineWidth,
                 'text-align': 'center',
                 align: 'center',
@@ -90,7 +92,7 @@ class TreegraphPoint extends TreemapPoint {
                 .css(merge({
                 color: typeof fill === 'string' ?
                     chart.renderer.getContrast(fill) :
-                    "#333333" /* Palette.neutralColor80 */
+                    'var(--highcharts-neutral-color-80)'
             }, style))
                 .add(parentGroup);
             point.collapseButton.element.point = point;

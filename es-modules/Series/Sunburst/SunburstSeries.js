@@ -6,8 +6,9 @@
  *
  *  Authors: Jon Arild Nygård
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -25,10 +26,10 @@ const { getColor, getLevelOptions, setTreeValues, updateRootId } = TU;
 import SunburstNode from './SunburstNode.js';
 import SunburstSeriesDefaults from './SunburstSeriesDefaults.js';
 import SVGElement from '../../Core/Renderer/SVG/SVGElement.js';
-import TextPath from '../../Extensions/TextPath.js';
+import { composeTextPath } from '../../Extensions/TextPath.js';
 import { defined, extend, fireEvent, isNumber, isObject, isString, merge, splat } from '../../Shared/Utilities.js';
 import { error } from '../../Core/Utilities.js';
-TextPath.compose(SVGElement);
+composeTextPath(SVGElement);
 /* *
  *
  *  Constants
@@ -82,7 +83,7 @@ function getDlOptions(params) {
     // options doesn't work as an array
     optionsLevel = splat(isObject(params.level) ?
         params.level.dataLabels :
-        {})[0], options = merge(optionsLevel, optionsPoint), style = options.style = options.style || {}, { innerArcLength = 0, outerArcLength = 0 } = point;
+        {})[0], options = merge(optionsLevel, optionsPoint), style = options.style = options.style || {}, padding = splat(options.padding || 0), paddingLeft = padding[3 % padding.length], paddingRight = padding[1 % padding.length], { innerArcLength = 0, outerArcLength = 0 } = point;
     let rotationRad, rotation, rotationMode = options.rotationMode, width = defined(style.width) ?
         parseInt(style.width || '0', 10) : void 0;
     if (!isNumber(options.rotation)) {
@@ -169,7 +170,7 @@ function getDlOptions(params) {
             }
         }
         // Apply padding (#8515)
-        width = Math.max((width || 0) - 2 * (options.padding || 0), 1);
+        width = Math.max((width || 0) - paddingLeft - paddingRight, 1);
         rotation = ((rotationRad || 0) * rad2deg) % 180;
         if (rotationMode === 'parallel') {
             rotation -= 90;
@@ -191,8 +192,7 @@ function getDlOptions(params) {
             // Center dataLabel - disable textPath
             options.textPath.enabled = false;
             // Setting width and padding
-            width = Math.max((point.shapeExisting.r * 2) -
-                2 * (options.padding || 0), 1);
+            width = Math.max((point.shapeExisting.r * 2) - paddingLeft - paddingRight, 1);
         }
         else if (point.dlOptions?.textPath &&
             !point.dlOptions.textPath.enabled &&
@@ -205,7 +205,7 @@ function getDlOptions(params) {
             options.rotation = 0;
             // Setting width and padding
             width = Math.max((outerArcLength + innerArcLength) / 2 -
-                2 * (options.padding || 0), 1);
+                paddingLeft - paddingRight, 1);
             style.whiteSpace = 'nowrap';
         }
     }
@@ -440,6 +440,8 @@ class SunburstSeries extends TreemapSeries {
                 }),
                 zIndex: void 0
             };
+            // Delete so it doesn't override anything on merge.
+            delete point.dlOptions.zIndex;
             if (!addedHack && visible) {
                 addedHack = true;
                 onComplete = animateLabels;

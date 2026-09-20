@@ -4,8 +4,9 @@
  *
  *  Authors: Jon Arild Nygård / Øystein Moseng
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -39,7 +40,7 @@ const TreemapSeriesDefaults = {
      * @sample {highcharts} highcharts/plotoptions/treemap-allowdrilltonode/
      *         Enabled
      *
-     * @deprecated
+     * @deprecated 7.0.3
      * @type      {boolean}
      * @default   false
      * @since     4.1.0
@@ -255,7 +256,7 @@ const TreemapSeriesDefaults = {
      *
      * Since v9.3.3 the `traverseUpButton` is replaced by `breadcrumbs`.
      *
-     * @deprecated
+     * @deprecated 9.3.3
      */
     traverseUpButton: {
         /**
@@ -412,6 +413,15 @@ const TreemapSeriesDefaults = {
      * @apioption plotOptions.treemap.levels.dataLabels
      */
     /**
+     * Can set the group padding on a specific level. Overrides the series
+     * option of the same name.
+     *
+     * @type      {number}
+     * @since     12.2.0
+     * @product   highcharts
+     * @apioption plotOptions.treemap.levels.groupPadding
+     */
+    /**
      * Can set the layoutAlgorithm option on a specific level.
      *
      * @type       {string}
@@ -441,15 +451,27 @@ const TreemapSeriesDefaults = {
      * @product   highcharts
      * @apioption plotOptions.treemap.levels.level
      */
+    /**
+     * Whether the `level` number is absolute, or relative to the currently
+     * visible root. Overrides the series option of the same name for this
+     * level.
+     *
+     * @type      {boolean}
+     * @product   highcharts
+     * @apioption plotOptions.treemap.levels.levelIsConstant
+     */
     // Presentational options
     /**
      * The color of the border surrounding each tree map item.
      *
-     * @type {Highcharts.ColorString}
+     * @type    {Highcharts.ColorString}
+     * @product highcharts
      */
-    borderColor: "#e6e6e6" /* Palette.neutralColor10 */,
+    borderColor: 'var(--highcharts-neutral-color-10)',
     /**
      * The width of the border surrounding each tree map item.
+     *
+     * @product highcharts
      */
     borderWidth: 1,
     colorKey: 'colorValue',
@@ -477,7 +499,7 @@ const TreemapSeriesDefaults = {
             /**
              * The border color for the hovered state.
              */
-            borderColor: "#999999" /* Palette.neutralColor40 */,
+            borderColor: 'var(--highcharts-neutral-color-40)',
             /**
              * Brightness for the hovered point. Defaults to 0 if the
              * heatmap series is loaded first, otherwise 0.1.
@@ -627,7 +649,7 @@ const TreemapSeriesDefaults = {
  * not specified, it is inherited from [chart.type](#chart.type).
  *
  * @extends   series,plotOptions.treemap
- * @excluding dataParser, dataURL, stack, dataSorting
+ * @excluding stack, dataSorting
  * @product   highcharts
  * @requires  modules/treemap
  * @apioption series.treemap
@@ -664,6 +686,7 @@ const TreemapSeriesDefaults = {
  * @sample {highcharts} highcharts/series/data-array-of-objects/
  *         Config objects
  *
+ * @basic
  * @type      {Array<number|null|*>}
  * @extends   series.heatmap.data
  * @excluding x, y, pointPadding

@@ -9,14 +9,14 @@
  *  Layout algorithm by Ben Frederickson:
  *  https://www.benfrederickson.com/better-venn-diagrams/
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
 'use strict';
-import A from '../../Core/Animation/AnimationUtilities.js';
-const { animObject } = A;
+import { animObject } from '../../Core/Animation/AnimationUtilities.js';
 import Color from '../../Core/Color/Color.js';
 const { parse: color } = Color;
 import CU from '../../Core/Geometry/CircleUtilities.js';
@@ -330,11 +330,11 @@ class VennSeries extends ScatterSeries {
      * Returns the calculated attributes.
      */
     pointAttribs(point, state) {
-        const series = this, seriesOptions = series.options || {}, pointOptions = point?.options || {}, stateOptions = (state && seriesOptions.states[state]) || {}, options = merge(seriesOptions, { color: point?.color }, pointOptions, stateOptions);
+        const series = this, seriesOptions = series.options || {}, pointOptions = point?.options || {}, stateOptions = (state && seriesOptions.states?.[state]) || {}, options = merge(seriesOptions, pointOptions, stateOptions);
         // Return resulting values for the attributes.
         return {
-            'fill': color(options.color)
-                .brighten(options.brightness)
+            'fill': color(options.color || point.color)
+                .brighten(options.brightness || 0)
                 .get(),
             // Set opacity directly to the SVG element, not to pattern #14372.
             opacity: options.opacity,
@@ -348,7 +348,7 @@ class VennSeries extends ScatterSeries {
         this.dataTable.modified = this.dataTable;
         this.generatePoints();
         // Process the data before passing it into the layout function.
-        const relations = VennUtils.processVennData(this.options.data, VennSeries.splitter);
+        const relations = VennUtils.processVennData(this.dataTable, VennSeries.splitter);
         // Calculate the positions of each circle.
         const { mapOfIdToShape, mapOfIdToLabelValues } = VennSeries.layout(relations);
         // Calculate the scale, and center of the plot area.
@@ -411,11 +411,9 @@ class VennSeries extends ScatterSeries {
             }
             // Add width for the data label
             if (dataLabelWidth && shapeArgs) {
-                point.dlOptions = merge(true, {
-                    style: {
-                        width: dataLabelWidth
-                    }
-                }, isObject(dlOptions, true) ? dlOptions : void 0, { zIndex: void 0 });
+                point.dlOptions = merge({ style: { width: dataLabelWidth } }, isObject(dlOptions, true) ? dlOptions : void 0, { zIndex: void 0 });
+                // Delete so it doesn't override anything on merge.
+                delete point.dlOptions.zIndex;
             }
             // Set name for usage in tooltip and in data label.
             point.name = point.options.name || sets.join('∩');

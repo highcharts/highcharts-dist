@@ -2,8 +2,9 @@
  *
  *  (c) 2009-2026 Highsoft AS
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -14,6 +15,8 @@
  *
  * */
 import AST from '../Core/Renderer/HTML/AST.js';
+import BaseFormIcons from './BaseFormIcons.js';
+import getIcon from './BaseFormUtils.js';
 import { addEvent, createElement } from './Utilities.js';
 /* *
  *
@@ -61,22 +64,20 @@ class BaseForm {
      * Close button.
      */
     addCloseButton(className = 'highcharts-popup-close') {
-        const popup = this, iconsURL = this.iconsURL;
         // Create close popup button.
         const closeButton = createElement('button', { className }, void 0, this.container);
         createElement('span', {
             className: 'highcharts-icon'
         }, {
-            backgroundImage: 'url(' + (iconsURL.match(/png|svg|jpeg|jpg|gif/ig) ?
-                iconsURL : iconsURL + 'close.svg') + ')'
+            backgroundImage: getIcon('close.svg', this.iconsURL, BaseFormIcons)
         }, closeButton);
         ['click', 'touchstart'].forEach((eventName) => {
-            addEvent(closeButton, eventName, popup.closeButtonEvents.bind(popup));
+            addEvent(closeButton, eventName, this.closeButtonEvents.bind(this));
         });
         // Close popup when press ESC
-        addEvent(document, 'keydown', function (event) {
+        addEvent(document, 'keydown', (event) => {
             if (event.code === 'Escape') {
-                popup.closeButtonEvents();
+                this.closeButtonEvents();
             }
         });
         return closeButton;

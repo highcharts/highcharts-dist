@@ -4,8 +4,9 @@
  *
  *  Author: Lars A. V. Cabrera
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -32,12 +33,15 @@ import { addEvent, merge, pushUnique, wrap } from '../Shared/Utilities.js';
  * @type      {boolean|CurrentDateIndicatorOptions}
  * @default   true
  * @extends   xAxis.plotLines
- * @excluding value
+ * @excluding className, value
  * @product   gantt
  * @apioption xAxis.currentDateIndicator
  */
 const defaultOptions = {
-    color: "#ccd3ff" /* Palette.highlightColor20 */,
+    /**
+     * @type {Highcharts.ColorType}
+     */
+    color: 'var(--highcharts-highlight-color-20)',
     width: 2,
     /**
      * @declare Highcharts.AxisCurrentDateIndicatorLabelOptions
@@ -49,6 +53,7 @@ const defaultOptions = {
          *
          * @type      {string|Intl.DateTimeFormatOptions}
          * @product   gantt
+         * @default   %[abdYHM]
          * @apioption xAxis.currentDateIndicator.label.format
          */
         format: '%[abdYHM]',
@@ -71,7 +76,7 @@ const defaultOptions = {
  *
  * */
 /** @internal */
-function compose(AxisClass, PlotLineOrBandClass) {
+export function composeCurrentDateIndication(AxisClass, PlotLineOrBandClass) {
     if (pushUnique(composed, 'CurrentDateIndication')) {
         addEvent(AxisClass, 'afterSetOptions', onAxisAfterSetOptions);
         addEvent(PlotLineOrBandClass, 'render', onPlotLineOrBandRender);
@@ -87,41 +92,25 @@ function onAxisAfterSetOptions() {
             merge(defaultOptions);
         plotLineOptions.value = Date.now();
         plotLineOptions.className = 'highcharts-current-date-indicator';
-        if (!options.plotLines) {
-            options.plotLines = [];
-        }
+        options.plotLines ?? (options.plotLines = []);
         options.plotLines.push(plotLineOptions);
     }
 }
 /** @internal */
 function onPlotLineOrBandRender() {
     // If the label already exists, update its text
-    if (this.label) {
-        this.label.attr({
-            text: this.getLabelText(this.options.label)
-        });
-    }
+    this.label?.attr({
+        text: this.getLabelText(this.options.label || {})
+    });
 }
 /** @internal */
 function wrapPlotLineOrBandGetLabelText(defaultMethod, defaultLabelOptions) {
-    const options = this.options;
-    if (options &&
-        options.className &&
-        options.className.indexOf('highcharts-current-date-indicator') !== -1 &&
-        options.label &&
-        typeof options.label.formatter === 'function') {
+    if (this.options.className &&
+        this.options.className.indexOf('highcharts-current-date-indicator') !== -1 &&
+        typeof this.options.label?.formatter === 'function') {
+        const options = this.options;
         options.value = Date.now();
-        return options.label.formatter
-            .call(this, options.value, options.label.format, this);
+        return options.label?.formatter?.call(this, options.value, options.label.format, this) || '';
     }
     return defaultMethod.call(this, defaultLabelOptions);
 }
-/* *
- *
- *  Default Export
- *
- * */
-const CurrentDateIndication = {
-    compose
-};
-export default CurrentDateIndication;

@@ -3,19 +3,21 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Sebastian Bochan, Rafał Sebestjański
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
 'use strict';
 import AreaRangePoint from '../AreaRange/AreaRangePoint.js';
-import { extend, pick } from '../../Shared/Utilities.js';
+import { extend } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class
  *
  * */
+/** @internal */
 class DumbbellPoint extends AreaRangePoint {
     /* *
      *
@@ -26,10 +28,16 @@ class DumbbellPoint extends AreaRangePoint {
      * Set the point's state extended by have influence on the connector
      * (between low and high value).
      *
-     * @private
+     * @internal
      */
     setState() {
-        const point = this, series = point.series, chart = series.chart, seriesLowColor = series.options.lowColor, seriesMarker = series.options.marker, seriesLowMarker = series.options.lowMarker, pointOptions = point.options, pointLowColor = pointOptions.lowColor, zoneColor = point.zone && point.zone.color, lowerGraphicColor = pick(pointLowColor, seriesLowMarker?.fillColor, seriesLowColor, pointOptions.color, zoneColor, point.color, series.color);
+        const point = this, series = point.series, chart = series.chart, seriesLowColor = series.options.lowColor, seriesMarker = series.options.marker, seriesLowMarker = series.options.lowMarker, pointOptions = point.options, pointLowColor = pointOptions.lowColor, zoneColor = point.zone && point.zone.color, lowerGraphicColor = pointLowColor ??
+            seriesLowMarker?.fillColor ??
+            seriesLowColor ??
+            pointOptions.color ??
+            zoneColor ??
+            point.color ??
+            series.color;
         let verb = 'attr', upperGraphicColor, origProps;
         this.pointSetState.apply(point, arguments);
         if (!point.state) {
@@ -46,7 +54,12 @@ class DumbbellPoint extends AreaRangePoint {
                     };
                     point.y = point.high;
                     point.zone = point.zone ? point.getZone() : void 0;
-                    upperGraphicColor = pick(point.marker ? point.marker.fillColor : void 0, seriesMarker ? seriesMarker.fillColor : void 0, pointOptions.color, point.zone ? point.zone.color : void 0, point.color);
+                    upperGraphicColor =
+                        (point.marker ? point.marker.fillColor : void 0) ??
+                            (seriesMarker ? seriesMarker.fillColor : void 0) ??
+                            pointOptions.color ??
+                            (point.zone ? point.zone.color : void 0) ??
+                            point.color;
                     upperGraphic.attr({
                         fill: upperGraphicColor
                     });
@@ -56,14 +69,14 @@ class DumbbellPoint extends AreaRangePoint {
         }
         point.connector?.[verb](series.getConnectorAttribs(point));
     }
-    destroy() {
+    destroy(sync) {
         const point = this;
         // #15560
         if (!point.graphic) {
             point.graphic = point.connector;
             point.connector = void 0;
         }
-        return super.destroy();
+        return super.destroy(sync);
     }
 }
 extend(DumbbellPoint.prototype, {
@@ -74,4 +87,5 @@ extend(DumbbellPoint.prototype, {
  *  Default export
  *
  * */
+/** @internal */
 export default DumbbellPoint;

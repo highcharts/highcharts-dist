@@ -6,8 +6,9 @@
  *
  *  Author: Daniel Studencki
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -15,7 +16,7 @@
 import Point from '../../Core/Series/Point.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { line: { prototype: { pointClass: LinePoint } }, pie: { prototype: { pointClass: PiePoint } } } = SeriesRegistry.seriesTypes;
-import { defined, isNumber, merge, objectEach, pick } from '../../Shared/Utilities.js';
+import { defined, isNumber, merge, objectEach } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class
@@ -117,9 +118,7 @@ class TimelinePoint extends LinePoint {
         this.y = 1;
     }
     isValid() {
-        return (this.options.y !== null ||
-            this.series.options.nullInteraction ||
-            true);
+        return this.options.y !== null;
     }
     setState() {
         const proceed = super.setState;
@@ -130,7 +129,7 @@ class TimelinePoint extends LinePoint {
     }
     setVisible(visible, redraw) {
         const point = this, series = point.series;
-        redraw = pick(redraw, series.options.ignoreHiddenPoint);
+        redraw = (redraw ?? series.options.ignoreHiddenPoint);
         PiePoint.prototype.setVisible.call(point, visible, false);
         // Process new data
         series.processData();
@@ -138,10 +137,8 @@ class TimelinePoint extends LinePoint {
             series.chart.redraw();
         }
     }
-    applyOptions(options, x) {
-        const isNull = (this.isNull ||
-            options === null ||
-            options.y === null), series = this.series;
+    applyOptions(options, x, isMock) {
+        const series = this.series;
         if (!x && !options?.x) {
             if (isNumber(this.x)) {
                 x = this.x;
@@ -151,11 +148,11 @@ class TimelinePoint extends LinePoint {
                 series.autoIncrement();
             }
         }
-        options = Point.prototype.optionsToObject.call(this, options ?? ((series.options.nullInteraction && { y: 0 }) ||
-            null));
-        const p = super.applyOptions(options, x);
-        this.userDLOptions = merge(this.userDLOptions, options.dataLabels);
-        p.isNull = isNull;
+        options = Point.prototype.optionsToObject.call(this, options);
+        const p = super.applyOptions(options, x, isMock);
+        if (!isMock) {
+            this.userDLOptions = merge(this.userDLOptions, options.dataLabels);
+        }
         return p;
     }
 }

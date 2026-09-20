@@ -3,8 +3,9 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -30,6 +31,8 @@
  *               softThreshold, stacking, step, threshold
  *
  * @product      highcharts highmaps
+ * @requires     modules/coloraxis
+ * @requires     modules/contour
  * @optionparent plotOptions.contour
  */
 const ContourSeriesDefaults = {
@@ -47,6 +50,13 @@ const ContourSeriesDefaults = {
      * @type      {boolean}
      * @default   false
      * @apioption plotOptions.contour.smoothColoring
+     */
+    /**
+     * The color of the contour lines.
+     *
+     * @type      {Highcharts.ColorType}
+     * @default   #000000
+     * @apioption plotOptions.contour.lineColor
      */
     /**
      * This setting controls the visibility and size of contour lines. For now,
@@ -139,19 +149,19 @@ const ContourSeriesDefaults = {
  * @sample highcharts/demo/contour-mountain/
  *         Simple contour
  *
- * @extends      series,plotOptions.contour
- * @excluding    cropThreshold, dataParser, dataURL, dragDrop ,pointRange,
- *               stack, allowPointSelect, boostBlending, boostThreshold, color,
- *               colorIndex, connectEnds, connectNulls, crisp, dashStyle,
- *               inactiveOtherPoints, jitter, linecap, negativeColor,
- *               pointInterval, pointStart, pointIntervalUnit, lineWidth,
- *               onPoint, pointPlacement, shadow, stacking, step, threshold,
- *               zoneAxis, zones, onPoint, grouping, groupPadding,
- *               groupZPadding
+ * @extends   series,plotOptions.contour
+ * @excluding allowPointSelect, boostBlending, boostThreshold, color,
+ *            colorIndex, connectEnds, connectNulls, crisp, cropThreshold,
+ *            dashStyle, dragDrop, grouping, groupPadding, groupZPadding,
+ *            inactiveOtherPoints, jitter, linecap, lineWidth, negativeColor,
+ *            onPoint, pointInterval, pointIntervalUnit, pointPlacement,
+ *            pointRange, pointStart, shadow, stack, stacking, step, threshold,
+ *            zoneAxis, zones
  *
- *
- * @product      highcharts highmaps
- * @apioption    series.contour
+ * @product   highcharts highmaps
+ * @requires  modules/coloraxis
+ * @requires  modules/contour
+ * @apioption series.contour
  */
 /**
  * An array of data points for the series. For the `contour` series
@@ -201,6 +211,7 @@ const ContourSeriesDefaults = {
  * @sample {highcharts} highcharts/series/data-array-of-objects/
  *         Config objects
  *
+ * @basic
  * @type      {Array<Array<number>|*>}
  * @extends   series.line.data
  * @product   highcharts highmaps

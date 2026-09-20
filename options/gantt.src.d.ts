@@ -82,6 +82,25 @@ declare module "../highcharts.src" {
         valueSuffix?: string;
     }
     /**
+     * (Highcharts, Highstock, Highmaps, Gantt) Enable or disable the initial
+     * animation when a series is displayed for the `dataLabels`. The animation
+     * can also be set as a configuration object. Please note that this option
+     * only applies to the initial animation.
+     *
+     * For other animations, see chart.animation and the animation parameter
+     * under the API methods. The following properties are supported:
+     *
+     * - `defer`: The animation delay time in milliseconds.
+     */
+    interface PlotGanttDataLabelsAnimationOptions {
+        /**
+         * (Highcharts, Highstock, Highmaps, Gantt) The animation delay time in
+         * milliseconds. Set to `0` to render the data labels immediately. As
+         * `undefined` inherits defer time from the series.animation.defer.
+         */
+        defer?: number;
+    }
+    /**
      * (Highcharts, Highstock, Highmaps, Gantt) Options for the series data
      * labels, appearing next to each data point.
      *
@@ -132,8 +151,15 @@ declare module "../highcharts.src" {
         animation?: (boolean|Highcharts.PlotGanttDataLabelsAnimationOptions|Partial<Highcharts.AnimationOptionsObject>);
         /**
          * (Highcharts, Highstock, Highmaps, Gantt) The background color or
-         * gradient for the data label. Setting it to `auto` will use the
-         * point's color.
+         * gradient for the data label. In addition to regular colors, there are
+         * two special setting for this option:
+         *
+         * - `auto` will set the background color the point's color.
+         *
+         * - `contrast` will set it to a contrast against the text color, with
+         * an opacity allowing to see the underlying content. The contrast is
+         * great enough to ensure readability for the text according to
+         * accessibility standards.
          */
         backgroundColor?: Highcharts.ColorType;
         /**
@@ -188,6 +214,13 @@ declare module "../highcharts.src" {
          * the defer time set in plotOptions.series.animation.
          */
         defer?: boolean;
+        /**
+         * (Highcharts, Highstock, Gantt) The distance of the data label from
+         * the data point. Note that the `padding` setting also affects the
+         * rendered distance, but is not visible unless the data label has a
+         * border or background.
+         */
+        distance?: number;
         /**
          * (Highcharts, Highstock, Highmaps, Gantt) Enable or disable the data
          * labels.
@@ -262,8 +295,12 @@ declare module "../highcharts.src" {
          * (Highcharts, Highstock, Highmaps, Gantt) When either the
          * `borderWidth` or the `backgroundColor` is set, this is the padding
          * within the box.
+         *
+         * An array of numbers sets padding for the respective sides. An array
+         * of two numbers repeats the values for the horizontal and vertical
+         * sides.
          */
-        padding?: number;
+        padding?: (number|Array<number>);
         /**
          * (Highcharts, Highstock, Highmaps, Gantt) Aligns data labels relative
          * to points. If `center` alignment is not possible, it defaults to
@@ -303,7 +340,10 @@ declare module "../highcharts.src" {
          * well, in which cases it can be disabled by setting it to `"none"`.
          * When `useHTML` is true, the `textOutline` will not be picked up. In
          * this, case, the same effect can be achieved through the `text-shadow`
-         * CSS property.
+         * CSS property. As a complementary or alternative to the `textOutline`,
+         * a `dataLabels.backgroundColor` can be used. It provides a more calm
+         * impression and ensures readable text label, at the cost of a risk of
+         * overshadowing the underlying chart elements.
          *
          * For some series types, where each point has an extent, like for
          * example tree maps, the data label may overflow the point. There are
@@ -320,6 +360,10 @@ declare module "../highcharts.src" {
          *
          * **Note:** Only SVG-based renderer supports this option. Setting
          * `useHTML` to true will disable this option.
+         *
+         * Text path support is not bundled into `highcharts.js`, and requires
+         * the `modules/textpath.js` file. However, it is included in the script
+         * files of those series types that use it by default.
          */
         textPath?: Highcharts.DataLabelsTextPathOptionsObject;
         /**
@@ -344,13 +388,72 @@ declare module "../highcharts.src" {
          * label relative to the point in pixels.
          */
         y?: number;
+        /**
+         * (Highcharts, Highstock, Highmaps, Gantt) The z index of the data
+         * labels group. Does not apply below series level options.
+         *
+         * Use a `zIndex` of 6 to display it above the series, or use a `zIndex`
+         * of 2 to display it behind the series.
+         */
+        zIndex?: number;
+    }
+    /**
+     * (Highcharts, Highstock, Highmaps, Gantt) Styles for the label. The
+     * default `color` setting is `"contrast"`, which is a pseudo color that
+     * Highcharts picks up and applies the maximum contrast to the underlying
+     * point item, for example the bar in a bar chart.
+     *
+     * The `textOutline` is a pseudo property that applies an outline of the
+     * given width with the given color, which by default is the maximum
+     * contrast to the text. So a bright text color will result in a black text
+     * outline for maximum readability on a mixed background. In some cases,
+     * especially with grayscale text, the text outline doesn't work well, in
+     * which cases it can be disabled by setting it to `"none"`. When `useHTML`
+     * is true, the `textOutline` will not be picked up. In this, case, the same
+     * effect can be achieved through the `text-shadow` CSS property. As a
+     * complementary or alternative to the `textOutline`, a
+     * `dataLabels.backgroundColor` can be used. It provides a more calm
+     * impression and ensures readable text label, at the cost of a risk of
+     * overshadowing the underlying chart elements.
+     *
+     * For some series types, where each point has an extent, like for example
+     * tree maps, the data label may overflow the point. There are two
+     * strategies for handling overflow. By default, the text will wrap to
+     * multiple lines. The other strategy is to set `style.textOverflow` to
+     * `ellipsis`, which will keep the text on one line plus it will break
+     * inside long words.
+     */
+    interface PlotGanttDataLabelsStyleOptions {
+        whiteSpace?: string;
     }
     /**
      * (Highcharts, Highstock, Gantt) Styles for the series label. The color
      * defaults to the series color, or a contrast color if `onArea`.
      */
     interface PlotGanttLabelStyleOptions {
-        fontSize?: (number|string);
+        fontSize?: number;
+        fontWeight?: string;
+    }
+    /**
+     * (Gantt) Options for the connector in the _Series on point_ feature.
+     *
+     * In styled mode, the connector can be styled with the
+     * `.highcharts-connector-seriesonpoint` class name.
+     */
+    interface PlotGanttOnPointConnectorOptions {
+        /**
+         * (Gantt) A name for the dash style to use for the connector.
+         */
+        dashstyle?: string;
+        /**
+         * (Gantt) Color of the connector line. By default it's the series'
+         * color.
+         */
+        stroke?: string;
+        /**
+         * (Gantt) Pixel width of the connector line.
+         */
+        width?: number;
     }
     /**
      * (Gantt) Options for the _Series on point_ feature. Only `pie` and
@@ -375,6 +478,34 @@ declare module "../highcharts.src" {
          * series in the _Series on point_ feature.
          */
         position?: (object|Highcharts.PlotGanttOnPointPositionOptions);
+    }
+    /**
+     * (Gantt) Options allowing to set a position and an offset of the series in
+     * the _Series on point_ feature.
+     */
+    interface PlotGanttOnPointPositionOptions {
+        /**
+         * (Gantt) Series center offset from the original x position. If
+         * defined, the connector line is drawn connecting original position
+         * with new position.
+         */
+        offsetX?: number;
+        /**
+         * (Gantt) Series center offset from the original y position. If
+         * defined, the connector line is drawn from original position to a new
+         * position.
+         */
+        offsetY?: number;
+        /**
+         * (Gantt) X position of the series center. By default, the series is
+         * displayed on the point that it is connected to.
+         */
+        x?: number;
+        /**
+         * (Gantt) Y position of the series center. By default, the series is
+         * displayed on the point that it is connected to.
+         */
+        y?: number;
     }
     /**
      * (Gantt) A `gantt` series. If the type option is not specified, it is
@@ -567,6 +698,48 @@ declare module "../highcharts.src" {
          */
         dataLabels?: (Highcharts.PlotGanttDataLabelsOptions|Array<Highcharts.PlotGanttDataLabelsOptions>);
         /**
+         * (Gantt) The mapping between the data table and the series data
+         * points. This is used in conjunction with the `dataTable` option (on
+         * chart or series level) to map columns from the data table to the
+         * properties of the data points. The keys of the `dataMapping` object
+         * correspond to the properties of the data points (e.g. `x`, `y`,
+         * `name`), and the values are objects that specify which column from
+         * which data table to use for that property.
+         *
+         * The keys can also be nested paths, for example `dataLabel.format`, to
+         * map to nested properties of the data points.
+         *
+         * The values can also be strings, in which case they are interpreted as
+         * column id's from the first data table.
+         *
+         * A typical use case is that multiple series share a common column,
+         * like `name` or `x`. In this case, to avoid repetition, the common
+         * column can be applied in `plotOptions.series.dataMapping` and the
+         * individual series can specify only the columns that are unique to
+         * them.
+         *
+         * The series name defaults to the column ID of the main data column in
+         * the mapping. The main data column is typically the `y` data for
+         * cartesian series, or `value` for map series. For example, if the
+         * mapping is `{ y: 'Cost' }`, the series name will be `Cost`. (see
+         * online documentation for example)
+         *
+         * If the columns of the DataTable have keys matching the series keys,
+         * the data mapping is not necessary. For example, this DataTable will
+         * connect directly to the series' `x` and `y` keys: (see online
+         * documentation for example)
+         */
+        dataMapping?: Highcharts.DataMappingOptionsObject;
+        /**
+         * (Gantt) Options for a specific series-level data table or an array of
+         * data tables. The `dataTable` option can be either a configuration
+         * object or an instance of the `DataTable` class. If a `DataTable`
+         * instance is passed, it will be used directly. If a configuration
+         * object or an array is passed, a new `DataTable` instance will be
+         * created based on the provided configuration.
+         */
+        dataTable?: (Highcharts.DataTable|Highcharts.DataTableOptionsObject|Array<(Highcharts.DataTable|Highcharts.DataTableOptionsObject)>);
+        /**
          * (Gantt) Deprecated. Use plotOptions.series.accessibility.description
          * instead.
          *
@@ -671,8 +844,10 @@ declare module "../highcharts.src" {
          * (Highcharts, Highstock, Gantt) The minimal height for a column or
          * width for a bar. By default, 0 values are not shown. To visualize a 0
          * (or close to zero) point, set the minimal point length to a pixel
-         * value like 3\. In stacked column charts, minPointLength might not be
-         * respected for tightly packed values.
+         * value like 3\. In stacked column charts, the length is applied to
+         * each point in isolation, so tightly packed values may overlap. See
+         * the stacked sample below for a plugin that lays out the stack as a
+         * whole instead.
          */
         minPointLength?: number;
         /**
@@ -700,6 +875,8 @@ declare module "../highcharts.src" {
          *
          * Same as accessibility.point.descriptionFormat, but for an individual
          * series. Overrides the chart wide configuration.
+         *
+         * @deprecated 12.6.0
          */
         pointDescriptionFormat?: Function;
         /**
@@ -773,6 +950,10 @@ declare module "../highcharts.src" {
         sonification?: Highcharts.SeriesSonificationOptions;
         /**
          * (Gantt) A collection of options for different series states.
+         *
+         * In addition to the options documented under each state, any option
+         * from the parent series type can be set, with exception of `data` and
+         * `states`.
          */
         states?: Highcharts.SeriesStatesOptionsObject;
         /**
@@ -830,6 +1011,17 @@ declare module "../highcharts.src" {
         zoomEnabled?: boolean;
     }
     /**
+     * (Highcharts, Highstock, Gantt) A partial fill for each point, typically
+     * used to visualize how much of a task is performed.
+     */
+    interface PlotGanttPartialFillOptions {
+        /**
+         * (Highcharts, Highstock, Gantt) The fill color to be used for partial
+         * fills. Defaults to a darker shade of the point color.
+         */
+        fill?: Highcharts.ColorType;
+    }
+    /**
      * (Highcharts, Highstock) Animation setting for hovering the graph in
      * line-type series.
      */
@@ -852,5 +1044,138 @@ declare module "../highcharts.src" {
          * slowly back to normal.
          */
         duration?: number;
+    }
+    /**
+     * (Highcharts, Highstock, Gantt) For series on datetime axes, the date
+     * format in the tooltip's header will by default be guessed based on the
+     * closest data points. This member gives the default string representations
+     * used for each unit. For an overview of the string or object
+     * configuration, see dateFormat.
+     */
+    interface PlotGanttTooltipDateTimeLabelFormatsOptions {
+        day?: string;
+        hour?: string;
+        millisecond?: string;
+        minute?: string;
+        month?: string;
+        second?: string;
+        week?: string;
+        year?: string;
+    }
+    /**
+     * (Gantt) Options for the tooltip header when tooltip.split is enabled. The
+     * header is the box containing the X value in a split tooltip.
+     */
+    interface PlotGanttTooltipHeaderOptions {
+        /**
+         * (Gantt) Background color for the tooltip header when tooltip.split is
+         * enabled.
+         */
+        backgroundColor?: Highcharts.ColorType;
+        /**
+         * (Gantt) Border color for the tooltip header when tooltip.split is
+         * enabled.
+         */
+        borderColor?: Highcharts.ColorType;
+        /**
+         * (Gantt) The width of the border for the tooltip header when
+         * tooltip.split is enabled.
+         */
+        borderWidth?: number;
+        /**
+         * (Gantt) Distance between the plot area and the header (except the
+         * chevron) in a split tooltip, in pixels. The default value makes the
+         * header text align with the axis labels.
+         */
+        distance?: number;
+        /**
+         * (Gantt) The name of a symbol to use for the border around the tooltip
+         * header. Applies only when tooltip.split is enabled.
+         *
+         * Custom callbacks for symbol path generation can also be added to
+         * `Highcharts.SVGRenderer.prototype.symbols` the same way as for
+         * series.marker.symbol.
+         */
+        shape?: string;
+        /**
+         * (Gantt) CSS styles for the tooltip header. The default is `{
+         * fontSize: '1em' }`, ensuring that the header text is the same size as
+         * the axis labels.
+         */
+        style?: object;
+    }
+    /**
+     * (Gantt) Positioning options for fixed tooltip, taking effect only when
+     * tooltip.fixed is `true`.
+     */
+    interface PlotGanttTooltipPositionOptions {
+        /**
+         * (Gantt) The horizontal alignment of the fixed tooltip.
+         */
+        align?: Highcharts.AlignValue;
+        /**
+         * (Gantt) What the fixed tooltip alignment should be relative to.
+         *
+         * The default, `pane`, means that it is aligned within the plot area
+         * for that given series. If the tooltip is split (as default in Stock
+         * charts), each partial tooltip is aligned within the series' pane.
+         */
+        relativeTo?: Highcharts.OptionsRelativeToValue;
+        /**
+         * (Gantt) The vertical alignment of the fixed tooltip.
+         */
+        verticalAlign?: Highcharts.VerticalAlignValue;
+        /**
+         * (Gantt) X pixel offset from the given position. Can be used to shy
+         * away from axis lines, grid lines etc to avoid the tooltip overlapping
+         * other elements.
+         */
+        x?: number;
+        /**
+         * (Gantt) Y pixel offset from the given position. Can be used to shy
+         * away from axis lines, grid lines etc to avoid the tooltip overlapping
+         * other elements.
+         */
+        y?: number;
+    }
+    /**
+     * (Gantt) A `gantt` series.
+     *
+     * Configuration options for the series are given in three levels:
+     *
+     * 1. Options for all series in a chart are defined in the
+     * plotOptions.series object.
+     *
+     * 2. Options for all `gantt` series are defined in plotOptions.gantt.
+     *
+     * 3. Options for one single series are given in the series instance array.
+     * (see online documentation for example)
+     *
+     * **TypeScript:**
+     *
+     * - type option should always be set, otherwise a broad set of unsupported
+     * options is allowed.
+     *
+     * - when accessing an array of series, the combined set of all series types
+     * is represented by Highcharts.SeriesOptionsType . Narrowing down to the
+     * specific type can be done by checking the `type` property. (see online
+     * documentation for example)
+     *
+     * You have to extend the `SeriesGanttOptions` via an interface to allow
+     * custom properties: ``` declare interface SeriesGanttOptions {
+     * customProperty: string; }
+     *
+     */
+    interface SeriesGanttOptions extends Highcharts.PlotGanttOptions, Highcharts.SeriesOptions {
+        /**
+         * (Gantt) Data for a Gantt series.
+         */
+        data?: Array<Highcharts.GanttPointOptionsObject>;
+        /**
+         * (Highcharts, Highstock, Highmaps, Gantt) This property is only in
+         * TypeScript non-optional and might be `undefined` in series objects
+         * from unknown sources.
+         */
+        type: "gantt";
     }
 }

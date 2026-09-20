@@ -3,8 +3,9 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  A commercial license may be required depending on use.
- *  See www.highcharts.com/license
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
  *
  *
  * */
@@ -16,7 +17,7 @@ import R from '../../Core/Renderer/RendererUtilities.js';
 const { distribute } = R;
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { series: Series } = SeriesRegistry;
-import { arrayMax, clamp, defined, isNumber, pick, pushUnique, relativeLength } from '../../Shared/Utilities.js';
+import { arrayMax, clamp, defined, isNumber, pushUnique, relativeLength } from '../../Shared/Utilities.js';
 /* *
  *
  *  Composition
@@ -42,7 +43,7 @@ var ColumnDataLabel;
         // distribute algorithm.
         radialDistributionX: function (series, point, y, naturalY, dataLabel) {
             const pos = dataLabel.dataLabelPosition;
-            return series.getX(y < (pos?.top || 0) + 2 || y > (pos?.bottom || 0) - 2 ?
+            return series.getXPos(y < (pos?.top || 0) + 2 || y > (pos?.bottom || 0) - 2 ?
                 naturalY :
                 y, point.half, point, dataLabel);
         },
@@ -323,7 +324,7 @@ var ColumnDataLabel;
                         labelPosition.computed.x = x;
                         labelPosition.computed.y = y - topOffset;
                         // Detect overflowing data labels
-                        if (pick(dataLabelOptions.crop, true)) {
+                        if (dataLabelOptions.crop ?? true) {
                             dataLabelWidth = dataLabel.getBBox().width;
                             let sideOverflow;
                             // Overflow left
@@ -390,7 +391,7 @@ var ColumnDataLabel;
                                     'stroke-width': connectorWidth,
                                     'stroke': (connectorColor ||
                                         point.color ||
-                                        "#666666" /* Palette.neutralColor60 */)
+                                        'var(--highcharts-neutral-color-60)')
                                 });
                             }
                             connector[isNew ? 'attr' : 'animate']({
