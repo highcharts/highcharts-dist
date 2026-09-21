@@ -5,9 +5,8 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
@@ -106,19 +105,7 @@ const FunnelSeriesDefaults = {
      * @ignore-option
      */
     size: true,
-    /**
-     * @declare Highcharts.SeriesFunnelDataLabelsOptionsObject
-     * @extends plotOptions.pie.dataLabels
-     */
     dataLabels: {
-        /**
-         * Whether to render the data label inside the funnel item instead of
-         * outside, connected by a connector line.
-         *
-         * @type      {boolean}
-         * @default   false
-         * @apioption plotOptions.funnel.dataLabels.inside
-         */
         connectorWidth: 1,
         verticalAlign: 'middle'
     },
@@ -141,13 +128,13 @@ const FunnelSeriesDefaults = {
              *
              * @type {Highcharts.ColorType}
              */
-            color: 'var(--highcharts-neutral-color-20)',
+            color: "#cccccc" /* Palette.neutralColor20 */,
             /**
              * A specific border color for the selected point.
              *
              * @type {Highcharts.ColorString}
              */
-            borderColor: 'var(--highcharts-neutral-color-100)'
+            borderColor: "#000000" /* Palette.neutralColor100 */
         }
     }
 };
@@ -156,7 +143,7 @@ const FunnelSeriesDefaults = {
  * not specified, it is inherited from [chart.type](#chart.type).
  *
  * @extends   series,plotOptions.funnel
- * @excluding stack, xAxis, yAxis, dataSorting,
+ * @excluding dataParser, dataURL, stack, xAxis, yAxis, dataSorting,
  *            boostBlending, boostThreshold
  * @product   highcharts
  * @requires  modules/funnel
@@ -201,7 +188,6 @@ const FunnelSeriesDefaults = {
  * @sample {highcharts} highcharts/series/data-array-of-objects/
  *         Config objects
  *
- * @basic
  * @type      {Array<number|null|*>}
  * @extends   series.pie.data
  * @excluding sliced

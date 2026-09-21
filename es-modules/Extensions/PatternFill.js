@@ -5,31 +5,30 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi, Øystein Moseng
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
 'use strict';
-import { animObject } from '../Core/Animation/AnimationUtilities.js';
+import A from '../Core/Animation/AnimationUtilities.js';
+const { animObject } = A;
 import D from '../Core/Defaults.js';
 const { getOptions } = D;
-import { addEvent, defined, erase, extend, isObject, merge, removeEvent, wrap } from '../Shared/Utilities.js';
+import { addEvent, defined, erase, extend, isObject, merge, pick, removeEvent, wrap } from '../Shared/Utilities.js';
 /* *
  *
  *  Constants
  *
  * */
-/** @internal */
-export const patterns = createPatterns();
+const patterns = createPatterns();
 /* *
  *
  *  Functions
  *
  * */
 /** @internal */
-export function composePatternFill(ChartClass, SeriesClass, SVGRendererClass) {
+function compose(ChartClass, SeriesClass, SVGRendererClass) {
     const PointClass = SeriesClass.prototype.pointClass, pointProto = PointClass.prototype;
     if (!pointProto.calculatePatternDimensions) {
         addEvent(ChartClass, 'endResize', onChartEndResize);
@@ -237,7 +236,7 @@ function onPointAfterInit() {
  */
 function onRendererComplexColor(args) {
     const color = args.args[0], prop = args.args[1], element = args.args[2], chartIndex = (this.chartIndex || 0);
-    let pattern = color.pattern, value = 'var(--highcharts-neutral-color-80)';
+    let pattern = color.pattern, value = "#333333" /* Palette.neutralColor80 */;
     // Handle patternIndex
     if (typeof color.patternIndex !== 'undefined' && patterns) {
         pattern = patterns[color.patternIndex];
@@ -284,9 +283,7 @@ function onRendererComplexColor(args) {
         }
         // Add it. This function does nothing if an element with this ID
         // already exists.
-        this.addPattern(pattern, !this.forExport && (pattern.animation ??
-            this.globalAnimation ??
-            { duration: 100 }));
+        this.addPattern(pattern, !this.forExport && pick(pattern.animation, this.globalAnimation, { duration: 100 }));
         value = `url(${this.url}#${pattern.id + (this.forExport ? '-export' : '')})`;
     }
     else {
@@ -438,7 +435,7 @@ function pointCalculatePatternDimensions(pattern) {
  * @internal
  * @function Highcharts.SVGRenderer#addPattern
  *
- * @param {Highcharts.PatternOptionsObject} options
+ * @param {Highcharts.PatternObject} options
  * The pattern options.
  *
  * @param {boolean|Partial<Highcharts.AnimationOptionsObject>} [animation]
@@ -450,8 +447,7 @@ function pointCalculatePatternDimensions(pattern) {
  * @requires modules/pattern-fill
  */
 function rendererAddPattern(options, animation) {
-    const animate = (animation ?? true), animationOptions = animObject(animate), color = options.color ||
-        'var(--highcharts-neutral-color-80)', defaultSize = 32, height = options.height ||
+    const animate = pick(animation, true), animationOptions = animObject(animate), color = options.color || "#333333" /* Palette.neutralColor80 */, defaultSize = 32, height = options.height ||
         (typeof options._height === 'number' ? options._height : 0) ||
         defaultSize, width = options.width ||
         (typeof options._width === 'number' ? options._width : 0) ||
@@ -518,7 +514,7 @@ function rendererAddPattern(options, animation) {
         };
         if (!this.styledMode) {
             attribs.stroke = path.stroke || color;
-            attribs['stroke-width'] = (path.strokeWidth ?? 2);
+            attribs['stroke-width'] = pick(path.strokeWidth, 2);
             attribs.fill = path.fill || 'none';
         }
         if (path.transform) {
@@ -533,7 +529,7 @@ function rendererAddPattern(options, animation) {
             this.image(options.image, 0, 0, width, height, function () {
                 // Onload
                 this.animate({
-                    opacity: (options.opacity ?? 1)
+                    opacity: pick(options.opacity, 1)
                 }, animationOptions);
                 removeEvent(this.element, 'load');
             }).attr({ opacity: 0 }).add(pattern);
@@ -639,6 +635,16 @@ function onPatternScaleCorrection() {
 }
 /* *
  *
+ *  Export
+ *
+ * */
+const PatternFill = {
+    compose,
+    patterns
+};
+export default PatternFill;
+/* *
+ *
  *  API Declarations
  *
  * */
@@ -656,7 +662,7 @@ function onPatternScaleCorrection() {
 *         Compare shared vs anchored pattern positioning
 * @name Highcharts.PatternOptionsObject#anchorToPoint
 * @type {boolean|undefined}
-* @since 12.6.0
+* @since next
 * @default false
 */ /**
 * Background color for the pattern if a `path` is set (not images).
@@ -685,15 +691,13 @@ function onPatternScaleCorrection() {
 * @name Highcharts.PatternOptionsObject#aspectRatio
 * @type {number|undefined}
 */ /**
-* Horizontal offset of the pattern.
+* Horizontal offset of the pattern. Defaults to 0.
 * @name Highcharts.PatternOptionsObject#x
 * @type {number|undefined}
-* @default 0
 */ /**
-* Vertical offset of the pattern.
+* Vertical offset of the pattern. Defaults to 0.
 * @name Highcharts.PatternOptionsObject#y
 * @type {number|undefined}
-* @default 0
 */ /**
 * Either an SVG path as string, or an object. As an object, supply the path
 * string in the `path.d` property. Other supported properties are standard SVG

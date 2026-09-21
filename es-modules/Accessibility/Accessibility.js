@@ -5,9 +5,8 @@
  *
  *  Accessibility module for Highcharts
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
@@ -17,7 +16,7 @@ const { defaultOptions } = D;
 import H from '../Core/Globals.js';
 const { doc } = H;
 import HU from './Utils/HTMLUtilities.js';
-const { escapeStringForHTML, removeElement, stripHTMLTagsFromString } = HU;
+const { removeElement } = HU;
 import A11yI18n from './A11yI18n.js';
 import ContainerComponent from './Components/ContainerComponent.js';
 import FocusBorderComposition from './FocusBorder.js';
@@ -156,11 +155,9 @@ class Accessibility {
         // Update keyboard navigation
         this.keyboardNavigation.update(kbdNavOrder);
         // Handle high contrast mode
-        // Reapply after updates while HC mode is active, but avoid recursion
-        // while the theme itself is being applied through chart.update.
-        if (!chart.highContrastState?.applying &&
-            a11yOptions.highContrastMode !== false && (chart.highContrastState?.active ||
-            whcm.isHighContrastModeActive() ||
+        // Should only be applied once, and not if explicitly disabled
+        if (!chart.highContrastModeActive &&
+            a11yOptions.highContrastMode !== false && (whcm.isHighContrastModeActive() ||
             a11yOptions.highContrastMode === true)) {
             whcm.setHighContrastTheme(chart);
         }
@@ -262,42 +259,6 @@ class Accessibility {
         }
     }
     /**
-     * Inject the accessibility description into the exported SVG as a
-     * Dublin Core RDF metadata block. Runs on the source chart so the
-     * `linkedDescription` selector resolves against the live DOM, then
-     * mutates the export copy's `<svg>` element before its `innerHTML`
-     * is serialized.
-     * @private
-     */
-    function chartOnGetSVG(e) {
-        const a11y = this.accessibility;
-        if (!a11y || a11y.zombie) {
-            return;
-        }
-        const infoRegions = a11y.components.infoRegions;
-        const text = infoRegions && (infoRegions.getLongdescText() ||
-            infoRegions.getTypeDescriptionText());
-        if (!text) {
-            return;
-        }
-        const safe = escapeStringForHTML(stripHTMLTagsFromString(text, true));
-        if (!safe.trim()) {
-            return;
-        }
-        const box = e.chartCopy.renderer.box;
-        box.querySelector(':scope > metadata')?.remove();
-        box.insertAdjacentHTML('afterbegin', '<metadata>' +
-            '<rdf:RDF ' +
-            'xmlns:rdf="http://www.w3.org/' +
-            '1999/02/22-rdf-syntax-ns#" ' +
-            'xmlns:dc="http://purl.org/dc/elements/1.1/">' +
-            '<rdf:Description>' +
-            '<dc:description>' + safe + '</dc:description>' +
-            '</rdf:Description>' +
-            '</rdf:RDF>' +
-            '</metadata>');
-    }
-    /**
      * Update with chart/series/point updates.
      * @private
      */
@@ -384,7 +345,6 @@ class Accessibility {
             addEvent(ChartClass, 'destroy', chartOnDestroy);
             addEvent(ChartClass, 'render', chartOnRender);
             addEvent(ChartClass, 'update', chartOnUpdate);
-            addEvent(ChartClass, 'getSVG', chartOnGetSVG);
             // Mark dirty for update
             ['addSeries', 'init'].forEach((event) => {
                 addEvent(ChartClass, event, function () {

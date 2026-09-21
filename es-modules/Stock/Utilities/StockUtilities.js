@@ -3,9 +3,8 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
@@ -20,7 +19,7 @@ import { defined } from '../../Shared/Utilities.js';
  * Sets the chart.fixedRange to the specified value. If the value is larger
  * than actual range, sets it to the maximum possible range. (#20327)
  *
- * @internal
+ * @private
  * @function Highcharts.StockChart#setFixedRange
  * @param {number|undefined} range
  *        Range to set in axis units.
@@ -36,9 +35,7 @@ function setFixedRange(range) {
         this.fixedRange = range;
     }
 }
-/** @internal */
 const StockUtilities = {
     setFixedRange
 };
-/** @internal */
 export default StockUtilities;

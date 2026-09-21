@@ -5,19 +5,18 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
 'use strict';
-import { borderRadiusObject } from '../../Extensions/BorderRadius.js';
+import BorderRadius from '../../Extensions/BorderRadius.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { gauge: GaugeSeries, pie: PieSeries } = SeriesRegistry.seriesTypes;
 import SolidGaugeAxis from '../../Core/Axis/SolidGaugeAxis.js';
 import SolidGaugeSeriesDefaults from './SolidGaugeSeriesDefaults.js';
-import { clamp, extend, isNumber, merge, relativeLength } from '../../Shared/Utilities.js';
+import { clamp, extend, isNumber, merge, pInt, pick } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class
@@ -53,8 +52,7 @@ class SolidGaugeSeries extends GaugeSeries {
     }
     // Draw the points where each point is one needle.
     drawPoints() {
-        const series = this, yAxis = series.yAxis, center = yAxis.center, options = series.options, renderer = series.chart.renderer, overshoot = options.overshoot, rounded = options.rounded, borderRadius = borderRadiusObject(rounded ? '50%' : (options.borderRadius ??
-            yAxis.pane.options.borderRadius)).radius, overshootVal = isNumber(overshoot) ?
+        const series = this, yAxis = series.yAxis, center = yAxis.center, options = series.options, renderer = series.chart.renderer, overshoot = options.overshoot, rounded = options.rounded && options.borderRadius === void 0, overshootVal = isNumber(overshoot) ?
             overshoot / 180 * Math.PI :
             0;
         let thresholdAngleRad;
@@ -62,18 +60,13 @@ class SolidGaugeSeries extends GaugeSeries {
         if (isNumber(options.threshold)) {
             thresholdAngleRad = yAxis.startAngleRad + yAxis.translate(options.threshold, void 0, void 0, void 0, true);
         }
-        this.thresholdAngleRad = (thresholdAngleRad ?? yAxis.startAngleRad);
+        this.thresholdAngleRad = pick(thresholdAngleRad, yAxis.startAngleRad);
         for (const point of series.points) {
             // #10630 null point should not be draw
             if (!point.isNull) { // Condition like in pie chart
-                const paneInnerSize = yAxis.pane.options.innerSize, radius = ((relativeLength(point.options.radius ??
-                    options.radius ??
-                    '100%', center[2] / 2))), innerRadius = Math.min((relativeLength(point.options.innerRadius ??
-                    options.innerRadius ??
-                    (isNumber(paneInnerSize) ?
-                        paneInnerSize / 2 :
-                        paneInnerSize) ??
-                    0, center[2] / 2)), radius), axisMinAngle = Math.min(yAxis.startAngleRad, yAxis.endAngleRad), axisMaxAngle = Math.max(yAxis.startAngleRad, yAxis.endAngleRad), attribs = {};
+                const radius = ((pInt(pick(point.options.radius, options.radius, 100 // %
+                )) * center[2]) / 200), innerRadius = ((pInt(pick(point.options.innerRadius, options.innerRadius, 60 // %
+                )) * center[2]) / 200), axisMinAngle = Math.min(yAxis.startAngleRad, yAxis.endAngleRad), axisMaxAngle = Math.max(yAxis.startAngleRad, yAxis.endAngleRad);
                 let graphic = point.graphic, rotation = (yAxis.startAngleRad +
                     yAxis.translate(point.y, void 0, void 0, void 0, true)), shapeArgs, d, toColor = yAxis.toColor(point.y, point), className = point.getClassName();
                 if (toColor === 'none') { // #3708
@@ -97,6 +90,10 @@ class SolidGaugeSeries extends GaugeSeries {
                 if (end - start > 2 * Math.PI) {
                     end = start + 2 * Math.PI;
                 }
+                let borderRadius = rounded ? '50%' : 0;
+                if (options.borderRadius) {
+                    borderRadius = BorderRadius.optionsToObject(options.borderRadius).radius;
+                }
                 point.shapeArgs = shapeArgs = {
                     x: center[0],
                     y: center[1],
@@ -107,23 +104,22 @@ class SolidGaugeSeries extends GaugeSeries {
                     borderRadius
                 };
                 point.startR = radius; // For PieSeries.animate
-                if (toColor !== 'none') {
-                    attribs.fill = toColor;
-                }
                 if (graphic) {
                     d = shapeArgs.d;
-                    graphic.animate(extend(attribs, shapeArgs));
+                    graphic.animate(extend({ fill: toColor }, shapeArgs));
                     if (d) {
                         shapeArgs.d = d; // Animate alters it
                     }
                 }
                 else {
-                    attribs['sweep-flag'] = 0;
                     point.graphic = graphic = renderer.arc(shapeArgs)
-                        .attr(attribs)
+                        .attr({
+                        fill: toColor,
+                        'sweep-flag': 0
+                    })
                         .add(series.group);
                 }
-                if (!renderer.styledMode) {
+                if (!series.chart.styledMode) {
                     if (options.linecap !== 'square') {
                         graphic.attr({
                             'stroke-linecap': 'round',
@@ -143,12 +139,6 @@ class SolidGaugeSeries extends GaugeSeries {
                 if (graphic) {
                     graphic.addClass(className);
                 }
-                // Positions for the tooltip
-                const midRadius = innerRadius + (radius - innerRadius) * 0.5;
-                point.tooltipPos = [
-                    center[0] + Math.cos(rotation) * midRadius,
-                    center[1] + Math.sin(rotation) * midRadius
-                ];
             }
         }
     }

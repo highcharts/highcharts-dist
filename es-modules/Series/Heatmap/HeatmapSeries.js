@@ -3,9 +3,8 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
@@ -19,7 +18,7 @@ const { series: Series, seriesTypes: { column: ColumnSeries, scatter: ScatterSer
 import SVGRenderer from '../../Core/Renderer/SVG/SVGRenderer.js';
 const { prototype: { symbols } } = SVGRenderer;
 import IU from '../InterpolationUtilities.js';
-import { addEvent, extend, fireEvent, isNumber, merge } from '../../Shared/Utilities.js';
+import { addEvent, extend, fireEvent, isNumber, merge, pick } from '../../Shared/Utilities.js';
 const { colorFromPoint, getContext } = IU;
 /* *
  *
@@ -27,7 +26,7 @@ const { colorFromPoint, getContext } = IU;
  *
  * */
 /**
- * @internal
+ * @private
  * @class
  * @name Highcharts.seriesTypes.heatmap
  *
@@ -51,7 +50,7 @@ class HeatmapSeries extends ScatterSeries {
      *
      * */
     /**
-     * @internal
+     * @private
      */
     drawPoints() {
         const series = this, seriesOptions = series.options, interpolation = seriesOptions.interpolation, seriesMarkerOptions = seriesOptions.marker || {};
@@ -109,14 +108,7 @@ class HeatmapSeries extends ScatterSeries {
         }
     }
     /**
-     * Override to use rectangle by default
-     * @internal
-     */
-    getSymbol() {
-        this.symbol = this.options.marker?.symbol || 'rect';
-    }
-    /**
-     * @internal
+     * @private
      */
     getExtremes() {
         // Get the extremes from the value data
@@ -134,7 +126,7 @@ class HeatmapSeries extends ScatterSeries {
     /**
      * Override to also allow null points, used when building the k-d-tree for
      * tooltips in boost mode.
-     * @internal
+     * @private
      */
     getValidPoints(points, insideOnly) {
         return Series.prototype.getValidPoints.call(this, points, insideOnly, true);
@@ -142,20 +134,20 @@ class HeatmapSeries extends ScatterSeries {
     /**
      * Define hasData function for non-cartesian series. Returns true if the
      * series has points at all.
-     * @internal
+     * @private
      */
     hasData() {
         return !!this.dataTable.rowCount;
     }
     /**
      * Override the init method to add point ranges on both axes.
-     * @internal
+     * @private
      */
     init() {
         super.init.apply(this, arguments);
         const options = this.options;
         // #3758, prevent resetting in setData
-        options.pointRange = options.pointRange ?? (options.colsize || 1);
+        options.pointRange = pick(options.pointRange, options.colsize || 1);
         // General point range
         this.yAxis.axisPointRange = options.rowsize || 1;
         // Bind new symbol names
@@ -178,7 +170,7 @@ class HeatmapSeries extends ScatterSeries {
         }
     }
     /**
-     * @internal
+     * @private
      */
     markerAttribs(point, state) {
         const shapeArgs = point.shapeArgs || {};
@@ -212,7 +204,7 @@ class HeatmapSeries extends ScatterSeries {
         return shapeArgs;
     }
     /**
-     * @internal
+     * @private
      */
     pointAttribs(point, state) {
         const series = this, attr = Series.prototype.pointAttribs.call(series, point, state), seriesOptions = series.options || {}, plotOptions = series.chart.options.plotOptions || {}, seriesPlotOptions = plotOptions.series || {}, heatmapPlotOptions = plotOptions.heatmap || {}, 
@@ -242,7 +234,7 @@ class HeatmapSeries extends ScatterSeries {
         return attr;
     }
     /**
-     * @internal
+     * @private
      */
     translate() {
         const series = this, options = series.options, { borderRadius, marker } = options, symbol = marker?.symbol || 'rect', shape = symbols[symbol] ? symbol : 'rect', hasRegularShape = ['circle', 'square'].indexOf(shape) !== -1;
@@ -294,10 +286,11 @@ extend(HeatmapSeries.prototype, {
     specialGroup: 'group',
     trackerGroups: ColorMapComposition.seriesMembers.trackerGroups,
     /**
-     * @internal
+     * @private
      */
     alignDataLabel: ColumnSeries.prototype.alignDataLabel,
-    colorAttribs: ColorMapComposition.seriesMembers.colorAttribs
+    colorAttribs: ColorMapComposition.seriesMembers.colorAttribs,
+    getSymbol: Series.prototype.getSymbol
 });
 ColorMapComposition.compose(HeatmapSeries);
 SeriesRegistry.registerSeriesType('heatmap', HeatmapSeries);

@@ -3,9 +3,8 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
@@ -28,7 +27,6 @@ import { addEvent, crisp, extend, merge, pushUnique } from '../../Shared/Utiliti
 function onSeriesAfterSetOptions(e) {
     const options = e.options, dataGrouping = options.dataGrouping;
     if (dataGrouping &&
-        !dataGrouping.approximation &&
         options.useOhlcData &&
         options.id !== 'highcharts-navigator-series') {
         dataGrouping.approximation = 'ohlc';
@@ -82,8 +80,8 @@ class OHLCSeries extends HLCSeries {
      *  Functions
      *
      * */
-    getPointPath(point) {
-        const path = super.getPointPath(point), strokeWidth = this.borderWidth, crispX = crisp(point.plotX || 0, strokeWidth), halfWidth = Math.round(point.shapeArgs.width / 2);
+    getPointPath(point, graphic) {
+        const path = super.getPointPath(point, graphic), strokeWidth = graphic.strokeWidth(), crispX = crisp(point.plotX || 0, strokeWidth), halfWidth = Math.round(point.shapeArgs.width / 2);
         if (point.open !== null) {
             const plotOpen = crisp(point.plotOpen, strokeWidth);
             path.push(['M', crispX, plotOpen], ['L', crispX - halfWidth, plotOpen]);
@@ -98,9 +96,9 @@ class OHLCSeries extends HLCSeries {
     pointAttribs(point, state) {
         const attribs = super.pointAttribs.call(this, point, state), options = this.options;
         delete attribs.fill;
-        if (!point?.options.color &&
+        if (!point.options.color &&
             options.upColor &&
-            (point?.open || 0) < (point?.close || 0)) {
+            point.open < point.close) {
             attribs.stroke = options.upColor;
         }
         return attribs;

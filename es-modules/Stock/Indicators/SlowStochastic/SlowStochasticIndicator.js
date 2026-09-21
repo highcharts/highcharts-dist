@@ -1,8 +1,7 @@
 /* *
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
@@ -18,7 +17,7 @@ import { extend, merge } from '../../../Shared/Utilities.js';
 /**
  * The Slow Stochastic series type.
  *
- * @internal
+ * @private
  * @class
  * @name Highcharts.seriesTypes.slowstochastic
  *
@@ -77,7 +76,7 @@ class SlowStochasticIndicator extends StochasticIndicator {
  * to be set and should be loaded after `stock/indicators/indicators.js`
  * and `stock/indicators/stochastic.js` files.
  *
- * @sample {highstock} stock/indicators/slow-stochastic
+ * @sample stock/indicators/slow-stochastic
  *         Slow Stochastic oscillator
  *
  * @extends      plotOptions.stochastic
@@ -108,7 +107,6 @@ SeriesRegistry.registerSeriesType('slowstochastic', SlowStochasticIndicator);
  *  Default Export
  *
  * */
-/** @internal */
 export default SlowStochasticIndicator;
 /* *
  *

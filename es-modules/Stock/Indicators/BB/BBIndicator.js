@@ -1,9 +1,8 @@
-/* *
+// SPDX-License-Identifier: LicenseRef-Highcharts
+/**
  *
- *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
@@ -18,7 +17,9 @@ import { extend, isArray, merge } from '../../../Shared/Utilities.js';
  *
  * */
 // Utils:
-/** @internal */
+/**
+ * @private
+ */
 function getStandardDeviation(arr, index, isOHLC, mean) {
     const arrLen = arr.length;
     let i = 0, std = 0, value, variance = 0;
@@ -38,7 +39,7 @@ function getStandardDeviation(arr, index, isOHLC, mean) {
 /**
  * Bollinger Bands series type.
  *
- * @internal
+ * @private
  * @class
  * @name Highcharts.seriesTypes.bb
  *
@@ -108,7 +109,7 @@ class BBIndicator extends SMAIndicator {
  * Bollinger bands (BB). This series requires the `linkedTo` option to be
  * set and should be loaded after the `stock/indicators/indicators.js` file.
  *
- * @sample {highstock} stock/indicators/bollinger-bands
+ * @sample stock/indicators/bollinger-bands
  *         Bollinger bands
  *
  * @extends      plotOptions.sma
@@ -208,7 +209,6 @@ SeriesRegistry.registerSeriesType('bb', BBIndicator);
  *  Default Export
  *
  * */
-/** @internal */
 export default BBIndicator;
 /* *
  *
@@ -221,6 +221,7 @@ export default BBIndicator;
  *
  * @extends   series,plotOptions.bb
  * @since     6.0.0
+ * @excluding dataParser, dataURL
  * @product   highstock
  * @requires  stock/indicators/indicators
  * @requires  stock/indicators/bollinger-bands

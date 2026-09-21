@@ -3,15 +3,14 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Hubert Kozik
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
 'use strict';
 import H from '../Core/Globals.js';
-import { defined } from '../Shared/Utilities.js';
+import { defined, pick } from '../Shared/Utilities.js';
 const { doc } = H;
 /* *
  *
@@ -21,7 +20,7 @@ const { doc } = H;
 /**
  * Find color of point based on color axis.
  *
- * @internal
+ * @function Highcharts.colorFromPoint
  *
  * @param {number | null} value
  *        Value to find corresponding color on the color axis.
@@ -39,8 +38,8 @@ function colorFromPoint(value, point) {
             .split(')')[0]
             .split('(')[1]
             .split(',')
-            .map((s) => (parseFloat(s) ?? parseInt(s, 10))));
-        rgba[3] = (rgba[3] ?? 1.0) * 255;
+            .map((s) => pick(parseFloat(s), parseInt(s, 10))));
+        rgba[3] = pick(rgba[3], 1.0) * 255;
         if (!defined(value) || !point.visible) {
             rgba[3] = 0;
         }
@@ -50,7 +49,7 @@ function colorFromPoint(value, point) {
 }
 /**
  * Method responsible for creating a canvas for interpolation image.
- * @internal
+ * @private
  */
 function getContext(series) {
     const { canvas, context } = series;

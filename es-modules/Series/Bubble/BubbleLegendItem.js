@@ -4,9 +4,8 @@
  *
  *  Author: Paweł Potaczek
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
@@ -14,7 +13,7 @@
 import F from '../../Core/Templating.js';
 import H from '../../Core/Globals.js';
 const { noop } = H;
-import { arrayMax, arrayMin, isNumber, merge, stableSort } from '../../Shared/Utilities.js';
+import { arrayMax, arrayMin, isNumber, merge, pick, stableSort } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class
@@ -23,7 +22,7 @@ import { arrayMax, arrayMin, isNumber, merge, stableSort } from '../../Shared/Ut
 /**
  * BubbleLegend class.
  *
- * @internal
+ * @private
  * @class
  * @name Highcharts.BubbleLegend
  * @param {Highcharts.LegendBubbleLegendOptions} options
@@ -49,7 +48,7 @@ class BubbleLegendItem {
      * */
     /**
      * Create basic bubbleLegend properties similar to item in legend.
-     * @internal
+     * @private
      */
     init(options, legend) {
         this.options = options;
@@ -60,7 +59,7 @@ class BubbleLegendItem {
     /**
      * Depending on the position option, add bubbleLegend to legend items.
      *
-     * @internal
+     * @private
      *
      * @param {Array<(Highcharts.Point|Highcharts.Series)>} items
      *        All legend items
@@ -73,13 +72,13 @@ class BubbleLegendItem {
      * Calculate ranges, sizes and call the next steps of bubbleLegend
      * creation.
      *
-     * @internal
+     * @private
      *
      * @param {Highcharts.Legend} legend
      *        Legend instance
      */
     drawLegendSymbol(legend) {
-        const itemDistance = (legend.options.itemDistance ?? 20), legendItem = this.legendItem || {}, options = this.options, ranges = options.ranges, connectorDistance = options.connectorDistance;
+        const itemDistance = pick(legend.options.itemDistance, 20), legendItem = this.legendItem || {}, options = this.options, ranges = options.ranges, connectorDistance = options.connectorDistance;
         let connectorSpace;
         // Do not create bubbleLegend now if ranges or ranges values are not
         // specified or if are empty array.
@@ -108,7 +107,7 @@ class BubbleLegendItem {
     }
     /**
      * Set style options for each bubbleLegend range.
-     * @internal
+     * @private
      */
     setOptions() {
         const ranges = this.ranges, options = this.options, series = this.chart.series[options.seriesIndex], baseline = this.legend.baseline, bubbleAttribs = {
@@ -125,17 +124,13 @@ class BubbleLegendItem {
         // Allow to parts of styles be used individually for range
         ranges.forEach(function (range, i) {
             if (!styledMode) {
-                bubbleAttribs.stroke =
-                    range.borderColor ?? options.borderColor ?? series.color;
+                bubbleAttribs.stroke = pick(range.borderColor, options.borderColor, series.color);
                 bubbleAttribs.fill = range.color || options.color;
                 if (!bubbleAttribs.fill) {
                     bubbleAttribs.fill = series.color;
                     bubbleAttribs['fill-opacity'] = fillOpacity ?? 1;
                 }
-                connectorAttribs.stroke =
-                    range.connectorColor ??
-                        options.connectorColor ??
-                        series.color;
+                connectorAttribs.stroke = pick(range.connectorColor, options.connectorColor, series.color);
             }
             // Set options needed for rendering each range
             ranges[i].radius = this.getRangeRadius(range.value);
@@ -156,7 +151,7 @@ class BubbleLegendItem {
      * Calculate radius for each bubble range,
      * used code from BubbleSeries.js 'getRadius' method.
      *
-     * @internal
+     * @private
      *
      * @param {number} value
      *        Range value
@@ -170,7 +165,7 @@ class BubbleLegendItem {
     }
     /**
      * Render the legendItem group.
-     * @internal
+     * @private
      */
     render() {
         const legendItem = this.legendItem || {}, renderer = this.chart.renderer, zThreshold = this.options.zThreshold;
@@ -201,7 +196,7 @@ class BubbleLegendItem {
     /**
      * Render one range, consisting of bubble symbol, connector and label.
      *
-     * @internal
+     * @private
      *
      * @param {Highcharts.LegendBubbleLegendRangesOptions} range
      *        Range options
@@ -261,7 +256,7 @@ class BubbleLegendItem {
     }
     /**
      * Get the label which takes up the most space.
-     * @internal
+     * @private
      */
     getMaxLabelSize() {
         const labels = this.symbols.labels;
@@ -281,7 +276,7 @@ class BubbleLegendItem {
     /**
      * Get formatted label for range.
      *
-     * @internal
+     * @private
      *
      * @param {Highcharts.LegendBubbleLegendRangesOptions} range
      *        Range options
@@ -299,7 +294,7 @@ class BubbleLegendItem {
     /**
      * By using default chart 'hideOverlappingLabels' method, hide or show
      * labels and connectors.
-     * @internal
+     * @private
      */
     hideOverlappingLabels() {
         const chart = this.chart, allowOverlap = this.options.labels.allowOverlap, symbols = this.symbols;
@@ -319,7 +314,7 @@ class BubbleLegendItem {
     /**
      * Calculate ranges from created series.
      *
-     * @internal
+     * @private
      *
      * @return {Array<Highcharts.LegendBubbleLegendRangesOptions>}
      *         Array of range objects
@@ -332,10 +327,10 @@ class BubbleLegendItem {
             if (s.isBubble && !s.ignoreSeries) {
                 zData = s.getColumn('z').filter(isNumber);
                 if (zData.length) {
-                    minZ = (s.options.zMin ?? Math.min(minZ, Math.max(arrayMin(zData), s.options.displayNegative === false ?
+                    minZ = pick(s.options.zMin, Math.min(minZ, Math.max(arrayMin(zData), s.options.displayNegative === false ?
                         s.options.zThreshold :
                         -Number.MAX_VALUE)));
-                    maxZ = (s.options.zMax ?? Math.max(maxZ, arrayMax(zData)));
+                    maxZ = pick(s.options.zMax, Math.max(maxZ, arrayMax(zData)));
                 }
             }
         });
@@ -366,7 +361,7 @@ class BubbleLegendItem {
     /**
      * Calculate bubble legend sizes from rendered series.
      *
-     * @internal
+     * @private
      *
      * @return {Array<number,number>}
      *         Calculated min and max bubble sizes
@@ -394,7 +389,7 @@ class BubbleLegendItem {
     }
     /**
      * Correct ranges with calculated sizes.
-     * @internal
+     * @private
      */
     updateRanges(min, max) {
         const bubbleLegendOptions = this.legend.options.bubbleLegend;
@@ -406,7 +401,7 @@ class BubbleLegendItem {
      * Because of the possibility of creating another legend line, predicted
      * bubble legend sizes may differ by a few pixels, so it is necessary to
      * correct them.
-     * @internal
+     * @private
      */
     correctSizes() {
         const legend = this.legend, chart = this.chart, bubbleSeries = chart.series[this.options.seriesIndex], pxSizes = bubbleSeries.getPxExtremes(), bubbleSeriesSize = pxSizes.maxPxSize, bubbleLegendSize = this.options.maxSize;

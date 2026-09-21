@@ -3,9 +3,8 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
@@ -17,7 +16,7 @@ const { composed } = H;
 import MapNavigationDefaults from './MapNavigationDefaults.js';
 import MapPointer from './MapPointer.js';
 import MapSymbols from './MapSymbols.js';
-import { extend, objectEach, merge, pushUnique, addEvent } from '../Shared/Utilities.js';
+import { extend, objectEach, merge, pick, pushUnique, addEvent } from '../Shared/Utilities.js';
 /* *
  *
  *  Functions
@@ -107,7 +106,7 @@ class MapNavigation {
             navButtons.pop()?.destroy();
         }
         if (!chart.renderer.forExport &&
-            (navOptions.enableButtons ?? navOptions.enabled)) {
+            pick(navOptions.enableButtons, navOptions.enabled)) {
             if (!mapNav.navButtonsGroup) {
                 mapNav.navButtonsGroup = chart.renderer.g()
                     .attr({
@@ -238,7 +237,7 @@ class MapNavigation {
     updateEvents(options) {
         const chart = this.chart;
         // Add the double click event
-        if ((options.enableDoubleClickZoom ?? options.enabled) ||
+        if (pick(options.enableDoubleClickZoom, options.enabled) ||
             options.enableDoubleClickZoomTo) {
             this.unbindDblClick = this.unbindDblClick || addEvent(chart.container, 'dblclick', function (e) {
                 chart.pointer.onContainerDblClick(e);
@@ -249,7 +248,7 @@ class MapNavigation {
             this.unbindDblClick = this.unbindDblClick();
         }
         // Add the mousewheel event
-        if (options.enableMouseWheelZoom ?? options.enabled) {
+        if (pick(options.enableMouseWheelZoom, options.enabled)) {
             this.unbindMouseWheel = this.unbindMouseWheel || addEvent(chart.container, 'wheel', function (e) {
                 // Prevent scrolling when the pointer is over the element
                 // with that class, for example annotation popup #12100.

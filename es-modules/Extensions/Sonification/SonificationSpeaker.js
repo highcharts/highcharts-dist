@@ -5,13 +5,13 @@
  *
  *  Class representing a speech synthesis voice.
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
 'use strict';
+import { pick } from '../../Shared/Utilities.js';
 /**
  * The SonificationSpeaker class. This class represents an announcer using
  * speech synthesis. It allows for scheduling speech announcements, as well
@@ -58,9 +58,7 @@ class SonificationSpeaker {
             utterance.rate = options && options.rate || this.options.rate || 1;
             utterance.pitch = options && options.pitch ||
                 this.options.pitch || 1;
-            utterance.volume = ((options && options.volume) ??
-                this.options.volume ??
-                1) * this.masterVolume;
+            utterance.volume = pick(options && options.volume, this.options.volume, 1) * this.masterVolume;
             this.synthesis.speak(utterance);
         }
     }

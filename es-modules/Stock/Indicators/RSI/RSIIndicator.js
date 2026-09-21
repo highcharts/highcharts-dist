@@ -1,8 +1,7 @@
 /* *
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
@@ -16,7 +15,9 @@ import { isNumber, merge } from '../../../Shared/Utilities.js';
  *
  * */
 // Utils:
-/** @internal */
+/**
+ *
+ */
 function toFixed(a, n) {
     return parseFloat(a.toFixed(n));
 }
@@ -28,7 +29,7 @@ function toFixed(a, n) {
 /**
  * The RSI series type.
  *
- * @internal
+ * @private
  * @class
  * @name Highcharts.seriesTypes.rsi
  *
@@ -46,7 +47,7 @@ class RSIIndicator extends SMAIndicator {
         // Cause we need to calculate change between two points
         RSI = [], xData = [], yData = [];
         let gain = 0, loss = 0, index = params.index, range = 1, RSIPoint, change, avgGain, avgLoss, i, values;
-        if (xVal.length < period) {
+        if ((xVal.length < period)) {
             return;
         }
         if (isNumber(yVal[0])) {
@@ -121,7 +122,7 @@ class RSIIndicator extends SMAIndicator {
  * requires the `linkedTo` option to be set and should be loaded after
  * the `stock/indicators/indicators.js` file.
  *
- * @sample {highstock} stock/indicators/rsi
+ * @sample stock/indicators/rsi
  *         RSI indicator
  *
  * @extends      plotOptions.sma
@@ -143,7 +144,6 @@ SeriesRegistry.registerSeriesType('rsi', RSIIndicator);
  *  Default Export
  *
  * */
-/** @internal */
 export default RSIIndicator;
 /* *
  *
@@ -157,6 +157,7 @@ export default RSIIndicator;
  * @extends   series,plotOptions.rsi
  * @since     6.0.0
  * @product   highstock
+ * @excluding dataParser, dataURL
  * @requires  stock/indicators/indicators
  * @requires  stock/indicators/rsi
  * @apioption series.rsi

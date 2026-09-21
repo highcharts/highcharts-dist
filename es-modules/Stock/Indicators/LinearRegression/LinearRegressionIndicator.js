@@ -1,11 +1,11 @@
-/* *
+// SPDX-License-Identifier: LicenseRef-Highcharts
+/**
  *
  *  (c) 2010-2026 Highsoft AS
  *  Author: Kamil Kulig
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
@@ -21,7 +21,7 @@ import { extend, isArray, merge } from '../../../Shared/Utilities.js';
 /**
  * Linear regression series type.
  *
- * @internal
+ * @private
  * @class
  * @name Highcharts.seriesTypes.linearregression
  *
@@ -36,7 +36,7 @@ class LinearRegressionIndicator extends SMAIndicator {
     /**
      * Return the slope and intercept of a straight line function.
      *
-     * @internal
+     * @private
      *
      * @param {Array<number>} xData
      * List of all x coordinates in a period.
@@ -74,7 +74,7 @@ class LinearRegressionIndicator extends SMAIndicator {
     /**
      * Return the y value on a straight line.
      *
-     * @internal
+     * @private
      *
      * @param {Highcharts.RegressionLineParametersObject} lineParameters
      * Object that contains the slope and the intercept of a straight line
@@ -93,7 +93,7 @@ class LinearRegressionIndicator extends SMAIndicator {
      * Transform the coordinate system so that x values start at 0 and
      * apply xAxisUnit.
      *
-     * @internal
+     * @private
      *
      * @param {Array<number>} xData
      * List of all x coordinates in a period
@@ -112,7 +112,7 @@ class LinearRegressionIndicator extends SMAIndicator {
     }
     /**
      * Find the closest distance between points in the base series.
-     * @internal
+     * @private
      * @param {Array<number>} xData list of all x coordinates in the base series
      * @return {number} - closest distance between points in the base series
      */
@@ -215,8 +215,8 @@ LinearRegressionIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
          * @sample {highstock} stock/plotoptions/linear-regression-xaxisunit
          *         xAxisUnit set to 1 minute
          *
-         * @example
-         * // In Linear Regression Slope Indicator series `xAxisUnit` is
+         * ```js
+         * // In Liniear Regression Slope Indicator series `xAxisUnit`is
          * // `86400000` (1 day) and period is `3`. There're 3 points in
          * // the base series:
          *
@@ -231,7 +231,7 @@ LinearRegressionIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
          * // we change the `xAxisUnit` to `1` (ms) the value of the
          * // indicator's point will be `2.3148148148148148e-8` which is
          * // harder to interpret for a human.
-
+         * ```
          *
          * @type    {null|number}
          * @product highstock
@@ -253,7 +253,6 @@ SeriesRegistry.registerSeriesType('linearRegression', LinearRegressionIndicator)
  *  Default Export
  *
  * */
-/** @internal */
 export default LinearRegressionIndicator;
 /* *
  *
@@ -268,6 +267,7 @@ export default LinearRegressionIndicator;
  * @extends   series,plotOptions.linearregression
  * @since     7.0.0
  * @product   highstock
+ * @excluding dataParser,dataURL
  * @requires  stock/indicators/indicators
  * @requires  stock/indicators/regressions
  * @apioption series.linearregression

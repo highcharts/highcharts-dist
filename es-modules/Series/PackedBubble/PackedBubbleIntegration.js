@@ -3,9 +3,8 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Grzegorz Blachliński, Sebastian Bochan
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
@@ -19,7 +18,7 @@ import VerletIntegration from '../Networkgraph/VerletIntegration.js';
  *
  * */
 /**
- * @internal
+ * @private
  */
 function barycenter() {
     const layout = this, gravitationalConstant = layout.options.gravitationalConstant || 0, box = layout.box, nodes = layout.nodes, nodeCountSqrt = Math.sqrt(nodes.length);
@@ -53,7 +52,7 @@ function barycenter() {
     }
 }
 /**
- * @internal
+ * @private
  */
 function repulsive(node, force, distanceXY, repNode) {
     const factor = (force * this.diffTemperature / node.mass /
@@ -68,7 +67,7 @@ function repulsive(node, force, distanceXY, repNode) {
     }
 }
 /**
- * @internal
+ * @private
  */
 function repulsiveForceFunction(d, k, node, repNode) {
     return Math.min(d, (node.marker.radius +

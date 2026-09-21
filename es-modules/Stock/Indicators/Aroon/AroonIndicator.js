@@ -1,8 +1,7 @@
 /* *
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
@@ -10,7 +9,7 @@
 import MultipleLinesComposition from '../MultipleLinesComposition.js';
 import SeriesRegistry from '../../../Core/Series/SeriesRegistry.js';
 const { sma: SMAIndicator } = SeriesRegistry.seriesTypes;
-import { extend, merge } from '../../../Shared/Utilities.js';
+import { extend, merge, pick } from '../../../Shared/Utilities.js';
 /* *
  *
  *  Functions
@@ -18,7 +17,9 @@ import { extend, merge } from '../../../Shared/Utilities.js';
  * */
 // Utils
 // Index of element with extreme value from array (min or max)
-/** @internal */
+/**
+ * @private
+ */
 function getExtremeIndexInArray(arr, extreme) {
     let extremeValue = arr[0], valueIndex = 0, i;
     for (i = 1; i < arr.length; i++) {
@@ -38,7 +39,7 @@ function getExtremeIndexInArray(arr, extreme) {
 /**
  * The Aroon series type.
  *
- * @internal
+ * @private
  * @class
  * @name Highcharts.seriesTypes.aroon
  *
@@ -61,10 +62,10 @@ class AroonIndicator extends SMAIndicator {
         for (i = period - 1; i < yValLen; i++) {
             slicedY = yVal.slice(i - period + 1, i + 2);
             xLow = getExtremeIndexInArray(slicedY.map(function (elem) {
-                return (elem[low] ?? elem);
+                return pick(elem[low], elem);
             }), 'min');
             xHigh = getExtremeIndexInArray(slicedY.map(function (elem) {
-                return (elem[high] ?? elem);
+                return pick(elem[high], elem);
             }), 'max');
             aroonUp = (xHigh / period) * 100;
             aroonDown = (xLow / period) * 100;
@@ -159,7 +160,6 @@ SeriesRegistry.registerSeriesType('aroon', AroonIndicator);
  *  Default Export
  *
  * */
-/** @internal */
 export default AroonIndicator;
 /* *
  *
@@ -173,7 +173,7 @@ export default AroonIndicator;
  * @extends   series,plotOptions.aroon
  * @since     7.0.0
  * @product   highstock
- * @excluding allAreas, colorAxis, compare, compareBase,
+ * @excluding allAreas, colorAxis, compare, compareBase, dataParser, dataURL,
  *            joinBy, keys, navigatorOptions, pointInterval, pointIntervalUnit,
  *            pointPlacement, pointRange, pointStart, showInNavigator, stacking
  * @requires  stock/indicators/indicators

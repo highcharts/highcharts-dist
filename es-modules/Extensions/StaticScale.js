@@ -3,25 +3,22 @@
  *  (c) 2016-2026 Highsoft AS
  *  Author: Torstein Hønsi, Lars Cabrera
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
 'use strict';
-import { addEvent, defined, isNumber, pushUnique } from '../Shared/Utilities.js';
-import H from '../Core/Globals.js';
-const { composed } = H;
+import { addEvent, defined, isNumber } from '../Shared/Utilities.js';
 /* *
  *
  *  Composition
  *
  * */
 /** @internal */
-export function composeStaticScale(AxisClass, ChartClass) {
-    if (pushUnique(composed, 'StaticScale')) {
-        const chartProto = ChartClass.prototype;
+function compose(AxisClass, ChartClass) {
+    const chartProto = ChartClass.prototype;
+    if (!chartProto.adjustHeight) {
         addEvent(AxisClass, 'afterSetOptions', onAxisAfterSetOptions);
         chartProto.adjustHeight = chartAdjustHeight;
         addEvent(ChartClass, 'render', chartProto.adjustHeight);
@@ -48,7 +45,7 @@ function chartAdjustHeight() {
                 defined(axis.min) &&
                 defined(axis.max)) {
                 let height = (axis.brokenAxis?.unitLength ??
-                    (axis.max + axis.tickInterval - axis.min)) * staticScale;
+                    (axis.max + axis.tickInterval - axis.min)) * (staticScale);
                 // Minimum height is 1 x staticScale.
                 height = Math.max(height, staticScale);
                 const diff = height - chart.plotHeight;
@@ -59,25 +56,32 @@ function chartAdjustHeight() {
                 }
                 // Make sure clip rects have the right height before initial
                 // animation.
-                if (!chart.initiatedScale) {
-                    axis.series.forEach((series) => {
-                        const clipRect = series.sharedClipKey &&
-                            chart.sharedClips[series.sharedClipKey];
-                        if (clipRect) {
-                            clipRect.attr(chart.inverted ? {
-                                width: chart.plotHeight
-                            } : {
-                                height: chart.plotHeight
-                            });
-                        }
-                    });
-                }
+                axis.series.forEach(function (series) {
+                    const clipRect = series.sharedClipKey &&
+                        chart.sharedClips[series.sharedClipKey];
+                    if (clipRect) {
+                        clipRect.attr(chart.inverted ? {
+                            width: chart.plotHeight
+                        } : {
+                            height: chart.plotHeight
+                        });
+                    }
+                });
             }
         }
         this.initiatedScale = true;
     }
     this.redrawTrigger = void 0;
 }
+/* *
+ *
+ *  Default Export
+ *
+ * */
+const StaticScale = {
+    compose
+};
+export default StaticScale;
 /* *
  *
  *  API Options

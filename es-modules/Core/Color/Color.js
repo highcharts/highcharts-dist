@@ -3,9 +3,8 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
@@ -18,9 +17,7 @@ import { defined, isNumber, isString, merge, pInt } from '../../Shared/Utilities
  *  Helpers
  *
  * */
-const colorMix = (color1, color2, weight) => (weight === 0 ? color1 :
-    weight === 1 ? color2 :
-        `color-mix(in srgb,${color1},${color2} ${weight * 100}%)`);
+const colorMix = (color1, color2, weight) => `color-mix(in srgb,${color1},${color2} ${weight * 100}%)`;
 const isStringColor = (color) => isString(color) && !!color && color !== 'none';
 /* *
  *
@@ -189,12 +186,7 @@ class Color {
      *         Color with modifications.
      */
     setOpacity(alpha) {
-        if (isNumber(this.rgba[0])) {
-            this.rgba[3] = alpha;
-        }
-        else if (Color.useColorMix && isStringColor(this.input)) {
-            this.output = colorMix(this.input, '#0000', 1 - alpha);
-        }
+        this.rgba[3] = alpha;
         return this;
     }
     /**
@@ -329,9 +321,7 @@ export default Color;
  */
 /**
  * A valid color type than can be parsed and handled by Highcharts. It can be a
- * color string (including CSS expressions), a gradient object, or a pattern
- * object. Read more about colors in the [Highcharts
- * documentation](https://www.highcharts.com/docs/chart-design-and-style/colors).
+ * color string, a gradient object, or a pattern object.
  *
  * @typedef {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject} Highcharts.ColorType
  */

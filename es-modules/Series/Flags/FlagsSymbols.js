@@ -3,43 +3,47 @@
  *  Imports
  *
  * */
-import H from '../../Core/Globals.js';
-import { pushUnique } from '../../Shared/Utilities.js';
-const { composed } = H;
+import RendererRegistry from '../../Core/Renderer/RendererRegistry.js';
 /* *
  *
  *  Composition
  *
  * */
-/** @internal */
 var FlagsSymbols;
 (function (FlagsSymbols) {
+    /* *
+     *
+     *  Constants
+     *
+     * */
+    const modifiedMembers = [];
     /* *
      *
      *  Functions
      *
      * */
     /**
-     * @internal
+     * @private
      */
     function compose(SVGRendererClass) {
-        if (pushUnique(composed, 'Series.Flags')) {
+        if (modifiedMembers.indexOf(SVGRendererClass) === -1) {
+            modifiedMembers.push(SVGRendererClass);
             const symbols = SVGRendererClass.prototype.symbols;
             symbols.flag = flag;
             createPinSymbol(symbols, 'circle');
             createPinSymbol(symbols, 'square');
-            symbols['flag-icon'] = function (x, y, w, h) {
-                return flag.call(this, x, y, w, Math.round(h * 0.6), {
-                    anchorX: Math.round(x),
-                    anchorY: Math.round(y + h)
-                });
-            };
+        }
+        const RendererClass = RendererRegistry.getRendererType();
+        // The symbol callbacks are generated on the SVGRenderer object in all
+        // browsers.
+        if (modifiedMembers.indexOf(RendererClass)) {
+            modifiedMembers.push(RendererClass);
         }
     }
     FlagsSymbols.compose = compose;
     /**
      * Create the flag icon with anchor.
-     * @internal
+     * @private
      */
     function flag(x, y, w, h, options) {
         const anchorX = (options && options.anchorX) || x, anchorY = (options && options.anchorY) || y;
@@ -49,7 +53,7 @@ var FlagsSymbols;
     }
     /**
      * Create the circlepin and squarepin icons with anchor.
-     * @internal
+     * @private
      */
     function createPinSymbol(symbols, shape) {
         symbols[(shape + 'pin')] = function (x, y, w, h, options) {
@@ -100,5 +104,4 @@ var FlagsSymbols;
  *  Default Export
  *
  * */
-/** @internal */
 export default FlagsSymbols;

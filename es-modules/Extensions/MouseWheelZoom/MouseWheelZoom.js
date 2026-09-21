@@ -3,15 +3,14 @@
  *  (c) 2023-2026 Highsoft AS
  *  Author: Torstein Hønsi, Askel Eirik Johansson
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
 'use strict';
 import NBU from '../Annotations/NavigationBindingsUtilities.js';
-import { addEvent, defined, internalClearTimeout, isObject, merge } from '../../Shared/Utilities.js';
+import { addEvent, defined, internalClearTimeout, isObject, merge, pick } from '../../Shared/Utilities.js';
 const { getAssignedAxis } = NBU;
 /* *
  *
@@ -40,7 +39,7 @@ const optionsToObject = (options) => {
 };
 /** @internal */
 const zoomBy = function (chart, howMuch, xAxis, yAxis, mouseX, mouseY, options) {
-    const type = (options.type ?? chart.zooming.type ?? '');
+    const type = pick(options.type, chart.zooming.type, '');
     let axes = [];
     if (type === 'x') {
         axes = xAxis;
@@ -193,7 +192,7 @@ export default MouseWheelZoomComposition;
  *
  * @type      {boolean}
  * @default   false
- * @since     12.5.0
+ * @since {next}
  * @requires  modules/mouse-wheel-zoom
  * @sample    {highcharts} highcharts/mouse-wheel-zoom/reset-zoom-button
  *            Enable reset zoom button for mouse wheel zooming

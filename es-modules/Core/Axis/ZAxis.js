@@ -3,9 +3,8 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
@@ -13,7 +12,7 @@
 import Axis from './Axis.js';
 import D from '../Defaults.js';
 const { defaultOptions } = D;
-import { splat, merge, addEvent } from '../../Shared/Utilities.js';
+import { splat, merge, pick, addEvent } from '../../Shared/Utilities.js';
 /* *
  *
  *  Functions
@@ -101,12 +100,10 @@ class ZAxis extends Axis {
                 if (this.positiveValuesOnly && threshold <= 0) {
                     threshold = void 0;
                 }
-                const zData = [...series.getColumn('z', false, true)]
-                    // When z is not defined, render in the 0 plane
-                    .map((z) => z || 0);
+                const zData = series.getColumn('z');
                 if (zData.length) {
-                    this.dataMin = Math.min(this.dataMin ?? (zData[0] || 0), Math.min.apply(null, zData));
-                    this.dataMax = Math.max(this.dataMax ?? (zData[0] || 0), Math.max.apply(null, zData));
+                    this.dataMin = Math.min(pick(this.dataMin, zData[0]), Math.min.apply(null, zData));
+                    this.dataMax = Math.max(pick(this.dataMax, zData[0]), Math.max.apply(null, zData));
                 }
             }
         });

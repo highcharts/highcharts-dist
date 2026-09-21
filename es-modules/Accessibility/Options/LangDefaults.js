@@ -5,9 +5,8 @@
  *
  *  Default lang/i18n options for accessibility.
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
@@ -212,7 +211,7 @@ const langOptions = {
         /**
          * Stock tools language options for accessibility.
          *
-         * @since 12.6.0
+         * @since next
          */
         stockTools: {
             groupLabel: 'Stock chart tools',
@@ -351,7 +350,7 @@ const langOptions = {
          */
         exporting: {
             chartMenuLabel: 'Chart menu',
-            menuButtonLabel: 'View chart context menu, {chartTitle}'
+            menuButtonLabel: 'View chart menu, {chartTitle}'
         },
         /**
          * Lang configuration for different series types. For more dynamic

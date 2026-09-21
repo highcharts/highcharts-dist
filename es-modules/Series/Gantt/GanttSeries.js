@@ -4,9 +4,8 @@
  *
  *  Author: Lars A. V. Cabrera
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
@@ -16,7 +15,7 @@ import GanttSeriesDefaults from './GanttSeriesDefaults.js';
 import Pathfinder from '../../Gantt/Pathfinder.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { series: Series, seriesTypes: { xrange: XRangeSeries } } = SeriesRegistry;
-import { composeStaticScale } from '../../Extensions/StaticScale.js';
+import StaticScale from '../../Extensions/StaticScale.js';
 import TreeGridAxis from '../../Core/Axis/TreeGrid/TreeGridAxis.js';
 import { extend, isNumber, merge } from '../../Shared/Utilities.js';
 /* *
@@ -42,7 +41,7 @@ class GanttSeries extends XRangeSeries {
         if (!ChartClass) {
             return;
         }
-        composeStaticScale(AxisClass, ChartClass);
+        StaticScale.compose(AxisClass, ChartClass);
         if (!SeriesClass) {
             return;
         }
@@ -57,17 +56,6 @@ class GanttSeries extends XRangeSeries {
      *  Functions
      *
      * */
-    getColumn(columnName) {
-        const time = this.chart.time;
-        if (columnName === 'x') {
-            const startColumn = super.getColumn('start');
-            if (startColumn.length) {
-                return startColumn.map((val) => time.parse(val) ?? NaN // #24849
-                );
-            }
-        }
-        return super.getColumn.apply(this, arguments);
-    }
     /**
      * Draws a single point in the series.
      *

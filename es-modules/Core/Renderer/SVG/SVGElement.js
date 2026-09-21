@@ -3,18 +3,18 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
 'use strict';
-import { animate, animObject, stop } from '../../Animation/AnimationUtilities.js';
+import A from '../../Animation/AnimationUtilities.js';
+const { animate, animObject, stop } = A;
 import Color from '../../Color/Color.js';
 import H from '../../Globals.js';
 const { deg2rad, doc, svg, SVG_NS, win, isFirefox } = H;
-import { addEvent, attr, createElement, crisp, css, defined, erase, extend, fireEvent, getAlignFactor, isArray, isFunction, isNumber, isObject, isString, merge, objectEach, pInt, pushUnique, replaceNested, syncTimeout } from '../../../Shared/Utilities.js';
+import { addEvent, attr, createElement, crisp, css, defined, erase, extend, fireEvent, getAlignFactor, isArray, isFunction, isNumber, isObject, isString, merge, objectEach, pInt, pick, pushUnique, replaceNested, syncTimeout } from '../../../Shared/Utilities.js';
 import { uniqueKey } from '../../Utilities.js';
 /* *
  *
@@ -70,11 +70,8 @@ class SVGElement {
      * Property value.
      */
     _defaultGetter(key) {
-        let ret = (this[key + 'Value'] ??
-            this[key] ??
-            (this.element ? this.element.getAttribute(key) : null) ??
-            this.box?.[key] ?? // For labels, when animating border radius
-            0);
+        let ret = pick(this[key + 'Value'], // Align getter
+        this[key], this.element ? this.element.getAttribute(key) : null, 0);
         if (/^-?[\d\.]+$/.test(ret)) { // Is numerical
             ret = parseFloat(ret);
         }
@@ -237,7 +234,7 @@ class SVGElement {
             }
             alignTo = void 0; // Do not use the box
         }
-        const alignToBox = alignTo ?? renderer[alignToKey] ?? renderer, 
+        const alignToBox = pick(alignTo, renderer[alignToKey], renderer), 
         // Default: left align
         x = (alignToBox.x || 0) + (alignOptions.x || 0) +
             ((alignToBox.width || 0) - (alignOptions.width || 0)) *
@@ -297,7 +294,7 @@ class SVGElement {
      * Returns the SVGElement for chaining.
      */
     animate(params, options, complete) {
-        const animOptions = animObject((options ?? this.renderer.globalAnimation ?? true)), deferTime = animOptions.defer;
+        const animOptions = animObject(pick(options, this.renderer.globalAnimation, true)), deferTime = animOptions.defer;
         // When the page is hidden save resources in the background by not
         // running animation at all (#9749).
         if (doc.hidden) {
@@ -588,10 +585,10 @@ class SVGElement {
      */
     complexColor(colorOptions, prop, elem) {
         const renderer = this.renderer;
-        let colorObject, gradName, gradAttr, radAttr, gradients, stops, stopOpacity, radialReference, id, key = [], value;
+        let colorObject, gradName, gradAttr, radAttr, gradients, stops, stopColor, stopOpacity, radialReference, id, key = [], value;
         fireEvent(this.renderer, 'complexColor', {
             args: arguments
-        }, () => {
+        }, function () {
             // Apply linear or radial gradients
             if (colorOptions.radialGradient) {
                 gradName = 'radialGradient';
@@ -649,17 +646,18 @@ class SVGElement {
                     // The gradient needs to keep a list of stops to be able to
                     // destroy them
                     gradientObject.stops = [];
-                    stops.forEach(([offset, stopColor]) => {
-                        if (stopColor.indexOf('rgba') === 0) {
-                            colorObject = Color.parse(stopColor);
+                    stops.forEach(function (stop) {
+                        if (stop[1].indexOf('rgba') === 0) {
+                            colorObject = Color.parse(stop[1]);
                             stopColor = colorObject.get('rgb');
                             stopOpacity = colorObject.get('a');
                         }
                         else {
+                            stopColor = stop[1];
                             stopOpacity = 1;
                         }
                         const stopObject = renderer.createElement('stop').attr({
-                            offset,
+                            offset: stop[0],
                             'stop-color': stopColor,
                             'stop-opacity': stopOpacity
                         }).add(gradientObject);
@@ -697,7 +695,7 @@ class SVGElement {
      * Return the SVG element for chaining.
      */
     css(styles) {
-        const oldStyles = this.styles, newStyles = {}, elem = this.element, renderer = this.renderer;
+        const oldStyles = this.styles, newStyles = {}, elem = this.element;
         let textWidth, hasNew = !oldStyles;
         // Filter out existing styles to increase performance (#2640)
         if (oldStyles) {
@@ -725,7 +723,7 @@ class SVGElement {
             }
             // Store object
             extend(this.styles, styles);
-            if (textWidth && (!svg && renderer.forExport)) {
+            if (textWidth && (!svg && this.renderer.forExport)) {
                 delete styles.width;
             }
             const fontSize = isFirefox && styles.fontSize || null;
@@ -754,7 +752,7 @@ class SVGElement {
             // Rebuild text after added. Cache mechanisms in the buildText will
             // prevent building if there are no significant changes.
             if (this.element.nodeName === 'text') {
-                renderer.buildText(this);
+                this.renderer.buildText(this);
             }
             // Apply text outline after added
             if (styles.textOutline) {
@@ -789,7 +787,7 @@ class SVGElement {
                 .split(','); // Ending comma
             i = v.length;
             while (i--) {
-                v[i] = '' + (pInt(v[i]) * (strokeWidth ?? NaN));
+                v[i] = '' + (pInt(v[i]) * pick(strokeWidth, NaN));
             }
             value = v.join(',').replace(/NaN/g, 'none'); // #3226
             this.element.setAttribute('stroke-dasharray', value);
@@ -803,6 +801,9 @@ class SVGElement {
      */
     destroy() {
         const wrapper = this, { element = {}, renderer, stops } = wrapper, ownerSVGElement = element.ownerSVGElement;
+        let parentToClean = (element.nodeName === 'SPAN' &&
+            wrapper.parentGroup ||
+            void 0), grandParent;
         // Remove events
         element.onclick = element.onmouseout = element.onmouseover =
             element.onmousemove = element.point = null;
@@ -828,6 +829,15 @@ class SVGElement {
         }
         // Remove element
         wrapper.safeRemoveChild(element);
+        // In case of useHTML, clean up empty containers emulating SVG groups
+        // (#1960, #2393, #2697).
+        while (parentToClean?.div &&
+            parentToClean.div.childNodes.length === 0) {
+            grandParent = parentToClean.parentGroup;
+            wrapper.safeRemoveChild(parentToClean.div);
+            delete parentToClean.div;
+            parentToClean = grandParent;
+        }
         // Remove from alignObjects
         if (wrapper.alignOptions) {
             erase(renderer.alignedObjects, wrapper);
@@ -929,7 +939,7 @@ class SVGElement {
      *         The bounding box with `x`, `y`, `width` and `height` properties.
      */
     getBBox(reload, rot) {
-        const wrapper = this, { element, renderer, styles, textStr } = wrapper, { cache, cacheKeys } = renderer, isSVG = element.namespaceURI === wrapper.SVG_NS, rotation = (rot ?? wrapper.rotation ?? 0), fontSize = renderer.styledMode ? (element &&
+        const wrapper = this, { element, renderer, styles, textStr } = wrapper, { cache, cacheKeys } = renderer, isSVG = element.namespaceURI === wrapper.SVG_NS, rotation = pick(rot, wrapper.rotation, 0), fontSize = renderer.styledMode ? (element &&
             SVGElement.prototype.getStyle.call(element, 'font-size')) : (styles.fontSize), cacheKey = this.getBBoxCacheKey([
             renderer.rootFontSize,
             this.textWidth, // #7874, also useHTML
@@ -1199,7 +1209,7 @@ class SVGElement {
          * @name Highcharts.SVGElement#element
          * @type {Highcharts.SVGDOMElement|Highcharts.HTMLDOMElement}
          */
-        this.element = nodeName === 'div' || nodeName === 'body' ?
+        this.element = nodeName === 'span' || nodeName === 'body' ?
             createElement(nodeName) :
             doc.createElementNS(this.SVG_NS, nodeName);
         /**
@@ -1455,7 +1465,7 @@ class SVGElement {
     symbolAttr(hash) {
         const wrapper = this;
         SVGElement.symbolCustomAttribs.forEach(function (key) {
-            wrapper[key] = (hash[key] ?? wrapper[key]);
+            wrapper[key] = pick(hash[key], wrapper[key]);
         });
         wrapper.attr({
             d: wrapper.renderer.symbols[wrapper.symbolName](wrapper.x, wrapper.y, wrapper.width, wrapper.height, wrapper)
@@ -1495,7 +1505,7 @@ class SVGElement {
         }
         // Replace text content and escape markup
         titleNode.textContent = replaceNested(// Scan #[73]
-        (value ?? ''), // #3276, #3895
+        pick(value, ''), // #3276, #3895
         [/<[^>]*>/g, '']).replace(/&lt;/g, '<').replace(/&gt;/g, '>');
     }
     /**
@@ -1543,7 +1553,7 @@ class SVGElement {
      * @function Highcharts.SVGElement#updateTransform
      */
     updateTransform(attrib = 'transform') {
-        const { element, foreignObject, matrix, rotation = 0, rotationOriginX, rotationOriginY, scaleX, scaleY, text, translateX = 0, translateY = 0 } = this;
+        const { element, foreignObject, matrix, padding, rotation = 0, rotationOriginX, rotationOriginY, scaleX, scaleY, text, translateX = 0, translateY = 0 } = this;
         // Apply translate. Nearly all transformed elements have translation,
         // so instead of checking for translate = 0, do it always (#1767,
         // #1846).
@@ -1559,6 +1569,15 @@ class SVGElement {
                 ' ' +
                 (rotationOriginY ?? element.getAttribute('y') ?? this.y ?? 0) +
                 ')');
+            // HTML labels rotation (#20685)
+            if (text?.element.tagName === 'SPAN' &&
+                !text?.foreignObject) {
+                text.attr({
+                    rotation,
+                    rotationOriginX: (rotationOriginX || 0) - padding,
+                    rotationOriginY: (rotationOriginY || 0) - padding
+                });
+            }
         }
         // Apply scale
         if (defined(scaleX) || defined(scaleY)) {
@@ -1611,7 +1630,7 @@ class SVGElement {
      * @function Highcharts.SVGElement#zIndexSetter
      */
     zIndexSetter(value, key) {
-        const { element, parentGroup, renderer } = this, parentNode = parentGroup?.element || renderer.box, svgParent = parentNode === renderer.box;
+        const renderer = this.renderer, parentGroup = this.parentGroup, parentWrapper = parentGroup || renderer, parentNode = parentWrapper.element || renderer.box, element = this.element, svgParent = parentNode === renderer.box;
         let childNodes, otherElement, otherZIndex, inserted = false, undefinedOtherZIndex, run = this.added, i;
         if (defined(value)) {
             // So we can read it for other elements in the group
@@ -1645,7 +1664,7 @@ class SVGElement {
                     // On all levels except the highest. If the parent is
                     // <svg>, then we don't want to put items before <desc>
                     // or <defs>
-                    defined(value) && value < 0 &&
+                    value < 0 &&
                         undefinedOtherZIndex &&
                         !svgParent &&
                         !i) {
@@ -1654,8 +1673,7 @@ class SVGElement {
                     }
                     else if (
                     // Insert after the first element with a lower zIndex
-                    (defined(value) &&
-                        parseFloat(otherZIndex || '') <= value) ||
+                    pInt(otherZIndex) <= value ||
                         // If negative zIndex, add this before first undefined
                         // zIndex element
                         (undefinedOtherZIndex &&

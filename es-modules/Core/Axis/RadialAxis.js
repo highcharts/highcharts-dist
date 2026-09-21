@@ -3,20 +3,18 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
 'use strict';
 import RadialAxisDefaults from './RadialAxisDefaults.js';
-import { borderRadiusObject } from '../../Extensions/BorderRadius.js';
 import D from '../Defaults.js';
 const { defaultOptions } = D;
 import H from '../Globals.js';
 const { composed, noop } = H;
-import { addEvent, clamp, correctFloat, defined, extend, fireEvent, isNumber, isObject, merge, pushUnique, relativeLength, splat, wrap } from '../../Shared/Utilities.js';
+import { addEvent, correctFloat, defined, extend, fireEvent, isObject, merge, pick, pushUnique, relativeLength, splat, wrap } from '../../Shared/Utilities.js';
 /* *
  *
  *  Composition
@@ -47,7 +45,7 @@ var RadialAxis;
         // one closestPointRange is added to the X axis to prevent the last
         // point from overlapping the first.
         this.autoConnect = (this.isCircular &&
-            typeof (this.userMax ?? this.options.max) === 'undefined' &&
+            typeof pick(this.userMax, this.options.max) === 'undefined' &&
             correctFloat(this.endAngleRad - this.startAngleRad) ===
                 correctFloat(2 * Math.PI));
         // This will lead to add an extra tick to xAxis in order to display
@@ -55,7 +53,7 @@ var RadialAxis;
         if (!this.isCircular && this.chart.inverted) {
             this.max++;
         }
-        if (this.autoConnect && isNumber(this.max)) {
+        if (this.autoConnect) {
             this.max += ((this.categories && 1) ||
                 this.pointRange ||
                 this.closestPointRange ||
@@ -79,7 +77,6 @@ var RadialAxis;
     function compose(AxisClass, TickClass) {
         if (pushUnique(composed, 'Axis.Radial')) {
             addEvent(AxisClass, 'afterInit', onAxisAfterInit);
-            addEvent(AxisClass, 'afterTickSize', onAxisAfterTickSize);
             addEvent(AxisClass, 'autoLabelAlign', onAxisAutoLabelAlign);
             addEvent(AxisClass, 'destroy', onAxisDestroy);
             addEvent(AxisClass, 'init', onAxisInit);
@@ -87,7 +84,6 @@ var RadialAxis;
             addEvent(TickClass, 'afterGetLabelPosition', onTickAfterGetLabelPosition);
             addEvent(TickClass, 'afterGetPosition', onTickAfterGetPosition);
             addEvent(H, 'setOptions', onGlobalSetOptions);
-            wrap(AxisClass.prototype, 'getMinorTickInterval', wrapAxisGetMinorTickInterval);
             wrap(TickClass.prototype, 'getMarkPath', wrapTickGetMarkPath);
         }
         return AxisClass;
@@ -175,10 +171,12 @@ var RadialAxis;
      */
     function getLinePath(_lineWidth, radius, innerRadius) {
         const center = this.pane.center, chart = this.chart, left = this.left || 0, top = this.top || 0;
-        let end, path, r = (radius ?? center[2] / 2 - this.offset);
-        innerRadius ?? (innerRadius = this.horiz ? 0 : this.center && -this.center[3] / 2);
+        let end, r = pick(radius, center[2] / 2 - this.offset), path;
+        if (typeof innerRadius === 'undefined') {
+            innerRadius = this.horiz ? 0 : this.center && -this.center[3] / 2;
+        }
         // In case when innerSize of pane is set, it must be included
-        if (innerRadius && innerRadius > 0) {
+        if (innerRadius) {
             r += innerRadius;
         }
         if (this.isCircular || typeof radius !== 'undefined') {
@@ -215,11 +213,6 @@ var RadialAxis;
         // Call the Axis prototype method (the method we're in now is on the
         // instance)
         axisProto.getOffset.call(this);
-        const offset = this.options.offset ?? (this.pane.hasSeriesType('gauge') ?
-            '-20%' : void 0);
-        if (defined(offset)) {
-            this.offset = relativeLength(offset, this.center[2] / 2) * -1;
-        }
         // Title or label offsets are not counted
         this.chart.axisOffset[this.side] = 0;
     }
@@ -238,14 +231,11 @@ var RadialAxis;
                 return r;
             }
             return radius;
-        }, center = this.center, { endAngleRad, startAngleRad } = this, borderRadius = borderRadiusObject(options.borderRadius ??
-            this.pane.options.borderRadius), fullRadius = center[2] / 2, offset = Math.min(this.offset || 0, 0), left = this.left || 0, top = this.top || 0, percentRegex = /%$/, isCircular = this.isCircular, // X axis in a polar chart
+        }, center = this.center, startAngleRad = this.startAngleRad, borderRadius = options.borderRadius, fullRadius = center[2] / 2, offset = Math.min(this.offset, 0), left = this.left || 0, top = this.top || 0, percentRegex = /%$/, isCircular = this.isCircular, // X axis in a polar chart
         trueBands = this.options.plotBands || [], index = trueBands.indexOf(options);
-        let start, end, angle, xOnPerimeter, open, path, outerRadius = (radiusToPixels(options.outerRadius) ?? fullRadius), innerRadius = radiusToPixels(options.innerRadius), thickness = radiusToPixels(options.thickness), brStart = true, brEnd = true;
+        let start, end, angle, xOnPerimeter, open, path, outerRadius = pick(radiusToPixels(options.outerRadius), fullRadius), innerRadius = radiusToPixels(options.innerRadius), thickness = pick(radiusToPixels(options.thickness), 10), brStart = true, brEnd = true;
         // Apply conditional border radius, only for ends of band stacks
-        if (borderRadius.radius &&
-            borderRadius.scope === 'stack' &&
-            index > -1) {
+        if (borderRadius && index > -1) {
             if (trueBands[index - 1] && trueBands[index - 1].to === from) {
                 brStart = false;
             }
@@ -260,12 +250,8 @@ var RadialAxis;
         }
         else {
             // Keep within bounds
-            if (isNumber(this.min)) {
-                from = Math.max(from, this.min);
-            }
-            if (isNumber(this.max)) {
-                to = Math.min(to, this.max);
-            }
+            from = Math.max(from, this.min);
+            to = Math.min(to, this.max);
             const transFrom = this.translate(from), transTo = this.translate(to);
             // Plot bands on Y axis (radial axis) - inner and outer
             // radius depend on to and from
@@ -273,17 +259,8 @@ var RadialAxis;
                 outerRadius = transFrom || 0;
                 innerRadius = transTo || 0;
             }
-            // Allow background for empty axis
-            if (!isNumber(this.min) &&
-                !isNumber(this.max) &&
-                // Not for plot bands
-                !options.color &&
-                !options.className) {
-                start = startAngleRad;
-                end = endAngleRad;
-                // Handle full circle
-            }
-            else if (options.shape === 'circle' || !isCircular) {
+            // Handle full circle
+            if (options.shape === 'circle' || !isCircular) {
                 start = -Math.PI / 2;
                 end = Math.PI * 1.5;
                 open = true;
@@ -293,18 +270,14 @@ var RadialAxis;
                 end = startAngleRad + (transTo || 0);
             }
             outerRadius -= offset; // #5283
-            if (isNumber(thickness)) {
-                thickness -= offset; // #5283
-            }
+            thickness -= offset; // #5283
             path = chart.renderer.symbols.arc(left + center[0], top + center[1], outerRadius, outerRadius, {
                 // Math is for reversed yAxis (#3606)
                 start: Math.min(start, end),
                 end: Math.max(start, end),
-                innerR: innerRadius ?? (isNumber(thickness) ?
-                    outerRadius - thickness :
-                    this.center[3] / 2),
+                innerR: pick(innerRadius, outerRadius - thickness),
                 open,
-                borderRadius: borderRadius.radius,
+                borderRadius,
                 brStart,
                 brEnd
             });
@@ -336,15 +309,15 @@ var RadialAxis;
         const center = this.pane.center, chart = this.chart, inverted = chart.inverted, reverse = options.reverse, backgroundOption = this.pane.options.background, background = backgroundOption ?
             splat(backgroundOption)[0] :
             {}, innerRadius = background.innerRadius || '0%', outerRadius = background.outerRadius || '100%', x1 = center[0] + chart.plotLeft, y1 = center[1] + chart.plotTop, height = this.height, isCrosshair = options.isCrosshair, paneInnerR = center[3] / 2;
-        let value = chart.time.parse(options.value) || 0, innerRatio, distance, a, b, otherAxis, xy, tickPositions, crossPos, path;
-        const end = this.getPosition(value, center[2] / 2 + (this.isCircular ? this.offset : 0));
+        let value = options.value, innerRatio, distance, a, b, otherAxis, xy, tickPositions, crossPos, path;
+        const end = this.getPosition(value);
         let x2 = end.x, y2 = end.y;
         // Crosshair logic
         if (isCrosshair) {
             // Find crosshair's position and perform destructuring
             // assignment
             crossPos = this.getCrosshairPosition(options, x1, y1);
-            value = crossPos[0] || 0;
+            value = crossPos[0];
             x2 = crossPos[1];
             y2 = crossPos[2];
         }
@@ -376,17 +349,23 @@ var RadialAxis;
             // Concentric circles
         }
         else {
-            // Pick the right values depending if it is grid line or crosshair.
-            // Clamp is required in case when xAxis is non-circular to prevent
-            // grid lines (or crosshairs, if enabled) from rendering above the
-            // center after they supposed to be displayed below the center
-            // point.
-            let transValue = clamp(this.translate(value), 0, height);
+            // Pick the right values depending if it is grid line or
+            // crosshair
+            value = this.translate(value);
+            // This is required in case when xAxis is non-circular to
+            // prevent grid lines (or crosshairs, if enabled) from
+            // rendering above the center after they supposed to be
+            // displayed below the center point
+            if (value) {
+                if (value < 0 || value > height) {
+                    value = 0;
+                }
+            }
             if (this.options.gridLineInterpolation === 'circle') {
                 // A value of 0 is in the center, so it won't be
                 // visible, but draw it anyway for update and animation
                 // (#2366)
-                path = this.getLinePath(0, transValue, paneInnerR);
+                path = this.getLinePath(0, value, paneInnerR);
                 // Concentric polygons
             }
             else {
@@ -408,11 +387,11 @@ var RadialAxis;
                     if (reverse) {
                         tickPositions = tickPositions.slice().reverse();
                     }
-                    if (transValue) {
-                        transValue += paneInnerR;
+                    if (value) {
+                        value += paneInnerR;
                     }
                     for (let i = 0; i < tickPositions.length; i++) {
-                        xy = otherAxis.getPosition(tickPositions[i], transValue);
+                        xy = otherAxis.getPosition(tickPositions[i], value);
                         path.push(i ? ['L', xy.x, xy.y] : ['M', xy.x, xy.y]);
                     }
                 }
@@ -432,16 +411,13 @@ var RadialAxis;
      */
     function getPosition(value, length) {
         const translatedVal = this.translate(value);
-        const centerRadius = ((this.center && this.center[2]) || 0) / 2;
         return this.postTranslate(this.isCircular ? translatedVal : this.angleRad, // #2848
         // In case when translatedVal is negative, the 0 value must be
         // used instead, in order to deal with lines and labels that
         // fall out of the visible range near the center of a pane
-        (this.isCircular ?
-            (length ?? centerRadius) :
-            (typeof translatedVal === 'number' && translatedVal < 0 ?
-                0 :
-                translatedVal ?? centerRadius)) - this.offset);
+        pick(this.isCircular ?
+            length :
+            (translatedVal < 0 ? 0 : translatedVal), this.center[2] / 2) - this.offset);
     }
     /**
      * Find the position for the axis title, by default inside the gauge.
@@ -460,47 +436,6 @@ var RadialAxis;
                     center[2]) +
                 (titleOptions.y || 0))
         };
-    }
-    /**
-     * Before modifying the axis properities, save references to the unmodified
-     * properties so that they can be restored when switching back from radial
-     * to cartesian.
-     */
-    function saveUnmodified(axis) {
-        axis.unmodifiedProps || (axis.unmodifiedProps = [
-            'beforeSetTickPositions',
-            'createLabelCollector',
-            'getCrosshairPosition',
-            'getLinePath',
-            'getOffset',
-            'getPlotBandPath',
-            'getPlotLinePath',
-            'getPosition',
-            'getTitlePosition',
-            'isHidden',
-            'postTranslate',
-            'redraw',
-            'render',
-            'setAxisSize',
-            'setAxisTranslation',
-            'setCategories',
-            'setOptions',
-            'setScale',
-            'setTitle'
-        ].reduce((obj, fnName) => {
-            obj[fnName] = axis[fnName];
-            return obj;
-        }, {}));
-    }
-    /**
-     * Restore unmodified axis properties.
-     */
-    function unmodify(axis) {
-        const props = axis.unmodifiedProps;
-        if (isObject(props)) {
-            extend(axis, props);
-            delete axis.unmodifiedProps;
-        }
     }
     /**
      * Modify radial axis.
@@ -534,6 +469,7 @@ var RadialAxis;
         radialAxis.getOffset = noop;
         radialAxis.redraw = renderHidden;
         radialAxis.render = renderHidden;
+        radialAxis.setScale = noop;
         radialAxis.setCategories = noop;
         radialAxis.setTitle = noop;
     }
@@ -543,19 +479,17 @@ var RadialAxis;
     function onAxisAfterInit() {
         const chart = this.chart, options = this.options, isHidden = chart.angular && this.isXAxis, pane = this.pane, paneOptions = pane?.options;
         if (!isHidden && pane && (chart.angular || chart.polar)) {
-            const fullCircle = Math.PI * 2, startAngle = paneOptions.startAngle ??
-                // Gauges start at -135 by default
-                (chart.angular ? -135 : 0), 
+            const fullCircle = Math.PI * 2, 
             // Start and end angle options are given in degrees relative to
             // top, while internal computations are in radians relative to
             // right (like SVG).
-            start = (startAngle - 90) * Math.PI / 180, end = ((paneOptions.endAngle ??
-                startAngle + (chart.angular ? 270 : 360)) - 90) * Math.PI / 180;
+            start = (pick(paneOptions.startAngle, 0) - 90) * Math.PI / 180, end = (pick(paneOptions.endAngle, pick(paneOptions.startAngle, 0) + 360) - 90) * Math.PI / 180;
             // Y axis in polar charts
             this.angleRad = (options.angle || 0) * Math.PI / 180;
             // Gauges
             this.startAngleRad = start;
             this.endAngleRad = end;
+            this.offset = options.offset || 0;
             // Normalize Start and End to <0, 2*PI> range
             // (in degrees: <0,360>)
             let normalizedStart = (start % fullCircle + fullCircle) %
@@ -570,24 +504,6 @@ var RadialAxis;
             }
             this.normalizedStartAngleRad = normalizedStart;
             this.normalizedEndAngleRad = normalizedEnd;
-        }
-    }
-    /**
-     * Gauge-specific tick length
-     */
-    function onAxisAfterTickSize(e) {
-        if (this.chart.angular) {
-            const { options, pane } = this;
-            if (pane.hasSeriesType('gauge')) {
-                e.tickSize = [
-                    options[`${e.prefix}Length`] ?? 10,
-                    options[`${e.prefix}Width`] ?? 1
-                ];
-                // Negate the length
-                if (options[`${e.prefix}Position`] === 'inside') {
-                    e.tickSize[0] *= -1;
-                }
-            }
         }
     }
     /**
@@ -625,7 +541,6 @@ var RadialAxis;
             return;
         }
         // Before prototype.init
-        saveUnmodified(this);
         if (angular) {
             if (isHidden) {
                 modifyAsHidden(this);
@@ -639,9 +554,6 @@ var RadialAxis;
             modify(this);
             // Check which axis is circular
             isCircular = this.horiz;
-        }
-        else {
-            unmodify(this);
         }
         // Disable certain features on angular and polar axes
         if (angular || polar) {
@@ -668,7 +580,7 @@ var RadialAxis;
      */
     function onAxisInitialAxisTranslation() {
         if (this.isRadial) {
-            this.beforeSetTickPositions?.();
+            this.beforeSetTickPositions();
         }
     }
     /**
@@ -687,8 +599,7 @@ var RadialAxis;
             correctAngle + 360 : correctAngle, reducedAngle2 = reducedAngle1, translateY = 0, translateX = 0;
         if (axis.isRadial) { // Both X and Y axes in a polar chart
             ret = axis.getPosition(this.pos, (axis.center[2] / 2) +
-                relativeLength(labelOptions.distance ?? 15, axis.center[2] / 2) +
-                axis.offset);
+                relativeLength(pick(labelOptions.distance, -25), axis.center[2] / 2, -axis.center[2] / 2));
             // Automatically rotated
             if (labelOptions.rotation === 'auto') {
                 label.attr({
@@ -849,7 +760,7 @@ var RadialAxis;
         axisProto.setAxisSize.call(this);
         if (this.isRadial) {
             // Set the center array
-            this.pane.updateCenter();
+            this.pane.updateCenter(this);
             // In case when the innerSize is set in a polar chart, the axis'
             // center cannot be a reference to pane's center
             center = this.center = this.pane.center.slice();
@@ -857,9 +768,6 @@ var RadialAxis;
             // translation of reversed axis points (#2570)
             if (this.isCircular) {
                 this.sector = this.endAngleRad - this.startAngleRad;
-                // Axis len is used to lay out the ticks
-                this.len = this.width = this.height =
-                    center[2] * this.sector / 2;
             }
             else {
                 // When the pane's startAngle or the axis' angle is set then
@@ -868,12 +776,10 @@ var RadialAxis;
                 start = this.postTranslate(this.angleRad, center[3] / 2);
                 center[0] = start.x - this.chart.plotLeft;
                 center[1] = start.y - this.chart.plotTop;
-                // After updating chart.inverted
-                delete this.sector;
-                // Axis len is used to lay out the ticks
-                this.len = this.width = this.height =
-                    (center[2] - center[3]) / 2;
             }
+            // Axis len is used to lay out the ticks
+            this.len = this.width = this.height =
+                (center[2] - center[3]) * pick(this.sector, 1) / 2;
         }
     }
     /**
@@ -941,17 +847,6 @@ var RadialAxis;
         fireEvent(this, 'afterSetOptions');
     }
     /**
-     * Wrap the `getMinorTickInterval` method to return 'auto' for gauge axes by
-     * default, when `minorTicks` are not explicitly enabled or disabled.
-     */
-    function wrapAxisGetMinorTickInterval(proceed) {
-        if (!defined(this.options.minorTicks) &&
-            this.pane.hasSeriesType('gauge')) {
-            return 'auto';
-        }
-        return proceed.apply(this, Array.prototype.slice.call(arguments, 1));
-    }
-    /**
      * Wrap the getMarkPath function to return the path of the radial marker.
      */
     function wrapTickGetMarkPath(proceed, x, y, tickLength, tickWidth, horiz, renderer) {
@@ -960,8 +855,12 @@ var RadialAxis;
         if (axis.isRadial) {
             endPoint = axis.getPosition(this.pos, axis.center[2] / 2 + tickLength);
             ret = [
-                ['M', x, y],
-                ['L', endPoint.x, endPoint.y]
+                'M',
+                x,
+                y,
+                'L',
+                endPoint.x,
+                endPoint.y
             ];
         }
         else {

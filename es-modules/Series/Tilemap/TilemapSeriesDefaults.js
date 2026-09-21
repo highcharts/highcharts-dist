@@ -5,9 +5,8 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Øystein Moseng
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
@@ -102,8 +101,7 @@ const TilemapSeriesDefaults = {
      * @sample maps/demo/diamondmap
      *         Diamond tile shapes
      *
-     * @declare Highcharts.TilemapShapeValue
-     * @type    {"circle"|"diamond"|"hexagon"|"square"}
+     * @type {Highcharts.TilemapShapeValue}
      */
     tileShape: 'hexagon'
 };
@@ -112,7 +110,7 @@ const TilemapSeriesDefaults = {
  * not specified, it is inherited from [chart.type](#chart.type).
  *
  * @extends   series,plotOptions.tilemap
- * @excluding allAreas, joinBy, mapData, marker,
+ * @excluding allAreas, dataParser, dataURL, joinBy, mapData, marker,
  *            pointRange, shadow, stack, dataSorting, boostThreshold,
  *            boostBlending
  * @product   highcharts highmaps
@@ -172,7 +170,6 @@ const TilemapSeriesDefaults = {
  * @sample {highcharts} highcharts/series/data-array-of-objects/
  *         Config objects
  *
- * @basic
  * @type      {Array<Array<(number|string),number>|Array<(number|string),number,number>|*>}
  * @extends   series.heatmap.data
  * @excluding marker

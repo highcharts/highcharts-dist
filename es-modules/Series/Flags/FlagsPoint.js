@@ -3,9 +3,8 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
@@ -18,7 +17,6 @@ const { column: { prototype: { pointClass: ColumnPoint } } } = SeriesRegistry.se
  *  Class
  *
  * */
-/** @internal */
 class FlagsPoint extends ColumnPoint {
     constructor() {
         /* *
@@ -35,7 +33,7 @@ class FlagsPoint extends ColumnPoint {
      *
      * */
     /**
-     * @internal
+     * @private
      */
     isValid() {
         // #9233 - Prevent from treating flags as null points (even if
@@ -43,7 +41,7 @@ class FlagsPoint extends ColumnPoint {
         return isNumber(this.y) || typeof this.y === 'undefined';
     }
     /**
-     * @internal
+     * @private
      */
     hasNewShapeType() {
         const shape = this.options.shape || this.series.options.shape;
@@ -55,5 +53,4 @@ class FlagsPoint extends ColumnPoint {
  *  Default Export
  *
  * */
-/** @internal */
 export default FlagsPoint;

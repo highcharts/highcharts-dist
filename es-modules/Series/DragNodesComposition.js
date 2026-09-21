@@ -5,23 +5,22 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Paweł Fus
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
 'use strict';
 import H from '../Core/Globals.js';
 const { composed } = H;
-import { addEvent, isObject, pushUnique } from '../Shared/Utilities.js';
+import { addEvent, pushUnique } from '../Shared/Utilities.js';
 /* *
  *
  *  Functions
  *
  * */
 /**
- * @internal
+ * @private
  */
 function compose(ChartClass) {
     if (pushUnique(composed, 'DragNodes')) {
@@ -30,7 +29,7 @@ function compose(ChartClass) {
 }
 /**
  * Draggable mode:
- * @internal
+ * @private
  */
 function onChartLoad() {
     const chart = this;
@@ -69,7 +68,7 @@ function onChartLoad() {
 /**
  * Mouse down action, initializing drag&drop mode.
  *
- * @internal
+ * @private
  * @param {Highcharts.Point} point
  *        The point that event occurred.
  * @param {Highcharts.PointerEventObject} event
@@ -92,7 +91,7 @@ function onMouseDown(point, event) {
 /**
  * Mouse move action during drag&drop.
  *
- * @internal
+ * @private
  *
  * @param {Highcharts.Point} point
  *        The point that event occurred.
@@ -122,7 +121,7 @@ function onMouseMove(point, event) {
 /**
  * Mouse up action, finalizing drag&drop.
  *
- * @internal
+ * @private
  * @param {Highcharts.Point} point
  *        The point that event occurred.
  */
@@ -145,15 +144,14 @@ function onMouseUp(point) {
 /**
  * Redraw halo on mousemove during the drag&drop action.
  *
- * @internal
+ * @private
  * @param {Highcharts.Point} point
  *        The point that should show halo.
  */
 function redrawHalo(point) {
     if (point && this.halo) {
         this.halo.attr({
-            d: point.haloPath(isObject(this.options.states?.hover?.halo) &&
-                this.options.states?.hover?.halo.size || 0)
+            d: point.haloPath(this.options.states.hover.halo.size)
         });
     }
 }
@@ -162,7 +160,6 @@ function redrawHalo(point) {
  *  Default Export
  *
  * */
-/** @internal */
 const DragNodesComposition = {
     compose,
     onMouseDown,
@@ -170,5 +167,4 @@ const DragNodesComposition = {
     onMouseUp,
     redrawHalo
 };
-/** @internal */
 export default DragNodesComposition;

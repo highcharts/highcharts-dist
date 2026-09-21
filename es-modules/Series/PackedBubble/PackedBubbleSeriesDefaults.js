@@ -166,7 +166,7 @@ const PackedBubbleSeriesDefaults = {
              *
              * @type      {Highcharts.SVGAttributes}
              * @since     7.1.0
-             * @apioption plotOptions.packedbubble.dataLabels.parentNodeTextPath.attributes
+             * @apioption plotOptions.packedbubble.dataLabels.attributes
              */
             /**
              * Enable or disable `textPath` option for link's or marker's
@@ -339,8 +339,8 @@ export default PackedBubbleSeriesDefaults;
  *
  * @type      {Object}
  * @extends   series,plotOptions.packedbubble
- * @excluding cropThreshold, dataSorting, dragDrop, stack, boostThreshold,
- *            boostBlending
+ * @excluding cropThreshold, dataParser, dataSorting, dataURL, dragDrop, stack,
+ *            boostThreshold, boostBlending
  * @product   highcharts
  * @requires  highcharts-more
  * @apioption series.packedbubble
@@ -372,7 +372,6 @@ export default PackedBubbleSeriesDefaults;
  *     }]
  *  ```
  *
- * @basic
  * @type      {Array<Object|Array>}
  * @extends   series.line.data
  * @excluding marker, x, y

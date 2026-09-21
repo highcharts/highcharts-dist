@@ -5,9 +5,8 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Kacper Madej
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
@@ -61,10 +60,7 @@ const Pyramid3DSeriesDefaults = {
  * @excluding allAreas,boostThreshold,colorAxis,compare,compareBase,dataSorting
  * @product   highcharts
  * @sample    {highcharts} highcharts/demo/pyramid3d/ Pyramid3d
- * @requires     highcharts-3d
- * @requires     modules/cylinder
- * @requires     modules/funnel3d
- * @requires     modules/pyramid3d
+ * @requires  modules/pyramid3d
  * @apioption series.pyramid3d
  */
 /**
@@ -110,7 +106,6 @@ const Pyramid3DSeriesDefaults = {
  * @sample {highcharts} highcharts/series/data-array-of-objects/
  *         Config objects
  *
- * @basic
  * @type      {Array<number|Array<number>|*>}
  * @extends   series.funnel3d.data
  * @product   highcharts

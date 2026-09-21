@@ -2,9 +2,8 @@
  *
  *  (c) 2009-2026 Highsoft AS
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  *  Authors:
@@ -33,7 +32,7 @@ import { uniqueKey } from '../Core/Utilities.js';
  * @class
  * @name Highcharts.DataTable
  *
- * @param {Highcharts.DataTableOptionsObject} [options]
+ * @param {Highcharts.DataTableOptions} [options]
  * Options to initialize the new DataTable instance.
  */
 class DataTable extends DataTableCore {
@@ -595,9 +594,6 @@ class DataTable extends DataTableCore {
     hasRowWith(columnId, cellValue) {
         const table = this;
         const column = table.columns[columnId];
-        if (!column) {
-            return false;
-        }
         // Normal array
         if (Array.isArray(column)) {
             return (column.indexOf(cellValue) !== -1);
@@ -643,14 +639,8 @@ class DataTable extends DataTableCore {
      * Returns `true` if successful, `false` if the column was not found.
      */
     changeColumnId(columnId, newColumnId) {
-        if (columnId === '__proto__' ||
-            columnId === 'constructor' ||
-            newColumnId === '__proto__' ||
-            newColumnId === 'constructor') {
-            return false;
-        }
         const table = this, columns = table.columns;
-        if (Object.hasOwnProperty.call(columns, columnId)) {
+        if (columns[columnId]) {
             if (columnId !== newColumnId) {
                 columns[newColumnId] = columns[columnId];
                 delete columns[columnId];
@@ -683,14 +673,8 @@ class DataTable extends DataTableCore {
      * @emits #afterSetCell
      */
     setCell(columnId, rowIndex, cellValue, eventDetail) {
-        if (columnId === '__proto__' ||
-            columnId === 'constructor') {
-            return;
-        }
         const table = this, columns = table.columns, modifier = table.modifier;
-        let column = Object.hasOwnProperty.call(columns, columnId) ?
-            columns[columnId] :
-            void 0;
+        let column = columns[columnId];
         if (column && column[rowIndex] === cellValue) {
             return;
         }
@@ -759,10 +743,6 @@ class DataTable extends DataTableCore {
         else {
             for (let i = 0, iEnd = columnIds.length, column, tableColumn, columnId, ArrayConstructor; i < iEnd; ++i) {
                 columnId = columnIds[i];
-                if (columnId === '__proto__' ||
-                    columnId === 'constructor') {
-                    continue;
-                }
                 column = columns[columnId];
                 tableColumn = tableColumns[columnId];
                 ArrayConstructor = Object.getPrototypeOf((tableColumn && typeAsOriginal) ? tableColumn : column).constructor;
@@ -976,23 +956,6 @@ class DataTable extends DataTableCore {
             rows
         });
     }
-}
-/**
- * Type guard narrowing an arbitrary value to a valid table cell value.
- *
- * @param {*} value
- * Candidate value.
- *
- * @return {boolean}
- * `true` when the value is a valid `CellType`.
- */
-export function isCellValue(value) {
-    const valueType = typeof value;
-    return (value === null ||
-        valueType === 'undefined' ||
-        valueType === 'boolean' ||
-        valueType === 'number' ||
-        valueType === 'string');
 }
 /* *
  *

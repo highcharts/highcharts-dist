@@ -7,9 +7,8 @@
  *  This keeps `cross` out of Core SVG symbols while allowing modules
  *  like PointAndFigure and Contour to compose it when needed.
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
@@ -32,7 +31,7 @@ var CrossSymbol;
     /**
      * Register the shared `cross` symbol on a renderer class.
      *
-     * @internal
+     * @private
      */
     function compose(SVGRendererClass) {
         if (pushUnique(composed, 'Series.CrossSymbol')) {
@@ -42,7 +41,7 @@ var CrossSymbol;
     CrossSymbol.compose = compose;
     /**
      * Cross marker path.
-     * @internal
+     * @private
      */
     function cross(x, y, w, h) {
         return [
@@ -59,5 +58,4 @@ var CrossSymbol;
  *  Default Export
  *
  * */
-/** @internal */
 export default CrossSymbol;

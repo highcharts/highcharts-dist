@@ -6,83 +6,6 @@
 import * as Highcharts from "../highcharts";
 declare module "../highcharts" {
     /**
-     * (Highcharts, Highstock) Point accessibility options for a series.
-     */
-    interface PlotArearangeAccessibilityPointOptions {
-        /**
-         * (Highcharts, Highstock) Date format to use for points on datetime
-         * axes when describing them to screen reader users.
-         *
-         * Defaults to the same format as in tooltip.
-         *
-         * For an overview of the replacement codes, see dateFormat.
-         */
-        dateFormat?: string;
-        /**
-         * (Highcharts, Highstock) Formatter function to determine the date/time
-         * format used with points on datetime axes when describing them to
-         * screen reader users. Receives one argument, `point`, referring to the
-         * point to describe. Should return a date format string compatible with
-         * dateFormat.
-         */
-        dateFormatter?: Highcharts.ScreenReaderFormatterCallbackFunction<Highcharts.Point>;
-        /**
-         * (Highcharts, Highstock) Whether or not to describe points with the
-         * value `null` to assistive technology, such as screen readers.
-         */
-        describeNull?: boolean;
-        /**
-         * (Highcharts, Highstock) A format string to use instead of the default
-         * for point descriptions.
-         *
-         * The context of the format string is the point instance.
-         *
-         * As opposed to accessibility.point.valueDescriptionFormat, this option
-         * replaces the whole description.
-         */
-        descriptionFormat?: string;
-        /**
-         * (Highcharts, Highstock) Formatter function to use instead of the
-         * default for point descriptions. Same as
-         * `accessibility.point.descriptionFormatter`, but applies to a series
-         * instead of the whole chart.
-         *
-         * Note: Prefer using accessibility.point.valueDescriptionFormat instead
-         * if possible, as default functionality such as describing annotations
-         * will be preserved.
-         */
-        descriptionFormatter?: Highcharts.ScreenReaderFormatterCallbackFunction<Highcharts.Point>;
-        /**
-         * (Highcharts, Highstock) Decimals to use for the values in the point
-         * descriptions. Uses tooltip.valueDecimals if not defined.
-         */
-        valueDecimals?: number;
-        /**
-         * (Highcharts, Highstock) Format to use for describing the values of
-         * data points to assistive technology - including screen readers. The
-         * point context is available as `{point}`.
-         *
-         * Other available context variables include `{index}`, `{value}`, and
-         * `{xDescription}`.
-         *
-         * Additionally, the series name, annotation info, and description added
-         * in `point.accessibility.description` is added by default if relevant.
-         * To override this, use the accessibility.point.descriptionFormatter
-         * option.
-         */
-        valueDescriptionFormat?: string;
-        /**
-         * (Highcharts, Highstock) Prefix to add to the values in the point
-         * descriptions. Uses tooltip.valuePrefix if not defined.
-         */
-        valuePrefix?: string;
-        /**
-         * (Highcharts, Highstock) Suffix to add to the values in the point
-         * descriptions. Uses tooltip.valueSuffix if not defined.
-         */
-        valueSuffix?: string;
-    }
-    /**
      * (Highcharts, Highstock) Enable or disable the initial animation when a
      * series is displayed for the `dataLabels`. The animation can also be set
      * as a configuration object. Please note that this option only applies to
@@ -102,80 +25,17 @@ declare module "../highcharts" {
         defer?: number;
     }
     /**
-     * (Highcharts, Highstock) Options for series data sorting.
-     */
-    interface PlotArearangeDataSortingOptions {
-        /**
-         * (Highcharts, Highstock) Enable or disable data sorting for the
-         * series. Use xAxis.reversed to change the sorting order.
-         */
-        enabled?: boolean;
-        /**
-         * (Highcharts, Highstock) Whether to allow matching points by name in
-         * an update. If this option is disabled, points will be matched by
-         * order.
-         */
-        matchByName?: boolean;
-        /**
-         * (Highcharts, Highstock) Determines what data value should be used to
-         * sort by.
-         */
-        sortKey?: string;
-    }
-    /**
      * (Highcharts, Highstock, Gantt) Styles for the series label. The color
      * defaults to the series color, or a contrast color if `onArea`.
      */
     interface PlotArearangeLabelStyleOptions {
-        fontSize?: number;
-        fontWeight?: string;
-    }
-    /**
-     * (Highcharts, Highstock) Animation when hovering over the marker.
-     */
-    interface PlotArearangeLowMarkerStatesHoverAnimationOptions {
-        duration?: number;
-    }
-    /**
-     * (Highcharts, Highstock) Animation when hovering over the marker.
-     */
-    interface PlotArearangeLowMarkerStatesSelectAnimationOptions {
-        duration?: number;
+        fontSize?: (number|string);
     }
     /**
      * (Highcharts, Highstock) Animation when hovering over the marker.
      */
     interface PlotArearangeMarkerStatesHoverAnimationOptions {
         duration?: number;
-    }
-    /**
-     * (Highcharts, Highstock) Animation when hovering over the marker.
-     */
-    interface PlotArearangeMarkerStatesSelectAnimationOptions {
-        duration?: number;
-    }
-    /**
-     * (Highcharts, Highstock) Options for the connector in the _Series on
-     * point_ feature.
-     *
-     * In styled mode, the connector can be styled with the
-     * `.highcharts-connector-seriesonpoint` class name.
-     */
-    interface PlotArearangeOnPointConnectorOptions {
-        /**
-         * (Highcharts, Highstock) A name for the dash style to use for the
-         * connector.
-         */
-        dashstyle?: string;
-        /**
-         * (Highcharts, Highstock) Color of the connector line. By default it's
-         * the series' color.
-         */
-        stroke?: string;
-        /**
-         * (Highcharts, Highstock) Pixel width of the connector line.
-         */
-        width?: number;
     }
     /**
      * (Highcharts, Highstock) Options for the _Series on point_ feature. Only
@@ -201,34 +61,6 @@ declare module "../highcharts" {
          * offset of the series in the _Series on point_ feature.
          */
         position?: (object|Highcharts.PlotArearangeOnPointPositionOptions);
-    }
-    /**
-     * (Highcharts, Highstock) Options allowing to set a position and an offset
-     * of the series in the _Series on point_ feature.
-     */
-    interface PlotArearangeOnPointPositionOptions {
-        /**
-         * (Highcharts, Highstock) Series center offset from the original x
-         * position. If defined, the connector line is drawn connecting original
-         * position with new position.
-         */
-        offsetX?: number;
-        /**
-         * (Highcharts, Highstock) Series center offset from the original y
-         * position. If defined, the connector line is drawn from original
-         * position to a new position.
-         */
-        offsetY?: number;
-        /**
-         * (Highcharts, Highstock) X position of the series center. By default,
-         * the series is displayed on the point that it is connected to.
-         */
-        x?: number;
-        /**
-         * (Highcharts, Highstock) Y position of the series center. By default,
-         * the series is displayed on the point that it is connected to.
-         */
-        y?: number;
     }
     /**
      * (Highcharts, Highstock) The area range series is a cartesian series with
@@ -505,56 +337,15 @@ declare module "../highcharts" {
         dataGrouping?: Highcharts.DataGroupingOptionsObject;
         /**
          * (Highcharts, Highstock) Extended data labels for range series types.
-         * Range series data labels can be positioned individually by defining
-         * them as an array and setting `alignToKey` to `high` or `low`.
+         * Range series data labels use no `x` and `y` options. Instead, they
+         * have `xLow`, `xHigh`, `yLow` and `yHigh` options to allow the higher
+         * and lower data label sets individually.
          */
         dataLabels?: (Highcharts.SeriesAreaRangeDataLabelsOptionsObject|Array<Highcharts.SeriesAreaRangeDataLabelsOptionsObject>);
         /**
-         * (Highcharts, Highstock) The mapping between the data table and the
-         * series data points. This is used in conjunction with the `dataTable`
-         * option (on chart or series level) to map columns from the data table
-         * to the properties of the data points. The keys of the `dataMapping`
-         * object correspond to the properties of the data points (e.g. `x`,
-         * `y`, `name`), and the values are objects that specify which column
-         * from which data table to use for that property.
-         *
-         * The keys can also be nested paths, for example `dataLabel.format`, to
-         * map to nested properties of the data points.
-         *
-         * The values can also be strings, in which case they are interpreted as
-         * column id's from the first data table.
-         *
-         * A typical use case is that multiple series share a common column,
-         * like `name` or `x`. In this case, to avoid repetition, the common
-         * column can be applied in `plotOptions.series.dataMapping` and the
-         * individual series can specify only the columns that are unique to
-         * them.
-         *
-         * The series name defaults to the column ID of the main data column in
-         * the mapping. The main data column is typically the `y` data for
-         * cartesian series, or `value` for map series. For example, if the
-         * mapping is `{ y: 'Cost' }`, the series name will be `Cost`. (see
-         * online documentation for example)
-         *
-         * If the columns of the DataTable have keys matching the series keys,
-         * the data mapping is not necessary. For example, this DataTable will
-         * connect directly to the series' `x` and `y` keys: (see online
-         * documentation for example)
+         * (Highcharts, Highstock) Options for the series data sorting.
          */
-        dataMapping?: Highcharts.DataMappingOptionsObject;
-        /**
-         * (Highcharts, Highstock) Options for series data sorting.
-         */
-        dataSorting?: Highcharts.PlotArearangeDataSortingOptions;
-        /**
-         * (Highcharts, Highstock) Options for a specific series-level data
-         * table or an array of data tables. The `dataTable` option can be
-         * either a configuration object or an instance of the `DataTable`
-         * class. If a `DataTable` instance is passed, it will be used directly.
-         * If a configuration object or an array is passed, a new `DataTable`
-         * instance will be created based on the provided configuration.
-         */
-        dataTable?: (Highcharts.DataTable|Highcharts.DataTableOptionsObject|Array<(Highcharts.DataTable|Highcharts.DataTableOptionsObject)>);
+        dataSorting?: (Highcharts.DataSortingOptionsObject|Highcharts.PlotArearangeDataSortingOptions);
         /**
          * (Highcharts, Highstock) Deprecated. Use
          * plotOptions.series.accessibility.description instead.
@@ -812,8 +603,6 @@ declare module "../highcharts" {
          *
          * Same as accessibility.point.descriptionFormat, but for an individual
          * series. Overrides the chart wide configuration.
-         *
-         * @deprecated 12.6.0
          */
         pointDescriptionFormat?: Function;
         /**
@@ -978,10 +767,6 @@ declare module "../highcharts" {
         /**
          * (Highcharts, Highstock) A collection of options for different series
          * states.
-         *
-         * In addition to the options documented under each state, any option
-         * from the parent series type can be set, with exception of `data` and
-         * `states`.
          */
         states?: Highcharts.SeriesStatesOptionsObject;
         /**
@@ -1081,100 +866,10 @@ declare module "../highcharts" {
         zoomEnabled?: boolean;
     }
     /**
-     * (Highcharts, Highstock) Animation setting for hovering the graph in
-     * line-type series.
-     */
-    interface PlotArearangeStatesHoverAnimationOptions {
-        /**
-         * (Highcharts, Highstock) The duration of the hover animation in
-         * milliseconds. By default the hover state animates quickly in, and
-         * slowly back to normal.
-         */
-        duration?: number;
-    }
-    /**
      * (Highcharts, Highstock) Animation when not hovering over the marker.
      */
     interface PlotArearangeStatesInactiveAnimationOptions {
-        /**
-         * (Highcharts, Highstock) The duration of the hover animation in
-         * milliseconds. By default the hover state animates quickly in, and
-         * slowly back to normal.
-         */
         duration?: number;
-    }
-    /**
-     * (Highcharts, Highstock) Animation setting for hovering the graph in
-     * line-type series.
-     */
-    interface PlotArearangeStatesSelectAnimationOptions {
-        /**
-         * (Highcharts, Highstock) The duration of the hover animation in
-         * milliseconds. By default the hover state animates quickly in, and
-         * slowly back to normal.
-         */
-        duration?: number;
-    }
-    /**
-     * (Highcharts, Highstock, Gantt) For series on datetime axes, the date
-     * format in the tooltip's header will by default be guessed based on the
-     * closest data points. This member gives the default string representations
-     * used for each unit. For an overview of the string or object
-     * configuration, see dateFormat.
-     */
-    interface PlotArearangeTooltipDateTimeLabelFormatsOptions {
-        day?: string;
-        hour?: string;
-        millisecond?: string;
-        minute?: string;
-        month?: string;
-        second?: string;
-        week?: string;
-        year?: string;
-    }
-    /**
-     * (Highcharts, Highstock) Options for the tooltip header when tooltip.split
-     * is enabled. The header is the box containing the X value in a split
-     * tooltip.
-     */
-    interface PlotArearangeTooltipHeaderOptions {
-        /**
-         * (Highcharts, Highstock) Background color for the tooltip header when
-         * tooltip.split is enabled.
-         */
-        backgroundColor?: Highcharts.ColorType;
-        /**
-         * (Highcharts, Highstock) Border color for the tooltip header when
-         * tooltip.split is enabled.
-         */
-        borderColor?: Highcharts.ColorType;
-        /**
-         * (Highcharts, Highstock) The width of the border for the tooltip
-         * header when tooltip.split is enabled.
-         */
-        borderWidth?: number;
-        /**
-         * (Highcharts, Highstock) Distance between the plot area and the header
-         * (except the chevron) in a split tooltip, in pixels. The default value
-         * makes the header text align with the axis labels.
-         */
-        distance?: number;
-        /**
-         * (Highcharts, Highstock) The name of a symbol to use for the border
-         * around the tooltip header. Applies only when tooltip.split is
-         * enabled.
-         *
-         * Custom callbacks for symbol path generation can also be added to
-         * `Highcharts.SVGRenderer.prototype.symbols` the same way as for
-         * series.marker.symbol.
-         */
-        shape?: string;
-        /**
-         * (Highcharts, Highstock) CSS styles for the tooltip header. The
-         * default is `{ fontSize: '1em' }`, ensuring that the header text is
-         * the same size as the axis labels.
-         */
-        style?: object;
     }
     /**
      * (Highcharts, Highstock) Positioning options for fixed tooltip, taking
@@ -1211,25 +906,6 @@ declare module "../highcharts" {
          * tooltip overlapping other elements.
          */
         y?: number;
-    }
-    /**
-     * (Highcharts, Highstock) Enable or disable the initial animation when a
-     * series is displayed for the `dataLabels`. The animation can also be set
-     * as a configuration object. Please note that this option only applies to
-     * the initial animation.
-     *
-     * For other animations, see chart.animation and the animation parameter
-     * under the API methods. The following properties are supported:
-     *
-     * - `defer`: The animation delay time in milliseconds.
-     */
-    interface SeriesArearangeDataDataLabelsAnimationOptions {
-        /**
-         * (Highcharts, Highstock) The animation delay time in milliseconds. Set
-         * to `0` to render the data labels immediately. As `undefined` inherits
-         * defer time from the series.animation.defer.
-         */
-        defer?: number;
     }
     /**
      * (Highcharts, Highstock) A `arearange` series. If the type option is not
@@ -1282,6 +958,14 @@ declare module "../highcharts" {
          * is not available. (see online documentation for example)
          */
         data?: Array<([(number|string), number]|[(number|string), number, number]|Highcharts.PointOptionsObject)>;
+        /**
+         * Not available
+         */
+        dataParser?: undefined;
+        /**
+         * Not available
+         */
+        dataURL?: undefined;
         /**
          * Not available
          */

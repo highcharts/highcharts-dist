@@ -3,22 +3,19 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Hubert Kozik, Kamil Musiałowski
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
 'use strict';
-import { stop } from '../../Core/Animation/AnimationUtilities.js';
-import Fx from '../../Core/Animation/Fx.js';
 import H from '../../Core/Globals.js';
 const { composed } = H;
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { map: MapSeries } = SeriesRegistry.seriesTypes;
 import TilesProviderRegistry from '../../Maps/TilesProviders/TilesProviderRegistry.js';
 import TiledWebMapSeriesDefaults from './TiledWebMapSeriesDefaults.js';
-import { addEvent, defined, merge, pushUnique } from '../../Shared/Utilities.js';
+import { addEvent, defined, merge, pick, pushUnique } from '../../Shared/Utilities.js';
 import { error } from '../../Core/Utilities.js';
 /* *
  *
@@ -129,8 +126,8 @@ class TiledWebMapSeries extends MapSeries {
         if (!mapView) {
             return;
         }
-        const tiles = (this.tiles = this.tiles || {}), transformGroups = (this.transformGroups = this.transformGroups || []), series = this, options = this.options, provider = options.provider, { zoom } = mapView, lambda = ((mapView.projection.options.rotation &&
-            mapView.projection.options.rotation[0]) ?? 0), worldSize = 400.979322, tileSize = 256, duration = chart.renderer.forExport ? 0 : 200, animateTiles = (duration) => {
+        const tiles = (this.tiles = this.tiles || {}), transformGroups = (this.transformGroups = this.transformGroups || []), series = this, options = this.options, provider = options.provider, { zoom } = mapView, lambda = pick((mapView.projection.options.rotation &&
+            mapView.projection.options.rotation[0]), 0), worldSize = 400.979322, tileSize = 256, duration = chart.renderer.forExport ? 0 : 200, animateTiles = (duration) => {
             for (const zoomKey of Object.keys(tiles)) {
                 if ((parseFloat(zoomKey) === (mapView.zoom < 0 ? 0 :
                     Math.floor(mapView.zoom))) ||
@@ -211,7 +208,7 @@ class TiledWebMapSeries extends MapSeries {
                 else if (defined(def.subdomains) &&
                     // Do not show warning if no subdomain in URL
                     theme.url.indexOf('{s}') !== -1) {
-                    subdomain = ((def.subdomains && def.subdomains[0]) ?? '');
+                    subdomain = pick(def.subdomains && def.subdomains[0], '');
                     error('Highcharts warning: The Tiles Provider\'s Subdomain ' +
                         '\'' + provider.subdomain + '\' is not defined in ' +
                         'the Provider definition - falling back to \'' +
@@ -234,9 +231,7 @@ class TiledWebMapSeries extends MapSeries {
                 this.minZoom = theme.minZoom;
                 this.maxZoom = theme.maxZoom;
                 // Add as credits.text, to prevent changing the default mapText
-                const creditsText = ((chart.userOptions.credits &&
-                    chart.userOptions.credits.text) ??
-                    ('Highcharts.com ' + (theme.credits ?? def.defaultCredits)));
+                const creditsText = pick(chart.userOptions.credits && chart.userOptions.credits.text, 'Highcharts.com ' + pick(theme.credits, def.defaultCredits));
                 if (chart.credits) {
                     chart.credits.update({
                         text: creditsText
@@ -245,7 +240,7 @@ class TiledWebMapSeries extends MapSeries {
                 else {
                     chart.addCredits({
                         text: creditsText,
-                        style: (chart.options.credits?.style ?? {})
+                        style: pick(chart.options.credits?.style, {})
                     });
                 }
                 if (mapView.projection.options.name !== providerProjection) {
@@ -385,15 +380,11 @@ class TiledWebMapSeries extends MapSeries {
             for (const zoomKey of Object.keys(tiles)) {
                 for (const key of Object.keys(tiles[zoomKey].tiles)) {
                     if (mapView.projection && mapView.projection.def) {
-                        const tile = tiles[zoomKey].tiles[key];
-                        if (Fx.timers.length > 0) {
-                            stop(tile, 'animator');
-                        }
                         // Calculate group translations based on first loaded
                         // tile
                         const scale = ((tileSize / worldSize) *
                             Math.pow(2, zoom)) / ((tileSize / worldSize) *
-                            Math.pow(2, parseFloat(zoomKey))), scaledTileSize = scale * 256, firstTile = tiles[zoomKey].tiles[Object.keys(tiles[zoomKey].tiles)[0]], { posX, posY } = tile;
+                            Math.pow(2, parseFloat(zoomKey))), scaledTileSize = scale * 256, firstTile = tiles[zoomKey].tiles[Object.keys(tiles[zoomKey].tiles)[0]], { posX, posY } = tiles[zoomKey].tiles[key];
                         if (defined(posX) &&
                             defined(posY) &&
                             defined(firstTile.posX) &&
@@ -408,9 +399,9 @@ class TiledWebMapSeries extends MapSeries {
                                 firstTilePx.y;
                             if (chart.renderer.globalAnimation &&
                                 chart.hasRendered) {
-                                const startX = Number(tile.attr('x')), startY = Number(tile.attr('y')), startWidth = Number(tile.attr('width')), startHeight = Number(tile.attr('height'));
+                                const startX = Number(tiles[zoomKey].tiles[key].attr('x')), startY = Number(tiles[zoomKey].tiles[key].attr('y')), startWidth = Number(tiles[zoomKey].tiles[key].attr('width')), startHeight = Number(tiles[zoomKey].tiles[key].attr('height'));
                                 const step = (now, fx) => {
-                                    tile.attr({
+                                    tiles[zoomKey].tiles[key].attr({
                                         x: (startX + (((posX * scaledTileSize) -
                                             tilesOffsetX - startX) * fx.pos)),
                                         y: (startY + (((posY * scaledTileSize) -
@@ -422,7 +413,7 @@ class TiledWebMapSeries extends MapSeries {
                                     });
                                 };
                                 series.isAnimating = true;
-                                tile
+                                tiles[zoomKey].tiles[key]
                                     .attr({ animator: 0 })
                                     .animate({ animator: 1 }, { step }, function () {
                                     series.isAnimating = false;
@@ -448,7 +439,7 @@ class TiledWebMapSeries extends MapSeries {
                                     series.redrawTiles = false;
                                     animateTiles(duration);
                                 }
-                                tile.attr({
+                                tiles[zoomKey].tiles[key].attr({
                                     x: (posX * scaledTileSize) - tilesOffsetX,
                                     y: (posY * scaledTileSize) - tilesOffsetY,
                                     width: Math.ceil(scaledTileSize) + 1,
@@ -484,7 +475,7 @@ class TiledWebMapSeries extends MapSeries {
                     projection: {
                         name: (new ProviderDefinition()).initialProjectionName
                     }
-                }, false);
+                });
             }
         }
         super.update.apply(this, arguments);

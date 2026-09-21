@@ -4,9 +4,8 @@
  *
  *  Author: Torstein Hønsi
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
@@ -127,7 +126,7 @@ function arc(x, y, w, h, options = {}) {
     if (options.open || !options.borderRadius) {
         return path;
     }
-    const alpha = end - start, sinHalfAlpha = Math.sin(alpha / 2), borderRadius = Math.max(Math.min(relativeLength(borderRadiusObject(options.borderRadius).radius, r - innerR), 
+    const alpha = end - start, sinHalfAlpha = Math.sin(alpha / 2), borderRadius = Math.max(Math.min(relativeLength(options.borderRadius || 0, r - innerR), 
     // Cap to half the sector radius
     (r - innerR) / 2, 
     // For smaller pie slices, cap to the largest small circle that
@@ -153,7 +152,7 @@ function seriesOnAfterColumnTranslate() {
     if (this.options.borderRadius &&
         !(this.chart.is3d && this.chart.is3d())) {
         const { options, yAxis } = this, percent = options.stacking === 'percent', seriesDefault = defaultOptions.plotOptions?.[this.type]
-            ?.borderRadius, borderRadius = borderRadiusObject(options.borderRadius, isObject(seriesDefault) ? seriesDefault : {}), reversed = yAxis.options.reversed;
+            ?.borderRadius, borderRadius = optionsToObject(options.borderRadius, isObject(seriesDefault) ? seriesDefault : {}), reversed = yAxis.options.reversed;
         for (const point of this.points) {
             const { shapeArgs } = point;
             if (point.shapeType === 'roundedRect' && shapeArgs) {
@@ -209,7 +208,7 @@ function seriesOnAfterColumnTranslate() {
     }
 }
 /** @internal */
-export function composeBorderRadius(SeriesClass, SVGElementClass, SVGRendererClass) {
+function compose(SeriesClass, SVGElementClass, SVGRendererClass) {
     const PieSeriesClass = SeriesClass.types.pie;
     if (!SVGElementClass.symbolCustomAttribs.includes('borderRadius')) {
         const symbols = SVGRendererClass.prototype.symbols;
@@ -225,12 +224,8 @@ export function composeBorderRadius(SeriesClass, SVGElementClass, SVGRendererCla
         symbols.roundedRect = roundedRect;
     }
 }
-/**
- * Utility function to get the full border radius options object, from a simple
- * number or a partial options object.
- * @internal
- */
-export function borderRadiusObject(options, seriesBROptions) {
+/** @internal */
+function optionsToObject(options, seriesBROptions) {
     if (!isObject(options)) {
         options = { radius: options || 0 };
     }
@@ -238,7 +233,7 @@ export function borderRadiusObject(options, seriesBROptions) {
 }
 /** @internal */
 function pieSeriesOnAfterTranslate() {
-    const borderRadius = borderRadiusObject(this.options.borderRadius);
+    const borderRadius = optionsToObject(this.options.borderRadius);
     for (const point of this.points) {
         const shapeArgs = point.shapeArgs;
         if (shapeArgs) {
@@ -334,6 +329,16 @@ function roundedRect(x, y, width, height, options = {}) {
 }
 /* *
  *
+ *  Default Export
+ *
+ * */
+const BorderRadius = {
+    compose,
+    optionsToObject
+};
+export default BorderRadius;
+/* *
+ *
  *  API Declarations
  *
  * */
@@ -357,22 +362,19 @@ function roundedRect(x, y, width, height, options = {}) {
 *          Column and pie with rounded border
 *
 * @name Highcharts.BorderRadiusOptionsObject#radius
-* @type {string|number|undefined}
+* @type {string|number}
 */ /**
-* The scope of the rounding for column charts or plot bands. In a stacked
-* column chart, the value `point` means each single point will get rounded
-* corners. The value `stack` means the rounding will apply to the full
-* stack, so that only points close to the top or bottom will receive
-* rounding.
-*
-* Similarly, for plot bands, the `individual` value means each plot band
-* will get rounded corners.
+* The scope of the rounding for column charts. In a stacked column chart, the
+* value `point` means each single point will get rounded corners. The value
+* `stack` means the rounding will apply to the full stack, so that only points
+* close to the top or bottom will receive rounding.
 *
 * @sample  {highcharts} highcharts/plotoptions/column-borderradius/
 *          Rounded columns
 *
 * @name Highcharts.BorderRadiusOptionsObject#scope
-* @type {"individual"|"point"|"stack"|undefined}
+* @validvalue ["point", "stack"]
+* @type {string}
 */ /**
 * For column charts, where in the point or stack to apply rounding. The `end`
 * value means only those corners at the point value will be rounded, leaving
@@ -383,7 +385,8 @@ function roundedRect(x, y, width, height, options = {}) {
 *          Rounding on all corners
 *
 * @name Highcharts.BorderRadiusOptionsObject#where
-* @type {"all"|"end"|undefined}
+* @validvalue ["all", "end"]
+* @type {string}
 * @default end
 */
 (''); // Keeps doclets above in JS file

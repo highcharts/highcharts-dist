@@ -5,9 +5,8 @@
  *  (c) 2009-2026 Highsoft AS
  *  Author: Sebastian Bochan
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
@@ -42,7 +41,7 @@ function onNavigationBindingsShowPopup(config) {
         this.popup = new Popup(this.chart.container, (this.chart.options.navigation.iconsURL ||
             (this.chart.options.stockTools &&
                 this.chart.options.stockTools.gui.iconsURL) ||
-            'renderer'), this.chart);
+            'https://code.highcharts.com/12.6.2/gfx/stock-icons/'), this.chart);
     }
     this.popup.showForm(config.formType, this.chart, config.options, config.onSubmit);
 }

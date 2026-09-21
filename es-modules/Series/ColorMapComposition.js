@@ -3,9 +3,8 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
@@ -26,13 +25,11 @@ var ColorMapComposition;
      *  Constants
      *
      * */
-    /** @internal */
     ColorMapComposition.pointMembers = {
         dataLabelOnNull: true,
         moveToTopOnHover: true,
         isValid: pointIsValid
     };
-    /** @internal */
     ColorMapComposition.seriesMembers = {
         colorKey: 'value',
         axisTypes: ['xAxis', 'yAxis', 'colorAxis'],
@@ -48,7 +45,7 @@ var ColorMapComposition;
      *
      * */
     /**
-     * @internal
+     * @private
      */
     function compose(SeriesClass) {
         const PointClass = SeriesClass.prototype.pointClass;
@@ -58,7 +55,7 @@ var ColorMapComposition;
     ColorMapComposition.compose = compose;
     /**
      * Move points to the top of the z-index order when hovered.
-     * @internal
+     * @private
      */
     function onPointAfterSetState(e) {
         const point = this, series = point.series, renderer = series.chart.renderer;
@@ -94,7 +91,7 @@ var ColorMapComposition;
     /**
      * Color points have a value option that determines whether or not it is
      * a null point
-     * @internal
+     * @private
      */
     function pointIsValid() {
         return (this.value !== null &&
@@ -105,7 +102,7 @@ var ColorMapComposition;
     }
     /**
      * Get the color attributes to apply on the graphic
-     * @internal
+     * @private
      * @function Highcharts.colorMapSeriesMixin.colorAttribs
      * @param {Highcharts.Point} point
      * @return {Highcharts.SVGAttributes}
@@ -126,5 +123,4 @@ var ColorMapComposition;
  *  Default Export
  *
  * */
-/** @internal */
 export default ColorMapComposition;

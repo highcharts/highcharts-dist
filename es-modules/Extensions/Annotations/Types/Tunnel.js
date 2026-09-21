@@ -9,8 +9,6 @@ import CrookedLine from './CrookedLine.js';
 import D from '../../../Core/Defaults.js';
 const { defaultOptions } = D;
 import MockPoint from '../MockPoint.js';
-import NBU from '../NavigationBindingsUtilities.js';
-const { getAxisFromOptions } = NBU;
 import { merge } from '../../../Shared/Utilities.js';
 if (defaultOptions.annotations?.types) {
     defaultOptions.annotations.types.tunnel = merge(defaultOptions.annotations.types.crookedLine, 
@@ -21,7 +19,6 @@ if (defaultOptions.annotations?.types) {
      * @sample highcharts/annotations-advanced/tunnel/
      *         Tunnel
      * @product highstock
-     * @requires modules/annotations-advanced
      * @optionparent annotations.types.tunnel
      */
     {
@@ -113,7 +110,7 @@ class Tunnel extends CrookedLine {
      *
      * */
     getPointsOptions() {
-        const pointsOptions = CrookedLine.prototype.getPointsOptions.call(this), yAxis = getAxisFromOptions(this.chart, 'yAxis', this.options.typeOptions?.yAxis ?? 0);
+        const pointsOptions = CrookedLine.prototype.getPointsOptions.call(this), yAxisIndex = this.options.typeOptions?.yAxis || 0, yAxis = this.chart.yAxis[yAxisIndex];
         pointsOptions[2] = this.heightPointOptions(pointsOptions[1]);
         pointsOptions[3] = this.heightPointOptions(pointsOptions[0]);
         // In case of log axis, translate the bottom left point again, #16769

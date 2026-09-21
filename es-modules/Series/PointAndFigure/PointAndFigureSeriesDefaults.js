@@ -3,9 +3,8 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Kamil Musiałowski
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
@@ -103,7 +102,6 @@ const PointAndFigureSeriesDefaults = {
  *    ]
  *    ```
  *
- * @basic
  * @type      {Array<Array<number,number>|*>}
  * @extends   series.scatter.data
  * @product   highstock

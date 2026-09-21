@@ -3,21 +3,18 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
 'use strict';
-import { borderRadiusObject } from '../../Extensions/BorderRadius.js';
 import BoxPlotSeriesDefaults from './BoxPlotSeriesDefaults.js';
 import ColumnSeries from '../Column/ColumnSeries.js';
 import H from '../../Core/Globals.js';
 const { noop } = H;
-import RangeDataLabel from '../RangeDataLabel.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-import { crisp, extend, merge, relativeLength } from '../../Shared/Utilities.js';
+import { crisp, extend, merge, pick, relativeLength } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class
@@ -26,7 +23,7 @@ import { crisp, extend, merge, relativeLength } from '../../Shared/Utilities.js'
 /**
  * The boxplot series type.
  *
- * @internal
+ * @private
  * @class
  * @name Highcharts.seriesTypes#boxplot
  *
@@ -40,9 +37,8 @@ class BoxPlotSeries extends ColumnSeries {
      * */
     // Get presentational attributes
     pointAttribs() {
-        // No attributes should be set on point.graphic which is the group. The
-        // returned fill is for legend symbols.
-        return { fill: this.color };
+        // No attributes should be set on point.graphic which is the group
+        return {};
     }
     // Get an SVGPath object for both whiskers
     getWhiskerPair(halfWidth, stemX, upperWhiskerLength, lowerWhiskerLength, point) {
@@ -73,9 +69,8 @@ class BoxPlotSeries extends ColumnSeries {
         // Do the translation on each point dimension
         series.points.forEach(function (point) {
             pointArrayMap.forEach(function (key) {
-                const value = point[key];
-                if (value !== null) {
-                    point[`${key}Plot`] = yAxis.translate(value, false, true, false, true);
+                if (point[key] !== null) {
+                    point[key + 'Plot'] = yAxis.translate(point[key], 0, 1, 0, 1);
                 }
             });
             point.plotHigh = point.highPlot; // For data label validation
@@ -83,7 +78,7 @@ class BoxPlotSeries extends ColumnSeries {
     }
     /**
      * Draw the data points
-     * @internal
+     * @private
      */
     drawPoints() {
         const series = this, points = series.points, options = series.options, chart = series.chart, renderer = chart.renderer, 
@@ -127,10 +122,7 @@ class BoxPlotSeries extends ColumnSeries {
                     // Stem attributes
                     stemAttr.stroke =
                         point.stemColor || options.stemColor || color;
-                    stemAttr['stroke-width'] =
-                        point.stemWidth ??
-                            options.stemWidth ??
-                            options.lineWidth;
+                    stemAttr['stroke-width'] = pick(point.stemWidth, options.stemWidth, options.lineWidth);
                     stemAttr.dashstyle = (point.stemDashStyle ||
                         options.stemDashStyle ||
                         options.dashStyle);
@@ -140,10 +132,7 @@ class BoxPlotSeries extends ColumnSeries {
                         whiskersAttr.stroke = (point.whiskerColor ||
                             options.whiskerColor ||
                             color);
-                        whiskersAttr['stroke-width'] =
-                            point.whiskerWidth ??
-                                options.whiskerWidth ??
-                                options.lineWidth;
+                        whiskersAttr['stroke-width'] = pick(point.whiskerWidth, options.whiskerWidth, options.lineWidth);
                         whiskersAttr.dashstyle = (point.whiskerDashStyle ||
                             options.whiskerDashStyle ||
                             options.dashStyle);
@@ -164,28 +153,25 @@ class BoxPlotSeries extends ColumnSeries {
                     medianAttr.stroke = (point.medianColor ||
                         options.medianColor ||
                         color);
-                    medianAttr['stroke-width'] =
-                        point.medianWidth ??
-                            options.medianWidth ??
-                            options.lineWidth;
+                    medianAttr['stroke-width'] = pick(point.medianWidth, options.medianWidth, options.lineWidth);
                     medianAttr.dashstyle = (point.medianDashStyle ||
                         options.medianDashStyle ||
                         options.dashStyle);
                     point.medianShape.attr(medianAttr);
                 }
+                let d;
                 // The stem
                 const stemX = crisp((point.plotX || 0) + (series.pointXOffset || 0) +
                     ((series.barW || 0) / 2), point.stem.strokeWidth());
-                point.stem[verb]({
-                    d: [
-                        // Stem up
-                        ['M', stemX, q3Plot],
-                        ['L', stemX, highPlot],
-                        // Stem down
-                        ['M', stemX, q1Plot],
-                        ['L', stemX, lowPlot]
-                    ]
-                });
+                d = [
+                    // Stem up
+                    ['M', stemX, q3Plot],
+                    ['L', stemX, highPlot],
+                    // Stem down
+                    ['M', stemX, q1Plot],
+                    ['L', stemX, lowPlot]
+                ];
+                point.stem[verb]({ d });
                 // The box
                 if (doQuartiles) {
                     const boxStrokeWidth = point.box.strokeWidth();
@@ -193,11 +179,15 @@ class BoxPlotSeries extends ColumnSeries {
                     q3Plot = crisp(q3Plot, boxStrokeWidth);
                     x = crisp(x, boxStrokeWidth);
                     right = crisp(right, boxStrokeWidth);
-                    // Optionally round the corners of the box
-                    const r = Math.min(relativeLength(borderRadiusObject(options.borderRadius).radius, right - x), (right - x) / 2, Math.abs(q1Plot - q3Plot) / 2);
-                    point.box[verb]({
-                        d: renderer.symbols.roundedRect(x, Math.min(q1Plot, q3Plot), right - x, Math.abs(q1Plot - q3Plot), { r })
-                    });
+                    d = [
+                        ['M', x, q3Plot],
+                        ['L', x, q1Plot],
+                        ['L', right, q1Plot],
+                        ['L', right, q3Plot],
+                        ['L', x, q3Plot],
+                        ['Z']
+                    ];
+                    point.box[verb]({ d });
                 }
                 // The whiskers
                 if (pointWhiskerLength) {
@@ -210,12 +200,11 @@ class BoxPlotSeries extends ColumnSeries {
                 }
                 // The median
                 medianPlot = crisp(point.medianPlot, point.medianShape.strokeWidth());
-                point.medianShape[verb]({
-                    d: [
-                        ['M', x, medianPlot],
-                        ['L', right, medianPlot]
-                    ]
-                });
+                d = [
+                    ['M', x, medianPlot],
+                    ['L', right, medianPlot]
+                ];
+                point.medianShape[verb]({ d });
             }
         }
     }
@@ -235,16 +224,14 @@ extend(BoxPlotSeries.prototype, {
     pointArrayMap: ['low', 'q1', 'median', 'q3', 'high'],
     // Defines the top of the tracker
     pointValKey: 'high',
+    // Disable data labels for box plot
+    drawDataLabels: noop,
     setStackedPoints: noop // #3890
 });
-RangeDataLabel.compose(BoxPlotSeries);
 SeriesRegistry.registerSeriesType('boxplot', BoxPlotSeries);
 /* *
  *
  *  Default Export
  *
  * */
-/**
- * @internal
- */
 export default BoxPlotSeries;

@@ -3,9 +3,8 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
@@ -85,10 +84,6 @@ const isDateTimeFormatOptions = (obj) => obj.main === void 0;
  *
  * @param {Highcharts.TimeOptions} [options] Time options as defined in
  * [chart.options.time](/highcharts/time).
- *
- * @param {Highcharts.LangOptions} [lang]
- * Language options. When `options.locale` is not set, `lang.locale` is used as
- * the locale fallback for locale-aware date formatting.
  */
 class TimeBase {
     /* *
@@ -107,8 +102,8 @@ class TimeBase {
         };
         this.variableTimezone = false;
         this.Date = win.Date;
-        this.lang = lang;
         this.update(options);
+        this.lang = lang;
     }
     /* *
      *
@@ -205,24 +200,22 @@ class TimeBase {
             //      L, 6/3/2023 14:30:00
             .split(/(?:, | |\/|:)/g);
         return [
-            +year,
+            year,
             +month - 1,
-            +dayOfMonth,
-            +hours,
-            +minutes,
-            +seconds,
+            dayOfMonth,
+            hours,
+            minutes,
+            seconds,
             // Milliseconds
             Math.floor(Number(timestamp) || 0) % 1000,
             // Spanish weekday index
             'DLMXJVS'.indexOf(weekday)
-        ];
+        ].map(Number);
     }
     /**
      * Shorthand to get a cached `Intl.DateTimeFormat` instance.
      */
-    dateTimeFormat(options, timestamp, locale = (this.options.locale ||
-        this.lang?.locale ||
-        pageLang)) {
+    dateTimeFormat(options, timestamp, locale = this.options.locale || pageLang) {
         const cacheKey = JSON.stringify(options) + locale;
         if (isString(options)) {
             options = this.str2dtf(options);
@@ -308,16 +301,17 @@ class TimeBase {
         // eslint-disable-next-line new-cap
         let d = this.Date.UTC(year, month, date, hours, minutes || 0, seconds || 0, milliseconds || 0);
         if (this.timezone !== 'UTC') {
-            const offset = this.getTimezoneOffset(d), localHours = (hours - offset / timeUnits.hour + 24) % 24;
+            const offset = this.getTimezoneOffset(d);
             d += offset;
+            // Adjustments close to DST transitions
             if (
-            // Limit the number of calls to `getTimezoneOffset` to months
-            // where DST changes may occur. According to
+            // Optimize for speed by limiting the number of calls to
+            // `getTimezoneOffset`. According to
             // https://en.wikipedia.org/wiki/Daylight_saving_time_by_country,
             // DST change may only occur in these months.
             [2, 3, 8, 9, 10, 11].indexOf(month) !== -1 &&
-                // DST changes only occur at night (#24420)
-                (localHours < 5 || localHours > 20)) {
+                // DST transitions occur only in the night-time
+                (hours < 5 || hours > 20)) {
                 const newOffset = this.getTimezoneOffset(d);
                 if (offset !== newOffset) {
                     d += newOffset - offset;

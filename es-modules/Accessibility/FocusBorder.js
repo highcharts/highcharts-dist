@@ -5,14 +5,13 @@
  *
  *  Extend SVG and Chart classes with focus border capabilities.
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
 'use strict';
-import { addEvent } from '../Shared/Utilities.js';
+import { addEvent, pick } from '../Shared/Utilities.js';
 /* *
  *
  *  Composition
@@ -150,7 +149,7 @@ var FocusBorderComposition;
             this.removeFocusBorder();
         }
         // Add the border rect
-        const bb = this.getBBox(), pad = (margin ?? 3), parent = this.parentGroup, scaleX = this.scaleX || parent && parent.scaleX, scaleY = this.scaleY || parent && parent.scaleY, oneDefined = scaleX ? !scaleY : scaleY, scaleBoth = oneDefined ? Math.abs(scaleX || scaleY || 1) :
+        const bb = this.getBBox(), pad = pick(margin, 3), parent = this.parentGroup, scaleX = this.scaleX || parent && parent.scaleX, scaleY = this.scaleY || parent && parent.scaleY, oneDefined = scaleX ? !scaleY : scaleY, scaleBoth = oneDefined ? Math.abs(scaleX || scaleY || 1) :
             (Math.abs(scaleX || 1) + Math.abs(scaleY || 1)) / 2, lineHeight = this.renderer.fontMetrics(this).h;
         bb.x += this.translateX ? this.translateX : 0;
         bb.y += this.translateY ? this.translateY : 0;

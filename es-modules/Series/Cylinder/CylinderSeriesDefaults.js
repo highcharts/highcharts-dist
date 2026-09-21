@@ -6,9 +6,8 @@
  *
  *  Author: Kacper Madej
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
@@ -30,7 +29,6 @@
  * @product      highcharts
  * @excluding    allAreas, boostThreshold, colorAxis, compare, compareBase,
  *               dragDrop, boostBlending
- * @requires     highcharts-3d
  * @requires     modules/cylinder
  * @optionparent plotOptions.cylinder
  */
@@ -44,7 +42,6 @@ const CylinderSeriesDefaults = {};
  * @product   highcharts
  * @excluding allAreas, boostThreshold, colorAxis, compare, compareBase,
  *            boostBlending
- * @requires  highcharts-3d
  * @requires  modules/cylinder
  * @apioption series.cylinder
  */
@@ -103,7 +100,6 @@ const CylinderSeriesDefaults = {};
  * @sample {highcharts} highcharts/series/data-array-of-objects/
  *         Config objects
  *
- * @basic
  * @type      {Array<number|Array<(number|string),(number|null)>|null|*>}
  * @extends   series.column.data
  * @product   highcharts highstock

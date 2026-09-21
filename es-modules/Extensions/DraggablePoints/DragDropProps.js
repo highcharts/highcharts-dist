@@ -4,16 +4,15 @@
  *
  *  Authors: Øystein Moseng, Torstein Hønsi, Jon A. Nygård
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
 'use strict';
 import DraggableChart from './DraggableChart.js';
 const { flipResizeSide } = DraggableChart;
-import { isNumber, merge } from '../../Shared/Utilities.js';
+import { isNumber, merge, pick } from '../../Shared/Utilities.js';
 /* *
  *
  *  Constants
@@ -49,7 +48,8 @@ const column = {
             // We flip whether or not we update the top or bottom of the guide
             // box at threshold, but if we drag the mouse fast, the top has not
             // reached threshold before we cross over and update the bottom.
-            const plotThreshold = point.yBottom ?? point.series.translatedThreshold, plotY = guideBox.attr('y'), threshold = isNumber(point.stackY) ? (point.stackY - (point.y || 0)) : point.series.options.threshold || 0, y = threshold + pointVals.y;
+            const plotThreshold = pick(point.yBottom, // Added support for stacked series. (#18741)
+            point.series.translatedThreshold), plotY = guideBox.attr('y'), threshold = isNumber(point.stackY) ? (point.stackY - (point.y || 0)) : point.series.options.threshold || 0, y = threshold + pointVals.y;
             let height, diff;
             if (point.series.yAxis.reversed ? y < threshold : y >= threshold) {
                 // Above threshold - always set height to hit the threshold

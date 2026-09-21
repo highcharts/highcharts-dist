@@ -3,9 +3,8 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
@@ -13,7 +12,7 @@
 import Point from '../Core/Series/Point.js';
 const { tooltipFormatter: pointTooltipFormatter } = Point.prototype;
 import Series from '../Core/Series/Series.js';
-import { addEvent, arrayMax, arrayMin, correctFloat, defined, isArray, isNumber, isString } from '../Shared/Utilities.js';
+import { addEvent, arrayMax, arrayMin, correctFloat, defined, isArray, isNumber, isString, pick } from '../Shared/Utilities.js';
 /* *
  *
  *  Composition
@@ -75,7 +74,7 @@ var DataModifyComposition;
                     series.setCumulative(modeState, false);
                 }
             });
-            if (redraw ?? true) {
+            if (pick(redraw, true)) {
                 this.chart.redraw();
             }
         }
@@ -92,7 +91,7 @@ var DataModifyComposition;
     function tooltipFormatter(pointFormat) {
         const point = this, { numberFormatter } = point.series.chart, replace = function (value) {
             pointFormat = pointFormat.replace('{point.' + value + '}', (point[value] > 0 && value === 'change' ? '+' : '') +
-                numberFormatter(point[value], (point.series.tooltipOptions.changeDecimals ?? 2)));
+                numberFormatter(point[value], pick(point.series.tooltipOptions.changeDecimals, 2)));
         };
         if (defined(point.change)) {
             replace('change');
@@ -120,9 +119,7 @@ var DataModifyComposition;
                 chart.series[this.index - 1] :
                 chart.get(linkedTo);
             if (linkedSeries instanceof Series) {
-                this.options.compare =
-                    this.userOptions.compare ??
-                        linkedSeries.options.compare;
+                this.options.compare = pick(this.userOptions.compare, linkedSeries.options.compare);
             }
         }
         const compare = this.options.compare;
@@ -196,7 +193,7 @@ var DataModifyComposition;
         // Survive to export, #5485 (and for options generally)
         this.options.compare = this.userOptions.compare = compare;
         // Fire series.init() that will set or delete series.dataModify
-        this.update({}, (redraw ?? true));
+        this.update({}, pick(redraw, true));
         if (this.dataModify && (compare === 'value' || compare === 'percent')) {
             this.dataModify.initCompare(compare);
         }
@@ -283,11 +280,11 @@ var DataModifyComposition;
      */
     function seriesSetCumulative(cumulative, redraw) {
         // Set default value to false
-        cumulative = (cumulative ?? false);
+        cumulative = pick(cumulative, false);
         // Survive to export, #5485 (and for options generally)
         this.options.cumulative = this.userOptions.cumulative = cumulative;
         // Fire series.init() that will set or delete series.dataModify
-        this.update({}, (redraw ?? true));
+        this.update({}, pick(redraw, true));
         // If should, turn on the Cumulative Sum mode
         if (this.dataModify) {
             this.dataModify.initCumulative();

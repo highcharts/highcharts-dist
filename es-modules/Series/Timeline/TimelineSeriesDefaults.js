@@ -6,9 +6,8 @@
  *
  *  Author: Daniel Studencki
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
@@ -78,11 +77,11 @@ const TimelineSeriesDefaults = {
          *         Alternate disabled
          */
         alternate: true,
-        backgroundColor: 'var(--highcharts-background-color)',
+        backgroundColor: "#ffffff" /* Palette.backgroundColor */,
         borderWidth: 1,
-        borderColor: 'var(--highcharts-neutral-color-40)',
+        borderColor: "#999999" /* Palette.neutralColor40 */,
         borderRadius: 3,
-        color: 'var(--highcharts-neutral-color-80)',
+        color: "#333333" /* Palette.neutralColor80 */,
         /**
          * The color of the line connecting the data label to the point.
          * The default color is the same as the point's color.
@@ -145,11 +144,14 @@ const TimelineSeriesDefaults = {
                 (this.label || '');
             return format;
         },
-        padding: 5,
         style: {
+            /** @internal */
             textOutline: 'none',
+            /** @internal */
             fontWeight: 'normal',
+            /** @internal */
             fontSize: '0.8em',
+            /** @internal */
             textAlign: 'left'
         },
         /**
@@ -181,7 +183,7 @@ const TimelineSeriesDefaults = {
  *
  * @extends   series,plotOptions.timeline
  * @excluding animationLimit, boostThreshold, connectEnds, connectNulls,
- *            cropThreshold, dashStyle, findNearestPointBy,
+ *            cropThreshold, dashStyle, dataParser, dataURL, findNearestPointBy,
  *            getExtremesFromAll, negativeColor, pointInterval,
  *            pointIntervalUnit, pointPlacement, pointStart, softThreshold,
  *            stacking, stack, step, threshold, turboThreshold, zoneAxis, zones,
@@ -216,7 +218,6 @@ const TimelineSeriesDefaults = {
  * @sample {highcharts} highcharts/series-timeline/datetime-axis
  *         Real time intervals
  *
- * @basic
  * @type      {Array<*>}
  * @extends   series.line.data
  * @excluding marker, y

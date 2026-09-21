@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Stock v13.1.1 (2026-09-20)
+ * @license Highcharts Stock v12.6.2 (2026-09-21)
  * @module highcharts/highstock
  *
  * (c) 2009-2026 Highsoft AS
  *
- * A commercial license may be required depending on use,
- * see www.highcharts.com/license
+ * A commercial license may be required depending on use.
+ * See www.highcharts.com/license
  */
 'use strict';
 import Highcharts from './highcharts.src.js';

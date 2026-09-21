@@ -3,9 +3,8 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
@@ -110,7 +109,7 @@ var WaterfallAxis;
          * @function Highcharts.Axis#renderWaterfallStackTotals
          */
         renderStackTotals() {
-            const yAxis = this.axis, waterfallStacks = yAxis.waterfall?.stacks, stackTotalGroup = yAxis.stacking?.stackTotalGroup, dummyStackItem = new StackItem(yAxis, false, 0, void 0);
+            const yAxis = this.axis, waterfallStacks = yAxis.waterfall?.stacks, stackTotalGroup = yAxis.stacking?.stackTotalGroup, dummyStackItem = new StackItem(yAxis, yAxis.options.stackLabels || {}, false, 0, void 0);
             this.dummyStackItem = dummyStackItem;
             // Render each waterfall stack total
             if (stackTotalGroup) {

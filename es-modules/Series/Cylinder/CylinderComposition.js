@@ -6,9 +6,8 @@
  *
  *  Author: Kacper Madej
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
@@ -18,13 +17,15 @@ const { charts, deg2rad } = H;
 import Math3D from '../../Core/Math3D.js';
 const { perspective } = Math3D;
 import SVGElement3DCylinder from './SVGElement3DCylinder.js';
-import { extend } from '../../Shared/Utilities.js';
+import { extend, pick } from '../../Shared/Utilities.js';
 /* *
  *
  *  Functions
  *
  * */
-/** @internal */
+/**
+ *
+ */
 function compose(SVGRendererClass) {
     const rendererProto = SVGRendererClass.prototype;
     if (!rendererProto.cylinder) {
@@ -42,18 +43,18 @@ function compose(SVGRendererClass) {
 /**
  * Check if a path is simplified. The simplified path contains only lineTo
  * segments, whereas non-simplified contain curves.
- * @internal
+ * @private
  */
 function isSimplified(path) {
     return !path.some((seg) => seg[0] === 'C');
 }
-/** @internal */
+/** @private */
 function rendererCylinder(shapeArgs) {
     return this.element3d('cylinder', shapeArgs);
 }
 /**
  * Generates paths and zIndexes.
- * @internal
+ * @private
  */
 function rendererCylinderPath(shapeArgs) {
     const renderer = this, chart = charts[renderer.chartIndex], 
@@ -77,7 +78,7 @@ function rendererCylinderPath(shapeArgs) {
  * Returns curved path in format of:
  * [ M, x, y, ...[C, cp1x, cp2y, cp2x, cp2y, epx, epy]*n_times ]
  * (cp - control point, ep - end point)
- * @internal
+ * @private
  */
 function rendererGetCurvedPath(points) {
     const path = [['M', points[0].x, points[0].y]], limit = points.length - 2;
@@ -93,7 +94,7 @@ function rendererGetCurvedPath(points) {
 }
 /**
  * Returns cylinder Back path.
- * @internal
+ * @private
  */
 function rendererGetCylinderBack(topPath, bottomPath) {
     const path = [];
@@ -149,13 +150,13 @@ function rendererGetCylinderBack(topPath, bottomPath) {
 }
 /**
  * Returns cylinder path for top or bottom.
- * @internal
+ * @private
  */
 function rendererGetCylinderEnd(chart, shapeArgs, isBottom) {
     const { width = 0, height = 0, alphaCorrection = 0 } = shapeArgs, 
     // A half of the smaller one out of width or depth (optional, because
     // there's no depth for a funnel that reuses the code)
-    depth = (shapeArgs.depth ?? width ?? 0), radius = Math.min(width, depth) / 2, 
+    depth = pick(shapeArgs.depth, width, 0), radius = Math.min(width, depth) / 2, 
     // Approximated longest diameter
     angleOffset = deg2rad * (chart.options.chart.options3d.beta - 90 +
         alphaCorrection), 
@@ -246,7 +247,7 @@ function rendererGetCylinderEnd(chart, shapeArgs, isBottom) {
 }
 /**
  * Returns cylinder Front path.
- * @internal
+ * @private
  */
 function rendererGetCylinderFront(topPath, bottomPath) {
     const path = topPath.slice(0, 3);
@@ -290,9 +291,7 @@ function rendererGetCylinderFront(topPath, bottomPath) {
  *  Default Export
  *
  * */
-/** @internal */
 const CylinderComposition = {
     compose
 };
-/** @internal */
 export default CylinderComposition;

@@ -1,24 +1,25 @@
 /* *
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
 'use strict';
 import SeriesRegistry from '../../../Core/Series/SeriesRegistry.js';
 const { sma: SMAIndicator } = SeriesRegistry.seriesTypes;
-import { correctFloat, extend, merge } from '../../../Shared/Utilities.js';
+import { correctFloat, extend, merge, pick } from '../../../Shared/Utilities.js';
 /* *
  *
  *  Functions
  *
  * */
 // Utils:
-/** @internal */
+/**
+ * @private
+ */
 function accumulatePoints(sum, yVal, i, index, subtract) {
-    const price = (yVal[i][index] ?? yVal[i]);
+    const price = pick(yVal[i][index], yVal[i]);
     if (subtract) {
         return correctFloat(sum - price);
     }
@@ -32,7 +33,7 @@ function accumulatePoints(sum, yVal, i, index, subtract) {
 /**
  * The DPO series type.
  *
- * @internal
+ * @private
  * @class
  * @name Highcharts.seriesTypes.dpo
  *
@@ -63,8 +64,7 @@ class DPOIndicator extends SMAIndicator {
             rangeIndex = j + range - 1;
             // Adding the last period point
             sum = accumulatePoints(sum, yVal, periodIndex, index);
-            price = yVal[rangeIndex][index] ??
-                yVal[rangeIndex];
+            price = pick(yVal[rangeIndex][index], yVal[rangeIndex]);
             oscillator = price - sum / period;
             // Subtracting the first period point
             sum = accumulatePoints(sum, yVal, j, index, true);
@@ -124,7 +124,6 @@ SeriesRegistry.registerSeriesType('dpo', DPOIndicator);
  *  Default Export
  *
  * */
-/** @internal */
 export default DPOIndicator;
 /* *
  *
@@ -138,7 +137,7 @@ export default DPOIndicator;
  * @extends   series,plotOptions.dpo
  * @since     7.0.0
  * @product   highstock
- * @excluding allAreas, colorAxis, compare, compareBase,
+ * @excluding allAreas, colorAxis, compare, compareBase, dataParser, dataURL,
  *            joinBy, keys, navigatorOptions, pointInterval, pointIntervalUnit,
  *            pointPlacement, pointRange, pointStart, showInNavigator, stacking
  * @requires  stock/indicators/indicators

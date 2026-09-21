@@ -3,9 +3,8 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
@@ -378,11 +377,10 @@ var AxisDefaults;
          * the mouse is over a point. Works on initial hover.
          *
          * @sample {highcharts|highstock} highcharts/tooltip/showdelay/
-         *         Show crosshair after 2 seconds
          *
          * @type      {number}
          * @default   0
-         * @since     12.6.0
+         * @since     next
          * @apioption xAxis.crosshair.showDelay
          */
         /**
@@ -459,54 +457,26 @@ var AxisDefaults;
         zoomEnabled: true,
         /**
          * For a datetime axis, the scale will automatically adjust to the
-         * appropriate unit. This member gives the default representations used
-         * for each unit. For easier data interpretation, `hour`, `day`, `month`
-         * and `year` units can be used and formatted as boundary tick values.
-         * Check boundaries map below to see where to format boundary ticks on
-         * given main time units.
+         * appropriate unit. This member gives the default string
+         * representations used for each unit. For intermediate values,
+         * different units may be used, for example the `day` unit can be used
+         * on midnight and `hour` unit be used for intermediate values on the
+         * same axis.
          *
-         * ```js
-         *     baseUnit: boundaryUnit
-         *     ----------------------
-         *     millisecond: 'hour',
-         *     second: 'hour',
-         *     minute: 'hour',
-         *     hour: 'day',
-         *     day: 'month',
-         *     week: 'month',
-         *     month: 'year',
-         *     year: 'year'
-         * ```
-         *
-         * For an overview of the date time label formats configuration, see
+         * For an overview of the string or object configuration, see
          * [dateFormat](/class-reference/Highcharts.Time#dateFormat).
          *
          * Defaults to:
          * ```js
          * {
-         *     millisecond: { main: '%[HMSL]' },
-         *     second: { main: '%[HMS]' },
-         *     minute: { main: '%[HM]' },
-         *     hour: { main: '%[HM]', boundary: undefined },
-         *     day: { main: '%[eb]', boundary: '%[eb]' },
-         *     week: { main: '%[eb]' },
-         *     month: { main: '%[bY]', boundary: undefined },
-         *     year: { main: '%Y', boundary: undefined }
-         * }
-         * ```
-         *
-         * @productdesc {gantt}
-         * For grid axes (like in Gantt charts),
-         * it is possible to declare as a list to provide different
-         * formats depending on available space.
-         *
-         * Defaults to:
-         * ```js
-         * {
-         *     hour: { list: ['%H:%M', '%H'] },
-         *     day: { list: ['%A, %e. %B', '%a, %e. %b', '%E'] },
-         *     week: { list: ['Week %W', 'W%W'] },
-         *     month: { list: ['%B', '%b', '%o'] }
+         *     millisecond: '%[HMSL]',
+         *     second: '%[HMS]',
+         *     minute: '%[HM]',
+         *     hour: '%[HM]',
+         *     day: '%[eb]',
+         *     week: '%[eb]',
+         *     month: '%[bY]',
+         *     year: '%Y'
          * }
          * ```
          *
@@ -514,216 +484,144 @@ var AxisDefaults;
          *         Object day format on X axis
          * @sample {highcharts} highcharts/xaxis/datetimelabelformats/
          *         String day format on X axis
-         * @sample {highcharts} highcharts/xaxis/labels-boundary/
-         *         Month boundary on daily ticks
-         * @sample {highcharts} highcharts/xaxis/labels-boundary-format/
-         *         Using axis labels format to format boundary labels
          * @sample {highstock} stock/xaxis/datetimelabelformats/
          *         More information in x axis labels
-         * @sample {highstock} stock/xaxis/labels-boundary/
-         *         Year boundary on monthly ticks
-         * @sample {gantt} gantt/grid-axis/date-time-label-formats
-         *         Gantt chart with custom axis date format.
          *
          * @declare Highcharts.AxisDateTimeLabelFormatsOptions
          * @product highcharts highstock gantt
          */
         dateTimeLabelFormats: {
             /**
-             * @type {Highcharts.AxisDateTimeLabelFormatsOptionsObject|string}
              * @declare Highcharts.AxisDateTimeLabelFormatsOptionsObject
+             * @type {string|*}
              */
             millisecond: {
                 /**
-                 * List of possible format strings used for this unit.
-                 *
                  * @type {Array<string|Highcharts.DateTimeFormatOptions>}
+                 * @default undefined
                  * @apioption xAxis.dateTimeLabelFormats.millisecond.list
                  */
                 /**
+                 * @type {string|Highcharts.DateTimeFormatOptions}
                  * @apioption xAxis.dateTimeLabelFormats.millisecond.main
                  */
                 main: '%[HMSL]',
-                /**
-                 * When `false`, this time unit is treated as a point in time
-                 * rather than a range. In Gantt charts, when grid axis is
-                 * enabled, point-in-time ticks get left-aligned in the grid
-                 * cell by default.
-                 *
-                 * @product gantt
-                 * @apioption xAxis.dateTimeLabelFormats.millisecond.range
-                 */
                 range: false
             },
             /**
-             * @type {Highcharts.AxisDateTimeLabelFormatsOptionsObject|string}
              * @declare Highcharts.AxisDateTimeLabelFormatsOptionsObject
+             * @type {string|*}
              */
             second: {
                 /**
-                 * List of possible format strings used for this unit.
-                 *
                  * @type {Array<string|Highcharts.DateTimeFormatOptions>}
+                 * @default undefined
                  * @apioption xAxis.dateTimeLabelFormats.second.list
                  */
                 /**
+                 * @type {string|Highcharts.DateTimeFormatOptions}
                  * @apioption xAxis.dateTimeLabelFormats.second.main
                  */
                 main: '%[HMS]',
-                /**
-                 * When `false`, this time unit is treated as a point in time
-                 * rather than a range. In Gantt charts, when grid axis is
-                 * enabled, point-in-time ticks get left-aligned in the grid
-                 * cell by default.
-                 *
-                 * @product gantt
-                 * @apioption xAxis.dateTimeLabelFormats.second.range
-                 */
                 range: false
             },
             /**
-             * @type {Highcharts.AxisDateTimeLabelFormatsOptionsObject|string}
              * @declare Highcharts.AxisDateTimeLabelFormatsOptionsObject
+             * @type {string|*}
              */
             minute: {
                 /**
-                 * List of possible format strings used for this unit.
-                 *
                  * @type {Array<string|Highcharts.DateTimeFormatOptions>}
+                 * @default undefined
                  * @apioption xAxis.dateTimeLabelFormats.minute.list
                  */
                 /**
+                 * @type {string|Highcharts.DateTimeFormatOptions}
                  * @apioption xAxis.dateTimeLabelFormats.minute.main
                  */
                 main: '%[HM]',
-                /**
-                 * When `false`, this time unit is treated as a point in time
-                 * rather than a range. In Gantt charts, when grid axis is
-                 * enabled, point-in-time ticks get left-aligned in the grid
-                 * cell by default.
-                 *
-                 * @product gantt
-                 * @apioption xAxis.dateTimeLabelFormats.minute.range
-                 */
                 range: false
             },
             /**
-             * @type {Highcharts.AxisDateTimeLabelFormatsOptionsObject|string}
              * @declare Highcharts.AxisDateTimeLabelFormatsOptionsObject
+             * @type {string|*}
              */
             hour: {
                 /**
-                 * List of possible format strings used for this unit.
-                 *
                  * @type {Array<string|Highcharts.DateTimeFormatOptions>}
+                 * @default undefined
                  * @apioption xAxis.dateTimeLabelFormats.hour.list
                  */
                 /**
+                 * @type {string|Highcharts.DateTimeFormatOptions}
                  * @apioption xAxis.dateTimeLabelFormats.hour.main
                  */
                 main: '%[HM]',
-                /**
-                 * Label format that should be used when a tick is a boundary
-                 * tick, e.g. start of day, start of year, etc.
-                 *
-                 * @apioption xAxis.dateTimeLabelFormats.hour.boundary
-                 */
-                boundary: void 0,
-                /**
-                 * When `false`, this time unit is treated as a point in time
-                 * rather than a range. In Gantt charts, when grid axis is
-                 * enabled, point-in-time ticks get left-aligned in the grid
-                 * cell by default.
-                 *
-                 * @product gantt
-                 * @apioption xAxis.dateTimeLabelFormats.hour.range
-                 */
                 range: false
             },
             /**
-             * @type {Highcharts.AxisDateTimeLabelFormatsOptionsObject|string}
              * @declare Highcharts.AxisDateTimeLabelFormatsOptionsObject
+             * @type {string|*}
              */
             day: {
                 /**
-                 * List of possible format strings used for this unit.
-                 *
                  * @type {Array<string|Highcharts.DateTimeFormatOptions>}
+                 * @default undefined
                  * @apioption xAxis.dateTimeLabelFormats.day.list
                  */
                 /**
+                 * @type {string|Highcharts.DateTimeFormatOptions}
                  * @apioption xAxis.dateTimeLabelFormats.day.main
                  */
-                main: '%[eb]',
-                /**
-                 * Label format that should be used when a tick is a boundary
-                 * tick, e.g. start of day, start of year, etc.
-                 *
-                 * @apioption xAxis.dateTimeLabelFormats.day.boundary
-                 */
-                boundary: '%[eb]'
+                main: '%[eb]'
             },
             /**
-             * @type {Highcharts.AxisDateTimeLabelFormatsOptionsObject|string}
              * @declare Highcharts.AxisDateTimeLabelFormatsOptionsObject
+             * @type {string|*}
              */
             week: {
                 /**
-                 * List of possible format strings used for this unit.
-                 *
                  * @type {Array<string|Highcharts.DateTimeFormatOptions>}
+                 * @default undefined
                  * @apioption xAxis.dateTimeLabelFormats.week.list
                  */
                 /**
+                 * @type {string|Highcharts.DateTimeFormatOptions}
                  * @apioption xAxis.dateTimeLabelFormats.week.main
                  */
                 main: '%[eb]'
             },
             /**
-             * @type {Highcharts.AxisDateTimeLabelFormatsOptionsObject|string}
              * @declare Highcharts.AxisDateTimeLabelFormatsOptionsObject
+             * @type {string|*}
              */
             month: {
                 /**
-                 * List of possible format strings used for this unit.
-                 *
                  * @type {Array<string|Highcharts.DateTimeFormatOptions>}
+                 * @default undefined
                  * @apioption xAxis.dateTimeLabelFormats.month.list
                  */
                 /**
+                 * @type {string|Highcharts.DateTimeFormatOptions}
                  * @apioption xAxis.dateTimeLabelFormats.month.main
                  */
-                main: '%[bY]',
-                /**
-                 * Label format that should be used when a tick is a boundary
-                 * tick, e.g. start of day, start of year, etc.
-                 *
-                 * @apioption xAxis.dateTimeLabelFormats.month.boundary
-                 */
-                boundary: void 0
+                main: '%[bY]'
             },
             /**
-             * @type {Highcharts.AxisDateTimeLabelFormatsOptionsObject|string}
              * @declare Highcharts.AxisDateTimeLabelFormatsOptionsObject
+             * @type {string|*}
              */
             year: {
                 /**
-                 * List of possible format strings used for this unit.
-                 *
                  * @type {Array<string|Highcharts.DateTimeFormatOptions>}
+                 * @default undefined
                  * @apioption xAxis.dateTimeLabelFormats.year.list
                  */
                 /**
+                 * @type {string|Highcharts.DateTimeFormatOptions}
                  * @apioption xAxis.dateTimeLabelFormats.year.main
                  */
-                main: '%[Y]',
-                /**
-                 * Label format that should be used when a tick is a boundary
-                 * tick, e.g. start of day, start of year, etc.
-                 *
-                 * @apioption xAxis.dateTimeLabelFormats.year.boundary
-                 */
-                boundary: void 0
+                main: '%Y'
             }
         },
         /**
@@ -962,16 +860,15 @@ var AxisDefaults;
             /**
              * The label's pixel distance from the perimeter of the plot area.
              * On cartesian charts, this is overridden if the `labels.y` setting
-             * is set. Defaults to 15 unless the labels are aligned inside the
-             * plot area, in which case it defaults to 0.
+             * is set.
              *
              * @sample {highcharts} highcharts/yaxis/labels-distance/
              *         Polar chart, labels centered under the arc
              *
              * @type      {number}
              * @product   highcharts gantt
-             * @apioption xAxis.labels.distance
              */
+            distance: 15,
             /**
              * Enable or disable the axis labels.
              *
@@ -1051,7 +948,7 @@ var AxisDefaults;
              * add to automatically avoid overlapping X labels. Set to `1` to
              * disable overlap detection.
              *
-             * @deprecated 6.0.0
+             * @deprecated
              * @type      {number}
              * @default   5
              * @since     1.3.3
@@ -1190,12 +1087,15 @@ var AxisDefaults;
              * @type      {Highcharts.CSSObject}
              */
             style: {
-                /**
-                 * @type {Highcharts.ColorType}
-                 */
-                color: 'var(--highcharts-neutral-color-80)',
+                /** @internal */
+                color: "#333333" /* Palette.neutralColor80 */,
+                /** @internal */
                 cursor: 'default',
+                /**
+                 * @type {number|string}
+                 */
                 fontSize: '0.8em',
+                /** @internal */
                 textOverflow: 'ellipsis'
             }
         },
@@ -1229,18 +1129,18 @@ var AxisDefaults;
          * @apioption xAxis.top
          */
         /**
-         * Index or [id](#xAxis.id) of another axis that this axis is linked to.
-         * When an axis is linked to a master axis, it will take the same
-         * extremes as the master, but as assigned by min or max or by
-         * `setExtremes`. It can be used to show additional info, or to ease
-         * reading the chart by duplicating the scales.
+         * Index of another axis that this axis is linked to. When an axis is
+         * linked to a master axis, it will take the same extremes as
+         * the master, but as assigned by min or max or by setExtremes.
+         * It can be used to show additional info, or to ease reading the
+         * chart by duplicating the scales.
          *
          * @sample {highcharts} highcharts/xaxis/linkedto/
          *         Different string formats of the same date
          * @sample {highcharts} highcharts/yaxis/linkedto/
          *         Y values on both sides
          *
-         * @type      {number|string}
+         * @type      {number}
          * @since     2.0.2
          * @product   highcharts highstock gantt
          * @apioption xAxis.linkedTo
@@ -1296,7 +1196,7 @@ var AxisDefaults;
         /**
          * Deprecated. Use `minRange` instead.
          *
-         * @deprecated 6.0.0
+         * @deprecated
          * @type      {number}
          * @product   highcharts highstock
          * @apioption xAxis.maxZoom
@@ -1369,7 +1269,7 @@ var AxisDefaults;
          * The pixel length of the minor tick marks.
          *
          * @sample {highcharts} highcharts/yaxis/minorticklength/
-         *         Minor ticks on Y axis
+         *         10px on Y axis
          * @sample {highstock} stock/xaxis/minorticks/
          *         10px on Y axis
          */
@@ -1416,8 +1316,6 @@ var AxisDefaults;
         /**
          * The number of minor ticks per major tick. Works for `linear`,
          * `logarithmic` and `datetime` axes.
-         *
-         * For radial axes in gauges, the default value is 10.
          *
          * @sample {highcharts} highcharts/yaxis/minortickspermajor/
          *         2 minor ticks per major tick on Y axis
@@ -1500,27 +1398,20 @@ var AxisDefaults;
          */
         /**
          * The distance in pixels from the plot area to the axis line.
-         * A positive offset moves the axis with its line, labels and ticks
+         * A positive offset moves the axis with it's line, labels and ticks
          * away from the plot area. This is typically used when two or more
          * axes are displayed on the same side of the plot. With multiple
          * axes the offset is dynamically adjusted to avoid collision, this
          * can be overridden by setting offset explicitly.
-        *
-        * For radial axes in gauges, the offset can be a percentage string, and
-        * defaults to render the line and ticks on the inside of the pane and
-        * plot bands (since v13). Labels are not affected by the offset in
-        * radial axes.
          *
          * @sample {highcharts} highcharts/yaxis/offset/
          *         Y axis offset of 70
          * @sample {highcharts} highcharts/yaxis/offset-centered/
          *         Axes positioned in the center of the plot
-         * @sample {highcharts} highcharts/yaxis/radial-offset
-         *         Radial axis offset in gauge
          * @sample {highstock} stock/xaxis/offset/
          *         Y axis offset by 70 px
          *
-         * @type {number|string}
+         * @type {number}
          */
         offset: void 0,
         /**
@@ -1959,7 +1850,7 @@ var AxisDefaults;
             /**
              * Deprecated. Set the `text` to `undefined` to disable the title.
              *
-             * @deprecated 3.0.0
+             * @deprecated
              * @type      {boolean}
              * @product   highcharts
              * @apioption xAxis.title.enabled
@@ -1975,25 +1866,17 @@ var AxisDefaults;
              * @apioption xAxis.title.margin
              */
             /**
-             * The distance from the plot area to the axis line. A positive
-             * offset moves the axis with its line, labels and ticks away from
-             * the plot area. With multiple axes the offset is dynamically
-             * adjusted to avoid collision, this can be overridden by setting
-             * offset explicitly.
+             * The distance of the axis title from the axis line. By default,
+             * this distance is computed from the offset width of the labels,
+             * the labels' distance from the axis and the title's margin.
+             * However when the offset option is set, it overrides all this.
              *
-             * For radial axes in gauges, the offset can be a percentage string,
-             * and defaults to render the line and ticks on the inside of the
-             * pane and plot bands (since v13). Labels are not affected by the
-             * offset in radial axes.
+             * @sample {highcharts} highcharts/yaxis/title-offset/
+             *         Place the axis title on top of the axis
+             * @sample {highstock} highcharts/yaxis/title-offset/
+             *         Place the axis title on top of the Y axis
              *
-             * @sample highcharts/yaxis/offset/
-             *         Axis offfset
-             * @sample {highcharts} highcharts/yaxis/offset-centered/
-             *         Axes positioned in the center of the plot
-             * @sample {highstock} stock/xaxis/offset/
-             *         Y axis offset in stock chart
-             *
-             * @type      {number|string}
+             * @type      {number}
              * @since     2.2.0
              * @apioption xAxis.title.offset
              */
@@ -2091,10 +1974,8 @@ var AxisDefaults;
              * @type    {Highcharts.CSSObject}
              */
             style: {
-                /**
-                 * @type {Highcharts.ColorType}
-                 */
-                color: 'var(--highcharts-neutral-color-60)',
+                /** @internal */
+                color: "#666666" /* Palette.neutralColor60 */,
                 /**
                  * @type {number|string}
                  */
@@ -2219,8 +2100,9 @@ var AxisDefaults;
          *         Bright grey lines from Y axis
          *
          * @type    {Highcharts.ColorType}
+         * @default #f2f2f2
          */
-        minorGridLineColor: 'var(--highcharts-neutral-color-5)',
+        minorGridLineColor: "#f2f2f2" /* Palette.neutralColor5 */,
         /**
          * Width of the minor, secondary grid lines.
          *
@@ -2244,8 +2126,9 @@ var AxisDefaults;
          *         Black tick marks on Y axis
          *
          * @type    {Highcharts.ColorType}
+         * @default #999999
          */
-        minorTickColor: 'var(--highcharts-neutral-color-40)',
+        minorTickColor: "#999999" /* Palette.neutralColor40 */,
         /**
          * The color of the line marking the axis itself.
          *
@@ -2261,7 +2144,7 @@ var AxisDefaults;
          *
          * @type    {Highcharts.ColorType}
          */
-        lineColor: 'var(--highcharts-neutral-color-80)',
+        lineColor: "#333333" /* Palette.neutralColor80 */,
         /**
          * The width of the line marking the axis itself.
          *
@@ -2296,15 +2179,13 @@ var AxisDefaults;
          *         Green lines
          *
          * @type    {Highcharts.ColorType}
+         * @default #e6e6e6
          */
-        gridLineColor: 'var(--highcharts-neutral-color-10)',
+        gridLineColor: "#e6e6e6" /* Palette.neutralColor10 */,
         /**
          * The width of the grid lines extending the ticks across the plot area.
          * Defaults to 1 on the Y axis and 0 on the X axis, except for 3d
-         * charts and gauges.
-         *
-         * In gauges, the grid lines are limited to the pane's `size` and
-         * `innerSize`.
+         * charts.
          *
          * In styled mode, the stroke width is given in the
          * `.highcharts-grid-line` class.
@@ -2313,8 +2194,6 @@ var AxisDefaults;
          *         2px lines
          * @sample {highcharts|highstock} highcharts/css/axis-grid/
          *         Styled mode
-         * @sample {highcharts} highcharts/yaxis/radial-gridline
-         *         Grid lines on gauge
          * @sample {highstock} stock/xaxis/gridlinewidth/
          *         2px lines
          *
@@ -2365,7 +2244,7 @@ var AxisDefaults;
          *
          * @type    {Highcharts.ColorType}
          */
-        tickColor: 'var(--highcharts-neutral-color-80)'
+        tickColor: "#333333" /* Palette.neutralColor80 */
         // `tickWidth: 1`
     };
     /**
@@ -3170,15 +3049,15 @@ var AxisDefaults;
              * @product highcharts
              */
             style: {
-                /**
-                 * @type {Highcharts.ColorType}
-                 */
-                color: 'var(--highcharts-neutral-color-100)',
+                /** @internal */
+                color: "#000000" /* Palette.neutralColor100 */,
                 /**
                  * @type {number|string}
                  */
                 fontSize: '0.7em',
+                /** @internal */
                 fontWeight: 'bold',
+                /** @internal */
                 textOutline: '1px contrast'
             }
         },

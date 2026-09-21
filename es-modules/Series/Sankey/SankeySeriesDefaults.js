@@ -5,9 +5,8 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
@@ -31,7 +30,7 @@
  * @extends      plotOptions.column
  * @since        6.0.0
  * @product      highcharts
- * @excluding    animationLimit, boostBlending, boostThreshold,
+ * @excluding    animationLimit, boostBlending, boostThreshold, borderRadius,
  *               crisp, cropThreshold, colorAxis, colorKey, dataSorting, depth,
  *               dragDrop, edgeColor, edgeWidth, findNearestPointBy, grouping,
  *               groupPadding, groupZPadding, legendSymbolColor, maxPointWidth,
@@ -312,7 +311,6 @@ const SankeySeriesDefaults = {
              * Animation when not hovering over the marker.
              *
              * @type      {boolean|Partial<Highcharts.AnimationOptionsObject>}
-             * @default   { duration: 50 }
              * @apioption plotOptions.series.states.inactive.animation
              */
             animation: {
@@ -352,12 +350,13 @@ const SankeySeriesDefaults = {
  *
  * @extends   series,plotOptions.sankey
  * @excluding animationLimit, boostBlending, boostThreshold, borderColor,
- *            borderWidth, crisp, cropThreshold, depth, dragDrop, edgeColor,
- *            edgeWidth, findNearestPointBy, getExtremesFromAll, grouping,
- *            groupPadding, groupZPadding, label, maxPointWidth, negativeColor,
- *            pointInterval, pointIntervalUnit, pointPadding, pointPlacement,
- *            pointRange, pointStart, pointWidth, shadow, softThreshold,
- *            stacking, threshold, zoneAxis, zones, dataSorting
+ *            borderRadius, borderWidth, crisp, cropThreshold, dataParser,
+ *            dataURL, depth, dragDrop, edgeColor, edgeWidth,
+ *            findNearestPointBy, getExtremesFromAll, grouping, groupPadding,
+ *            groupZPadding, label, maxPointWidth, negativeColor, pointInterval,
+ *            pointIntervalUnit, pointPadding, pointPlacement, pointRange,
+ *            pointStart, pointWidth, shadow, softThreshold, stacking,
+ *            threshold, zoneAxis, zones, dataSorting
  * @product   highcharts
  * @requires  modules/sankey
  * @apioption series.sankey
@@ -463,7 +462,7 @@ const SankeySeriesDefaults = {
  * If a percentage string is given, the node is offset by the percentage of the
  * node size plus `nodePadding`.
  *
- * @deprecated 9.3.0
+ * @deprecated
  * @type      {number|string}
  * @default   0
  * @since     6.0.5
@@ -534,7 +533,6 @@ const SankeySeriesDefaults = {
  * @sample {highcharts} highcharts/series/data-array-of-objects/
  *         Config objects
  *
- * @basic
  * @declare   Highcharts.SeriesSankeyPointOptionsObject
  * @type      {Array<*>|Array<Array<(string|number)>>}
  * @extends   series.line.data

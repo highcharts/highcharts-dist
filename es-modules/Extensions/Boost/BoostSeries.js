@@ -19,7 +19,7 @@ import H from '../../Core/Globals.js';
 const { composed, doc, noop, win } = H;
 import WGLRenderer from './WGLRenderer.js';
 import DataTableCore from '../../Data/DataTableCore.js';
-import { addEvent, defined, destroyObjectProperties, extend, fireEvent, isArray, isNumber, pushUnique, wrap } from '../../Shared/Utilities.js';
+import { addEvent, defined, destroyObjectProperties, extend, fireEvent, isArray, isNumber, pick, pushUnique, wrap } from '../../Shared/Utilities.js';
 import { error } from '../../Core/Utilities.js';
 /* *
  *
@@ -65,10 +65,10 @@ function allocateIfNotSeriesBoosting(renderer, series) {
  * True, if boost is enabled.
  */
 function boostEnabled(chart) {
-    return ((chart &&
+    return pick((chart &&
         chart.options &&
         chart.options.boost &&
-        chart.options.boost.enabled) ?? true);
+        chart.options.boost.enabled), true);
 }
 /** @internal */
 function compose(SeriesClass, seriesTypes, PointClass, wglMode) {
@@ -325,11 +325,20 @@ function createAndAttachRenderer(chart, series) {
  */
 function destroyGraphics(series) {
     const points = series.points;
-    points?.forEach((point) => {
-        point?.destroyElements?.(); // #7557
-    });
+    if (points) {
+        let point, i;
+        for (i = 0; i < points.length; i = i + 1) {
+            point = points[i];
+            if (point && point.destroyElements) {
+                point.destroyElements(); // #7557
+            }
+        }
+    }
     ['graph', 'area', 'tracker'].forEach((prop) => {
-        series[prop] = series[prop]?.destroy();
+        const seriesProp = series[prop];
+        if (seriesProp) {
+            series[prop] = seriesProp.destroy();
+        }
     });
     for (const zone of series.zones) {
         destroyObjectProperties(zone, void 0, true);
@@ -421,6 +430,7 @@ function enterBoost(series) {
         }
         series.data.length = 0;
         series.points.length = 0;
+        delete series.processedData;
     }
 }
 /**
@@ -465,7 +475,7 @@ function exitBoost(series) {
  * @function Highcharts.Series#hasExtremes
  */
 function hasExtremes(series, checkX) {
-    const options = series.options, threshold = (options.boostThreshold ?? Number.MAX_VALUE);
+    const options = series.options, threshold = pick(options.boostThreshold, Number.MAX_VALUE);
     if (threshold === 0) {
         return false;
     }
@@ -484,7 +494,7 @@ function hasExtremes(series, checkX) {
  * @internal
  */
 const getSeriesBoosting = (series, data) => {
-    const { options, forceCrop, chart } = series, threshold = (options.boostThreshold ?? Number.MAX_VALUE);
+    const { options, forceCrop, chart } = series, threshold = pick(options.boostThreshold, Number.MAX_VALUE);
     // Return early if either will be grouped or boost is disabled.
     if (forceCrop || threshold === 0) {
         return false;
@@ -515,7 +525,7 @@ function onSeriesDestroy() {
 }
 /** @internal */
 function onSeriesHide() {
-    const boost = this.boost, chartBoost = this.chart.boost, sharedMarkerGroup = chartBoost?.markerGroup;
+    const boost = this.boost;
     if (boost && boost.canvas && boost.target) {
         if (boost.wgl) {
             boost.wgl.clear();
@@ -523,12 +533,6 @@ function onSeriesHide() {
         if (boost.clear) {
             boost.clear();
         }
-    }
-    if (sharedMarkerGroup &&
-        this.markerGroup === sharedMarkerGroup &&
-        this.chart.series.some((series) => series.visible &&
-            series.markerGroup === sharedMarkerGroup)) {
-        sharedMarkerGroup.show();
     }
 }
 /**
@@ -571,32 +575,29 @@ function getPoint(series, boostPoint) {
         series.getColumn('x', true) ||
         false), yData = (series.getColumn('y', true) ||
         seriesOptions.yData ||
-        false), pointIndex = boostPoint.i, 
-    /// dataIndex = boostPoint.dataIndex ?? pointIndex,
-    pointColor = data?.[pointIndex]
+        false), pointIndex = boostPoint.i, pointColor = data?.[pointIndex]
         ?.color, point = new PointClass(series, (isScatter && xData && yData) ?
         [xData[pointIndex], yData[pointIndex]] :
         (isArray(data) ? data : [])[pointIndex], xData ? xData[pointIndex] : void 0);
     if (isScatter &&
         seriesOptions?.keys?.length) {
         const keys = seriesOptions.keys;
-        /// pointData = data?.[dataIndex];
-        // Don't reassign X and Y properties as they're already handled
-        // above
+        // Don't reassign X and Y properties as they're already handled above
         for (let keysIndex = keys.length - 1; keysIndex > -1; keysIndex--) {
             point[keys[keysIndex]] =
                 data[pointIndex][keysIndex];
         }
     }
-    point.category = (xAxis.categories ?
+    point.category = pick(xAxis.categories ?
         xAxis.categories[point.x] :
-        point.x ?? point.x);
+        point.x, // @todo simplify
+    point.x);
     point.key = point.name ?? point.category;
     point.dist = boostPoint.dist;
     point.distX = boostPoint.distX;
     point.plotX = boostPoint.plotX;
     point.plotY = boostPoint.plotY;
-    /// point.index = dataIndex;
+    point.index = pointIndex;
     point.percentage = boostPoint.percentage;
     point.isInside = series.isPointInside(point);
     if (pointColor) {
@@ -617,17 +618,7 @@ function scatterProcessData(force) {
     // Required to get tick-based zoom ranges that take options into account
     // like `minPadding`, `maxPadding`, `startOnTick`, `endOnTick`.
     series.yAxis.setTickInterval();
-    const boostThreshold = options.boostThreshold || 0, cropThreshold = options.cropThreshold, xData = series.getColumn('x'), xExtremes = xAxis.getExtremes(), xMax = xExtremes.max ?? Number.MAX_VALUE, xMin = xExtremes.min ?? -Number.MAX_VALUE, yData = series.getColumn('y'), yExtremes = yAxis.getExtremes(), yMax = yExtremes.max ?? Number.MAX_VALUE, yMin = yExtremes.min ?? -Number.MAX_VALUE, 
-    // Crop on the Y axis only against the hard options bounds, not the
-    // auto-scaled `yAxis.min` and `yAxis.max`. Cropping against them would
-    // lock reset zoom to the old window and stop the data extremes from
-    // being restored (#24386).
-    yCropMin = yAxis.userMin ?? (isNumber(yAxis.options.min) ?
-        yAxis.options.min : -Number.MAX_VALUE), yCropMax = yAxis.userMax ?? (isNumber(yAxis.options.max) ?
-        yAxis.options.max : Number.MAX_VALUE);
-    /// if (series.boost) {
-    //     delete series.boost.pointDataIndices;
-    // }
+    const boostThreshold = options.boostThreshold || 0, cropThreshold = options.cropThreshold, xData = series.getColumn('x'), xExtremes = xAxis.getExtremes(), xMax = xExtremes.max ?? Number.MAX_VALUE, xMin = xExtremes.min ?? -Number.MAX_VALUE, yData = series.getColumn('y'), yExtremes = yAxis.getExtremes(), yMax = yExtremes.max ?? Number.MAX_VALUE, yMin = yExtremes.min ?? -Number.MAX_VALUE;
     // Skip processing in non-boost zoom
     if (!series.boosted &&
         xAxis.old &&
@@ -658,16 +649,16 @@ function scatterProcessData(force) {
         return true;
     }
     // Filter unsorted scatter data for ranges
-    const processedXData = [], processedYData = [], processedDataIndices = [], xRangeNeeded = !(isNumber(xExtremes.max) || isNumber(xExtremes.min)), yRangeNeeded = !(isNumber(yExtremes.max) || isNumber(yExtremes.min));
+    const processedData = [], processedXData = [], processedYData = [], xRangeNeeded = !(isNumber(xExtremes.max) || isNumber(xExtremes.min)), yRangeNeeded = !(isNumber(yExtremes.max) || isNumber(yExtremes.min));
     let cropped = false, x, xDataMax = xData[0], xDataMin = xData[0], y, yDataMax = yData?.[0], yDataMin = yData?.[0];
     for (let i = 0, iEnd = xData.length; i < iEnd; ++i) {
         x = xData[i];
         y = yData?.[i];
         if (x >= xMin && x <= xMax &&
-            y >= yCropMin && y <= yCropMax) {
+            y >= yMin && y <= yMax) {
+            processedData.push({ x, y });
             processedXData.push(x);
             processedYData.push(y);
-            processedDataIndices.push(i);
             if (xRangeNeeded) {
                 xDataMax = Math.max(xDataMax, x);
                 xDataMin = Math.min(xDataMin, x);
@@ -697,15 +688,14 @@ function scatterProcessData(force) {
         // Calling setColumns with cropped data must be done on a new instance
         // to avoid modification of the original (complete) data
         series.dataTable.modified = new DataTableCore();
-        series.hasProcessedDataTable = true;
     }
     series.dataTable.getModified().setColumns({
         x: processedXData,
         y: processedYData
     });
-    /// if (series.boost && cropped) {
-    //     series.boost.pointDataIndices = processedDataIndices;
-    // }
+    if (!getSeriesBoosting(series, processedXData)) {
+        series.processedData = processedData; // For un-boosted points rendering
+    }
     return true;
 }
 /**
@@ -713,18 +703,14 @@ function scatterProcessData(force) {
  * @function Highcharts.Series#renderCanvas
  */
 function seriesRenderCanvas() {
-    const options = this.options || {}, chart = this.chart, chartBoost = chart.boost, seriesBoost = this.boost, xAxis = this.xAxis, yAxis = this.yAxis, xData = options.xData || this.getColumn('x', true), yData = options.yData || this.getColumn('y', true), lowData = this.getColumn('low', true), highData = this.getColumn('high', true), rawData = options.data, xExtremes = xAxis.getExtremes(), 
+    const options = this.options || {}, chart = this.chart, chartBoost = chart.boost, seriesBoost = this.boost, xAxis = this.xAxis, yAxis = this.yAxis, xData = options.xData || this.getColumn('x', true), yData = options.yData || this.getColumn('y', true), lowData = this.getColumn('low', true), highData = this.getColumn('high', true), rawData = this.processedData || options.data, xExtremes = xAxis.getExtremes(), 
     // Taking into account the offset of the min point #19497
     xMin = xExtremes.min - (xAxis.minPointOffset || 0), xMax = xExtremes.max + (xAxis.minPointOffset || 0), yExtremes = yAxis.getExtremes(), yMin = yExtremes.min - (yAxis.minPointOffset || 0), yMax = yExtremes.max + (yAxis.minPointOffset || 0), pointTaken = {}, sampling = !!this.sampling, enableMouseTracking = options.enableMouseTracking, threshold = options.threshold, isRange = this.pointArrayMap &&
-        this.pointArrayMap.join(',') === 'low,high', isStacked = !!options.stacking, cropStart = this.cropStart || 0, requireSorting = this.requireSorting, 
-    /// pointDataIndices = !requireSorting ?
-    //     seriesBoost?.pointDataIndices :
-    //     void 0,
-    useRaw = !xData, compareX = options.findNearestPointBy === 'x', xDataFull = ((this.getColumn('x').length ?
+        this.pointArrayMap.join(',') === 'low,high', isStacked = !!options.stacking, cropStart = this.cropStart || 0, requireSorting = this.requireSorting, useRaw = !xData, compareX = options.findNearestPointBy === 'x', xDataFull = ((this.getColumn('x').length ?
         this.getColumn('x') :
         void 0) ||
         this.options.xData ||
-        this.getColumn('x', true)), lineWidth = (options.lineWidth ?? 1), nullYSubstitute = options.nullInteraction && yMin, tooltip = chart.tooltip;
+        this.getColumn('x', true)), lineWidth = pick(options.lineWidth, 1), nullYSubstitute = options.nullInteraction && yMin, tooltip = chart.tooltip;
     let renderer = false, lastClientX, yBottom = yAxis.getThreshold(threshold), minVal, maxVal, minI, maxI;
     // Clear mock points and tooltip after zoom (#20330)
     if (!this.boosted) {
@@ -790,8 +776,7 @@ function seriesRenderCanvas() {
         }
     }
     const points = this.points = [], addKDPoint = (clientX, plotY, i, percentage) => {
-        const /// dataIndex = pointDataIndices?.[i] ?? (cropStart + i),
-        x = xDataFull ? xDataFull[cropStart + i] : false, pushPoint = (plotX) => {
+        const x = xDataFull ? xDataFull[cropStart + i] : false, pushPoint = (plotX) => {
             if (chart.inverted) {
                 plotX = xAxis.len - plotX;
                 plotY = yAxis.len - plotY;
@@ -803,7 +788,6 @@ function seriesRenderCanvas() {
                 plotX: plotX,
                 plotY: plotY,
                 i: cropStart + i,
-                /// dataIndex: dataIndex,
                 percentage: percentage
             });
         };

@@ -6,17 +6,15 @@
  *  (c) 2009-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
 'use strict';
-import { stop } from '../Animation/AnimationUtilities.js';
 import GeometryUtilities from '../Geometry/GeometryUtilities.js';
 const { pointInPolygon } = GeometryUtilities;
-import { addEvent, fireEvent, getAlignFactor, objectEach } from '../../Shared/Utilities.js';
+import { addEvent, fireEvent, getAlignFactor, objectEach, pick } from '../../Shared/Utilities.js';
 /* *
  *
  *  Functions
@@ -49,12 +47,10 @@ function chartHideOverlappingLabels(labels) {
      */
     function getAbsoluteBox(label) {
         if (label && (!label.alignAttr || label.placed)) {
-            const padding = label.box ? 0 : (label.padding || 0), pos = label.dataLabelPosition?.posAttribs || // #21725
-                label.alignAttr ||
-                {
-                    x: label.attr('x'),
-                    y: label.attr('y')
-                }, { height, polygon, width } = label.getBBox(), alignOffset = getAlignFactor(label.alignValue) * width;
+            const padding = label.box ? 0 : (label.padding || 0), pos = label.alignAttr || {
+                x: label.attr('x'),
+                y: label.attr('y')
+            }, { height, polygon, width } = label.getBBox(), alignOffset = getAlignFactor(label.alignValue) * width;
             label.width = width;
             label.height = height;
             return {
@@ -155,34 +151,30 @@ export function composeOverlappingDataLabels(ChartClass) {
  * Whether label is affected
  */
 function hideOrShow(label, chart) {
-    let isLabelAffected = false;
+    let complete, newOpacity, isLabelAffected = false;
     if (label) {
-        const newOpacity = label.newOpacity, isDataLabel = label.hasClass('highcharts-data-label');
-        // For tick labels, we need to stop running animations otherwise they
-        // may continue to run after we set the new opacity
-        if (!isDataLabel) {
-            stop(label, 'opacity');
-        }
+        newOpacity = label.newOpacity;
         if (label.oldOpacity !== newOpacity) {
             // Toggle data labels
-            if (isDataLabel) {
+            if (label.hasClass('highcharts-data-label')) {
                 // Make sure the label is completely hidden to avoid catching
                 // clicks (#4362)
                 label[newOpacity ? 'removeClass' : 'addClass']('highcharts-data-label-hidden');
-                isLabelAffected = true;
-                // Animate or set the opacity
-                label[label.isOld || label.placed ? 'animate' : 'attr']({ opacity: newOpacity }, void 0, () => {
+                complete = function () {
                     if (!chart.styledMode) {
                         label.css({
                             pointerEvents: newOpacity ? 'auto' : 'none'
                         });
                     }
-                });
+                };
+                isLabelAffected = true;
+                // Animate or set the opacity
+                label[label.isOld ? 'animate' : 'attr']({ opacity: newOpacity }, void 0, complete);
                 fireEvent(chart, 'afterHideOverlappingLabel');
-                // Toggle other labels - tick labels, stack labels
+                // Toggle other labels, tick labels
             }
             else {
-                label[label.placed ? 'animate' : 'attr']({
+                label.attr({
                     opacity: newOpacity
                 });
             }
@@ -198,37 +190,25 @@ function hideOrShow(label, chart) {
  * @internal
  */
 function onChartRender() {
-    const chart = this, 
-    // Helper function for data labels and stack labels when dynamicly
-    // toggling the allowOverlap option
-    toggle = (label, allowOverlap) => {
-        // Allow overlap, reset opacity and show
-        if (allowOverlap) {
-            label.oldOpacity = label.opacity;
-            label.newOpacity = 1;
-            hideOrShow(label, chart);
-            // Do not allow overlap
-        }
-        else {
-            labels.push(label);
-        }
-    };
+    const chart = this;
     let labels = [];
     // Consider external label collectors
     for (const collector of (chart.labelCollectors || [])) {
         labels = labels.concat(collector());
     }
-    // Stack labels
-    for (const { options, stacking } of (chart.yAxis || [])) {
-        objectEach(stacking?.stacks, (stack) => {
-            objectEach(stack, ({ label }) => {
-                if (label) {
-                    toggle(label, options.stackLabels?.allowOverlap);
-                }
+    for (const yAxis of (chart.yAxis || [])) {
+        if (yAxis.stacking &&
+            yAxis.options.stackLabels &&
+            !yAxis.options.stackLabels.allowOverlap) {
+            objectEach(yAxis.stacking.stacks, (stack) => {
+                objectEach(stack, (stackItem) => {
+                    if (stackItem.label) {
+                        labels.push(stackItem.label);
+                    }
+                });
             });
-        });
+        }
     }
-    // Series data labels
     for (const series of (chart.series || [])) {
         if (series.visible && series.hasDataLabels?.()) { // #3866
             const push = (points) => {
@@ -236,10 +216,7 @@ function onChartRender() {
                     if (point.visible) {
                         (point.dataLabels || []).forEach((label) => {
                             const options = label.options || {};
-                            label.labelrank =
-                                options.labelrank ??
-                                    point.labelrank ??
-                                    point.shapeArgs?.height; // #4118
+                            label.labelrank = pick(options.labelrank, point.labelrank, point.shapeArgs?.height); // #4118
                             // #21725: Sync target positions for generic overlap
                             // checking. During animations (e.g., toggling a
                             // point), DOM positions may overlap. We force
@@ -257,13 +234,20 @@ function onChartRender() {
                             }
                             */
                             // Allow overlap if the option is explicitly true
-                            toggle(label, (
+                            if (
                             // #13449
                             options.allowOverlap ??
                                 // Pie labels outside have a separate placement
                                 // logic, skip the overlap logic
-                                (series.is('pie') &&
-                                    Number(options.distance) > 0)));
+                                Number(options.distance) > 0) {
+                                label.oldOpacity = label.opacity;
+                                label.newOpacity = 1;
+                                hideOrShow(label, chart);
+                                // Do not allow overlap
+                            }
+                            else {
+                                labels.push(label);
+                            }
                         });
                     }
                 }

@@ -3,16 +3,15 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
 'use strict';
 import Color from '../../Color/Color.js';
 const { parse: color } = Color;
-import { addEvent, extend, merge, splat } from '../../../Shared/Utilities.js';
+import { addEvent, extend, merge, pick, splat } from '../../../Shared/Utilities.js';
 /* *
  *
  *  Composition
@@ -119,9 +118,6 @@ export var ColorAxisComposition;
                         }
                     }
                 });
-            }
-            else {
-                colorAxis.destroyItems();
             }
         });
         i = colorAxisItems.length;
@@ -233,7 +229,7 @@ export var ColorAxisComposition;
                 series.bindAxes();
                 series.isDirtyData = true;
             });
-            if (options.redraw ?? true) {
+            if (pick(options.redraw, true)) {
                 chart.redraw(options.animation);
             }
             return axis;
@@ -244,7 +240,7 @@ export var ColorAxisComposition;
      * @internal
      */
     function wrapFxFillSetter() {
-        (this.elem.attr)('fill', color(this.start).tweenTo(color(this.end), this.pos), void 0, true);
+        this.elem.attr('fill', color(this.start).tweenTo(color(this.end), this.pos), void 0, true);
     }
     /**
      * Handle animation of the color attributes directly.

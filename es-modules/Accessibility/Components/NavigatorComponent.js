@@ -5,9 +5,8 @@
  *  Accessibility component for the navigator.
  *
  *  Author: Øystein Moseng
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
@@ -21,14 +20,15 @@ import AccessibilityComponent from '../AccessibilityComponent.js';
 import Announcer from '../Utils/Announcer.js';
 import KeyboardNavigationHandler from '../KeyboardNavigationHandler.js';
 import Navigator from '../../Stock/Navigator/Navigator.js';
-import { animObject } from '../../Core/Animation/AnimationUtilities.js';
+import A from '../../Core/Animation/AnimationUtilities.js';
+const { animObject } = A;
 import T from '../../Core/Templating.js';
 const { format } = T;
 import HU from '../Utils/HTMLUtilities.js';
 const { getFakeMouseEvent } = HU;
 import CU from '../Utils/ChartUtilities.js';
 const { getAxisRangeDescription, fireEventOnWrappedOrUnwrappedElement } = CU;
-import { clamp, internalClearTimeout, syncTimeout } from '../../Shared/Utilities.js';
+import { clamp, internalClearTimeout, pick, syncTimeout } from '../../Shared/Utilities.js';
 /**
  * The NavigatorComponent class
  *
@@ -52,7 +52,7 @@ class NavigatorComponent extends AccessibilityComponent {
                     component.proxyProvider
                         .updateGroupProxyElementPositions('navigator');
                     component.updateHandleValues();
-                }, animObject((this.chart.renderer.globalAnimation ?? true)).duration);
+                }, animObject(pick(this.chart.renderer.globalAnimation, true)).duration);
             }
         });
     }

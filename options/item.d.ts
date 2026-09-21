@@ -83,56 +83,10 @@ declare module "../highcharts" {
         valueSuffix?: string;
     }
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) Enable or disable the initial
-     * animation when a series is displayed for the `dataLabels`. The animation
-     * can also be set as a configuration object. Please note that this option
-     * only applies to the initial animation.
-     *
-     * For other animations, see chart.animation and the animation parameter
-     * under the API methods. The following properties are supported:
-     *
-     * - `defer`: The animation delay time in milliseconds.
-     */
-    interface PlotItemDataLabelsAnimationOptions {
-        /**
-         * (Highcharts, Highstock, Highmaps, Gantt) The animation delay time in
-         * milliseconds. Set to `0` to render the data labels immediately. As
-         * `undefined` inherits defer time from the series.animation.defer.
-         */
-        defer?: number;
-    }
-    /**
      * (Highcharts) Animation when hovering over the marker.
      */
     interface PlotItemMarkerStatesHoverAnimationOptions {
         duration?: number;
-    }
-    /**
-     * (Highcharts) Animation when hovering over the marker.
-     */
-    interface PlotItemMarkerStatesSelectAnimationOptions {
-        duration?: number;
-    }
-    /**
-     * (Highcharts) Options for the connector in the _Series on point_ feature.
-     *
-     * In styled mode, the connector can be styled with the
-     * `.highcharts-connector-seriesonpoint` class name.
-     */
-    interface PlotItemOnPointConnectorOptions {
-        /**
-         * (Highcharts) A name for the dash style to use for the connector.
-         */
-        dashstyle?: string;
-        /**
-         * (Highcharts) Color of the connector line. By default it's the series'
-         * color.
-         */
-        stroke?: string;
-        /**
-         * (Highcharts) Pixel width of the connector line.
-         */
-        width?: number;
     }
     /**
      * (Highcharts) Options for the _Series on point_ feature. Only `pie` and
@@ -158,34 +112,6 @@ declare module "../highcharts" {
          * series in the _Series on point_ feature.
          */
         position?: (object|Highcharts.PlotItemOnPointPositionOptions);
-    }
-    /**
-     * (Highcharts) Options allowing to set a position and an offset of the
-     * series in the _Series on point_ feature.
-     */
-    interface PlotItemOnPointPositionOptions {
-        /**
-         * (Highcharts) Series center offset from the original x position. If
-         * defined, the connector line is drawn connecting original position
-         * with new position.
-         */
-        offsetX?: number;
-        /**
-         * (Highcharts) Series center offset from the original y position. If
-         * defined, the connector line is drawn from original position to a new
-         * position.
-         */
-        offsetY?: number;
-        /**
-         * (Highcharts) X position of the series center. By default, the series
-         * is displayed on the point that it is connected to.
-         */
-        x?: number;
-        /**
-         * (Highcharts) Y position of the series center. By default, the series
-         * is displayed on the point that it is connected to.
-         */
-        y?: number;
     }
     /**
      * (Highcharts) An item chart is an infographic chart where a number of
@@ -366,48 +292,6 @@ declare module "../highcharts" {
          */
         dataLabels?: (Highcharts.SeriesPieDataLabelsOptionsObject|Array<Highcharts.SeriesPieDataLabelsOptionsObject>);
         /**
-         * (Highcharts) The mapping between the data table and the series data
-         * points. This is used in conjunction with the `dataTable` option (on
-         * chart or series level) to map columns from the data table to the
-         * properties of the data points. The keys of the `dataMapping` object
-         * correspond to the properties of the data points (e.g. `x`, `y`,
-         * `name`), and the values are objects that specify which column from
-         * which data table to use for that property.
-         *
-         * The keys can also be nested paths, for example `dataLabel.format`, to
-         * map to nested properties of the data points.
-         *
-         * The values can also be strings, in which case they are interpreted as
-         * column id's from the first data table.
-         *
-         * A typical use case is that multiple series share a common column,
-         * like `name` or `x`. In this case, to avoid repetition, the common
-         * column can be applied in `plotOptions.series.dataMapping` and the
-         * individual series can specify only the columns that are unique to
-         * them.
-         *
-         * The series name defaults to the column ID of the main data column in
-         * the mapping. The main data column is typically the `y` data for
-         * cartesian series, or `value` for map series. For example, if the
-         * mapping is `{ y: 'Cost' }`, the series name will be `Cost`. (see
-         * online documentation for example)
-         *
-         * If the columns of the DataTable have keys matching the series keys,
-         * the data mapping is not necessary. For example, this DataTable will
-         * connect directly to the series' `x` and `y` keys: (see online
-         * documentation for example)
-         */
-        dataMapping?: Highcharts.DataMappingOptionsObject;
-        /**
-         * (Highcharts) Options for a specific series-level data table or an
-         * array of data tables. The `dataTable` option can be either a
-         * configuration object or an instance of the `DataTable` class. If a
-         * `DataTable` instance is passed, it will be used directly. If a
-         * configuration object or an array is passed, a new `DataTable`
-         * instance will be created based on the provided configuration.
-         */
-        dataTable?: (Highcharts.DataTable|Highcharts.DataTableOptionsObject|Array<(Highcharts.DataTable|Highcharts.DataTableOptionsObject)>);
-        /**
          * (Highcharts) Deprecated. Use
          * plotOptions.series.accessibility.description instead.
          *
@@ -579,8 +463,6 @@ declare module "../highcharts" {
          *
          * Same as accessibility.point.descriptionFormat, but for an individual
          * series. Overrides the chart wide configuration.
-         *
-         * @deprecated 12.6.0
          */
         pointDescriptionFormat?: Function;
         /**
@@ -660,10 +542,6 @@ declare module "../highcharts" {
         startAngle?: (number|undefined);
         /**
          * (Highcharts) A collection of options for different series states.
-         *
-         * In addition to the options documented under each state, any option
-         * from the parent series type can be set, with exception of `data` and
-         * `states`.
          */
         states?: Highcharts.SeriesStatesOptionsObject;
         /**
@@ -702,98 +580,10 @@ declare module "../highcharts" {
         zoomEnabled?: boolean;
     }
     /**
-     * (Highcharts, Highstock) Animation setting for hovering the graph in
-     * line-type series.
-     */
-    interface PlotItemStatesHoverAnimationOptions {
-        /**
-         * (Highcharts, Highstock) The duration of the hover animation in
-         * milliseconds. By default the hover state animates quickly in, and
-         * slowly back to normal.
-         */
-        duration?: number;
-    }
-    /**
-     * (Highcharts, Highstock) Animation when not hovering over the marker.
+     * (Highcharts) Animation when not hovering over the marker.
      */
     interface PlotItemStatesInactiveAnimationOptions {
-        /**
-         * (Highcharts, Highstock) The duration of the hover animation in
-         * milliseconds. By default the hover state animates quickly in, and
-         * slowly back to normal.
-         */
         duration?: number;
-    }
-    /**
-     * (Highcharts, Highstock) Animation setting for hovering the graph in
-     * line-type series.
-     */
-    interface PlotItemStatesSelectAnimationOptions {
-        /**
-         * (Highcharts, Highstock) The duration of the hover animation in
-         * milliseconds. By default the hover state animates quickly in, and
-         * slowly back to normal.
-         */
-        duration?: number;
-    }
-    /**
-     * (Highcharts, Highstock, Gantt) For series on datetime axes, the date
-     * format in the tooltip's header will by default be guessed based on the
-     * closest data points. This member gives the default string representations
-     * used for each unit. For an overview of the string or object
-     * configuration, see dateFormat.
-     */
-    interface PlotItemTooltipDateTimeLabelFormatsOptions {
-        day?: string;
-        hour?: string;
-        millisecond?: string;
-        minute?: string;
-        month?: string;
-        second?: string;
-        week?: string;
-        year?: string;
-    }
-    /**
-     * (Highcharts) Options for the tooltip header when tooltip.split is
-     * enabled. The header is the box containing the X value in a split tooltip.
-     */
-    interface PlotItemTooltipHeaderOptions {
-        /**
-         * (Highcharts) Background color for the tooltip header when
-         * tooltip.split is enabled.
-         */
-        backgroundColor?: Highcharts.ColorType;
-        /**
-         * (Highcharts) Border color for the tooltip header when tooltip.split
-         * is enabled.
-         */
-        borderColor?: Highcharts.ColorType;
-        /**
-         * (Highcharts) The width of the border for the tooltip header when
-         * tooltip.split is enabled.
-         */
-        borderWidth?: number;
-        /**
-         * (Highcharts) Distance between the plot area and the header (except
-         * the chevron) in a split tooltip, in pixels. The default value makes
-         * the header text align with the axis labels.
-         */
-        distance?: number;
-        /**
-         * (Highcharts) The name of a symbol to use for the border around the
-         * tooltip header. Applies only when tooltip.split is enabled.
-         *
-         * Custom callbacks for symbol path generation can also be added to
-         * `Highcharts.SVGRenderer.prototype.symbols` the same way as for
-         * series.marker.symbol.
-         */
-        shape?: string;
-        /**
-         * (Highcharts) CSS styles for the tooltip header. The default is `{
-         * fontSize: '1em' }`, ensuring that the header text is the same size as
-         * the axis labels.
-         */
-        style?: object;
     }
     /**
      * (Highcharts) Positioning options for fixed tooltip, taking effect only
@@ -828,25 +618,6 @@ declare module "../highcharts" {
          * overlapping other elements.
          */
         y?: number;
-    }
-    /**
-     * (Highcharts, Highmaps) Enable or disable the initial animation when a
-     * series is displayed for the `dataLabels`. The animation can also be set
-     * as a configuration object. Please note that this option only applies to
-     * the initial animation.
-     *
-     * For other animations, see chart.animation and the animation parameter
-     * under the API methods. The following properties are supported:
-     *
-     * - `defer`: The animation delay time in milliseconds.
-     */
-    interface SeriesItemDataDataLabelsAnimationOptions {
-        /**
-         * (Highcharts, Highmaps) The animation delay time in milliseconds. Set
-         * to `0` to render the data labels immediately. As `undefined` inherits
-         * defer time from the series.animation.defer.
-         */
-        defer?: number;
     }
     /**
      * (Highcharts) An `item` series. If the type option is not specified, it is
@@ -892,6 +663,14 @@ declare module "../highcharts" {
          * is not available. (see online documentation for example)
          */
         data?: Array<(number|[string, (number|null)]|null|Highcharts.PointOptionsObject)>;
+        /**
+         * Not available
+         */
+        dataParser?: undefined;
+        /**
+         * Not available
+         */
+        dataURL?: undefined;
         /**
          * Not available
          */

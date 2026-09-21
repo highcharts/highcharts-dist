@@ -5,18 +5,15 @@
  *  (c) 2009-2026 Highsoft AS
  *  Author: Sebastian Bochan
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
 'use strict';
 import AST from '../../Core/Renderer/HTML/AST.js';
 import StockToolsUtilities from './StockToolsUtilities.js';
-import getIcon from '../../Shared/BaseFormUtils.js';
-import StockToolsIcons from '../../Stock/StockTools/StockToolsIcons.js';
-import { addEvent, createElement, css, defined, fireEvent, getStyle, isArray, merge } from '../../Shared/Utilities.js';
+import { addEvent, createElement, css, defined, fireEvent, getStyle, isArray, merge, pick } from '../../Shared/Utilities.js';
 const { shallowArraysEqual } = StockToolsUtilities;
 /* *
  *
@@ -26,7 +23,7 @@ const { shallowArraysEqual } = StockToolsUtilities;
 /**
  * Toolbar Class
  *
- * @internal
+ * @private
  * @class
  *
  * @param {object} options
@@ -49,10 +46,11 @@ class Toolbar {
         this.isDirty = false;
         this.chart = chart;
         this.options = options;
-        this.iconsURL = this.getIconsURL();
         this.lang = langOptions;
+        // Set url for icons.
+        this.iconsURL = this.getIconsURL();
         this.guiEnabled = options.enabled;
-        this.visible = (options.visible ?? true);
+        this.visible = pick(options.visible, true);
         this.guiClassName = options.className;
         this.toolbarClassName = options.toolbarClassName;
         // General events collection which should be removed upon
@@ -72,7 +70,7 @@ class Toolbar {
      * */
     /**
      * Create and set up stockTools buttons with their events and submenus.
-     * @internal
+     * @private
      */
     createButtons() {
         const lang = this.lang, guiOptions = this.options, toolbar = this.toolbar, buttons = guiOptions.buttons, defs = guiOptions.definitions, allButtons = toolbar.childNodes;
@@ -91,7 +89,7 @@ class Toolbar {
      * Create submenu (list of buttons) for the option. In example main button
      * is Line, in submenu will be buttons with types of lines.
      *
-     * @internal
+     * @private
      *
      * @param {Highcharts.Dictionary<Highcharts.HTMLDOMElement>} parentBtn
      *        Button which has submenu
@@ -158,7 +156,7 @@ class Toolbar {
     /**
      * Create buttons in submenu
      *
-     * @internal
+     * @private
      *
      * @param {Highcharts.HTMLDOMElement} buttonWrapper
      *        Button where submenu is placed
@@ -187,7 +185,7 @@ class Toolbar {
     }
     /**
      * Erase active class on all other buttons.
-     * @internal
+     * @private
      */
     eraseActiveButtons(buttons, currentButton, submenuItems) {
         [].forEach.call(buttons, (btn) => {
@@ -207,7 +205,7 @@ class Toolbar {
      * Create single button. Consist of HTML elements `li`, `button`, and (if
      * exists) submenu container.
      *
-     * @internal
+     * @private
      *
      * @param {Highcharts.HTMLDOMElement} target
      *        HTML reference, where button should be added
@@ -229,7 +227,7 @@ class Toolbar {
             ?.stockTools.arrowLabel, items = btnOptions.items, classMapping = Toolbar.prototype.classMapping, userClassName = btnOptions.className || '';
         // Main button wrapper
         const buttonWrapper = createElement('li', {
-            className: (classMapping[btnName] ?? '') + ' ' + userClassName
+            className: pick(classMapping[btnName], '') + ' ' + userClassName
         }, void 0, target);
         // Single button
         const elementType = (btnOptions.elementType || 'button');
@@ -247,15 +245,16 @@ class Toolbar {
                 ariaLabel: arrowLabel,
                 ariaExpanded: false
             }, void 0, buttonWrapper);
-            submenuArrow.style.backgroundImage =
-                getIcon('arrow-bottom.svg', this.iconsURL, StockToolsIcons);
+            submenuArrow.style.backgroundImage = 'url(' +
+                this.iconsURL + 'arrow-bottom.svg)';
             return {
                 buttonWrapper,
                 mainButton,
                 submenuArrow
             };
         }
-        mainButton.style.backgroundImage = getIcon(btnOptions.symbol, this.iconsURL, StockToolsIcons);
+        mainButton.style.backgroundImage = 'url(' +
+            this.iconsURL + btnOptions.symbol + ')';
         return {
             buttonWrapper,
             mainButton
@@ -263,7 +262,7 @@ class Toolbar {
     }
     /**
      * Create navigation's HTML elements: container and arrows.
-     * @internal
+     * @private
      */
     addNavigation() {
         const wrapper = this.wrapper;
@@ -275,12 +274,12 @@ class Toolbar {
             className: 'highcharts-arrow-up'
         }, void 0, this.arrowWrapper);
         this.arrowUp.style.backgroundImage =
-            getIcon('arrow-right.svg', this.iconsURL, StockToolsIcons);
+            'url(' + this.iconsURL + 'arrow-right.svg)';
         this.arrowDown = createElement('div', {
             className: 'highcharts-arrow-down'
         }, void 0, this.arrowWrapper);
         this.arrowDown.style.backgroundImage =
-            getIcon('arrow-right.svg', this.iconsURL, StockToolsIcons);
+            'url(' + this.iconsURL + 'arrow-right.svg)';
         wrapper.insertBefore(this.arrowWrapper, wrapper.childNodes[0]);
         // Attach scroll events
         this.scrollButtons();
@@ -288,7 +287,7 @@ class Toolbar {
     /**
      * Add events to navigation (two arrows) which allows user to scroll
      * top/down GUI buttons, if container's height is not enough.
-     * @internal
+     * @private
      */
     scrollButtons() {
         const wrapper = this.wrapper, toolbar = this.toolbar, step = 0.1 * wrapper.offsetHeight; // 0.1 = 10%
@@ -361,7 +360,7 @@ class Toolbar {
     }
     /**
      * Function called in redraw verifies if the navigation should be visible.
-     * @internal
+     * @private
      */
     showHideNavigation() {
         // Arrows
@@ -379,7 +378,7 @@ class Toolbar {
     }
     /**
      * Create button which shows or hides GUI toolbar.
-     * @internal
+     * @private
      */
     showHideToolbar() {
         const wrapper = this.wrapper, toolbar = this.listWrapper, submenu = this.submenu, 
@@ -387,7 +386,7 @@ class Toolbar {
         showHideBtn = this.showHideBtn;
         let visible = this.visible;
         showHideBtn.style.backgroundImage =
-            getIcon('arrow-right.svg', this.iconsURL, StockToolsIcons);
+            'url(' + this.iconsURL + 'arrow-right.svg)';
         if (!visible) {
             // Hide
             if (submenu) {
@@ -441,7 +440,7 @@ class Toolbar {
     }
     /**
      * Set select state (active class) on button.
-     * @internal
+     * @private
      */
     toggleButtonActiveClass(button) {
         const classList = button.classList;
@@ -454,7 +453,7 @@ class Toolbar {
     }
     /**
      * Remove active class from all buttons except defined.
-     * @internal
+     * @private
      */
     unselectAllButtons(button) {
         const activeBtns = button.parentNode
@@ -467,25 +466,25 @@ class Toolbar {
     }
     /**
      * Update GUI with given options.
-     * @internal
+     * @private
      */
     update(options, redraw) {
         this.isDirty = !!options.gui.definitions;
         merge(true, this.chart.options.stockTools, options);
         merge(true, this.options, options.gui);
-        this.visible = (this.options.visible && this.options.enabled) ?? true;
+        this.visible = pick(this.options.visible && this.options.enabled, true);
         // If Stock Tools are updated, then bindings should be updated too:
         if (this.chart.navigationBindings) {
             this.chart.navigationBindings.update();
         }
         this.chart.isDirtyBox = true;
-        if (redraw ?? true) {
+        if (pick(redraw, true)) {
             this.chart.redraw();
         }
     }
     /**
      * Destroy all HTML GUI elements.
-     * @internal
+     * @private
      */
     destroy() {
         const stockToolsDiv = this.wrapper, parent = stockToolsDiv && stockToolsDiv.parentNode;
@@ -497,7 +496,7 @@ class Toolbar {
     }
     /**
      * Redraws the toolbar based on the current state of the options.
-     * @internal
+     * @private
      */
     redraw() {
         if (this.options.enabled !== this.guiEnabled) {
@@ -516,7 +515,7 @@ class Toolbar {
     }
     /**
      * Hadles the change of the `enabled` option.
-     * @internal
+     * @private
      */
     handleGuiEnabledChange() {
         if (this.options.enabled === false) {
@@ -531,7 +530,7 @@ class Toolbar {
     }
     /**
      * Updates the class names of the GUI and toolbar elements.
-     * @internal
+     * @private
      */
     updateClassNames() {
         if (this.options.className !== this.guiClassName) {
@@ -555,7 +554,7 @@ class Toolbar {
     }
     /**
      * Updates the buttons in the toolbar if the button options have changed.
-     * @internal
+     * @private
      */
     updateButtons() {
         if (!shallowArraysEqual(this.options.buttons, this.buttonList) ||
@@ -566,7 +565,7 @@ class Toolbar {
     }
     /**
      * Updates visibility based on current options.
-     * @internal
+     * @private
      */
     updateVisibility() {
         if (defined(this.options.visible)) {
@@ -574,15 +573,12 @@ class Toolbar {
         }
     }
     /**
-     * Get the icons URL
-     *
-     * @internal
-     * @return {string} Icons URL
+     * @private
      */
     getIconsURL() {
-        return this.chart.options.navigation?.iconsURL ||
+        return this.chart.options.navigation.iconsURL ||
             this.options.iconsURL ||
-            'renderer';
+            'https://code.highcharts.com/12.6.2/gfx/stock-icons/';
     }
 }
 Toolbar.prototype.classMapping = {
@@ -638,5 +634,4 @@ Toolbar.prototype.classMapping = {
  *  Default Export
  *
  * */
-/** @internal */
 export default Toolbar;

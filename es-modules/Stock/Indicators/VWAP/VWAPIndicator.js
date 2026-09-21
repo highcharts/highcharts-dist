@@ -5,9 +5,8 @@
  *
  *  Volume Weighted Average Price (VWAP) indicator for Highcharts Stock
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
@@ -24,7 +23,7 @@ import { error } from '../../../Core/Utilities.js';
 /**
  * The Volume Weighted Average Price (VWAP) series type.
  *
- * @internal
+ * @private
  * @class
  * @name Highcharts.seriesTypes.vwap
  *
@@ -56,7 +55,7 @@ class VWAPIndicator extends SMAIndicator {
      * Main algorithm used to calculate Volume Weighted Average Price (VWAP)
      * values
      *
-     * @internal
+     * @private
      *
      * @param {boolean} isOHLC
      * Says if data has OHLC format
@@ -127,7 +126,7 @@ class VWAPIndicator extends SMAIndicator {
  *
  * This series requires `linkedTo` option to be set.
  *
- * @sample {highstock} stock/indicators/vwap
+ * @sample stock/indicators/vwap
  *         Volume Weighted Average Price indicator
  *
  * @extends      plotOptions.sma
@@ -158,7 +157,6 @@ SeriesRegistry.registerSeriesType('vwap', VWAPIndicator);
  *  Default Export
  *
  * */
-/** @internal */
 export default VWAPIndicator;
 /* *
  *
@@ -173,6 +171,7 @@ export default VWAPIndicator;
  * @extends   series,plotOptions.vwap
  * @since     6.0.0
  * @product   highstock
+ * @excluding dataParser, dataURL
  * @requires  stock/indicators/indicators
  * @requires  stock/indicators/vwap
  * @apioption series.vwap

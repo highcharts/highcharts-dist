@@ -5,9 +5,8 @@
  *
  *  Extension for 3D charts
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
@@ -18,7 +17,7 @@ import D from '../Defaults.js';
 const { defaultOptions: genericDefaultOptions } = D;
 import Math3D from '../Math3D.js';
 const { perspective, shapeArea3D } = Math3D;
-import { addEvent, isArray, merge, wrap } from '../../Shared/Utilities.js';
+import { addEvent, isArray, merge, pick, wrap } from '../../Shared/Utilities.js';
 /* *
  *
  *  Composition
@@ -38,6 +37,7 @@ var Chart3D;
      * */
     /**
      * @optionparent
+     * @internal
      */
     Chart3D.defaultOptions = {
         chart: {
@@ -1119,7 +1119,10 @@ var Chart3D;
         const options = this.options;
         if (this.is3d()) {
             (options.series || []).forEach(function (s) {
-                if ((s.type || options.chart.type) === 'scatter') {
+                const type = (s.type ||
+                    options.chart.type ||
+                    options.chart.defaultSeriesType);
+                if (type === 'scatter') {
                     s.type = 'scatter3d';
                 }
             });
@@ -1312,8 +1315,8 @@ var Chart3D;
                     isVisible = faceOrientation > 0;
                 }
                 return {
-                    size: (options.size ?? 1),
-                    color: (options.color ?? 'none'),
+                    size: pick(options.size, 1),
+                    color: pick(options.color, 'none'),
                     frontFacing: faceOrientation > 0,
                     visible: isVisible
                 };
@@ -1640,7 +1643,7 @@ export default Chart3D;
  *
  * The side for the frame around a 3D chart.
  *
- * @deprecated 5.0.12
+ * @deprecated
  * @since     4.0
  * @product   highcharts
  * @requires  highcharts-3d
@@ -1649,7 +1652,7 @@ export default Chart3D;
 /**
  * The color of the panel.
  *
- * @deprecated 5.0.12
+ * @deprecated
  * @type      {Highcharts.ColorType}
  * @default   transparent
  * @since     4.0
@@ -1659,7 +1662,7 @@ export default Chart3D;
 /**
  * The thickness of the panel.
  *
- * @deprecated 5.0.12
+ * @deprecated
  * @type      {number}
  * @default   1
  * @since     4.0

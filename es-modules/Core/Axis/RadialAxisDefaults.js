@@ -5,9 +5,8 @@
  *
  *  Extension for radial axes
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
@@ -33,22 +32,25 @@ const defaultCircularOptions = {
  * @internal
  */
 const defaultRadialGaugeOptions = {
+    endOnTick: false,
     gridLineWidth: 0,
     labels: {
         align: 'center',
-        distance: 15,
+        distance: -25,
         x: 0,
         y: void 0 // Auto
     },
+    lineWidth: 1,
     minorGridLineWidth: 0,
-    minorTickLength: 5,
+    minorTickInterval: 'auto',
+    minorTickLength: 10,
     minorTickPosition: 'inside',
-    minorTicksPerMajor: 10,
     minorTickWidth: 1,
-    tickLength: void 0,
-    tickWidth: 2,
+    startOnTick: false,
+    tickLength: 10,
     tickPixelInterval: 100,
     tickPosition: 'inside',
+    tickWidth: 2,
     title: {
         rotation: 0,
         text: ''

@@ -3,14 +3,14 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
 'use strict';
-import { animObject, setAnimation } from '../Animation/AnimationUtilities.js';
+import A from '../Animation/AnimationUtilities.js';
+const { animObject, setAnimation } = A;
 import F from '../Foundation.js';
 const { registerEventOptions } = F;
 import H from '../Globals.js';
@@ -21,7 +21,7 @@ import R from '../Renderer/RendererUtilities.js';
 const { distribute } = R;
 import T from '../Templating.js';
 const { format } = T;
-import { addEvent, createElement, css, defined, discardElement, find, fireEvent, isNumber, merge, pushUnique, relativeLength, stableSort, syncTimeout } from '../../Shared/Utilities.js';
+import { addEvent, createElement, css, defined, discardElement, find, fireEvent, isNumber, merge, pick, pushUnique, relativeLength, stableSort, syncTimeout } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class
@@ -139,7 +139,7 @@ class Legend {
      * @param {Highcharts.LegendOptions} options
      */
     setOptions(options) {
-        const padding = (options.padding ?? 8);
+        const padding = pick(options.padding, 8);
         /**
          * Legend options.
          *
@@ -156,7 +156,7 @@ class Legend {
         this.itemMarginBottom = options.itemMarginBottom;
         this.padding = padding;
         this.initialItemY = padding - 5; // 5 is pixels above the text
-        this.symbolWidth = (options.symbolWidth ?? 16);
+        this.symbolWidth = pick(options.symbolWidth, 16);
         this.pages = [];
         this.proximate = options.layout === 'proximate' && !this.chart.inverted;
         // #12705: baseline has to be reset on every update
@@ -190,7 +190,7 @@ class Legend {
         }
         this.destroy();
         chart.isDirtyLegend = chart.isDirtyBox = true;
-        if (redraw ?? true) {
+        if (pick(redraw, true)) {
             chart.redraw();
         }
         fireEvent(this, 'afterUpdate', { redraw });
@@ -217,7 +217,7 @@ class Legend {
         }
         group?.[visible ? 'removeClass' : 'addClass']('highcharts-legend-item-hidden');
         if (!this.chart.styledMode) {
-            const { itemHiddenStyle = {} } = this, hiddenColor = itemHiddenStyle.color, { fillColor, lineColor } = item.options, colorizeHidden = (attr) => {
+            const { itemHiddenStyle = {} } = this, hiddenColor = itemHiddenStyle.color, { fillColor, fillOpacity, lineColor, marker } = item.options, colorizeHidden = (attr) => {
                 if (!visible) {
                     if (attr.fill) {
                         attr.fill = hiddenColor;
@@ -230,17 +230,15 @@ class Legend {
             };
             label?.css(merge(visible ? this.itemStyle : itemHiddenStyle));
             line?.attr(colorizeHidden({ stroke: lineColor || item.color }));
-            // Apply legend symbol attributes
-            symbol?.attr(colorizeHidden(item.series ?
-                // When `legendType` is `point`, like pie series
-                item.series.pointAttribs?.(item) :
-                // When `legendType` is `series`, like line or column series
-                item.pointAttribs?.() || { fill: item.color }));
+            if (symbol) {
+                // Apply marker options
+                symbol.attr(colorizeHidden(marker && symbol.isMarker ? // #585
+                    item.pointAttribs() :
+                    { fill: item.color }));
+            }
             area?.attr(colorizeHidden({
                 fill: fillColor || item.color,
-                'fill-opacity': fillColor ?
-                    1 :
-                    (item.options.fillOpacity ?? 0.75)
+                'fill-opacity': fillColor ? 1 : (fillOpacity ?? 0.75)
             }));
         }
         item.color = originalColor;
@@ -428,7 +426,7 @@ class Legend {
      * The item to render.
      */
     renderItem(item) {
-        const legend = this, legendItem = item.legendItem = item.legendItem || {}, chart = legend.chart, renderer = chart.renderer, options = legend.options, horizontal = options.layout === 'horizontal', symbolWidth = legend.symbolWidth, symbolPadding = options.symbolPadding || 0, itemStyle = legend.itemStyle, itemHiddenStyle = legend.itemHiddenStyle, itemDistance = horizontal ? (options.itemDistance ?? 20) : 0, ltr = !options.rtl, isSeries = !item.series, series = !isSeries && item.series.drawLegendSymbol ?
+        const legend = this, legendItem = item.legendItem = item.legendItem || {}, chart = legend.chart, renderer = chart.renderer, options = legend.options, horizontal = options.layout === 'horizontal', symbolWidth = legend.symbolWidth, symbolPadding = options.symbolPadding || 0, itemStyle = legend.itemStyle, itemHiddenStyle = legend.itemHiddenStyle, itemDistance = horizontal ? pick(options.itemDistance, 20) : 0, ltr = !options.rtl, isSeries = !item.series, series = !isSeries && item.series.drawLegendSymbol ?
             item.series :
             item, seriesOptions = series.options, showCheckbox = (!!legend.createCheckboxForItem &&
             seriesOptions &&
@@ -474,11 +472,9 @@ class Legend {
                     legend.fontMetrics.f + 3 + legend.itemMarginTop;
                 label.attr('y', legend.baseline);
                 legend.symbolHeight =
-                    (options.symbolHeight ?? legend.fontMetrics.f);
+                    pick(options.symbolHeight, legend.fontMetrics.f);
                 if (options.squareSymbol) {
-                    legend.symbolWidth =
-                        options.symbolWidth ??
-                            Math.max(legend.symbolHeight, 16);
+                    legend.symbolWidth = pick(options.symbolWidth, Math.max(legend.symbolHeight, 16));
                     itemExtraWidth = legend.symbolWidth + symbolPadding +
                         itemDistance + (showCheckbox ? 20 : 0);
                     if (ltr) {
@@ -530,7 +526,7 @@ class Legend {
      * @param {Highcharts.BubbleLegendItem|Highcharts.Point|Highcharts.Series} item
      */
     layoutItem(item) {
-        const options = this.options, padding = this.padding, horizontal = options.layout === 'horizontal', itemHeight = item.itemHeight, itemMarginBottom = this.itemMarginBottom, itemMarginTop = this.itemMarginTop, itemDistance = horizontal ? (options.itemDistance ?? 20) : 0, maxLegendWidth = this.maxLegendWidth, itemWidth = (options.alignColumns &&
+        const options = this.options, padding = this.padding, horizontal = options.layout === 'horizontal', itemHeight = item.itemHeight, itemMarginBottom = this.itemMarginBottom, itemMarginTop = this.itemMarginTop, itemDistance = horizontal ? pick(options.itemDistance, 20) : 0, maxLegendWidth = this.maxLegendWidth, itemWidth = (options.alignColumns &&
             this.totalItemWidth > maxLegendWidth) ?
             this.maxItemWidth :
             item.itemWidth, legendItem = item.legendItem || {};
@@ -584,9 +580,7 @@ class Legend {
             const seriesOptions = series?.options;
             // Handle showInLegend. If the series is linked to another series,
             // defaults to false.
-            if (series &&
-                (seriesOptions.showInLegend ??
-                    (!defined(seriesOptions.linkedTo)))) {
+            if (series && pick(seriesOptions.showInLegend, !defined(seriesOptions.linkedTo) ? void 0 : false, true)) {
                 // Use points or series for the legend item depending on
                 // legendType
                 allItems = allItems.concat(series.legendItem?.labels ||
@@ -868,7 +862,7 @@ class Legend {
      * @function Highcharts.Legend#handleOverflow
      */
     handleOverflow(legendHeight) {
-        const legend = this, chart = this.chart, renderer = chart.renderer, options = this.options, optionsY = options.y, alignTop = options.verticalAlign === 'top', padding = this.padding, maxHeight = options.maxHeight, navOptions = options.navigation, animation = (navOptions.animation ?? true), arrowSize = navOptions.arrowSize || 12, pages = this.pages, allItems = this.allItems, clipToHeight = function (height) {
+        const legend = this, chart = this.chart, renderer = chart.renderer, options = this.options, optionsY = options.y, alignTop = options.verticalAlign === 'top', padding = this.padding, maxHeight = options.maxHeight, navOptions = options.navigation, animation = pick(navOptions.animation, true), arrowSize = navOptions.arrowSize || 12, pages = this.pages, allItems = this.allItems, clipToHeight = function (height) {
             if (typeof height === 'number') {
                 clipRect.attr({
                     height: height
@@ -914,7 +908,7 @@ class Legend {
             navOptions.enabled !== false) {
             this.clipHeight = clipHeight =
                 Math.max(spaceHeight - 20 - this.titleHeight - padding, 0);
-            this.currentPage = (this.currentPage ?? 1);
+            this.currentPage = pick(this.currentPage, 1);
             this.fullHeight = legendHeight;
             // Fill pages with Y positions so that the top of each a legend item
             // defines the scroll top for each page (#2098)
@@ -1074,7 +1068,7 @@ class Legend {
             this.currentPage = currentPage;
             this.positionCheckboxes();
             // Fire event after scroll animation is complete
-            const animOptions = animObject((animation ?? chart.renderer.globalAnimation ?? true));
+            const animOptions = animObject(pick(animation, chart.renderer.globalAnimation, true));
             syncTimeout(() => {
                 fireEvent(this, 'afterScroll', { currentPage });
             }, animOptions.duration);
@@ -1272,10 +1266,6 @@ export default Legend;
  *
  * @param {Highcharts.LegendItemClickEventObject} event
  * The event that occurred.
- *
- * @param {Highcharts.Legend} [ctx]
- * Since v12.6.0, the legend context passed as an extra argument for arrow
- * functions.
  */
 /**
  * Information about the legend click event.
@@ -1284,7 +1274,7 @@ export default Legend;
  */ /**
 * Related browser event.
 * @name Highcharts.LegendItemClickEventObject#browserEvent
-* @type {PointerEvent}
+* @type {Highcharts.PointerEvent}
 */ /**
 * Prevent the default action of toggle the visibility of the series or point.
 * @name Highcharts.LegendItemClickEventObject#preventDefault
@@ -1319,10 +1309,6 @@ export default Legend;
  *
  * @param {Highcharts.PointLegendItemClickEventObject} event
  * The event that occurred.
- *
- * @param {Highcharts.Point} [ctx]
- * Since v12.6.0, the point context passed as an extra argument for arrow
- * functions.
  */
 /**
  * Information about the legend click event.
@@ -1335,7 +1321,7 @@ export default Legend;
  */ /**
 * Related browser event.
 * @name Highcharts.PointLegendItemClickEventObject#browserEvent
-* @type {PointerEvent}
+* @type {Highcharts.PointerEvent}
 */ /**
 * Whether the default action has been prevented (`true`) or not.
 * @name Highcharts.PointLegendItemClickEventObject#defaultPrevented
@@ -1375,10 +1361,6 @@ export default Legend;
  *
  * @param {Highcharts.SeriesLegendItemClickEventObject} event
  * The event that occurred.
- *
- * @param {Highcharts.Series} [ctx]
- * Since v12.6.0, the series context passed as an extra argument for arrow
- * functions.
  */
 /**
  * Information about the legend click event.
@@ -1391,7 +1373,7 @@ export default Legend;
  */ /**
 * Related browser event.
 * @name Highcharts.SeriesLegendItemClickEventObject#browserEvent
-* @type {PointerEvent}
+* @type {Highcharts.PointerEvent}
 */ /**
 * Whether the default action has been prevented (`true`) or not.
 * @name Highcharts.SeriesLegendItemClickEventObject#defaultPrevented

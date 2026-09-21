@@ -1,13 +1,13 @@
-/* *
+// SPDX-License-Identifier: LicenseRef-Highcharts
+/**
  *
  *  Events generator for Stock tools
  *
  *  (c) 2009-2026 Highsoft AS
  *  Author: Paweł Fus
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
@@ -15,8 +15,6 @@
 import H from '../../Core/Globals.js';
 import STU from './StockToolsUtilities.js';
 const { addFlagFromForm, attractToPoint, isNotNavigatorYAxis, isPriceIndicatorEnabled, manageIndicators, updateHeight, updateNthPoint, updateRectSize } = STU;
-import getIcon from '../../Shared/BaseFormUtils.js';
-import StockToolsIcons from './StockToolsIcons.js';
 import { fireEvent, merge } from '../../Shared/Utilities.js';
 /* *
  *
@@ -24,7 +22,6 @@ import { fireEvent, merge } from '../../Shared/Utilities.js';
  *
  * */
 /**
- * @internal
  * @sample {highstock} stock/stocktools/custom-stock-tools-bindings
  *         Custom stock tools bindings
  *
@@ -545,11 +542,6 @@ const StockToolsBindings = {
                         { x, y },
                         { x, y }
                     ]
-                },
-                labelOptions: {
-                    style: {
-                        color: 'var(--highcharts-neutral-color-60)'
-                    }
                 }
             }, navigation.annotationsOptions, navigation.bindings?.elliott3.annotationsOptions);
             return this.chart.addAnnotation(options);
@@ -903,7 +895,7 @@ const StockToolsBindings = {
                             y: coordsY.value,
                             controlPoint: {
                                 style: {
-                                    fill: 'var(--highcharts-negative-color)'
+                                    fill: "#f21313" /* Palette.negativeColor */
                                 }
                             }
                         },
@@ -965,7 +957,7 @@ const StockToolsBindings = {
                 }
             }, navigation.annotationsOptions, navigation.bindings?.verticalCounter.annotationsOptions), annotation = this.chart.addAnnotation(options);
             this.verticalCounter++;
-            annotation.options.events?.click?.call(annotation, {});
+            (annotation.options.events?.click).call(annotation, {});
         }
     },
     /**
@@ -1004,7 +996,7 @@ const StockToolsBindings = {
                         }]
                 }
             }, navigation.annotationsOptions, navigation.bindings?.timeCycles.annotationsOptions), annotation = this.chart.addAnnotation(options);
-            annotation.options.events?.click?.call(annotation, {});
+            (annotation.options.events?.click).call(annotation, {});
             return annotation;
         },
         steps: [
@@ -1043,14 +1035,14 @@ const StockToolsBindings = {
                     }
                 }
             }, navigation.annotationsOptions, navigation.bindings?.verticalLabel.annotationsOptions), annotation = this.chart.addAnnotation(options);
-            annotation.options.events?.click?.call(annotation, {});
+            (annotation.options.events?.click).call(annotation, {});
         }
     },
     /**
      * A vertical arrow annotation bindings. Includes `start` event. On click,
      * finds the closest point and marks it with an arrow.
-     * `var(--highcharts-positive-color)` is the color of the arrow when
-     * pointing from above and `var(--highcharts-negative-color)`
+     * `${palette.positiveColor}` is the color of the arrow when
+     * pointing from above and `${palette.negativeColor}`
      * when pointing from below the point.
      *
      * @type    {Highcharts.NavigationBindingsOptionsObject}
@@ -1091,12 +1083,12 @@ const StockToolsBindings = {
                     connector: {
                         fill: 'none',
                         stroke: closestPoint.below ?
-                            'var(--highcharts-negative-color)' :
-                            'var(--highcharts-positive-color)'
+                            "#f21313" /* Palette.negativeColor */ :
+                            "#06b535" /* Palette.positiveColor */
                     }
                 }
             }, navigation.annotationsOptions, navigation.bindings?.verticalArrow.annotationsOptions), annotation = this.chart.addAnnotation(options);
-            annotation.options.events?.click?.call(annotation, {});
+            (annotation.options.events?.click).call(annotation, {});
         }
     },
     /**
@@ -1498,19 +1490,21 @@ const StockToolsBindings = {
         // eslint-disable-next-line valid-jsdoc
         /** @ignore-option */
         init: function (button) {
-            const chart = this.chart, gui = chart.stockTools;
+            const chart = this.chart, gui = chart.stockTools, iconsURL = gui.getIconsURL();
             this.toggledAnnotations = !this.toggledAnnotations;
             (chart.annotations || []).forEach(function (annotation) {
                 annotation.setVisibility(!this.toggledAnnotations);
             }, this);
-            if (gui?.guiEnabled) {
+            if (gui && gui.guiEnabled) {
                 if (this.toggledAnnotations) {
                     button.firstChild.style['background-image'] =
-                        getIcon('annotations-hidden.svg', gui.iconsURL, StockToolsIcons);
+                        'url("' + iconsURL +
+                            'annotations-hidden.svg")';
                 }
                 else {
                     button.firstChild.style['background-image'] =
-                        getIcon('annotations-visible.svg', gui.iconsURL, StockToolsIcons);
+                        'url("' + iconsURL +
+                            'annotations-visible.svg")';
                 }
             }
             fireEvent(this, 'deselectButton', { button: button });
@@ -1566,5 +1560,4 @@ const StockToolsBindings = {
  *  Default Export
  *
  * */
-/** @internal */
 export default StockToolsBindings;

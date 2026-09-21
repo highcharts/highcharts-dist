@@ -5,17 +5,14 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Paweł Fus
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
 'use strict';
-import H from '../../Core/Globals.js';
-const { composed } = H;
 import ParallelCoordinatesDefaults from './ParallelCoordinatesDefaults.js';
-import { addEvent, arrayMax, arrayMin, isNumber, merge, pushUnique } from '../../Shared/Utilities.js';
+import { addEvent, arrayMax, arrayMin, isNumber, merge, pick } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class
@@ -91,8 +88,10 @@ var ParallelAxis;
      * @internal
      */
     function compose(AxisClass) {
-        if (pushUnique(composed, 'Axis.ParallelCoordinates')) {
+        if (!AxisClass.keepProps.includes('parallel')) {
             const axisCompo = AxisClass;
+            // On update, keep parallel additions.
+            AxisClass.keepProps.push('parallel');
             addEvent(axisCompo, 'init', onInit);
             addEvent(axisCompo, 'afterSetOptions', onAfterSetOptions);
             addEvent(axisCompo, 'getSeriesExtremes', onGetSeriesExtremes);
@@ -118,7 +117,7 @@ var ParallelAxis;
             else {
                 const axisIndex = chart.yAxis.indexOf(axis); // #13608
                 axis.options = merge(axis.options, axis.chart.options.chart.parallelAxes, e.userOptions);
-                parallelCoordinates.position = parallelCoordinates.position ?? (axisIndex >= 0 ? axisIndex : chart.yAxis.length);
+                parallelCoordinates.position = pick(parallelCoordinates.position, axisIndex >= 0 ? axisIndex : chart.yAxis.length);
                 parallelCoordinates.setPosition(axisPosition, axis.options);
             }
         }
@@ -161,7 +160,6 @@ var ParallelAxis;
      */
     function onInit() {
         const axis = this;
-        delete this.type; // After Axis.update
         if (!axis.parallelCoordinates) {
             axis.parallelCoordinates = new ParallelAxisAdditions(axis);
         }

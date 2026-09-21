@@ -3,22 +3,19 @@
  *  (c) 2016-2026 Highsoft AS
  *  Authors: Jon Arild Nygård
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
 'use strict';
 import BrokenAxis from '../BrokenAxis.js';
 import GridAxis from '../GridAxis.js';
-import H from '../../Globals.js';
-const { composed } = H;
 import Tree from '../../../Gantt/Tree.js';
 import TreeGridTick from './TreeGridTick.js';
 import TU from '../../../Series/TreeUtilities.js';
 const { getLevelOptions } = TU;
-import { addEvent, find, fireEvent, isObject, isString, merge, pushUnique, removeEvent, wrap } from '../../../Shared/Utilities.js';
+import { addEvent, find, fireEvent, isArray, isObject, isString, merge, removeEvent, splat, wrap } from '../../../Shared/Utilities.js';
 /* *
  *
  *  Variables
@@ -31,13 +28,6 @@ let TickConstructor;
  *  Functions
  *
  * */
-/**
- * Returns the current data
- */
-function getSeriesData(s) {
-    return new Array(s.dataTable.rowCount).fill(void 0)
-        .map((_, i) => s.dataTable.getRowObject(i));
-}
 /**
  * Creates a break object from a node.
  * @internal
@@ -159,7 +149,9 @@ function getTreeGridFromData(data, uniqueNames, numberOfSeries) {
                 const data = node.data;
                 if (isObject(data, true)) {
                     // Update point
-                    data.y = start + (data.yIndex || 0);
+                    data.y = start + (data.seriesIndex || 0);
+                    // Remove the property once used
+                    delete data.seriesIndex;
                 }
                 node.pos = pos;
             });
@@ -213,7 +205,7 @@ function onBeforeRender(e) {
             const seriesHasPrimitivePoints = [];
             // Concatenate data from all series assigned to this axis.
             data = axis.series.reduce(function (arr, s) {
-                const seriesData = getSeriesData(s), firstPoint = seriesData[0], 
+                const seriesData = (s.options.data || []), firstPoint = seriesData[0], 
                 // Check if the first point is a simple array of values.
                 // If so we assume that this is the case for all points.
                 foundPrimitivePoint = Array.isArray(firstPoint) &&
@@ -233,8 +225,7 @@ function onBeforeRender(e) {
                         if (isObject(pointOptions, true)) {
                             // Set series index on data. Removed again
                             // after use.
-                            pointOptions.yIndex = numberOfSeries;
-                            pointOptions.seriesIndex = s.index;
+                            pointOptions.seriesIndex = numberOfSeries;
                             arr.push(pointOptions);
                         }
                     });
@@ -265,11 +256,21 @@ function onBeforeRender(e) {
             axis.hasNames = true;
             axis.treeGrid.tree = treeGrid.tree;
             // Update yData now that we have calculated the y values
-            axis.series.forEach((series) => {
-                const axisData = data.filter((point) => point.seriesIndex === series.index);
-                axisData.forEach((point) => {
-                    delete point.seriesIndex;
-                    delete point.yIndex;
+            axis.series.forEach(function (series, index) {
+                const axisData = (series.options.data || []).map(function (d) {
+                    if (seriesHasPrimitivePoints[index] ||
+                        (isArray(d) && series.options.keys?.length)) {
+                        // Get the axisData from the data array used to
+                        // build the treeGrid where has been modified
+                        data.forEach(function (point) {
+                            const toArray = splat(d);
+                            if (toArray.indexOf(point.x || 0) >= 0 &&
+                                toArray.indexOf(point.x2 || 0) >= 0) {
+                                d = point;
+                            }
+                        });
+                    }
+                    return isObject(d, true) ? merge(d) : d;
                 });
                 // Avoid destroying points when series is not visible
                 if (series.visible) {
@@ -304,16 +305,19 @@ function onBeforeRender(e) {
  * The tick position in axis values.
  */
 function wrapGenerateTick(proceed, pos) {
-    const axis = this, mapOptionsToLevel = axis.treeGrid.mapOptionsToLevel || {}, isTreeGrid = axis.type === 'treegrid', ticks = axis.ticks, gridNode = axis.treeGrid.mapOfPosToGridNode?.[pos];
-    let tick = ticks[pos], levelOptions, options;
-    if (isTreeGrid && gridNode) {
+    const axis = this, mapOptionsToLevel = axis.treeGrid.mapOptionsToLevel || {}, isTreeGrid = axis.type === 'treegrid', ticks = axis.ticks;
+    let tick = ticks[pos], levelOptions, options, gridNode;
+    if (isTreeGrid &&
+        axis.treeGrid.mapOfPosToGridNode) {
+        gridNode = axis.treeGrid.mapOfPosToGridNode[pos];
         levelOptions = mapOptionsToLevel[gridNode.depth];
         if (levelOptions) {
             options = {
                 labels: levelOptions
             };
         }
-        if (!tick && TickConstructor) {
+        if (!tick &&
+            TickConstructor) {
             ticks[pos] = tick =
                 new TickConstructor(axis, pos, void 0, void 0, {
                     category: gridNode.name,
@@ -326,7 +330,6 @@ function wrapGenerateTick(proceed, pos) {
             tick.parameters.category = gridNode.name;
             tick.options = options;
             tick.addLabel();
-            axis.isDirty = true;
         }
     }
     else {
@@ -343,7 +346,7 @@ function wrapInit(proceed, chart, userOptions, coll) {
     if (isTreeGrid) {
         // Add event for updating the categories of a treegrid.
         // NOTE Preferably these events should be set on the axis.
-        addEvent(chart, 'beforeRender', onBeforeRender, { order: 0 });
+        addEvent(chart, 'beforeRender', onBeforeRender);
         addEvent(chart, 'beforeRedraw', onBeforeRender);
         // Add new collapsed nodes on addSeries
         addEvent(chart, 'addSeries', function (e) {
@@ -431,6 +434,8 @@ function wrapInit(proceed, chart, userOptions, coll) {
                  *
                  * @product      gantt
                  * @optionparent yAxis.labels.symbol
+                 *
+                 * @internal
                  */
                 symbol: {
                     /**
@@ -438,12 +443,14 @@ function wrapInit(proceed, chart, userOptions, coll) {
                      * the `Highcharts.Renderer.symbols` collection.
                      *
                      * @type {Highcharts.SymbolKeyValue}
+                     *
+                     * @internal
                      */
                     type: 'triangle',
                     x: -5,
-                    y: -3,
-                    height: 6,
-                    width: 8
+                    y: -5,
+                    height: 10,
+                    width: 10
                 }
             },
             uniqueNames: false
@@ -470,7 +477,9 @@ function wrapInit(proceed, chart, userOptions, coll) {
  * The original setTickInterval function.
  */
 function wrapSetTickInterval(proceed) {
-    const axis = this, options = axis.options, time = axis.chart.time, linkedParent = axis.linkedParent, isTreeGrid = axis.type === 'treegrid';
+    const axis = this, options = axis.options, time = axis.chart.time, linkedParent = typeof options.linkedTo === 'number' ?
+        this.chart[axis.coll]?.[options.linkedTo] :
+        void 0, isTreeGrid = axis.type === 'treegrid';
     if (isTreeGrid) {
         axis.min = axis.userMin ?? time.parse(options.min) ?? axis.dataMin;
         axis.max = axis.userMax ?? time.parse(options.max) ?? axis.dataMax;
@@ -534,8 +543,9 @@ class TreeGridAxisAdditions {
      * */
     /** @internal */
     static compose(AxisClass, ChartClass, SeriesClass, TickClass) {
-        if (pushUnique(composed, 'Axis.TreeGrid')) {
+        if (!AxisClass.keepProps.includes('treeGrid')) {
             const axisProps = AxisClass.prototype;
+            AxisClass.keepProps.push('treeGrid');
             wrap(axisProps, 'generateTick', wrapGenerateTick);
             wrap(axisProps, 'init', wrapInit);
             wrap(axisProps, 'setTickInterval', wrapSetTickInterval);
@@ -577,11 +587,10 @@ class TreeGridAxisAdditions {
     setCollapsedStatus(node) {
         const axis = this.axis, chart = axis.chart;
         axis.series.forEach(function (series) {
-            const data = getSeriesData(series);
+            const data = series.options.data;
             if (node.id && data) {
                 const point = chart.get(node.id), dataPoint = data[series.data.indexOf(point)];
-                series.dataTable.setRow({ collapsed: node.collapsed }, series.data.indexOf(point));
-                if (point && isObject(dataPoint, true)) {
+                if (point && dataPoint) {
                     point.collapsed = node.collapsed;
                     dataPoint.collapsed = node.collapsed;
                 }

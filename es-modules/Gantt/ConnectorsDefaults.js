@@ -3,9 +3,8 @@
  *  (c) 2016-2026 Highsoft AS
  *  Authors: Øystein Moseng, Lars A. V. Cabrera
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
@@ -204,20 +203,6 @@ const connectorsDefaults = {
              * Set the line/border width of the pathfinder markers.
              */
             lineWidth: 1
-            /**
-             * The x offset of the marker.
-             *
-             * @since 13.0.0
-             * @type number
-             * @apioption connectors.marker.xOffset
-             */
-            /**
-             * The y offset of the marker.
-             *
-             * @since 13.0.0
-             * @type number
-             * @apioption connectors.marker.yOffset
-             */
         },
         /**
          * Marker options specific to the start markers for this chart's

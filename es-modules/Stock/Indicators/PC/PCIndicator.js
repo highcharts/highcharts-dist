@@ -1,14 +1,14 @@
 /* *
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
 'use strict';
 import AU from '../ArrayUtilities.js';
 import MultipleLinesComposition from '../MultipleLinesComposition.js';
+import Palettes from '../../../Core/Color/Palettes.js';
 import SeriesRegistry from '../../../Core/Series/SeriesRegistry.js';
 const { sma: SMAIndicator } = SeriesRegistry.seriesTypes;
 import { extend, merge } from '../../../Shared/Utilities.js';
@@ -20,7 +20,7 @@ import { extend, merge } from '../../../Shared/Utilities.js';
 /**
  * The Price Channel series type.
  *
- * @internal
+ * @private
  * @class
  * @name Highcharts.seriesTypes.pc
  *
@@ -88,10 +88,11 @@ PCIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
      * Option for fill color between lines in Price channel Indicator.
      *
      * @sample {highstock} stock/indicators/indicator-area-fill
-     *      Background fill between lines.
+     *      background fill between lines
      *
      * @type {Highcharts.Color}
      * @apioption plotOptions.pc.fillColor
+     *
      */
     /**
      * @excluding index
@@ -109,7 +110,7 @@ PCIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
              *
              * @type {Highcharts.ColorString}
              */
-            lineColor: 'var(--highcharts-color-2)',
+            lineColor: Palettes.colors[2],
             /**
              * Pixel width of the line.
              */
@@ -124,7 +125,7 @@ PCIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
              *
              * @type {Highcharts.ColorString}
              */
-            lineColor: 'var(--highcharts-color-8)',
+            lineColor: Palettes.colors[8],
             /**
              * Pixel width of the line.
              */
@@ -150,7 +151,6 @@ SeriesRegistry.registerSeriesType('pc', PCIndicator);
  *  Default Export
  *
  * */
-/** @internal */
 export default PCIndicator;
 /* *
  *
@@ -164,7 +164,7 @@ export default PCIndicator;
  * @extends      series,plotOptions.pc
  * @since        7.0.0
  * @product      highstock
- * @excluding    allAreas, colorAxis, compare, compareBase,
+ * @excluding    allAreas, colorAxis, compare, compareBase, dataParser, dataURL,
  *               joinBy, keys, navigatorOptions, pointInterval,
  *               pointIntervalUnit, pointPlacement, pointRange, pointStart,
  *               showInNavigator, stacking

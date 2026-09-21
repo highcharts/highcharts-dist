@@ -1,8 +1,7 @@
 /* *
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
@@ -16,17 +15,23 @@ import { isArray, merge } from '../../../Shared/Utilities.js';
  *
  * */
 // Utils:
-/** @internal */
+/**
+ * @private
+ */
 function accumulateAverage(points, xVal, yVal, i) {
     const xValue = xVal[i], yValue = yVal[i];
     points.push([xValue, yValue]);
 }
-/** @internal */
+/**
+ * @private
+ */
 function getTR(currentPoint, prevPoint) {
     const pointY = currentPoint, prevY = prevPoint, HL = pointY[1] - pointY[2], HCp = typeof prevY === 'undefined' ? 0 : Math.abs(pointY[1] - prevY[3]), LCp = typeof prevY === 'undefined' ? 0 : Math.abs(pointY[2] - prevY[3]), TR = Math.max(HL, HCp, LCp);
     return TR;
 }
-/** @internal */
+/**
+ * @private
+ */
 function populateAverage(points, xVal, yVal, i, period, prevATR) {
     const x = xVal[i - 1], TR = getTR(yVal[i - 1], yVal[i - 2]), y = (((prevATR * (period - 1)) + TR) / period);
     return [x, y];
@@ -39,7 +44,7 @@ function populateAverage(points, xVal, yVal, i, period, prevATR) {
 /**
  * The ATR series type.
  *
- * @internal
+ * @private
  * @class
  * @name Highcharts.seriesTypes.atr
  *
@@ -96,7 +101,7 @@ class ATRIndicator extends SMAIndicator {
  * Average true range indicator (ATR). This series requires `linkedTo`
  * option to be set.
  *
- * @sample {highstock} stock/indicators/atr
+ * @sample stock/indicators/atr
  *         ATR indicator
  *
  * @extends      plotOptions.sma
@@ -120,7 +125,6 @@ SeriesRegistry.registerSeriesType('atr', ATRIndicator);
  *  Default Export
  *
  * */
-/** @internal */
 export default ATRIndicator;
 /* *
  *
@@ -134,6 +138,7 @@ export default ATRIndicator;
  * @extends   series,plotOptions.atr
  * @since     6.0.0
  * @product   highstock
+ * @excluding dataParser, dataURL
  * @requires  stock/indicators/indicators
  * @requires  stock/indicators/atr
  * @apioption series.atr

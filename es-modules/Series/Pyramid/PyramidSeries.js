@@ -5,9 +5,8 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
@@ -24,7 +23,7 @@ import { merge } from '../../Shared/Utilities.js';
 /**
  * Pyramid series type.
  *
- * @internal
+ * @private
  * @class
  * @name Highcharts.seriesTypes.pyramid
  *

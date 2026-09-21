@@ -15,7 +15,7 @@ import { addEvent, defined } from '../Shared/Utilities.js';
 /**
  * Provides methods for auto setting/updating series data based on the based
  * series data.
- * @internal
+ * @private
  */
 var DerivedComposition;
 (function (DerivedComposition) {
@@ -35,7 +35,7 @@ var DerivedComposition;
      * access to the base series via m `this.baseSeries` and the bases data is
      * initialised. It should return data in the format accepted by
      * `Series.setData()` method
-     * @internal
+     * @private
      */
     DerivedComposition.setDerivedData = noop;
     /* *
@@ -44,7 +44,7 @@ var DerivedComposition;
      *
      * */
     /**
-     * @internal
+     * @private
      */
     function compose(SeriesClass) {
         const seriesProto = SeriesClass.prototype;
@@ -58,7 +58,7 @@ var DerivedComposition;
     DerivedComposition.compose = compose;
     /**
      * Initialise series
-     * @internal
+     * @private
      */
     function init() {
         Series.prototype.init.apply(this, arguments);
@@ -70,7 +70,7 @@ var DerivedComposition;
     DerivedComposition.init = init;
     /**
      * Sets base series for the series
-     * @internal
+     * @private
      */
     function setBaseSeries() {
         const chart = this.chart, baseSeriesOptions = this.options.baseSeries, baseSeries = (defined(baseSeriesOptions) &&
@@ -81,7 +81,7 @@ var DerivedComposition;
     DerivedComposition.setBaseSeries = setBaseSeries;
     /**
      * Adds events for the series
-     * @internal
+     * @private
      */
     function addEvents() {
         this.eventRemovers.push(addEvent(this.chart, 'afterLinkSeries', () => {
@@ -97,7 +97,7 @@ var DerivedComposition;
     /**
      * Adds events to the base series - it required for recalculating the data
      * in the series if the base series is updated / removed / etc.
-     * @internal
+     * @private
      */
     function addBaseSeriesEvents() {
         this.eventRemovers.push(addEvent(this.baseSeries, 'updatedData', () => {
@@ -110,7 +110,7 @@ var DerivedComposition;
     DerivedComposition.addBaseSeriesEvents = addBaseSeriesEvents;
     /**
      * Destroys the series
-     * @internal
+     * @private
      */
     function destroy() {
         this.eventRemovers.forEach((remover) => {
@@ -125,5 +125,4 @@ var DerivedComposition;
  *  Default Export
  *
  * */
-/** @internal */
 export default DerivedComposition;

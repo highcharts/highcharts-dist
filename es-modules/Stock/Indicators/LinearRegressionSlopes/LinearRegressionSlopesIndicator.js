@@ -1,11 +1,11 @@
-/* *
+// SPDX-License-Identifier: LicenseRef-Highcharts
+/**
  *
  *  (c) 2010-2026 Highsoft AS
  *  Author: Kamil Kulig
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
@@ -21,7 +21,7 @@ import { extend, merge } from '../../../Shared/Utilities.js';
 /**
  * The Linear Regression Slope series type.
  *
- * @internal
+ * @private
  * @class
  * @name Highcharts.seriesTypes.linearRegressionSlope
  *
@@ -53,7 +53,7 @@ class LinearRegressionSlopesIndicator extends LinearRegressionIndicator {
  * @since        7.0.0
  * @product      highstock
  * @requires     stock/indicators/indicators
- * @requires     stock/indicators/regressions
+ * @requires  stock/indicators/regressions
  * @optionparent plotOptions.linearregressionslope
  */
 LinearRegressionSlopesIndicator.defaultOptions = merge(LinearRegressionIndicator.defaultOptions);
@@ -68,7 +68,6 @@ SeriesRegistry.registerSeriesType('linearRegressionSlope', LinearRegressionSlope
  *  Default Export
  *
  * */
-/** @internal */
 export default LinearRegressionSlopesIndicator;
 /* *
  *
@@ -76,13 +75,14 @@ export default LinearRegressionSlopesIndicator;
  *
  * */
 /**
- * A linear regression slope series. If the
+ * A linear regression intercept series. If the
  * [type](#series.linearregressionslope.type) option is not specified, it is
  * inherited from [chart.type](#chart.type).
  *
  * @extends   series,plotOptions.linearregressionslope
  * @since     7.0.0
  * @product   highstock
+ * @excluding dataParser,dataURL
  * @requires  stock/indicators/indicators
  * @requires  stock/indicators/regressions
  * @apioption series.linearregressionslope

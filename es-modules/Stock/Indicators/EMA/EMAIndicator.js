@@ -1,8 +1,7 @@
 /* *
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
@@ -18,7 +17,7 @@ import { correctFloat, isArray, merge } from '../../../Shared/Utilities.js';
 /**
  * The EMA series type.
  *
- * @internal
+ * @private
  * @class
  * @name Highcharts.seriesTypes.ema
  *
@@ -86,7 +85,7 @@ class EMAIndicator extends SMAIndicator {
  * Exponential moving average indicator (EMA). This series requires the
  * `linkedTo` option to be set.
  *
- * @sample {highstock} stock/indicators/ema
+ * @sample stock/indicators/ema
  * Exponential moving average indicator
  *
  * @extends      plotOptions.sma
@@ -117,7 +116,6 @@ SeriesRegistry.registerSeriesType('ema', EMAIndicator);
  *  Default Export
  *
  * */
-/** @internal */
 export default EMAIndicator;
 /* *
  *
@@ -131,6 +129,7 @@ export default EMAIndicator;
  * @extends   series,plotOptions.ema
  * @since     6.0.0
  * @product   highstock
+ * @excluding dataParser, dataURL
  * @requires  stock/indicators/indicators
  * @apioption series.ema
  */

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1 (2026-09-20)
+ * @license Highcharts JS v12.6.2 (2026-09-21)
  * @module highcharts/modules/arrow-symbols
  * @requires highcharts
  *
@@ -9,38 +9,45 @@
  * (c) 2017-2026 Highsoft AS
  * Author: Lars A. V. Cabrera
  *
- * A commercial license may be required depending on use,
- * see www.highcharts.com/license
+ * A commercial license may be required depending on use.
+ * See www.highcharts.com/license
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
 /******/ // The require scope
-/******/ const __webpack_require__ = {};
+/******/ var __webpack_require__ = {};
 /******/ 
 /************************************************************************/
 /******/ /* webpack/runtime/compat get default export */
-/******/ // getDefaultExport function for compatibility with non-harmony modules
-/******/ __webpack_require__.n = (module) => {
-/******/ 	const getter = module && module.__esModule ?
-/******/ 		() => (module['default']) :
-/******/ 		() => (module);
-/******/ 	__webpack_require__.d(getter, { a: getter });
-/******/ 	return getter;
-/******/ };
+/******/ (() => {
+/******/ 	// getDefaultExport function for compatibility with non-harmony modules
+/******/ 	__webpack_require__.n = (module) => {
+/******/ 		var getter = module && module.__esModule ?
+/******/ 			() => (module['default']) :
+/******/ 			() => (module);
+/******/ 		__webpack_require__.d(getter, { a: getter });
+/******/ 		return getter;
+/******/ 	};
+/******/ })();
 /******/ 
 /******/ /* webpack/runtime/define property getters */
-/******/ // define getter/value functions for harmony exports
-/******/ __webpack_require__.d = (exports, definition) => {
-/******/ 	for(var key in definition) {
-/******/ 		if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
-/******/ 			Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ (() => {
+/******/ 	// define getter functions for harmony exports
+/******/ 	__webpack_require__.d = (exports, definition) => {
+/******/ 		for(var key in definition) {
+/******/ 			if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 				Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 			}
 /******/ 		}
-/******/ 	}
-/******/ };
+/******/ 	};
+/******/ })();
 /******/ 
 /******/ /* webpack/runtime/hasOwnProperty shorthand */
-/******/ __webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop));
+/******/ (() => {
+/******/ 	__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
+/******/ })();
 /******/ 
 /************************************************************************/
+var __webpack_exports__ = {};
 
 ;// external ["../highcharts.src.js","default"]
 const external_highcharts_src_js_default_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"];
@@ -51,9 +58,8 @@ var external_highcharts_src_js_default_default = /*#__PURE__*/__webpack_require_
  *  (c) 2017-2026 Highsoft AS
  *  Authors: Lars A. V. Cabrera
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
@@ -75,6 +81,7 @@ var external_highcharts_src_js_default_default = /*#__PURE__*/__webpack_require_
  *                   o
  * ```
  *
+ * @internal
  * @function
  *
  * @param {number} x
@@ -110,6 +117,7 @@ function arrow(x, y, w, h) {
  *       o
  * ```
  *
+ * @internal
  * @function
  *
  * @param {number} x
@@ -135,7 +143,7 @@ function arrowHalf(x, y, w, h) {
  *
  * @internal
  */
-function composeArrowSymbols(SVGRendererClass) {
+function compose(SVGRendererClass) {
     const symbols = SVGRendererClass.prototype.symbols;
     symbols.arrow = arrow;
     symbols['arrow-filled'] = triangleLeft;
@@ -154,6 +162,7 @@ function composeArrowSymbols(SVGRendererClass) {
  *             o
  * ```
  *
+ * @internal
  * @function
  *
  * @param {number} x
@@ -189,6 +198,7 @@ function triangleLeft(x, y, w, h) {
  *       o
  * ```
  *
+ * @internal
  * @function
  *
  * @param {number} x
@@ -209,6 +219,15 @@ function triangleLeft(x, y, w, h) {
 function triangleLeftHalf(x, y, w, h) {
     return triangleLeft(x, y, w / 2, h);
 }
+/* *
+ *
+ *  Default Export
+ *
+ * */
+const ArrowSymbols = {
+    compose
+};
+/* harmony default export */ const Extensions_ArrowSymbols = (ArrowSymbols);
 
 ;// ./code/es-modules/masters/modules/arrow-symbols.src.js
 
@@ -216,7 +235,7 @@ function triangleLeftHalf(x, y, w, h) {
 
 
 const G = (external_highcharts_src_js_default_default());
-composeArrowSymbols(G.SVGRenderer);
+Extensions_ArrowSymbols.compose(G.SVGRenderer);
 /* harmony default export */ const arrow_symbols_src = ((external_highcharts_src_js_default_default()));
 
 export { arrow_symbols_src as default };

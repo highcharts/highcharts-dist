@@ -3,14 +3,13 @@
  *  (c) 2010-2026 Highsoft AS
  *  Author: Torstein Hønsi
  *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
+ *  A commercial license may be required depending on use.
+ *  See www.highcharts.com/license
  *
  *
  * */
 'use strict';
-import { extend, merge } from '../../Shared/Utilities.js';
+import { extend, merge, pick } from '../../Shared/Utilities.js';
 /* *
  *
  *  Namespace
@@ -90,7 +89,7 @@ var LegendSymbol;
         // Draw the marker
         if (markerOptions && markerOptions.enabled !== false && symbolWidth) {
             // Do not allow the marker to be larger than the symbolHeight
-            let radius = Math.min((markerOptions.radius ?? generalRadius), generalRadius);
+            let radius = Math.min(pick(markerOptions.radius, generalRadius), generalRadius);
             // Restrict symbol markers size
             if (symbol.indexOf('url') === 0) {
                 markerOptions = merge(markerOptions, {
