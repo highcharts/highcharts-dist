@@ -19,7 +19,7 @@ const { series: Series, seriesTypes: { column: ColumnSeries, scatter: ScatterSer
 import SVGRenderer from '../../Core/Renderer/SVG/SVGRenderer.js';
 const { prototype: { symbols } } = SVGRenderer;
 import IU from '../InterpolationUtilities.js';
-import { addEvent, extend, fireEvent, isNumber, merge, pick } from '../../Shared/Utilities.js';
+import { addEvent, extend, fireEvent, isNumber, merge } from '../../Shared/Utilities.js';
 const { colorFromPoint, getContext } = IU;
 /* *
  *
@@ -27,7 +27,6 @@ const { colorFromPoint, getContext } = IU;
  *
  * */
 /**
- * @private
  * @class
  * @name Highcharts.seriesTypes.heatmap
  *
@@ -41,8 +40,11 @@ class HeatmapSeries extends ScatterSeries {
          *
          * */
         super(...arguments);
+        /** @internal */
         this.valueMax = NaN;
+        /** @internal */
         this.valueMin = NaN;
+        /** @internal */
         this.isDirtyCanvas = true;
     }
     /* *
@@ -51,7 +53,7 @@ class HeatmapSeries extends ScatterSeries {
      *
      * */
     /**
-     * @private
+     * @internal
      */
     drawPoints() {
         const series = this, seriesOptions = series.options, interpolation = seriesOptions.interpolation, seriesMarkerOptions = seriesOptions.marker || {};
@@ -110,13 +112,13 @@ class HeatmapSeries extends ScatterSeries {
     }
     /**
      * Override to use rectangle by default
-     * @private
+     * @internal
      */
     getSymbol() {
         this.symbol = this.options.marker?.symbol || 'rect';
     }
     /**
-     * @private
+     * @internal
      */
     getExtremes() {
         // Get the extremes from the value data
@@ -134,7 +136,7 @@ class HeatmapSeries extends ScatterSeries {
     /**
      * Override to also allow null points, used when building the k-d-tree for
      * tooltips in boost mode.
-     * @private
+     * @internal
      */
     getValidPoints(points, insideOnly) {
         return Series.prototype.getValidPoints.call(this, points, insideOnly, true);
@@ -142,20 +144,20 @@ class HeatmapSeries extends ScatterSeries {
     /**
      * Define hasData function for non-cartesian series. Returns true if the
      * series has points at all.
-     * @private
+     * @internal
      */
     hasData() {
         return !!this.dataTable.rowCount;
     }
     /**
      * Override the init method to add point ranges on both axes.
-     * @private
+     * @internal
      */
     init() {
         super.init.apply(this, arguments);
         const options = this.options;
         // #3758, prevent resetting in setData
-        options.pointRange = pick(options.pointRange, options.colsize || 1);
+        options.pointRange = options.pointRange ?? (options.colsize || 1);
         // General point range
         this.yAxis.axisPointRange = options.rowsize || 1;
         // Bind new symbol names
@@ -178,7 +180,7 @@ class HeatmapSeries extends ScatterSeries {
         }
     }
     /**
-     * @private
+     * @internal
      */
     markerAttribs(point, state) {
         const shapeArgs = point.shapeArgs || {};
@@ -212,7 +214,7 @@ class HeatmapSeries extends ScatterSeries {
         return shapeArgs;
     }
     /**
-     * @private
+     * @internal
      */
     pointAttribs(point, state) {
         const series = this, attr = Series.prototype.pointAttribs.call(series, point, state), seriesOptions = series.options || {}, plotOptions = series.chart.options.plotOptions || {}, seriesPlotOptions = plotOptions.series || {}, heatmapPlotOptions = plotOptions.heatmap || {}, 
@@ -242,7 +244,7 @@ class HeatmapSeries extends ScatterSeries {
         return attr;
     }
     /**
-     * @private
+     * @internal
      */
     translate() {
         const series = this, options = series.options, { borderRadius, marker } = options, symbol = marker?.symbol || 'rect', shape = symbols[symbol] ? symbol : 'rect', hasRegularShape = ['circle', 'square'].indexOf(shape) !== -1;
@@ -274,6 +276,7 @@ class HeatmapSeries extends ScatterSeries {
         fireEvent(series, 'afterTranslate');
     }
 }
+/** @internal */
 HeatmapSeries.defaultOptions = merge(ScatterSeries.defaultOptions, HeatmapSeriesDefaults);
 addEvent(HeatmapSeries, 'afterDataClassLegendClick', function () {
     this.isDirtyCanvas = true;
@@ -294,7 +297,7 @@ extend(HeatmapSeries.prototype, {
     specialGroup: 'group',
     trackerGroups: ColorMapComposition.seriesMembers.trackerGroups,
     /**
-     * @private
+     * @internal
      */
     alignDataLabel: ColumnSeries.prototype.alignDataLabel,
     colorAttribs: ColorMapComposition.seriesMembers.colorAttribs

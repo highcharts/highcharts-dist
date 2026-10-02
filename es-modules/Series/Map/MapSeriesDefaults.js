@@ -303,7 +303,7 @@ const MapSeriesDefaults = {
  * is inherited from [chart.type](#chart.type).
  *
  * @extends   series,plotOptions.map
- * @excluding dataParser, dataURL, dragDrop, marker
+ * @excluding dragDrop, marker
  * @product   highmaps
  * @apioption series.map
  */

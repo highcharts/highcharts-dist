@@ -24,6 +24,7 @@ class WindbarbPoint extends ColumnSeries.prototype.pointClass {
      *  Functions
      *
      * */
+    /** @internal */
     isValid() {
         return isNumber(this.value) && this.value >= 0;
     }

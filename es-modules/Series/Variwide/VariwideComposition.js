@@ -73,15 +73,18 @@ function onTickAfterGetPosition(e) {
  */
 function tickPostTranslate(xy, xOrY, index) {
     const axis = this.axis;
-    let pos = xy[xOrY] - axis.pos;
-    if (!axis.horiz) {
-        pos = axis.len - pos;
+    if (axis.variwide) {
+        let pos = xy[xOrY] - axis.pos;
+        if (!axis.horiz) {
+            pos = axis.len - pos;
+        }
+        pos = axis.series[0]
+            ?.postTranslate?.(index, pos) ?? pos;
+        if (!axis.horiz) {
+            pos = axis.len - pos;
+        }
+        xy[xOrY] = axis.pos + pos;
     }
-    pos = axis.series[0].postTranslate(index, pos);
-    if (!axis.horiz) {
-        pos = axis.len - pos;
-    }
-    xy[xOrY] = axis.pos + pos;
 }
 /**
  * @private

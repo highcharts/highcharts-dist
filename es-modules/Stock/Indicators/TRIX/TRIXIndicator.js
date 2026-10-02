@@ -18,7 +18,6 @@ import { correctFloat, merge } from '../../../Shared/Utilities.js';
 /**
  * The TRIX series type.
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.trix
  *
@@ -31,6 +30,7 @@ class TRIXIndicator extends TEMAIndicator {
      *
      * */
     // TRIX is calculated using TEMA so we just extend getTemaPoint method.
+    /** @internal */
     getTemaPoint(xVal, tripledPeriod, EMAlevels, i) {
         if (i > tripledPeriod) {
             return [
@@ -65,6 +65,7 @@ class TRIXIndicator extends TEMAIndicator {
  * @requires     stock/indicators/tema
  * @requires     stock/indicators/trix
  * @optionparent plotOptions.trix
+ * @internal
  */
 TRIXIndicator.defaultOptions = merge(TEMAIndicator.defaultOptions);
 SeriesRegistry.registerSeriesType('trix', TRIXIndicator);
@@ -73,7 +74,6 @@ SeriesRegistry.registerSeriesType('trix', TRIXIndicator);
  *  Default Export
  *
  * */
-/** @internal */
 export default TRIXIndicator;
 /* *
  *
@@ -87,7 +87,7 @@ export default TRIXIndicator;
  * @extends   series,plotOptions.trix
  * @since     7.0.0
  * @product   highstock
- * @excluding allAreas, colorAxis, compare, compareBase, dataParser, dataURL,
+ * @excluding allAreas, colorAxis, compare, compareBase,
  *            joinBy, keys, navigatorOptions, pointInterval, pointIntervalUnit,
  *            pointPlacement, pointRange, pointStart, showInNavigator, stacking
  * @requires  stock/indicators/indicators

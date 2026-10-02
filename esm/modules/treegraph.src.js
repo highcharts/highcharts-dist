@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.0-modified (2026-08-14)
+ * @license Highcharts JS v13.1.0 (2026-10-02)
  * Treegraph chart series type
  * @module highcharts/modules/treegraph
  * @requires highcharts
@@ -18,48 +18,27 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 /******/ 
 /************************************************************************/
 /******/ /* webpack/runtime/compat get default export */
-/******/ (() => {
-/******/ 	// getDefaultExport function for compatibility with non-harmony modules
-/******/ 	__webpack_require__.n = (module) => {
-/******/ 		const getter = module && module.__esModule ?
-/******/ 			() => (module['default']) :
-/******/ 			() => (module);
-/******/ 		__webpack_require__.d(getter, { a: getter });
-/******/ 		return getter;
-/******/ 	};
-/******/ })();
+/******/ // getDefaultExport function for compatibility with non-harmony modules
+/******/ __webpack_require__.n = (module) => {
+/******/ 	const getter = module && module.__esModule ?
+/******/ 		() => (module['default']) :
+/******/ 		() => (module);
+/******/ 	__webpack_require__.d(getter, { a: getter });
+/******/ 	return getter;
+/******/ };
 /******/ 
 /******/ /* webpack/runtime/define property getters */
-/******/ (() => {
-/******/ 	// define getter/value functions for harmony exports
-/******/ 	__webpack_require__.d = (exports, definition) => {
-/******/ 		if(Array.isArray(definition)) {
-/******/ 			var i = 0;
-/******/ 			while(i < definition.length) {
-/******/ 				var key = definition[i++];
-/******/ 				var binding = definition[i++];
-/******/ 				if(!__webpack_require__.o(exports, key)) {
-/******/ 					if(binding === 0) {
-/******/ 						Object.defineProperty(exports, key, { enumerable: true, value: definition[i++] });
-/******/ 					} else {
-/******/ 						Object.defineProperty(exports, key, { enumerable: true, get: binding });
-/******/ 					}
-/******/ 				} else if(binding === 0) { i++; }
-/******/ 			}
-/******/ 		} else {
-/******/ 			for(var key in definition) {
-/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
-/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
-/******/ 				}
-/******/ 			}
+/******/ // define getter/value functions for harmony exports
+/******/ __webpack_require__.d = (exports, definition) => {
+/******/ 	for(var key in definition) {
+/******/ 		if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 			Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
 /******/ 		}
-/******/ 	};
-/******/ })();
+/******/ 	}
+/******/ };
 /******/ 
 /******/ /* webpack/runtime/hasOwnProperty shorthand */
-/******/ (() => {
-/******/ 	__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
-/******/ })();
+/******/ __webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop));
 /******/ 
 /************************************************************************/
 
@@ -150,7 +129,7 @@ function getCurvedPath(pathParams) {
 }
 /**
  * General function to apply corner radius to a path
- * @private
+ * @internal
  */
 function applyRadius(path, r) {
     const d = [];
@@ -203,10 +182,12 @@ function applyRadius(path, r) {
     }
     return d;
 }
+/** @internal */
 const PathUtilities = {
     applyRadius,
     getLinkPath
 };
+/** @internal */
 /* harmony default export */ const Series_PathUtilities = (PathUtilities);
 
 ;// external ["../highcharts.src.js","default","SeriesRegistry"]
@@ -452,6 +433,7 @@ class TreegraphPoint extends TreemapPoint {
      *  Functions
      *
      * */
+    /** @internal */
     draw() {
         super.draw.apply(this, arguments);
         // Run animation of hiding/showing of the point.
@@ -463,6 +445,7 @@ class TreegraphPoint extends TreemapPoint {
         }
         this.renderCollapseButton();
     }
+    /** @internal */
     renderCollapseButton() {
         const point = this, series = point.series, parentGroup = point.graphic && point.graphic.parentGroup, levelOptions = series.mapOptionsToLevel[point.node.level || 0] || {}, btnOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(series.options.collapseButton, levelOptions.collapseButton, point.options.collapseButton), { width, height, shape, style } = btnOptions, padding = 2, chart = this.series.chart, calculatedOpacity = (point.visible &&
             (point.collapsed ||
@@ -532,6 +515,7 @@ class TreegraphPoint extends TreemapPoint {
             }
         }
     }
+    /** @internal */
     toggleCollapse(state) {
         const series = this.series;
         this.update({
@@ -540,6 +524,7 @@ class TreegraphPoint extends TreemapPoint {
         (0,external_highcharts_src_js_default_namespaceObject.fireEvent)(series, 'toggleCollapse');
         series.redraw();
     }
+    /** @internal */
     destroy() {
         if (this.collapseButton) {
             this.collapseButton.destroy();
@@ -552,6 +537,7 @@ class TreegraphPoint extends TreemapPoint {
         }
         super.destroy.apply(this, arguments);
     }
+    /** @internal */
     getCollapseBtnPosition(btnOptions) {
         const point = this, chart = point.series.chart, inverted = chart.inverted, btnWidth = btnOptions.width, btnHeight = btnOptions.height, { x = 0, y = 0, width = 0, height = 0 } = point.shapeArgs || {};
         return {
@@ -562,7 +548,7 @@ class TreegraphPoint extends TreemapPoint {
         };
     }
 }
-(0,external_highcharts_src_js_default_namespaceObject.addEvent)(TreegraphPoint, 'mouseOut', function () {
+;(0,external_highcharts_src_js_default_namespaceObject.addEvent)(TreegraphPoint, 'mouseOut', function () {
     const btn = this.collapseButton, btnOptions = this.collapseButtonOptions;
     if (btn && btnOptions?.onlyOnHover && !this.collapsed) {
         btn.animate({ opacity: 0 });
@@ -639,9 +625,17 @@ function getColor(node, options) {
         }
         // Select either point color, level color or inherited color.
         if (!series.chart.styledMode) {
-            color = (0,external_highcharts_src_js_default_namespaceObject.pick)(point && point.options.color, level && level.color, colorByPoint, parentColor && variateColor(parentColor), series.color);
+            color = ((point && point.options.color) ??
+                (level && level.color) ??
+                colorByPoint ??
+                (parentColor && variateColor(parentColor)) ??
+                series.color);
         }
-        colorIndex = (0,external_highcharts_src_js_default_namespaceObject.pick)(point && point.options.colorIndex, level && level.colorIndex, colorIndexByPoint, parentColorIndex, options.colorIndex);
+        colorIndex = ((point && point.options.colorIndex) ??
+            (level && level.colorIndex) ??
+            colorIndexByPoint ??
+            parentColorIndex ??
+            options.colorIndex);
     }
     return {
         color: color,
@@ -678,7 +672,8 @@ function getLevelOptions(params) {
                 let level, levelIsConstant, options;
                 if ((0,external_highcharts_src_js_default_namespaceObject.isObject)(item) && (0,external_highcharts_src_js_default_namespaceObject.isNumber)(item.level)) {
                     options = (0,external_highcharts_src_js_default_namespaceObject.merge)({}, item);
-                    levelIsConstant = (0,external_highcharts_src_js_default_namespaceObject.pick)(options.levelIsConstant, defaults.levelIsConstant);
+                    levelIsConstant =
+                        options.levelIsConstant ?? defaults.levelIsConstant;
                     // Delete redundant properties.
                     delete options.levelIsConstant;
                     delete options.level;
@@ -710,7 +705,7 @@ function setTreeValues(tree, options) {
     const before = options.before, idRoot = options.idRoot, mapIdToNode = options.mapIdToNode, nodeRoot = mapIdToNode[idRoot], levelIsConstant = (options.levelIsConstant !== false), points = options.points, point = points[tree.i], optionsPoint = point && point.options || {}, children = [];
     let childrenTotal = 0;
     tree.levelDynamic = tree.level - (levelIsConstant ? 0 : nodeRoot.level);
-    tree.name = (0,external_highcharts_src_js_default_namespaceObject.pick)(point && point.name, '');
+    tree.name = ((point && point.name) ?? '');
     tree.visible = (idRoot === tree.id ||
         options.visible === true);
     if (typeof before === 'function') {
@@ -731,7 +726,7 @@ function setTreeValues(tree, options) {
         }
     });
     // Set the values
-    const value = (0,external_highcharts_src_js_default_namespaceObject.pick)(optionsPoint.value, childrenTotal);
+    const value = (optionsPoint.value ?? childrenTotal);
     tree.visible = value >= 0 && (childrenTotal > 0 || tree.visible);
     tree.children = children;
     tree.childrenTotal = childrenTotal;
@@ -757,7 +752,7 @@ function updateRootId(series) {
         // Get the series options.
         options = (0,external_highcharts_src_js_default_namespaceObject.isObject)(series.options) ? series.options : {};
         // Calculate the rootId.
-        rootId = (0,external_highcharts_src_js_default_namespaceObject.pick)(series.rootNode, options.rootId, '');
+        rootId = (series.rootNode ?? options.rootId ?? '');
         // Set rootId on series.userOptions to pick it up in exporting.
         if ((0,external_highcharts_src_js_default_namespaceObject.isObject)(series.userOptions)) {
             series.userOptions.rootId = rootId;
@@ -868,7 +863,7 @@ class LinkPoint extends ColumnPoint {
         animation, runEvent);
         this.visible = this.toNode.visible;
         (0,external_highcharts_src_js_default_namespaceObject.extend)(this, oldOptions);
-        if ((0,external_highcharts_src_js_default_namespaceObject.pick)(redraw, true)) {
+        if (redraw ?? true) {
             this.series.chart.redraw(animation);
         }
     }
@@ -1867,7 +1862,9 @@ class TreegraphSeries extends TreemapSeries {
          *
          * */
         super(...arguments);
+        /** @internal */
         this.nodeList = [];
+        /** @internal */
         this.links = [];
     }
     /* *
@@ -1875,6 +1872,7 @@ class TreegraphSeries extends TreemapSeries {
      *  Functions
      *
      * */
+    /** @internal */
     init() {
         super.init.apply(this, arguments);
         this.layoutAlgorithm = new Treegraph_TreegraphLayout();
@@ -1946,6 +1944,7 @@ class TreegraphSeries extends TreemapSeries {
             (plotSizeX - (maxXSize + maxXSize) / 2) / (maxX - minX), bx = maxX === minX ? plotSizeX / 2 : -ax * minX + minXSize / 2;
         return { ax, bx, ay, by };
     }
+    /** @internal */
     getLinks() {
         const series = this;
         const links = [];
@@ -1976,16 +1975,19 @@ class TreegraphSeries extends TreemapSeries {
         });
         return links;
     }
+    /** @internal */
     buildTree(id, index, level, list, parent) {
         const point = this.points[index];
         level = point?.level ?? level;
         return super.buildTree.call(this, id, index, level, list, parent);
     }
+    /** @internal */
     markerAttribs() {
         // The super Series.markerAttribs returns { width: NaN, height: NaN },
         // so just disable this for now.
         return {};
     }
+    /** @internal */
     setCollapsedStatus(node, visibility) {
         const point = node.point;
         if (point) {
@@ -1999,6 +2001,7 @@ class TreegraphSeries extends TreemapSeries {
             this.setCollapsedStatus(childNode, visibility);
         });
     }
+    /** @internal */
     drawTracker() {
         ColumnSeries.prototype.drawTracker.apply(this, arguments);
         ColumnSeries.prototype.drawTracker.call(this, this.links);
@@ -2046,6 +2049,7 @@ class TreegraphSeries extends TreemapSeries {
             series.setColorRecursive(series.tree);
         }
     }
+    /** @internal */
     translateLink(link) {
         const fromNode = link.fromNode, toNode = link.toNode, linkWidth = this.options.link?.lineWidth || 0, factor = this.options.link?.curveFactor ?? 0.5, hasXData = toNode.x !== toNode.node.level ||
             fromNode.x !== fromNode.node.level, type = (link.options.link?.type ??
@@ -2125,7 +2129,7 @@ class TreegraphSeries extends TreemapSeries {
                 if (!(0,external_highcharts_src_js_default_namespaceObject.splat)(series.options.dataLabels)[0].style?.lineClamp) {
                     css.lineClamp = Math.floor(height / 16);
                 }
-                (0,external_highcharts_src_js_default_namespaceObject.extend)(options.style, css);
+                ;(0,external_highcharts_src_js_default_namespaceObject.extend)(options.style, css);
                 point.dataLabel?.css(css);
             }
             // Merge custom options with point options
@@ -2166,6 +2170,7 @@ class TreegraphSeries extends TreemapSeries {
             seriesProto.drawDataLabels.call(this, this.links);
         }
     }
+    /** @internal */
     destroy() {
         // Links must also be destroyed.
         if (this.links) {
@@ -2206,6 +2211,7 @@ class TreegraphSeries extends TreemapSeries {
         }
         return attribs;
     }
+    /** @internal */
     drawPoints() {
         TreemapSeries.prototype.drawPoints.apply(this, arguments);
         ColumnSeries.prototype.drawPoints.call(this, this.links);
@@ -2246,7 +2252,7 @@ class TreegraphSeries extends TreemapSeries {
                         d: symbolFn(x, y, width, height, borderRadius ? { r: borderRadius } : void 0)
                     });
                 }
-                (0,external_highcharts_src_js_default_namespaceObject.extend)(point.shapeArgs, { x, y });
+                ;(0,external_highcharts_src_js_default_namespaceObject.extend)(point.shapeArgs, { x, y });
                 point.plotX = parentNode.plotX;
                 point.plotY = parentNode.plotY;
             }
@@ -2271,6 +2277,7 @@ class TreegraphSeries extends TreemapSeries {
             [nodeX + width / 2, nodeY];
     }
 }
+/** @internal */
 TreegraphSeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(TreemapSeries.defaultOptions, Treegraph_TreegraphSeriesDefaults);
 (0,external_highcharts_src_js_default_namespaceObject.extend)(TreegraphSeries.prototype, {
     forceDL: true,

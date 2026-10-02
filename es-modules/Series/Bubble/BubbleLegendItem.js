@@ -14,7 +14,7 @@
 import F from '../../Core/Templating.js';
 import H from '../../Core/Globals.js';
 const { noop } = H;
-import { arrayMax, arrayMin, isNumber, merge, pick, stableSort } from '../../Shared/Utilities.js';
+import { arrayMax, arrayMin, isNumber, merge, stableSort } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class
@@ -79,7 +79,7 @@ class BubbleLegendItem {
      *        Legend instance
      */
     drawLegendSymbol(legend) {
-        const itemDistance = pick(legend.options.itemDistance, 20), legendItem = this.legendItem || {}, options = this.options, ranges = options.ranges, connectorDistance = options.connectorDistance;
+        const itemDistance = (legend.options.itemDistance ?? 20), legendItem = this.legendItem || {}, options = this.options, ranges = options.ranges, connectorDistance = options.connectorDistance;
         let connectorSpace;
         // Do not create bubbleLegend now if ranges or ranges values are not
         // specified or if are empty array.
@@ -125,13 +125,17 @@ class BubbleLegendItem {
         // Allow to parts of styles be used individually for range
         ranges.forEach(function (range, i) {
             if (!styledMode) {
-                bubbleAttribs.stroke = pick(range.borderColor, options.borderColor, series.color);
+                bubbleAttribs.stroke =
+                    range.borderColor ?? options.borderColor ?? series.color;
                 bubbleAttribs.fill = range.color || options.color;
                 if (!bubbleAttribs.fill) {
                     bubbleAttribs.fill = series.color;
                     bubbleAttribs['fill-opacity'] = fillOpacity ?? 1;
                 }
-                connectorAttribs.stroke = pick(range.connectorColor, options.connectorColor, series.color);
+                connectorAttribs.stroke =
+                    range.connectorColor ??
+                        options.connectorColor ??
+                        series.color;
             }
             // Set options needed for rendering each range
             ranges[i].radius = this.getRangeRadius(range.value);
@@ -328,10 +332,10 @@ class BubbleLegendItem {
             if (s.isBubble && !s.ignoreSeries) {
                 zData = s.getColumn('z').filter(isNumber);
                 if (zData.length) {
-                    minZ = pick(s.options.zMin, Math.min(minZ, Math.max(arrayMin(zData), s.options.displayNegative === false ?
+                    minZ = (s.options.zMin ?? Math.min(minZ, Math.max(arrayMin(zData), s.options.displayNegative === false ?
                         s.options.zThreshold :
                         -Number.MAX_VALUE)));
-                    maxZ = pick(s.options.zMax, Math.max(maxZ, arrayMax(zData)));
+                    maxZ = (s.options.zMax ?? Math.max(maxZ, arrayMax(zData)));
                 }
             }
         });

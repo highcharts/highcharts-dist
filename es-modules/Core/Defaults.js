@@ -691,6 +691,13 @@ const defaultOptions = {
          * @apioption title.align
          */
         /**
+         * A CSS class name to apply to the title's container div,
+         * allowing unique CSS styling for each chart.
+         *
+         * @type      {string}
+         * @apioption title.className
+         */
+        /**
          * The margin between the title and the plot area, or if a subtitle
          * is present, the margin between the subtitle and the plot area.
          *
@@ -751,6 +758,13 @@ const defaultOptions = {
          * @default undefined
          * @since 2.0
          * @apioption subtitle.align
+         */
+        /**
+         * A CSS class name to apply to the subtitle's container div,
+         * allowing unique CSS styling for each chart.
+         *
+         * @type      {string}
+         * @apioption subtitle.className
          */
         /**
          * When the subtitle is floating, the plot area will not move to make
@@ -1300,6 +1314,8 @@ const defaultOptions = {
          *         Legend with vertical scrollable extension
          * @sample highcharts/legend/scrollable-horizontal/
          *         Legend with horizontal scrollable extension
+         * @sample highcharts/legend/navigation-horizontal-plugin/
+         *         Legend with horizontal navigation extension
          *
          */
         navigation: {
@@ -1990,6 +2006,9 @@ const defaultOptions = {
          * false in for example a column series, the tooltip will show above or
          * below the column, but as `followTouchMove` is true, the tooltip will
          * jump from column to column as the user swipes across the plot area.
+         *
+         * @sample {highcharts} highcharts/tooltip/followtouchmove/
+         *         Tooltip follows touch move
          *
          * @type      {boolean}
          * @default   {highcharts} true
@@ -2881,6 +2900,10 @@ const defaultOptions = {
         /**
          * The URL for the credits label.
          *
+         * URLs that do not start with one of the
+         * [AST.allowedReferences](https://api.highcharts.com/class-reference/Highcharts.AST#.allowedReferences),
+         * for example `javascript:` URLs, are ignored.
+         *
          * @sample {highcharts} highcharts/credits/href/
          *         Custom URL and text
          * @sample {highmaps} maps/credits/customized/
@@ -3096,6 +3119,41 @@ export default DefaultOptions;
  * @param {global.Event} event
  *        The event that occurred.
  */
+/**
+ * Gets fired while the chart is panned by mouse drag. Calling
+ * `event.preventDefault()` or returning `false` prevents the default panning
+ * of the axes.
+ *
+ * @callback Highcharts.ChartPanCallbackFunction
+ *
+ * @param {Highcharts.Chart} this
+ *        The chart on which the event occurred.
+ *
+ * @param {Highcharts.ChartPanEventObject} event
+ *        The event that occurred.
+ */
+/**
+ * Contains common event information. Through the `originalEvent` property you
+ * can access the pointer event that triggered the panning.
+ *
+ * @interface Highcharts.ChartPanEventObject
+ */ /**
+* The pointer event that triggered the panning.
+* @name Highcharts.ChartPanEventObject#originalEvent
+* @type {Highcharts.PointerEventObject}
+*/ /**
+* Prevents the default behavior of the event.
+* @name Highcharts.ChartPanEventObject#preventDefault
+* @type {Function}
+*/ /**
+* The event target.
+* @name Highcharts.ChartPanEventObject#target
+* @type {Highcharts.Chart}
+*/ /**
+* The event type.
+* @name Highcharts.ChartPanEventObject#type
+* @type {"pan"}
+*/
 /**
  * Fires when the chart is redrawn, either after a call to `chart.redraw()` or
  * after an axis, series or point is modified with the `redraw` option set to

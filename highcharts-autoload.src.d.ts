@@ -111,6 +111,12 @@ declare module "./highcharts.src" {
         series?: Series;
         visiblePlotOnly?: boolean;
     }
+    interface ChartPanEventObject {
+        originalEvent: PointerEventObject;
+        preventDefault: Function;
+        target: Chart;
+        type: "pan";
+    }
     interface ChartPositionObject {
         left: number;
         scaleX: number;
@@ -353,7 +359,6 @@ declare module "./highcharts.src" {
         alignOptions: AlignObject;
         axis: Axis;
         cumulative: number;
-        isNegative: boolean;
         label: SVGElement;
         options: YAxisStackLabelsOptions;
         total: number;
@@ -1072,12 +1077,12 @@ declare module "./highcharts.src" {
     /**
      * Return the first value that is not null or undefined.
      *
-     * @param items
+     * @param args
      *        Variable number of arguments to inspect.
      *
      * @return The value of the first argument that is not null or undefined.
      */
-    function pick<T>(...items: Array<(T|null|undefined)>): T;
+    function pick<T>(...args: Array<(T|null|undefined)>): T;
     /**
      * Return a length based on either the integer value, or a percentage of a
      * base.

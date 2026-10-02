@@ -16,7 +16,7 @@ import H from '../../Core/Globals.js';
 const { composed } = H;
 import ScrollbarAxis from '../../Core/Axis/ScrollbarAxis.js';
 import ScrollbarDefaults from './ScrollbarDefaults.js';
-import { addEvent, correctFloat, crisp, defined, destroyObjectProperties, extend, fireEvent, merge, pick, pushUnique, removeEvent } from '../../Shared/Utilities.js';
+import { addEvent, correctFloat, crisp, defined, destroyObjectProperties, extend, fireEvent, merge, pushUnique, removeEvent } from '../../Shared/Utilities.js';
 /* *
  *
  *  Constants
@@ -148,7 +148,7 @@ class Scrollbar {
     buttonToMaxClick(e) {
         const scroller = this;
         const range = ((scroller.to - scroller.from) *
-            pick(scroller.options.step, 0.2));
+            (scroller.options.step ?? 0.2));
         scroller.updatePosition(scroller.from + range, scroller.to + range);
         fireEvent(scroller, 'changed', {
             from: scroller.from,
@@ -160,7 +160,7 @@ class Scrollbar {
     buttonToMinClick(e) {
         const scroller = this;
         const range = correctFloat(scroller.to - scroller.from) *
-            pick(scroller.options.step, 0.2);
+            (scroller.options.step ?? 0.2);
         scroller.updatePosition(correctFloat(scroller.from - range), correctFloat(scroller.to - range));
         fireEvent(scroller, 'changed', {
             from: scroller.from,
@@ -292,10 +292,11 @@ class Scrollbar {
         scroller.renderer = renderer;
         scroller.userOptions = options;
         scroller.options = merge(ScrollbarDefaults, defaultOptions.scrollbar, options);
-        scroller.options.margin = pick(scroller.options.margin, 10);
+        scroller.options.margin = (scroller.options.margin ?? 10);
         scroller.chart = chart;
         // Backward compatibility
-        scroller.size = pick(scroller.options.size, scroller.options.height);
+        scroller.size = scroller.options.size ??
+            scroller.options.height;
         // Init
         if (options.enabled) {
             scroller.render();
@@ -585,9 +586,9 @@ class Scrollbar {
      * @function Highcharts.Scrollbar#shouldUpdateExtremes
      */
     shouldUpdateExtremes(eventType) {
-        return (pick(this.options.liveRedraw, H.svg &&
+        return ((this.options.liveRedraw ?? (H.svg &&
             !H.isTouchDevice &&
-            !this.chart.boosted) ||
+            !this.chart.boosted)) ||
             // Mouseup always should change extremes
             eventType === 'mouseup' ||
             eventType === 'touchend' ||

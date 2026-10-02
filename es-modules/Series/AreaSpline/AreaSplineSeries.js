@@ -22,7 +22,6 @@ import { extend, merge } from '../../Shared/Utilities.js';
 /**
  * AreaSpline series type.
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.areaspline
  *
@@ -35,6 +34,7 @@ class AreaSplineSeries extends SplineSeries {
  *  Static Properties
  *
  * */
+/** @internal */
 AreaSplineSeries.defaultOptions = merge(SplineSeries.defaultOptions, AreaSeries.defaultOptions);
 extend(AreaSplineSeries.prototype, {
     getGraphPath: areaProto.getGraphPath,
@@ -47,7 +47,6 @@ SeriesRegistry.registerSeriesType('areaspline', AreaSplineSeries);
  *  Default Export
  *
  * */
-/** @internal */
 export default AreaSplineSeries;
 /* *
  *
@@ -93,7 +92,7 @@ export default AreaSplineSeries;
  *
  *
  * @extends   series,plotOptions.areaspline
- * @excluding dataParser, dataURL, step, boostThreshold, boostBlending
+ * @excluding step, boostThreshold, boostBlending
  * @product   highcharts highstock
  * @apioption series.areaspline
  */

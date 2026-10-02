@@ -24,6 +24,7 @@ import { merge } from '../../Shared/Utilities.js';
  *  Class
  *
  * */
+/** @internal */
 class SVGElement3DFunnel extends SVGElement3D {
     constructor() {
         /* *
@@ -238,4 +239,5 @@ class SVGElement3DFunnel extends SVGElement3D {
  *  Default Export
  *
  * */
+/** @internal */
 export default SVGElement3DFunnel;

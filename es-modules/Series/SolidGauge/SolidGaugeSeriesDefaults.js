@@ -140,7 +140,7 @@ const SolidGaugeSeriesDefaults = {
  *
  * @extends   series,plotOptions.solidgauge
  * @excluding animationLimit, boostThreshold, connectEnds, connectNulls,
- *            cropThreshold, dashStyle, dataParser, dataURL, dial,
+ *            cropThreshold, dashStyle, dial,
  *            findNearestPointBy, getExtremesFromAll, marker, negativeColor,
  *            pointPlacement, pivot, shadow, softThreshold, stack, stacking,
  *            states, step, threshold, turboThreshold, wrap, zoneAxis, zones,

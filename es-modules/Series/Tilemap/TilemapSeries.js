@@ -80,6 +80,7 @@ class TilemapSeries extends HeatmapSeries {
      *  Static Functions
      *
      * */
+    /** @internal */
     static compose(AxisClass) {
         if (pushUnique(composed, 'TilemapSeries')) {
             addEvent(AxisClass, 'afterSetAxisTranslation', onAxisAfterSetAxisTranslation);
@@ -97,6 +98,7 @@ class TilemapSeries extends HeatmapSeries {
     alignDataLabel() {
         return this.tileShape.alignDataLabel.apply(this, arguments);
     }
+    /** @internal */
     drawPoints() {
         // In styled mode, use CSS, otherwise the fill used in the style
         // sheet will take precedence over the fill attribute.
@@ -162,6 +164,7 @@ class TilemapSeries extends HeatmapSeries {
  *  Static Properties
  *
  * */
+/** @internal */
 TilemapSeries.defaultOptions = merge(HeatmapSeries.defaultOptions, TilemapSeriesDefaults);
 extend(TilemapSeries.prototype, {
     // Revert the noop on getSymbol.

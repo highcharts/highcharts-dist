@@ -18,7 +18,6 @@ const { atr: ATRIndicator } = SeriesRegistry.seriesTypes;
 /**
  * The NATR series type.
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.natr
  *
@@ -30,6 +29,7 @@ class NATRIndicator extends ATRIndicator {
      *  Functions
      *
      * */
+    /** @internal */
     getValues(series, params) {
         const atrData = (super.getValues.apply(this, arguments)), atrLength = atrData.values.length, yVal = series.yData;
         let i = 0, period = params.period - 1;
@@ -64,6 +64,7 @@ class NATRIndicator extends ATRIndicator {
  * @requires     stock/indicators/atr
  * @requires     stock/indicators/natr
  * @optionparent plotOptions.natr
+ * @internal
  */
 NATRIndicator.defaultOptions = merge(ATRIndicator.defaultOptions, {
     tooltip: {
@@ -76,7 +77,6 @@ SeriesRegistry.registerSeriesType('natr', NATRIndicator);
  *  Default Export
  *
  * */
-/** @internal */
 export default NATRIndicator;
 /* *
  *
@@ -90,7 +90,6 @@ export default NATRIndicator;
  * @extends   series,plotOptions.natr
  * @since     7.0.0
  * @product   highstock
- * @excluding dataParser, dataURL
  * @requires  stock/indicators/indicators
  * @requires  stock/indicators/atr
  * @requires  stock/indicators/natr

@@ -45,7 +45,6 @@ import { addEvent, extend, fireEvent, merge } from '../Shared/Utilities.js';
 /**
  * The Accessibility class
  *
- * @private
  * @requires modules/accessibility
  *
  * @class
@@ -53,6 +52,8 @@ import { addEvent, extend, fireEvent, merge } from '../Shared/Utilities.js';
  *
  * @param {Highcharts.Chart} chart
  * Chart object
+ *
+ * @internal
  */
 class Accessibility {
     /* *
@@ -70,9 +71,10 @@ class Accessibility {
      * */
     /**
      * Initialize the accessibility class
-     * @private
      * @param {Highcharts.Chart} chart
      *        Chart object
+     *
+     * @internal
      */
     init(chart) {
         this.chart = chart;
@@ -90,9 +92,7 @@ class Accessibility {
         this.initComponents();
         this.keyboardNavigation = new KeyboardNavigation(chart, this.components);
     }
-    /**
-     * @private
-     */
+    /** @internal */
     initComponents() {
         const chart = this.chart;
         const proxyProvider = this.proxyProvider;
@@ -118,7 +118,8 @@ class Accessibility {
     }
     /**
      * Get order to update components in.
-     * @private
+     *
+     * @internal
      */
     getComponentOrder() {
         if (!this.components) {
@@ -202,7 +203,8 @@ class Accessibility {
     }
     /**
      * Return a list of the types of series we have in the chart.
-     * @private
+     *
+     * @internal
      */
     getChartTypes() {
         const types = {};
@@ -217,6 +219,7 @@ class Accessibility {
  *  Class Namespace
  *
  * */
+/** @internal */
 (function (Accessibility) {
     /* *
      *
@@ -228,6 +231,7 @@ class Accessibility {
      *  Constants
      *
      * */
+    /** @internal */
     Accessibility.i18nFormat = A11yI18n.i18nFormat;
     /* *
      *
@@ -236,7 +240,8 @@ class Accessibility {
      * */
     /**
      * Destroy with chart.
-     * @private
+     *
+     * @internal
      */
     function chartOnDestroy() {
         if (this.accessibility) {
@@ -245,7 +250,8 @@ class Accessibility {
     }
     /**
      * Handle updates to the module and send render updates to components.
-     * @private
+     *
+     * @internal
      */
     function chartOnRender() {
         // Update/destroy
@@ -299,7 +305,8 @@ class Accessibility {
     }
     /**
      * Update with chart/series/point updates.
-     * @private
+     *
+     * @internal
      */
     function chartOnUpdate(e) {
         // Merge new options
@@ -321,9 +328,7 @@ class Accessibility {
         // Mark dirty for update
         this.a11yDirty = true;
     }
-    /**
-     * @private
-     */
+    /** @internal */
     function chartUpdateA11yEnabled() {
         let a11y = this.accessibility;
         const accessibilityOptions = this.options.accessibility, svg = this.renderer.boxWrapper.element, title = this.title;
@@ -362,9 +367,7 @@ class Accessibility {
             }
         }
     }
-    /**
-     * @private
-     */
+    /** @internal */
     function compose(ChartClass, LegendClass, PointClass, SeriesClass, SVGElementClass, RangeSelectorClass) {
         // Ordered:
         KeyboardNavigation.compose(ChartClass);
@@ -414,7 +417,8 @@ class Accessibility {
     Accessibility.compose = compose;
     /**
      * Mark dirty for update.
-     * @private
+     *
+     * @internal
      */
     function pointOnUpdate() {
         if (this.series.chart.accessibility) {
@@ -439,4 +443,5 @@ merge(true, defaultOptions, defaultOptionsA11Y, {
  *  Default Export
  *
  * */
+/** @internal */
 export default Accessibility;

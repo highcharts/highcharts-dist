@@ -2458,9 +2458,10 @@ const seriesDefaults = {
      */
     /**
      * What type of legend symbol to render for this series. Can be one of
-     * `areaMarker`, `lineMarker` or `rectangle`.
+     * `areaMarker`, `lineMarker` or `rectangle`. The financial series of
+     * Highcharts Stock add `candlestick`, `hlc` and `ohlc`.
      *
-     * @validvalue ["areaMarker", "lineMarker", "rectangle"]
+     * @validvalue ["areaMarker", "candlestick", "hlc", "lineMarker", "ohlc", "rectangle"]
      *
      * @sample {highcharts} highcharts/series/legend-symbol/
      *         Change the legend symbol

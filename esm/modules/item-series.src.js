@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.0-modified (2026-08-14)
+ * @license Highcharts JS v13.1.0 (2026-10-02)
  * @module highcharts/modules/item-series
  * @requires highcharts
  *
@@ -18,48 +18,27 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 /******/ 
 /************************************************************************/
 /******/ /* webpack/runtime/compat get default export */
-/******/ (() => {
-/******/ 	// getDefaultExport function for compatibility with non-harmony modules
-/******/ 	__webpack_require__.n = (module) => {
-/******/ 		const getter = module && module.__esModule ?
-/******/ 			() => (module['default']) :
-/******/ 			() => (module);
-/******/ 		__webpack_require__.d(getter, { a: getter });
-/******/ 		return getter;
-/******/ 	};
-/******/ })();
+/******/ // getDefaultExport function for compatibility with non-harmony modules
+/******/ __webpack_require__.n = (module) => {
+/******/ 	const getter = module && module.__esModule ?
+/******/ 		() => (module['default']) :
+/******/ 		() => (module);
+/******/ 	__webpack_require__.d(getter, { a: getter });
+/******/ 	return getter;
+/******/ };
 /******/ 
 /******/ /* webpack/runtime/define property getters */
-/******/ (() => {
-/******/ 	// define getter/value functions for harmony exports
-/******/ 	__webpack_require__.d = (exports, definition) => {
-/******/ 		if(Array.isArray(definition)) {
-/******/ 			var i = 0;
-/******/ 			while(i < definition.length) {
-/******/ 				var key = definition[i++];
-/******/ 				var binding = definition[i++];
-/******/ 				if(!__webpack_require__.o(exports, key)) {
-/******/ 					if(binding === 0) {
-/******/ 						Object.defineProperty(exports, key, { enumerable: true, value: definition[i++] });
-/******/ 					} else {
-/******/ 						Object.defineProperty(exports, key, { enumerable: true, get: binding });
-/******/ 					}
-/******/ 				} else if(binding === 0) { i++; }
-/******/ 			}
-/******/ 		} else {
-/******/ 			for(var key in definition) {
-/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
-/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
-/******/ 				}
-/******/ 			}
+/******/ // define getter/value functions for harmony exports
+/******/ __webpack_require__.d = (exports, definition) => {
+/******/ 	for(var key in definition) {
+/******/ 		if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 			Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
 /******/ 		}
-/******/ 	};
-/******/ })();
+/******/ 	}
+/******/ };
 /******/ 
 /******/ /* webpack/runtime/hasOwnProperty shorthand */
-/******/ (() => {
-/******/ 	__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
-/******/ })();
+/******/ __webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop));
 /******/ 
 /************************************************************************/
 
@@ -94,7 +73,7 @@ const { series: { prototype: { pointClass: Point } }, seriesTypes: { pie: { prot
  * */
 class ItemPoint extends PiePoint {
 }
-(0,external_highcharts_src_js_default_namespaceObject.extend)(ItemPoint.prototype, {
+;(0,external_highcharts_src_js_default_namespaceObject.extend)(ItemPoint.prototype, {
     haloPath: Point.prototype.haloPath
 });
 /* *
@@ -2565,9 +2544,10 @@ const seriesDefaults = {
      */
     /**
      * What type of legend symbol to render for this series. Can be one of
-     * `areaMarker`, `lineMarker` or `rectangle`.
+     * `areaMarker`, `lineMarker` or `rectangle`. The financial series of
+     * Highcharts Stock add `candlestick`, `hlc` and `ohlc`.
      *
-     * @validvalue ["areaMarker", "lineMarker", "rectangle"]
+     * @validvalue ["areaMarker", "candlestick", "hlc", "lineMarker", "ohlc", "rectangle"]
      *
      * @sample {highcharts} highcharts/series/legend-symbol/
      *         Change the legend symbol
@@ -2735,7 +2715,7 @@ const ItemSeriesDefaults = {
  * it is inherited from [chart.type](#chart.type).
  *
  * @extends   series,plotOptions.item
- * @excluding dataParser, dataURL, stack, xAxis, yAxis, dataSorting,
+ * @excluding stack, xAxis, yAxis, dataSorting,
  *            boostThreshold, boostBlending
  * @product   highcharts
  * @requires  modules/item-series
@@ -2837,7 +2817,6 @@ const { pie: PieSeries } = (external_highcharts_src_js_default_SeriesRegistry_de
  *
  * @requires modules/item-series
  *
- * @private
  * @class
  * @name Highcharts.seriesTypes.item
  *
@@ -2851,7 +2830,7 @@ class ItemSeries extends PieSeries {
      * */
     /**
      * Fade in the whole chart.
-     * @private
+     * @internal
      */
     animate(init) {
         const group = this.group;
@@ -2868,6 +2847,9 @@ class ItemSeries extends PieSeries {
             }
         }
     }
+    /**
+     * @internal
+     */
     drawDataLabels() {
         if (this.center && this.slots) {
             super.drawDataLabels();
@@ -2879,6 +2861,9 @@ class ItemSeries extends PieSeries {
             }
         }
     }
+    /**
+     * @internal
+     */
     drawPoints() {
         const series = this, options = this.options, renderer = series.chart.renderer, seriesMarkerOptions = options.marker, borderWidth = this.borderWidth, crisp = borderWidth % 2 ? 0.5 : 1, rows = this.getRows(), cols = Math.ceil(this.total / rows), cellWidth = this.chart.plotWidth / cols, cellHeight = this.chart.plotHeight / rows, itemSize = this.itemSize || Math.min(cellWidth, cellHeight);
         let i = 0;
@@ -2893,7 +2878,7 @@ class ItemSeries extends PieSeries {
         //*/
         for (const point of series.points) {
             const pointMarkerOptions = point.marker || {}, symbol = (pointMarkerOptions.symbol ||
-                seriesMarkerOptions.symbol), r = (0,external_highcharts_src_js_default_namespaceObject.pick)(pointMarkerOptions.radius, seriesMarkerOptions.radius), size = (0,external_highcharts_src_js_default_namespaceObject.defined)(r) ? 2 * r : itemSize, padding = size * options.itemPadding;
+                seriesMarkerOptions.symbol), r = (pointMarkerOptions.radius ?? seriesMarkerOptions.radius), size = (0,external_highcharts_src_js_default_namespaceObject.defined)(r) ? 2 * r : itemSize, padding = size * options.itemPadding;
             let attr, graphics, pointAttr, x, y, width, height;
             point.graphics = graphics = point.graphics || [];
             if (!series.chart.styledMode) {
@@ -2974,6 +2959,9 @@ class ItemSeries extends PieSeries {
             }
         }
     }
+    /**
+     * @internal
+     */
     getRows() {
         const chart = this.chart, total = this.total || 0;
         let rows = this.options.rows, cols, ratio;
@@ -3006,7 +2994,7 @@ class ItemSeries extends PieSeries {
     }
     /**
      * Get the semi-circular slots.
-     * @private
+     * @internal
      */
     getSlots() {
         const series = this, center = series.center, diameter = center[2], slots = series.slots = series.slots || [], fullAngle = (series.endAngleRad - series.startAngleRad), rowsOption = series.options.rows, isCircle = fullAngle % (2 * Math.PI) === 0, total = series.total || 0;
@@ -3065,7 +3053,7 @@ class ItemSeries extends PieSeries {
         let overshoot = finalItemCount - series.total -
             (isCircle ? rows.length : 0);
         /**
-         * @private
+         * @internal
          * @param {Highcharts.ItemRowContainerObject} item
          * Wrapped object with angle and row
          */
@@ -3106,6 +3094,9 @@ class ItemSeries extends PieSeries {
         series.itemSize = itemSize;
         return slots;
     }
+    /**
+     * @internal
+     */
     translate(positions) {
         // Initialize chart without setting data, #13379.
         if (this.total === 0 && // Check if that is a (semi-)circle
@@ -3132,6 +3123,7 @@ class ItemSeries extends PieSeries {
  *  Static Properties
  *
  * */
+/** @internal */
 ItemSeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(PieSeries.defaultOptions, Item_ItemSeriesDefaults);
 (0,external_highcharts_src_js_default_namespaceObject.extend)(ItemSeries.prototype, {
     markerAttribs: void 0,

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.0-modified (2026-08-14)
+ * @license Highcharts JS v13.1.0 (2026-10-02)
  * @module highcharts/modules/data
  * @requires highcharts
  *
@@ -18,48 +18,27 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 /******/ 
 /************************************************************************/
 /******/ /* webpack/runtime/compat get default export */
-/******/ (() => {
-/******/ 	// getDefaultExport function for compatibility with non-harmony modules
-/******/ 	__webpack_require__.n = (module) => {
-/******/ 		const getter = module && module.__esModule ?
-/******/ 			() => (module['default']) :
-/******/ 			() => (module);
-/******/ 		__webpack_require__.d(getter, { a: getter });
-/******/ 		return getter;
-/******/ 	};
-/******/ })();
+/******/ // getDefaultExport function for compatibility with non-harmony modules
+/******/ __webpack_require__.n = (module) => {
+/******/ 	const getter = module && module.__esModule ?
+/******/ 		() => (module['default']) :
+/******/ 		() => (module);
+/******/ 	__webpack_require__.d(getter, { a: getter });
+/******/ 	return getter;
+/******/ };
 /******/ 
 /******/ /* webpack/runtime/define property getters */
-/******/ (() => {
-/******/ 	// define getter/value functions for harmony exports
-/******/ 	__webpack_require__.d = (exports, definition) => {
-/******/ 		if(Array.isArray(definition)) {
-/******/ 			var i = 0;
-/******/ 			while(i < definition.length) {
-/******/ 				var key = definition[i++];
-/******/ 				var binding = definition[i++];
-/******/ 				if(!__webpack_require__.o(exports, key)) {
-/******/ 					if(binding === 0) {
-/******/ 						Object.defineProperty(exports, key, { enumerable: true, value: definition[i++] });
-/******/ 					} else {
-/******/ 						Object.defineProperty(exports, key, { enumerable: true, get: binding });
-/******/ 					}
-/******/ 				} else if(binding === 0) { i++; }
-/******/ 			}
-/******/ 		} else {
-/******/ 			for(var key in definition) {
-/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
-/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
-/******/ 				}
-/******/ 			}
+/******/ // define getter/value functions for harmony exports
+/******/ __webpack_require__.d = (exports, definition) => {
+/******/ 	for(var key in definition) {
+/******/ 		if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 			Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
 /******/ 		}
-/******/ 	};
-/******/ })();
+/******/ 	}
+/******/ };
 /******/ 
 /******/ /* webpack/runtime/hasOwnProperty shorthand */
-/******/ (() => {
-/******/ 	__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
-/******/ })();
+/******/ __webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop));
 /******/ 
 /************************************************************************/
 
@@ -128,7 +107,7 @@ function ajax(settings) {
     if (!settings.headers?.['Content-Type']) {
         r.setRequestHeader('Content-Type', headers[settings.dataType || 'json'] || headers.text);
     }
-    (0,external_highcharts_src_js_default_namespaceObject.objectEach)(settings.headers, function (val, key) {
+    ;(0,external_highcharts_src_js_default_namespaceObject.objectEach)(settings.headers, function (val, key) {
         r.setRequestHeader(key, val);
     });
     if (settings.responseType) {
@@ -320,7 +299,8 @@ var external_highcharts_src_js_default_Chart_default = /*#__PURE__*/__webpack_re
  * @param {boolean} asSubarray
  * If column is a typed array, return a subarray instead of a new array. It
  * is faster `O(1)`, but the entire buffer will be kept in memory until all
- * views of it are destroyed. Default is `false`.
+ * views of it are destroyed. Default is `false`. Ignored when the column
+ * grows, as that always requires a new buffer.
  *
  * @return {DataTableColumn}
  * Modified column.
@@ -331,6 +311,12 @@ function setLength(column, length, asSubarray) {
     if (Array.isArray(column)) {
         column.length = length;
         return column;
+    }
+    if (length > column.length) {
+        const Constructor = Object.getPrototypeOf(column)
+            .constructor, grown = new Constructor(length);
+        grown.set(column);
+        return grown;
     }
     return column[asSubarray ? 'subarray' : 'slice'](0, length);
 }
@@ -545,7 +531,7 @@ class DataTableCore {
             });
             this.rowCount = length;
         }
-        (0,external_highcharts_src_js_default_namespaceObject.fireEvent)(this, 'afterDeleteRows', { rowIndex, rowCount });
+        ;(0,external_highcharts_src_js_default_namespaceObject.fireEvent)(this, 'afterDeleteRows', { rowIndex, rowCount });
         this.versionTag = (0,external_highcharts_src_js_default_namespaceObject.uniqueKey)();
     }
     /**
@@ -695,14 +681,22 @@ class DataTableCore {
      * @emits #afterSetRows
      */
     setRow(row, rowIndex = this.rowCount, insert, eventDetail) {
-        var _a;
         const { columns } = this, indexRowCount = insert ? this.rowCount + 1 : rowIndex + 1, rowKeys = Object.keys(row);
         if (eventDetail?.addColumns !== false) {
             for (let i = 0, iEnd = rowKeys.length; i < iEnd; i++) {
-                columns[_a = rowKeys[i]] || (columns[_a] = new Array(this.rowCount));
+                const rowKey = rowKeys[i];
+                if (rowKey !== '__proto__' &&
+                    rowKey !== 'constructor' &&
+                    !Object.hasOwnProperty.call(columns, rowKey)) {
+                    columns[rowKey] = new Array(this.rowCount);
+                }
             }
         }
-        (0,external_highcharts_src_js_default_namespaceObject.objectEach)(columns, (column, columnId) => {
+        // Typed arrays ignore out-of-range writes, `insert` grows via `splice`
+        if (!insert && indexRowCount > this.rowCount) {
+            this.applyRowCount(indexRowCount);
+        }
+        ;(0,external_highcharts_src_js_default_namespaceObject.objectEach)(columns, (column, columnId) => {
             if (column) {
                 if (insert) {
                     column = DataTableCore_splice(column, rowIndex, 0, true, [row[columnId]]).array;
@@ -1127,7 +1121,7 @@ class Data {
                 builder.addColumnReader(mapping.x, 'x');
             }
             // Add all column mappings
-            (0,external_highcharts_src_js_default_namespaceObject.objectEach)(mapping, function (val, name) {
+            ;(0,external_highcharts_src_js_default_namespaceObject.objectEach)(mapping, function (val, name) {
                 if (name !== 'x') {
                     builder.addColumnReader(val, name);
                 }
@@ -2271,14 +2265,16 @@ class Data {
     }
 }
 // Fire 1st xAxis properties modifier after the options are set.
-(0,external_highcharts_src_js_default_namespaceObject.addEvent)((external_highcharts_src_js_default_Axis_default()), 'afterSetOptions', function () {
+;(0,external_highcharts_src_js_default_namespaceObject.addEvent)((external_highcharts_src_js_default_Axis_default()), 'afterSetType', function () {
     // Target first xAxis only
     if (this.isXAxis &&
         // Init or update
         (!this.chart.xAxis.length || this.chart.xAxis[0] === this)) {
         this.chart.data?.xAxisUpdateHandler(this);
     }
-});
+}, 
+// Do this before the DataTimeAxis composition is added
+{ order: 0 });
 // Extend Chart.init so that the Chart constructor accepts a new configuration
 // option group, data.
 (0,external_highcharts_src_js_default_namespaceObject.addEvent)((external_highcharts_src_js_default_Chart_default()), 'init', function (e) {

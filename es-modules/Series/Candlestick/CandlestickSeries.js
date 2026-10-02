@@ -35,6 +35,21 @@ class CandlestickSeries extends OHLCSeries {
      *
      * */
     /**
+     * Colors of the up glyph, as `pointAttribs` gives them to an up point.
+     * `pointAttribs` needs a point, which breaks on zoned series.
+     *
+     * @internal
+     * @function Highcharts.seriesTypes.candlestick#legendSymbolAttribs
+     */
+    legendSymbolAttribs() {
+        const { legendSymbolColor, lineColor, lineWidth, upColor, upLineColor } = this.options, color = legendSymbolColor || this.color;
+        return {
+            fill: upColor || color,
+            stroke: upLineColor || lineColor || color,
+            'stroke-width': lineWidth
+        };
+    }
+    /**
      * Postprocess mapping between options and SVG attributes
      *
      * @private
@@ -106,6 +121,7 @@ class CandlestickSeries extends OHLCSeries {
  *  Static Properties
  *
  * */
+/** @internal */
 CandlestickSeries.defaultOptions = merge(OHLCSeries.defaultOptions, { tooltip: OHLCSeries.defaultOptions.tooltip }, CandlestickSeriesDefaults);
 SeriesRegistry.registerSeriesType('candlestick', CandlestickSeries);
 /* *

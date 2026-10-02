@@ -20,7 +20,6 @@ import { error } from '../../../Core/Utilities.js';
 /**
  * The Klinger oscillator series type.
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.klinger
  *
@@ -32,6 +31,7 @@ class KlingerIndicator extends SMAIndicator {
      *  Functions
      *
      * */
+    /** @internal */
     calculateTrend(yVal, i) {
         const isUpward = yVal[i][1] + yVal[i][2] + yVal[i][3] >
             yVal[i - 1][1] + yVal[i - 1][2] + yVal[i - 1][3];
@@ -39,6 +39,7 @@ class KlingerIndicator extends SMAIndicator {
     }
     // Checks if the series and volumeSeries are accessible, number of
     // points.x is longer than period, is series has OHLC data
+    /** @internal */
     isValidData(firstYVal) {
         const chart = this.chart, options = this.options, series = this.linkedParent, isSeriesOHLC = isArray(firstYVal) &&
             firstYVal.length === 4, volumeSeries = this.volumeSeries ||
@@ -55,12 +56,15 @@ class KlingerIndicator extends SMAIndicator {
         });
         return !!(isLengthValid && isSeriesOHLC);
     }
+    /** @internal */
     getCM(previousCM, DM, trend, previousTrend, previousDM) {
         return correctFloat(DM + (trend === previousTrend ? previousCM : previousDM));
     }
+    /** @internal */
     getDM(high, low) {
         return correctFloat(high - low);
     }
+    /** @internal */
     getVolumeForce(yVal) {
         const volumeForce = [];
         let CM = 0, // Cumulative measurement
@@ -86,13 +90,16 @@ class KlingerIndicator extends SMAIndicator {
         }
         return volumeForce;
     }
+    /** @internal */
     getEMA(yVal, prevEMA, SMA, EMApercent, index, i, xVal) {
         return EMAIndicator.prototype.calculateEma(xVal || [], yVal, typeof i === 'undefined' ? 1 : i, EMApercent, prevEMA, typeof index === 'undefined' ? -1 : index, SMA);
     }
+    /** @internal */
     getSMA(period, index, values) {
         return EMAIndicator.prototype
             .accumulatePeriodPoints(period, index, values) / period;
     }
+    /** @internal */
     getValues(series, params) {
         const Klinger = [], xVal = series.xData, yVal = series.yData, xData = [], yData = [], calcSignal = [];
         let KO, i = 0, fastEMA = 0, slowEMA, previousFastEMA = void 0, previousSlowEMA = void 0, signal = null;
@@ -154,6 +161,7 @@ class KlingerIndicator extends SMAIndicator {
  * @requires     stock/indicators/indicators
  * @requires     stock/indicators/klinger
  * @optionparent plotOptions.klinger
+ * @internal
  */
 KlingerIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
     /**
@@ -229,7 +237,6 @@ SeriesRegistry.registerSeriesType('klinger', KlingerIndicator);
  *  Default Export
  *
  * */
-/** @internal */
 export default KlingerIndicator;
 /* *
  *

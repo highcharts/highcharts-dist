@@ -61,6 +61,7 @@ class GanttPoint extends XRangePoint {
         this.formatPrefix = this.isNull ? 'null' : 'point'; // #23605
         return ganttPoint;
     }
+    /** @internal */
     isValid() {
         return ((typeof this.start === 'number' ||
             typeof this.x === 'number') &&

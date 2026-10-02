@@ -40,14 +40,17 @@ class RenkoSeries extends ColumnSeries {
          *
          * */
     }
+    /** @internal */
     init() {
         super.init.apply(this, arguments);
         this.renkoData = [];
     }
+    /** @internal */
     setData(data, redraw, animation) {
         this.renkoData = [];
         super.setData(data, redraw, animation, false);
     }
+    /** @internal */
     getXExtremes(xData) {
         this.processData();
         xData = this.getColumn('x', true);
@@ -56,6 +59,7 @@ class RenkoSeries extends ColumnSeries {
             max: xData[xData.length - 1]
         };
     }
+    /** @internal */
     getProcessedData() {
         const modified = this.dataTable.getModified();
         const processedXData = [];
@@ -142,6 +146,7 @@ class RenkoSeries extends ColumnSeries {
  *  Static Properties
  *
  * */
+/** @internal */
 RenkoSeries.defaultOptions = merge(ColumnSeries.defaultOptions, RenkoSeriesDefaults);
 extend(RenkoSeries.prototype, {
     pointClass: RenkoPoint

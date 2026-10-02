@@ -18,7 +18,7 @@ const { composed, noop } = H;
 import { borderRadiusObject } from '../../Extensions/BorderRadius.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { column: ColumnSeries, pie: PieSeries } = SeriesRegistry.seriesTypes;
-import { addEvent, correctFloat, extend, fireEvent, isArray, merge, pick, pushUnique, relativeLength, splat } from '../../Shared/Utilities.js';
+import { addEvent, correctFloat, extend, fireEvent, isArray, merge, pushUnique, relativeLength, splat } from '../../Shared/Utilities.js';
 /* *
  *
  *  Constants
@@ -33,13 +33,15 @@ const baseAlignDataLabel = SeriesRegistry.series.prototype.alignDataLabel;
 /**
  * Get positions - either an integer or a percentage string must be
  * given.
- * @private
+ *
  * @param {number|string|undefined} length
  *        Length
  * @param {number} relativeTo
  *        Relative factor
  * @return {number}
  *         Relative position
+ *
+ * @internal
  */
 function getLength(length, relativeTo) {
     return (/%$/).test(length) ?
@@ -52,7 +54,6 @@ function getLength(length, relativeTo) {
  *
  * */
 /**
- * @private
  * @class
  * @name Highcharts.seriesTypes.funnel
  *
@@ -64,9 +65,7 @@ class FunnelSeries extends PieSeries {
      *  Functions
      *
      * */
-    /**
-     * @private
-     */
+    /** @internal */
     alignDataLabel(point, dataLabel, options, alignTo, isNew) {
         const series = point.series, reversed = series.options.reversed, dlBox = point.dlBox || point.shapeArgs, { align, verticalAlign } = options, padding = splat(options.padding || 0), inside = ((series.options || {}).dataLabels || {}).inside, centerY = series.center[1], plotY = point.plotY || 0, pointPlotY = (reversed ?
             2 * centerY - plotY :
@@ -126,14 +125,21 @@ class FunnelSeries extends PieSeries {
     }
     /**
      * Extend the data label method.
-     * @private
+     * @internal
      */
     drawDataLabels() {
         (splat(this.options.dataLabels || {})[0].inside ?
             ColumnSeries :
             PieSeries).prototype.drawDataLabels.call(this);
     }
-    /** @private */
+    /**
+     * Override pie-specific functionality not supported in funnel.
+     * @internal
+     */
+    verifyDataLabelOverflow() {
+        return true;
+    }
+    /** @internal */
     getDataLabelPosition(point, distance) {
         const y = point.plotY || 0, sign = point.half ? 1 : -1, x = this.getXPos(y, !!point.half, point);
         return {
@@ -165,7 +171,7 @@ class FunnelSeries extends PieSeries {
     }
     /**
      * Overrides the pie translate method.
-     * @private
+     * @internal
      */
     translate() {
         const series = this, chart = series.chart, options = series.options, reversed = options.reversed, ignoreHiddenPoint = options.ignoreHiddenPoint, borderRadiusObj = borderRadiusObject(options.borderRadius), plotWidth = chart.plotWidth, plotHeight = chart.plotHeight, center = options.center, centerX = getLength(center[0], plotWidth), centerY = getLength(center[1], plotHeight), width = getLength(options.width, plotWidth), height = getLength(options.height, plotHeight), neckWidth = getLength(options.neckWidth, plotWidth), neckHeight = getLength(options.neckHeight, plotHeight), neckY = (centerY - height / 2) + height - neckHeight, points = series.points, borderRadius = relativeLength(borderRadiusObj.radius, width), radiusScope = borderRadiusObj.scope, half = (options.dataLabels.position === 'left' ?
@@ -398,7 +404,7 @@ class FunnelSeries extends PieSeries {
                 y: y1,
                 topWidth: x2 - x1,
                 bottomWidth: x4 - x3,
-                height: Math.abs(pick(y5, y3) - y1),
+                height: Math.abs((y5 ?? y3) - y1),
                 width: NaN
             };
             // Slice is a noop on funnel points
@@ -414,7 +420,7 @@ class FunnelSeries extends PieSeries {
     }
     /**
      * Funnel items don't have angles (#2289).
-     * @private
+     * @internal
      */
     sortByAngle(points) {
         points.sort((a, b) => (a.plotY - b.plotY));
@@ -425,6 +431,7 @@ class FunnelSeries extends PieSeries {
  *  Static Properties
  *
  * */
+/** @internal */
 FunnelSeries.defaultOptions = merge(PieSeries.defaultOptions, FunnelSeriesDefaults);
 extend(FunnelSeries.prototype, {
     animate: noop
@@ -434,23 +441,24 @@ extend(FunnelSeries.prototype, {
  *  Class Namespace
  *
  * */
+/** @internal */
 (function (FunnelSeries) {
     /* *
      *
      *  Functions
      *
      * */
-    /** @private */
+    /** @internal */
     function compose(ChartClass) {
         if (pushUnique(composed, 'FunnelSeries')) {
             addEvent(ChartClass, 'afterHideAllOverlappingLabels', onChartAfterHideAllOverlappingLabels);
         }
     }
     FunnelSeries.compose = compose;
-    /** @private */
+    /** @internal */
     function onChartAfterHideAllOverlappingLabels() {
         for (const series of this.series) {
-            let dataLabelsOptions = series.options && series.options.dataLabels;
+            let dataLabelsOptions = series.options?.dataLabels;
             if (isArray(dataLabelsOptions)) {
                 dataLabelsOptions = dataLabelsOptions[0];
             }

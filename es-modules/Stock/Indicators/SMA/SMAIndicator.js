@@ -11,7 +11,7 @@ import Chart from '../../../Core/Chart/Chart.js';
 import DataTableCore from '../../../Data/DataTableCore.js';
 import SeriesRegistry from '../../../Core/Series/SeriesRegistry.js';
 const { line: LineSeries } = SeriesRegistry.seriesTypes;
-import { addEvent, extend, fireEvent, isArray, merge, pick } from '../../../Shared/Utilities.js';
+import { addEvent, extend, fireEvent, isArray, merge } from '../../../Shared/Utilities.js';
 import { error } from '../../../Core/Utilities.js';
 /**
  *
@@ -39,7 +39,6 @@ const tableToMultiYData = (series, processed) => {
 /**
  * The SMA series type.
  *
- * @internal
  */
 class SMAIndicator extends LineSeries {
     /* *
@@ -61,7 +60,7 @@ class SMAIndicator extends LineSeries {
         if (!name) {
             (this.nameComponents || []).forEach(function (component, index) {
                 params.push(this.options.params[component] +
-                    pick(this.nameSuffixes[index], ''));
+                    (this.nameSuffixes[index] ?? ''));
             }, this);
             name = (this.nameBase || this.type.toUpperCase()) +
                 (this.nameComponents ? ' (' + params.join(', ') + ')' : '');
@@ -292,6 +291,7 @@ class SMAIndicator extends LineSeries {
  * @product      highstock
  * @requires     stock/indicators/indicators
  * @optionparent plotOptions.sma
+ * @internal
  */
 SMAIndicator.defaultOptions = merge(LineSeries.defaultOptions, {
     /**
@@ -359,7 +359,6 @@ SeriesRegistry.registerSeriesType('sma', SMAIndicator);
  *  Default Export
  *
  * */
-/** @internal */
 export default SMAIndicator;
 /* *
  *
@@ -373,7 +372,7 @@ export default SMAIndicator;
  * @extends   series,plotOptions.sma
  * @since     6.0.0
  * @product   highstock
- * @excluding dataParser, dataURL, useOhlcData
+ * @excluding useOhlcData
  * @requires  stock/indicators/indicators
  * @apioption series.sma
  */

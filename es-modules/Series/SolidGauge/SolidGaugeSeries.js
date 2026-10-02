@@ -17,7 +17,7 @@ import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { gauge: GaugeSeries, pie: PieSeries } = SeriesRegistry.seriesTypes;
 import SolidGaugeAxis from '../../Core/Axis/SolidGaugeAxis.js';
 import SolidGaugeSeriesDefaults from './SolidGaugeSeriesDefaults.js';
-import { clamp, extend, isNumber, merge, pick, relativeLength } from '../../Shared/Utilities.js';
+import { clamp, extend, isNumber, merge, relativeLength } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class
@@ -40,6 +40,7 @@ class SolidGaugeSeries extends GaugeSeries {
      * */
     // Extend the translate function to extend the Y axis with the necessary
     // decoration (#5895).
+    /** @internal */
     translate() {
         const axis = this.yAxis;
         SolidGaugeAxis.init(axis);
@@ -52,6 +53,7 @@ class SolidGaugeSeries extends GaugeSeries {
         GaugeSeries.prototype.translate.call(this);
     }
     // Draw the points where each point is one needle.
+    /** @internal */
     drawPoints() {
         const series = this, yAxis = series.yAxis, center = yAxis.center, options = series.options, renderer = series.chart.renderer, overshoot = options.overshoot, rounded = options.rounded, borderRadius = borderRadiusObject(rounded ? '50%' : (options.borderRadius ??
             yAxis.pane.options.borderRadius)).radius, overshootVal = isNumber(overshoot) ?
@@ -62,7 +64,7 @@ class SolidGaugeSeries extends GaugeSeries {
         if (isNumber(options.threshold)) {
             thresholdAngleRad = yAxis.startAngleRad + yAxis.translate(options.threshold, void 0, void 0, void 0, true);
         }
-        this.thresholdAngleRad = pick(thresholdAngleRad, yAxis.startAngleRad);
+        this.thresholdAngleRad = (thresholdAngleRad ?? yAxis.startAngleRad);
         for (const point of series.points) {
             // #10630 null point should not be draw
             if (!point.isNull) { // Condition like in pie chart
@@ -153,6 +155,7 @@ class SolidGaugeSeries extends GaugeSeries {
         }
     }
     // Extend the pie slice animation by animating from start angle and up.
+    /** @internal */
     animate(init) {
         if (!init) {
             this.startAngleRad = this.thresholdAngleRad;
@@ -165,6 +168,7 @@ class SolidGaugeSeries extends GaugeSeries {
  *  Static Properties
  *
  * */
+/** @internal */
 SolidGaugeSeries.defaultOptions = merge(GaugeSeries.defaultOptions, SolidGaugeSeriesDefaults);
 SeriesRegistry.registerSeriesType('solidgauge', SolidGaugeSeries);
 /* *

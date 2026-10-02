@@ -1468,14 +1468,16 @@ class Data {
     }
 }
 // Fire 1st xAxis properties modifier after the options are set.
-addEvent(Axis, 'afterSetOptions', function () {
+addEvent(Axis, 'afterSetType', function () {
     // Target first xAxis only
     if (this.isXAxis &&
         // Init or update
         (!this.chart.xAxis.length || this.chart.xAxis[0] === this)) {
         this.chart.data?.xAxisUpdateHandler(this);
     }
-});
+}, 
+// Do this before the DataTimeAxis composition is added
+{ order: 0 });
 // Extend Chart.init so that the Chart constructor accepts a new configuration
 // option group, data.
 addEvent(Chart, 'init', function (e) {

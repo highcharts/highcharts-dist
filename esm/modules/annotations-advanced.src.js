@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.0-modified (2026-08-14)
+ * @license Highcharts JS v13.1.0 (2026-10-02)
  * @module highcharts/modules/annotations-advanced
  * @requires highcharts
  *
@@ -18,48 +18,27 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 /******/ 
 /************************************************************************/
 /******/ /* webpack/runtime/compat get default export */
-/******/ (() => {
-/******/ 	// getDefaultExport function for compatibility with non-harmony modules
-/******/ 	__webpack_require__.n = (module) => {
-/******/ 		const getter = module && module.__esModule ?
-/******/ 			() => (module['default']) :
-/******/ 			() => (module);
-/******/ 		__webpack_require__.d(getter, { a: getter });
-/******/ 		return getter;
-/******/ 	};
-/******/ })();
+/******/ // getDefaultExport function for compatibility with non-harmony modules
+/******/ __webpack_require__.n = (module) => {
+/******/ 	const getter = module && module.__esModule ?
+/******/ 		() => (module['default']) :
+/******/ 		() => (module);
+/******/ 	__webpack_require__.d(getter, { a: getter });
+/******/ 	return getter;
+/******/ };
 /******/ 
 /******/ /* webpack/runtime/define property getters */
-/******/ (() => {
-/******/ 	// define getter/value functions for harmony exports
-/******/ 	__webpack_require__.d = (exports, definition) => {
-/******/ 		if(Array.isArray(definition)) {
-/******/ 			var i = 0;
-/******/ 			while(i < definition.length) {
-/******/ 				var key = definition[i++];
-/******/ 				var binding = definition[i++];
-/******/ 				if(!__webpack_require__.o(exports, key)) {
-/******/ 					if(binding === 0) {
-/******/ 						Object.defineProperty(exports, key, { enumerable: true, value: definition[i++] });
-/******/ 					} else {
-/******/ 						Object.defineProperty(exports, key, { enumerable: true, get: binding });
-/******/ 					}
-/******/ 				} else if(binding === 0) { i++; }
-/******/ 			}
-/******/ 		} else {
-/******/ 			for(var key in definition) {
-/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
-/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
-/******/ 				}
-/******/ 			}
+/******/ // define getter/value functions for harmony exports
+/******/ __webpack_require__.d = (exports, definition) => {
+/******/ 	for(var key in definition) {
+/******/ 		if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 			Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
 /******/ 		}
-/******/ 	};
-/******/ })();
+/******/ 	}
+/******/ };
 /******/ 
 /******/ /* webpack/runtime/hasOwnProperty shorthand */
-/******/ (() => {
-/******/ 	__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
-/******/ })();
+/******/ __webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop));
 /******/ 
 /************************************************************************/
 
@@ -104,7 +83,7 @@ var external_highcharts_src_js_default_default = /*#__PURE__*/__webpack_require_
 function chartAddAnnotation(options, redraw) {
     const annotation = this.initAnnotation(options);
     this.options.annotations.push(annotation.options);
-    if ((0,external_highcharts_src_js_default_namespaceObject.pick)(redraw, true)) {
+    if (redraw ?? true) {
         annotation.redraw();
         annotation.graphic.attr({
             opacity: 1
@@ -141,7 +120,8 @@ function chartCallback() {
             {}).columnHeaderFormatter, 
         // If second row doesn't have xValues
         // then it is a title row thus multiple level header is in use.
-        multiLevelHeaders = !event.dataRows[1].xValues, annotationHeader = (chart.options.lang &&
+        // The row is missing altogether when the chart has no data, #25090.
+        multiLevelHeaders = !event.dataRows[1]?.xValues, annotationHeader = (chart.options.lang &&
             chart.options.lang.exportData &&
             chart.options.lang.exportData.annotationHeader), columnHeaderFormatter = function (index) {
             let s;
@@ -1302,7 +1282,8 @@ class EventEmitter {
         emitter.removeMouseUp = (0,external_highcharts_src_js_default_namespaceObject.addEvent)(doc, isTouchDevice || firesTouchEvents ? 'touchend' : 'mouseup', function () {
             // Sometimes the target is the annotation and sometimes its the
             // controllable
-            const annotation = (0,external_highcharts_src_js_default_namespaceObject.pick)(emitter.target && emitter.target.annotation, emitter.target);
+            const annotation = ((emitter.target && emitter.target.annotation) ??
+                emitter.target);
             if (annotation) {
                 // Keep annotation selected after dragging control point
                 annotation.cancelClick = emitter.hasDragged;
@@ -1311,8 +1292,7 @@ class EventEmitter {
             emitter.chart.hasDraggedAnnotation = false;
             if (emitter.hasDragged) {
                 // ControlPoints vs Annotation:
-                (0,external_highcharts_src_js_default_namespaceObject.fireEvent)((0,external_highcharts_src_js_default_namespaceObject.pick)(annotation, // #15952
-                emitter), 'afterUpdate');
+                (0,external_highcharts_src_js_default_namespaceObject.fireEvent)((annotation ?? emitter), 'afterUpdate');
             }
             emitter.hasDragged = false;
             emitter.onMouseUp();
@@ -1401,7 +1381,7 @@ class ControlPoint extends Annotations_EventEmitter {
         this.chart = chart;
         this.target = target;
         this.options = options;
-        this.index = (0,external_highcharts_src_js_default_namespaceObject.pick)(options.index, index);
+        this.index = (options.index ?? index);
     }
     /* *
      *
@@ -1553,7 +1533,7 @@ function getAssignedAxis(coords) {
         const extremes = coord.axis.getExtremes(), axisMin = extremes.min, axisMax = extremes.max, 
         // Correct axis edges when axis has series
         // with pointRange (like column)
-        minPointOffset = (0,external_highcharts_src_js_default_namespaceObject.pick)(coord.axis.minPointOffset, 0);
+        minPointOffset = (coord.axis.minPointOffset ?? 0);
         return (0,external_highcharts_src_js_default_namespaceObject.isNumber)(axisMin) && (0,external_highcharts_src_js_default_namespaceObject.isNumber)(axisMax) &&
             coord.value >= (axisMin - minPointOffset) &&
             coord.value <= (axisMax + minPointOffset) &&
@@ -1878,7 +1858,7 @@ class MockPoint {
                     (0,external_highcharts_src_js_default_namespaceObject.defined)(plotY) &&
                     plotY >= 0 && plotY <= yAxis.len;
         }
-        (0,external_highcharts_src_js_default_namespaceObject.fireEvent)(this.series.chart, 'afterIsInsidePlot', e);
+        ;(0,external_highcharts_src_js_default_namespaceObject.fireEvent)(this.series.chart, 'afterIsInsidePlot', e);
         return e.isInsidePlot;
     }
     /**
@@ -3793,7 +3773,7 @@ class ControllableLabel extends Controllables_Controllable {
             if (itemOptions.distance && tooltip) {
                 itemPosition = tooltip.getPosition.call({
                     chart,
-                    distance: (0,external_highcharts_src_js_default_namespaceObject.pick)(itemOptions.distance, 16),
+                    distance: (itemOptions.distance ?? 16),
                     getPlayingField: tooltip.getPlayingField,
                     pointer: tooltip.pointer
                 }, width, height, {
@@ -4289,11 +4269,9 @@ function addToolbar(chart, options, callback) {
         className: 'highcharts-annotation-label'
     }, void 0, popupDiv);
     label.setAttribute('aria-label', 'Annotation type');
-    label.appendChild(PopupAnnotations_doc.createTextNode((0,external_highcharts_src_js_default_namespaceObject.pick)(
-    // Advanced annotations:
-    lang[options.langKey] || options.langKey, 
-    // Basic shapes:
-    options.shapes && options.shapes[0].type, '')));
+    label.appendChild(PopupAnnotations_doc.createTextNode(((lang[options.langKey] || options.langKey) ??
+        (options.shapes && options.shapes[0].type) ??
+        '')));
     // Add buttons
     let button = this.addButton(popupDiv, lang.editButton || 'Edit', 'edit', popupDiv, () => {
         showForm.call(this, 'annotation-edit', chart, options, callback);
@@ -4601,7 +4579,7 @@ function addIndicatorList(chart, parentDiv, listType, filter) {
         filteredSeriesArray = filterSeriesArray.call(this, series);
     }
     // Sort indicators alphabetically.
-    (0,external_highcharts_src_js_default_namespaceObject.stableSort)(filteredSeriesArray, (a, b) => {
+    ;(0,external_highcharts_src_js_default_namespaceObject.stableSort)(filteredSeriesArray, (a, b) => {
         const seriesAName = a.indicatorFullName.toLowerCase(), seriesBName = b.indicatorFullName.toLowerCase();
         return (seriesAName < seriesBName) ?
             -1 : (seriesAName > seriesBName) ? 1 : 0;
@@ -4819,7 +4797,7 @@ function addSelectionOptions(chart, optionName, selectBox, indicatorType, parame
                     series.type === 'column') {
                     selectedOption = seriesOptions.id;
                 }
-                (0,external_highcharts_src_js_default_namespaceObject.createElement)('option', {
+                ;(0,external_highcharts_src_js_default_namespaceObject.createElement)('option', {
                     value: seriesOptions.id
                 }, void 0, selectBox).appendChild(PopupIndicators_doc.createTextNode(seriesName));
             }
@@ -5145,7 +5123,7 @@ function switchTabs(disableTab) {
             return;
         }
         ['click', 'touchstart'].forEach((eventName) => {
-            (0,external_highcharts_src_js_default_namespaceObject.addEvent)(tab, eventName, function () {
+            ;(0,external_highcharts_src_js_default_namespaceObject.addEvent)(tab, eventName, function () {
                 // Reset class on other elements
                 deselectAll.call(popup);
                 selectTab.call(popup, this, i);
@@ -5346,7 +5324,8 @@ class Popup extends Shared_BaseForm {
      *         Return created input element.
      */
     addInput(option, indicatorType, parentDiv, inputAttributes) {
-        const optionParamList = option.split('.'), optionName = optionParamList[optionParamList.length - 1], lang = this.lang, inputName = 'highcharts-' + indicatorType + '-' + (0,external_highcharts_src_js_default_namespaceObject.pick)(inputAttributes.htmlFor, optionName);
+        const optionParamList = option.split('.'), optionName = optionParamList[optionParamList.length - 1], lang = this.lang, inputName = 'highcharts-' + indicatorType + '-' +
+            (inputAttributes.htmlFor ?? optionName);
         if (!optionName.match(/^\d+$/)) {
             // Add label
             (0,external_highcharts_src_js_default_namespaceObject.createElement)('label', {
@@ -5527,7 +5506,7 @@ class Popup extends Shared_BaseForm {
         this.container.style.height = this.container.offsetHeight + 'px';
     }
 }
-(0,external_highcharts_src_js_default_namespaceObject.extend)(Popup.prototype, {
+;(0,external_highcharts_src_js_default_namespaceObject.extend)(Popup.prototype, {
     annotations: Popup_PopupAnnotations,
     indicators: Popup_PopupIndicators,
     tabs: Popup_PopupTabs
@@ -5849,13 +5828,11 @@ class Annotation extends Annotations_EventEmitter {
      * @internal
      */
     destroy() {
-        const chart = this.chart, destroyItem = function (item) {
-            item.destroy();
-        };
-        this.labels.forEach(destroyItem);
-        this.shapes.forEach(destroyItem);
-        this.clipXAxis = null;
-        this.clipYAxis = null;
+        const chart = this.chart;
+        (0,external_highcharts_src_js_default_namespaceObject.destroyObjectProperties)(this.labels);
+        (0,external_highcharts_src_js_default_namespaceObject.destroyObjectProperties)(this.shapes);
+        delete this.clipXAxis;
+        delete this.clipYAxis;
         (0,external_highcharts_src_js_default_namespaceObject.erase)(chart.labelCollectors, this.labelCollector);
         super.destroy();
         this.destroyControlTarget();
@@ -5867,7 +5844,7 @@ class Annotation extends Annotations_EventEmitter {
      */
     destroyItem(item) {
         // Erase from shapes or labels array
-        (0,external_highcharts_src_js_default_namespaceObject.erase)(this[item.itemType + 's'], item);
+        ;(0,external_highcharts_src_js_default_namespaceObject.erase)(this[item.itemType + 's'], item);
         item.destroy();
     }
     /** @internal */
@@ -5969,7 +5946,7 @@ class Annotation extends Annotations_EventEmitter {
             if (!item.graphic) {
                 this.renderItem(item);
             }
-            item.redraw((0,external_highcharts_src_js_default_namespaceObject.pick)(animation, true) && item.graphic.placed);
+            item.redraw((animation ?? true) && item.graphic.placed);
             if (item.points.length) {
                 adjustVisibility(item);
             }
@@ -6112,7 +6089,7 @@ class Annotation extends Annotations_EventEmitter {
      * annotation's visibility is toggled.
      */
     setVisibility(visible) {
-        const options = this.options, navigation = this.chart.navigationBindings, visibility = (0,external_highcharts_src_js_default_namespaceObject.pick)(visible, !options.visible);
+        const options = this.options, navigation = this.chart.navigationBindings, visibility = (visible ?? !options.visible);
         this.graphic.attr('visibility', visibility ? 'inherit' : 'hidden');
         if (!visibility) {
             const setItemControlPointsVisibility = function (item) {
@@ -6148,10 +6125,10 @@ class Annotation extends Annotations_EventEmitter {
         // Update options in chart options, used in exporting (#9767, #21507):
         chart.options.annotations[userOptionsIndex] = this.options;
         this.isUpdating = true;
-        if ((0,external_highcharts_src_js_default_namespaceObject.pick)(redraw, true)) {
+        if (redraw ?? true) {
             chart.drawAnnotations();
         }
-        (0,external_highcharts_src_js_default_namespaceObject.fireEvent)(this, 'afterUpdate');
+        ;(0,external_highcharts_src_js_default_namespaceObject.fireEvent)(this, 'afterUpdate');
         this.isUpdating = false;
     }
 }
@@ -6964,7 +6941,7 @@ function selectableAnnotation(annotationType) {
             selectAndShowPopup.call(this, e);
         }
     }
-    (0,external_highcharts_src_js_default_namespaceObject.merge)(true, annotationType.prototype.defaultOptions.events, {
+    ;(0,external_highcharts_src_js_default_namespaceObject.merge)(true, annotationType.prototype.defaultOptions.events, {
         click: selectAndShowPopup,
         touchstart: saveCoords,
         touchend: checkForTouchmove
@@ -7105,7 +7082,7 @@ class NavigationBindings {
             if (navigation.selectedButtonElement.classList === button.classList) {
                 shouldEventBeFired = false;
             }
-            (0,external_highcharts_src_js_default_namespaceObject.fireEvent)(navigation, 'deselectButton', { button: navigation.selectedButtonElement });
+            ;(0,external_highcharts_src_js_default_namespaceObject.fireEvent)(navigation, 'deselectButton', { button: navigation.selectedButtonElement });
             if (navigation.nextEvent) {
                 // Remove in-progress annotations adders:
                 if (navigation.currentUserDetails &&
@@ -7243,7 +7220,7 @@ class NavigationBindings {
      *         Modified config
      */
     fieldsToOptions(fields, config) {
-        (0,external_highcharts_src_js_default_namespaceObject.objectEach)(fields, (value, field) => {
+        ;(0,external_highcharts_src_js_default_namespaceObject.objectEach)(fields, (value, field) => {
             const parsedValue = parseFloat(value), path = field.split('.'), pathLength = path.length - 1;
             // If it's a number (not "format" options), parse it:
             if ((0,external_highcharts_src_js_default_namespaceObject.isNumber)(parsedValue) &&
@@ -7257,7 +7234,7 @@ class NavigationBindings {
                 let parent = config;
                 path.forEach((name, index) => {
                     if (name !== '__proto__' && name !== 'constructor') {
-                        const nextName = (0,external_highcharts_src_js_default_namespaceObject.pick)(path[index + 1], '');
+                        const nextName = (path[index + 1] ?? '');
                         if (pathLength === index) {
                             // Last index, put value:
                             parent[name] = value;
@@ -7303,7 +7280,10 @@ class NavigationBindings {
      *         Annotation options to be displayed in popup box
      */
     annotationToFields(annotation) {
-        const options = annotation.options, editables = NavigationBindings.annotationsEditable, nestedEditables = editables.nestedOptions, type = (0,external_highcharts_src_js_default_namespaceObject.pick)(options.type, options.shapes?.[0]?.type, options.labels?.[0]?.type, 'label'), nonEditables = NavigationBindings.annotationsNonEditable[options.langKey] || [], visualOptions = {
+        const options = annotation.options, editables = NavigationBindings.annotationsEditable, nestedEditables = editables.nestedOptions, type = options.type ??
+            options.shapes?.[0]?.type ??
+            options.labels?.[0]?.type ??
+            'label', nonEditables = NavigationBindings.annotationsNonEditable[options.langKey] || [], visualOptions = {
             langKey: options.langKey,
             type: type
         };
@@ -7363,7 +7343,7 @@ class NavigationBindings {
                     else {
                         parent[key] = nextParent;
                     }
-                    (0,external_highcharts_src_js_default_namespaceObject.objectEach)(option, (nestedOption, nestedKey) => {
+                    ;(0,external_highcharts_src_js_default_namespaceObject.objectEach)(option, (nestedOption, nestedKey) => {
                         traverse(nestedOption, nestedKey, key === 0 ?
                             parentEditables :
                             nestedEditables[key], nextParent, key);
@@ -7386,7 +7366,7 @@ class NavigationBindings {
                 }
             }
         }
-        (0,external_highcharts_src_js_default_namespaceObject.objectEach)(options, (option, key) => {
+        ;(0,external_highcharts_src_js_default_namespaceObject.objectEach)(options, (option, key) => {
             if (key === 'typeOptions' &&
                 visualOptions['type'] !== 'basicAnnotation' // #23575
             ) {
@@ -9282,7 +9262,7 @@ class VerticalLine extends Annotations_Annotation {
      *
      * */
     static connectorFirstPoint(target) {
-        const annotation = target.annotation, chart = annotation.chart, inverted = chart.inverted, point = annotation.points[0], left = (0,external_highcharts_src_js_default_namespaceObject.pick)(point.series.yAxis?.left, 0), top = (0,external_highcharts_src_js_default_namespaceObject.pick)(point.series.yAxis?.top, 0), offset = annotation.options.typeOptions?.label?.offset || 0, y = Annotations_MockPoint.pointToPixels(point, true)[inverted ? 'x' : 'y'];
+        const annotation = target.annotation, chart = annotation.chart, inverted = chart.inverted, point = annotation.points[0], left = (point.series.yAxis?.left ?? 0), top = (point.series.yAxis?.top ?? 0), offset = annotation.options.typeOptions?.label?.offset || 0, y = Annotations_MockPoint.pointToPixels(point, true)[inverted ? 'x' : 'y'];
         return {
             x: point.x,
             xAxis: point.series.xAxis,
@@ -9291,7 +9271,7 @@ class VerticalLine extends Annotations_Annotation {
         };
     }
     static connectorSecondPoint(target) {
-        const annotation = target.annotation, chart = annotation.chart, inverted = chart.inverted, typeOptions = annotation.options.typeOptions, point = annotation.points[0], left = (0,external_highcharts_src_js_default_namespaceObject.pick)(point.series.yAxis && point.series.yAxis.left, 0), top = (0,external_highcharts_src_js_default_namespaceObject.pick)(point.series.yAxis && point.series.yAxis.top, 0), y = Annotations_MockPoint.pointToPixels(point, true)[inverted ? 'x' : 'y'];
+        const annotation = target.annotation, chart = annotation.chart, inverted = chart.inverted, typeOptions = annotation.options.typeOptions, point = annotation.points[0], left = ((point.series.yAxis && point.series.yAxis.left) ?? 0), top = ((point.series.yAxis && point.series.yAxis.top) ?? 0), y = Annotations_MockPoint.pointToPixels(point, true)[inverted ? 'x' : 'y'];
         let yOffset = typeOptions?.yOffset || 0;
         if ((typeOptions?.label?.offset || 0) < 0) {
             yOffset *= -1;
@@ -9973,8 +9953,8 @@ class Measure extends Annotations_Annotation {
                     return {
                         x: annotation.xAxisMin,
                         y: annotation.yAxisMin,
-                        xAxis: (0,external_highcharts_src_js_default_namespaceObject.pick)(typeOptions.xAxis, options.xAxis),
-                        yAxis: (0,external_highcharts_src_js_default_namespaceObject.pick)(typeOptions.yAxis, options.yAxis)
+                        xAxis: (typeOptions.xAxis ?? options.xAxis),
+                        yAxis: (typeOptions.yAxis ?? options.yAxis)
                     };
                 },
                 text: (formatter?.call(this, this) ||

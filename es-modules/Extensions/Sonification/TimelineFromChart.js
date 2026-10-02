@@ -16,7 +16,7 @@ import SonificationTimeline from './SonificationTimeline.js';
 import SonificationInstrument from './SonificationInstrument.js';
 import SonificationSpeaker from './SonificationSpeaker.js';
 import T from '../../Core/Templating.js';
-import { clamp, defined, extend, getNestedProperty, merge, pick } from '../../Shared/Utilities.js';
+import { clamp, defined, extend, getNestedProperty, merge } from '../../Shared/Utilities.js';
 const { format } = T;
 const isNoteDefinition = (str) => (/^([a-g][#b]?)[0-8]$/i).test(str);
 /**
@@ -219,8 +219,8 @@ function getMappingParameterValue(context, propMetrics, useSeriesExtremes, defau
     if (typeof mappingOptions === 'object') {
         mapTo = mappingOptions.mapTo;
         mapFunc = mappingOptions.mapFunction || mapFunc;
-        min = pick(mappingOptions.min, min);
-        max = pick(mappingOptions.max, max);
+        min = (mappingOptions.min ?? min);
+        max = (mappingOptions.max ?? max);
         within = mappingOptions.within || defaultMapping.within;
         scale = mappingOptions.scale;
     }
@@ -294,9 +294,9 @@ function getMappingParameterValue(context, propMetrics, useSeriesExtremes, defau
  * @internal
  */
 function getParamValWithDefault(context, propMetrics, useSeriesExtremes, mappingParamOptions, fallback, defaults, contextValueProp) {
-    return pick(getMappingParameterValue(context, propMetrics, useSeriesExtremes, extend({
+    return (getMappingParameterValue(context, propMetrics, useSeriesExtremes, extend({
         min: 0, max: 1, mapTo: 'y', mapFunction: 'linear', within: 'chart'
-    }, (defaults || {})), mappingParamOptions, contextValueProp), fallback);
+    }, (defaults || {})), mappingParamOptions, contextValueProp) ?? fallback);
 }
 /**
  * Get time value for a point event.
@@ -358,7 +358,7 @@ function addTimelineChannelFromTrack(timeline, audioContext, destinationNode, op
             synthPatch: options.instrument,
             midiTrackName: options.midiName
         });
-    return timeline.addChannel(options.type || 'instrument', engine, pick(options.showPlayMarker, true));
+    return timeline.addChannel(options.type || 'instrument', engine, (options.showPlayMarker ?? true));
 }
 /**
  * Add event from a point to a mapped instrument track.
@@ -474,8 +474,8 @@ function addMappedEventForPoint(context, channel, trackOptions, propMetrics) {
         }
     }
     else if (trackOptions.mapping) {
-        eventsAdded = addMappedInstrumentEvent(context, channel, trackOptions.mapping, propMetrics, pick(trackOptions
-            .roundToMusicalNotes, true));
+        eventsAdded = addMappedInstrumentEvent(context, channel, trackOptions.mapping, propMetrics, (trackOptions
+            .roundToMusicalNotes ?? true));
     }
     return eventsAdded;
 }
@@ -534,7 +534,7 @@ function isActive(context, activeWhen, lastPropValue) {
         return activeWhen(context);
     }
     if (typeof activeWhen === 'object') {
-        const prop = activeWhen.prop, val = pick(context.value, context.point && getPointPropValue(context.point, prop));
+        const prop = activeWhen.prop, val = context.value ?? (context.point && getPointPropValue(context.point, prop));
         if (typeof val !== 'number') {
             return false;
         }
@@ -551,7 +551,7 @@ function isActive(context, activeWhen, lastPropValue) {
                 hasLastValue && lastPropValue > crossingDown &&
                     val <= crossingDown);
         }
-        const max = pick(activeWhen.max, Infinity), min = pick(activeWhen.min, -Infinity);
+        const max = (activeWhen.max ?? Infinity), min = (activeWhen.min ?? -Infinity);
         return val <= max && val >= min && crossingOk;
     }
     return true;
@@ -703,7 +703,7 @@ function timelineFromChart(audioContext, destinationNode, chart) {
                         addMappedSpeechEvent({ time, value }, contextChannel, mergedOpts.mapping, propMetrics, valueProp);
                     }
                     else {
-                        addMappedInstrumentEvent({ time, value }, contextChannel, mergedOpts.mapping, propMetrics, pick(mergedOpts.roundToMusicalNotes, true), valueProp);
+                        addMappedInstrumentEvent({ time, value }, contextChannel, mergedOpts.mapping, propMetrics, (mergedOpts.roundToMusicalNotes ?? true), valueProp);
                     }
                 };
                 if (timeInterval) {

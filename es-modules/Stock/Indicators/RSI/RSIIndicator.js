@@ -28,7 +28,6 @@ function toFixed(a, n) {
 /**
  * The RSI series type.
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.rsi
  *
@@ -40,13 +39,14 @@ class RSIIndicator extends SMAIndicator {
      *  Functions
      *
      * */
+    /** @internal */
     getValues(series, params) {
         const period = params.period, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, decimals = params.decimals, 
         // RSI starts calculations from the second point
         // Cause we need to calculate change between two points
         RSI = [], xData = [], yData = [];
         let gain = 0, loss = 0, index = params.index, range = 1, RSIPoint, change, avgGain, avgLoss, i, values;
-        if ((xVal.length < period)) {
+        if (xVal.length < period) {
             return;
         }
         if (isNumber(yVal[0])) {
@@ -130,6 +130,7 @@ class RSIIndicator extends SMAIndicator {
  * @requires     stock/indicators/indicators
  * @requires     stock/indicators/rsi
  * @optionparent plotOptions.rsi
+ * @internal
  */
 RSIIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
     params: {
@@ -143,7 +144,6 @@ SeriesRegistry.registerSeriesType('rsi', RSIIndicator);
  *  Default Export
  *
  * */
-/** @internal */
 export default RSIIndicator;
 /* *
  *
@@ -157,7 +157,6 @@ export default RSIIndicator;
  * @extends   series,plotOptions.rsi
  * @since     6.0.0
  * @product   highstock
- * @excluding dataParser, dataURL
  * @requires  stock/indicators/indicators
  * @requires  stock/indicators/rsi
  * @apioption series.rsi

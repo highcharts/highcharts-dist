@@ -31,7 +31,6 @@ composeTextPath(SVGElement);
  *
  * */
 /**
- * @internal
  * @class
  * @name Highcharts.seriesTypes.dependencywheel
  *
@@ -43,6 +42,7 @@ class DependencyWheelSeries extends SankeySeries {
      *  Functions
      *
      * */
+    /** @internal */
     animate(init) {
         const series = this;
         if (!init) {
@@ -70,6 +70,7 @@ class DependencyWheelSeries extends SankeySeries {
             }
         }
     }
+    /** @internal */
     createNode(id) {
         const node = super.createNode(id);
         /**
@@ -261,11 +262,13 @@ class DependencyWheelSeries extends SankeySeries {
  *  Static Properties
  *
  * */
+/** @internal */
 DependencyWheelSeries.defaultOptions = merge(SankeySeries.defaultOptions, DependencyWheelSeriesDefaults);
 extend(DependencyWheelSeries.prototype, {
     orderNodes: false,
     pointArrayMap: ['from', 'to', 'weight', 'weightTo'],
-    getCenter: PieSeries.prototype.getCenter
+    getCenter: PieSeries.prototype.getCenter,
+    useCircularLayout: false
 });
 DependencyWheelSeries.prototype.pointClass = DependencyWheelPoint;
 SeriesRegistry.registerSeriesType('dependencywheel', DependencyWheelSeries);
@@ -274,5 +277,4 @@ SeriesRegistry.registerSeriesType('dependencywheel', DependencyWheelSeries);
  *  Default Export
  *
  * */
-/** @internal */
 export default DependencyWheelSeries;

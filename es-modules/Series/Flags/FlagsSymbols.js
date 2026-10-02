@@ -11,6 +11,7 @@ const { composed } = H;
  *  Composition
  *
  * */
+/** @internal */
 var FlagsSymbols;
 (function (FlagsSymbols) {
     /* *
@@ -19,7 +20,7 @@ var FlagsSymbols;
      *
      * */
     /**
-     * @private
+     * @internal
      */
     function compose(SVGRendererClass) {
         if (pushUnique(composed, 'Series.Flags')) {
@@ -38,7 +39,7 @@ var FlagsSymbols;
     FlagsSymbols.compose = compose;
     /**
      * Create the flag icon with anchor.
-     * @private
+     * @internal
      */
     function flag(x, y, w, h, options) {
         const anchorX = (options && options.anchorX) || x, anchorY = (options && options.anchorY) || y;
@@ -48,7 +49,7 @@ var FlagsSymbols;
     }
     /**
      * Create the circlepin and squarepin icons with anchor.
-     * @private
+     * @internal
      */
     function createPinSymbol(symbols, shape) {
         symbols[(shape + 'pin')] = function (x, y, w, h, options) {
@@ -99,4 +100,5 @@ var FlagsSymbols;
  *  Default Export
  *
  * */
+/** @internal */
 export default FlagsSymbols;

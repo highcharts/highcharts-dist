@@ -37,6 +37,7 @@ class GanttSeries extends XRangeSeries {
      *  Static Functions
      *
      * */
+    /** @internal */
     static compose(AxisClass, ChartClass, SeriesClass, TickClass) {
         XRangeSeries.compose(AxisClass);
         if (!ChartClass) {
@@ -57,12 +58,14 @@ class GanttSeries extends XRangeSeries {
      *  Functions
      *
      * */
+    /** @internal */
     getColumn(columnName) {
         const time = this.chart.time;
         if (columnName === 'x') {
             const startColumn = super.getColumn('start');
             if (startColumn.length) {
-                return startColumn.map((val) => time.parse(val) || 0);
+                return startColumn.map((val) => time.parse(val) ?? NaN // #24849
+                );
             }
         }
         return super.getColumn.apply(this, arguments);
@@ -141,6 +144,7 @@ class GanttSeries extends XRangeSeries {
  *  Static Properties
  *
  * */
+/** @internal */
 GanttSeries.defaultOptions = merge(XRangeSeries.defaultOptions, GanttSeriesDefaults);
 extend(GanttSeries.prototype, {
     pointArrayMap: ['start', 'end', 'y'],

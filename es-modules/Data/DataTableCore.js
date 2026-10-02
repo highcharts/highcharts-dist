@@ -270,12 +270,20 @@ class DataTableCore {
      * @emits #afterSetRows
      */
     setRow(row, rowIndex = this.rowCount, insert, eventDetail) {
-        var _a;
         const { columns } = this, indexRowCount = insert ? this.rowCount + 1 : rowIndex + 1, rowKeys = Object.keys(row);
         if (eventDetail?.addColumns !== false) {
             for (let i = 0, iEnd = rowKeys.length; i < iEnd; i++) {
-                columns[_a = rowKeys[i]] || (columns[_a] = new Array(this.rowCount));
+                const rowKey = rowKeys[i];
+                if (rowKey !== '__proto__' &&
+                    rowKey !== 'constructor' &&
+                    !Object.hasOwnProperty.call(columns, rowKey)) {
+                    columns[rowKey] = new Array(this.rowCount);
+                }
             }
+        }
+        // Typed arrays ignore out-of-range writes, `insert` grows via `splice`
+        if (!insert && indexRowCount > this.rowCount) {
+            this.applyRowCount(indexRowCount);
         }
         objectEach(columns, (column, columnId) => {
             if (column) {

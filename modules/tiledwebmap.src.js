@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.0-modified (2026-08-14)
+ * @license Highcharts JS v13.1.0 (2026-10-02)
  * @module highcharts/modules/tiledwebmap
  * @requires highcharts
  *
@@ -11,14 +11,14 @@
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(root["_Highcharts"], root["_Highcharts"]["Fx"], root["_Highcharts"]["SeriesRegistry"]);
+		module.exports = factory(root["_Highcharts"]["Fx"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
 	else if(typeof define === 'function' && define.amd)
-		define("highcharts/modules/tiledwebmap", ["highcharts/highcharts"], function (amd1) {return factory(amd1,amd1["Fx"],amd1["SeriesRegistry"]);});
+		define("highcharts/modules/tiledwebmap", ["highcharts/highcharts"], function (amd1) {return factory(amd1["Fx"],amd1["SeriesRegistry"],amd1);});
 	else if(typeof exports === 'object')
-		exports["highcharts/modules/tiledwebmap"] = factory(root["_Highcharts"], root["_Highcharts"]["Fx"], root["_Highcharts"]["SeriesRegistry"]);
+		exports["highcharts/modules/tiledwebmap"] = factory(root["_Highcharts"]["Fx"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
 	else
-		root["Highcharts"] = factory(root["Highcharts"], root["Highcharts"]["Fx"], root["Highcharts"]["SeriesRegistry"]);
-})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__944__, __WEBPACK_EXTERNAL_MODULE__168__, __WEBPACK_EXTERNAL_MODULE__512__) => {
+		root["Highcharts"] = factory(root["Highcharts"]["Fx"], root["Highcharts"]["SeriesRegistry"], root["Highcharts"]);
+})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__168__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__944__) => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
@@ -72,48 +72,27 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__944__;
 /******/ 	
 /************************************************************************/
 /******/ 	/* webpack/runtime/compat get default export */
-/******/ 	(() => {
-/******/ 		// getDefaultExport function for compatibility with non-harmony modules
-/******/ 		__webpack_require__.n = (module) => {
-/******/ 			const getter = module && module.__esModule ?
-/******/ 				() => (module['default']) :
-/******/ 				() => (module);
-/******/ 			__webpack_require__.d(getter, { a: getter });
-/******/ 			return getter;
-/******/ 		};
-/******/ 	})();
+/******/ 	// getDefaultExport function for compatibility with non-harmony modules
+/******/ 	__webpack_require__.n = (module) => {
+/******/ 		const getter = module && module.__esModule ?
+/******/ 			() => (module['default']) :
+/******/ 			() => (module);
+/******/ 		__webpack_require__.d(getter, { a: getter });
+/******/ 		return getter;
+/******/ 	};
 /******/ 	
 /******/ 	/* webpack/runtime/define property getters */
-/******/ 	(() => {
-/******/ 		// define getter/value functions for harmony exports
-/******/ 		__webpack_require__.d = (exports, definition) => {
-/******/ 			if(Array.isArray(definition)) {
-/******/ 				var i = 0;
-/******/ 				while(i < definition.length) {
-/******/ 					var key = definition[i++];
-/******/ 					var binding = definition[i++];
-/******/ 					if(!__webpack_require__.o(exports, key)) {
-/******/ 						if(binding === 0) {
-/******/ 							Object.defineProperty(exports, key, { enumerable: true, value: definition[i++] });
-/******/ 						} else {
-/******/ 							Object.defineProperty(exports, key, { enumerable: true, get: binding });
-/******/ 						}
-/******/ 					} else if(binding === 0) { i++; }
-/******/ 				}
-/******/ 			} else {
-/******/ 				for(var key in definition) {
-/******/ 					if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
-/******/ 						Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
-/******/ 					}
-/******/ 				}
+/******/ 	// define getter/value functions for harmony exports
+/******/ 	__webpack_require__.d = (exports, definition) => {
+/******/ 		for(var key in definition) {
+/******/ 			if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 				Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
 /******/ 			}
-/******/ 		};
-/******/ 	})();
+/******/ 		}
+/******/ 	};
 /******/ 	
 /******/ 	/* webpack/runtime/hasOwnProperty shorthand */
-/******/ 	(() => {
-/******/ 		__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
-/******/ 	})();
+/******/ 	__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop));
 /******/ 	
 /************************************************************************/
 let __webpack_exports__ = {};
@@ -595,7 +574,7 @@ var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highc
  * @excluding    affectsMapView, allAreas, allowPointSelect, animation,
  * animationLimit, boostBlending, boostThreshold, borderColor, borderWidth,
  * clip, color, colorAxis, colorByPoint, colorIndex, colorKey, colors,
- * cursor, dashStyle, dataLabels, dataParser, dataURL, dragDrop,
+ * cursor, dashStyle, dataLabels, dragDrop,
  * enableMouseTracking, findNearestPointBy, joinBy, keys, marker,
  * negativeColor, nullColor, nullInteraction, onPoint, point,
  * pointDescriptionFormatter, selected, shadow, showCheckbox,
@@ -629,7 +608,7 @@ const TiledWebMapSeriesDefaults = {
  * @excluding affectsMapView, allAreas, allowPointSelect, animation,
  * animationLimit, boostBlending, boostThreshold, borderColor, borderWidth,
  * clip, color, colorAxis, colorByPoint, colorIndex, colorKey, colors, cursor,
- * dashStyle, dataLabels, dataParser, dataURL, dragDrop, enableMouseTracking,
+ * dashStyle, dataLabels, dragDrop, enableMouseTracking,
  * findNearestPointBy, joinBy, keys, marker, negativeColor, nullColor,
  * nullInteraction, onPoint, point, pointDescriptionFormatter, selected, shadow,
  * showCheckbox, stickyTracking, tooltip, type
@@ -798,7 +777,9 @@ class TiledWebMapSeries extends MapSeries {
          *
          * */
         super(...arguments);
+        /** @internal */
         this.redrawTiles = false;
+        /** @internal */
         this.isAnimating = false;
     }
     /* *
@@ -806,6 +787,7 @@ class TiledWebMapSeries extends MapSeries {
      *  Static Functions
      *
      * */
+    /** @internal */
     static compose(MapViewClass) {
         if ((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pushUnique)(composed, 'TiledWebMapSeries')) {
             (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.addEvent)(MapViewClass, 'onRecommendMapView', onRecommendMapView);
@@ -841,13 +823,14 @@ class TiledWebMapSeries extends MapSeries {
             Math.PI * Math.atan(0.5 * (Math.exp(n) - Math.exp(-n))));
         return { lon, lat };
     }
+    /** @internal */
     drawPoints() {
         const chart = this.chart, mapView = chart.mapView;
         if (!mapView) {
             return;
         }
-        const tiles = (this.tiles = this.tiles || {}), transformGroups = (this.transformGroups = this.transformGroups || []), series = this, options = this.options, provider = options.provider, { zoom } = mapView, lambda = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)((mapView.projection.options.rotation &&
-            mapView.projection.options.rotation[0]), 0), worldSize = 400.979322, tileSize = 256, duration = chart.renderer.forExport ? 0 : 200, animateTiles = (duration) => {
+        const tiles = (this.tiles = this.tiles || {}), transformGroups = (this.transformGroups = this.transformGroups || []), series = this, options = this.options, provider = options.provider, { zoom } = mapView, lambda = ((mapView.projection.options.rotation &&
+            mapView.projection.options.rotation[0]) ?? 0), worldSize = 400.979322, tileSize = 256, duration = chart.renderer.forExport ? 0 : 200, animateTiles = (duration) => {
             for (const zoomKey of Object.keys(tiles)) {
                 if ((parseFloat(zoomKey) === (mapView.zoom < 0 ? 0 :
                     Math.floor(mapView.zoom))) ||
@@ -928,7 +911,7 @@ class TiledWebMapSeries extends MapSeries {
                 else if ((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.defined)(def.subdomains) &&
                     // Do not show warning if no subdomain in URL
                     theme.url.indexOf('{s}') !== -1) {
-                    subdomain = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(def.subdomains && def.subdomains[0], '');
+                    subdomain = ((def.subdomains && def.subdomains[0]) ?? '');
                     (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.error)('Highcharts warning: The Tiles Provider\'s Subdomain ' +
                         '\'' + provider.subdomain + '\' is not defined in ' +
                         'the Provider definition - falling back to \'' +
@@ -951,7 +934,9 @@ class TiledWebMapSeries extends MapSeries {
                 this.minZoom = theme.minZoom;
                 this.maxZoom = theme.maxZoom;
                 // Add as credits.text, to prevent changing the default mapText
-                const creditsText = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(chart.userOptions.credits && chart.userOptions.credits.text, 'Highcharts.com ' + (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(theme.credits, def.defaultCredits));
+                const creditsText = ((chart.userOptions.credits &&
+                    chart.userOptions.credits.text) ??
+                    ('Highcharts.com ' + (theme.credits ?? def.defaultCredits)));
                 if (chart.credits) {
                     chart.credits.update({
                         text: creditsText
@@ -960,7 +945,7 @@ class TiledWebMapSeries extends MapSeries {
                 else {
                     chart.addCredits({
                         text: creditsText,
-                        style: (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(chart.options.credits?.style, {})
+                        style: (chart.options.credits?.style ?? {})
                     });
                 }
                 if (mapView.projection.options.name !== providerProjection) {
@@ -1180,6 +1165,7 @@ class TiledWebMapSeries extends MapSeries {
                 'Provider Registry.', false);
         }
     }
+    /** @internal */
     update(options) {
         const { transformGroups } = this, chart = this.chart, mapView = chart.mapView, { provider } = options;
         if (transformGroups) {
@@ -1205,6 +1191,7 @@ class TiledWebMapSeries extends MapSeries {
         super.update.apply(this, arguments);
     }
 }
+/** @internal */
 TiledWebMapSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(MapSeries.defaultOptions, TiledWebMap_TiledWebMapSeriesDefaults);
 highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default().registerSeriesType('tiledwebmap', TiledWebMapSeries);
 /* *

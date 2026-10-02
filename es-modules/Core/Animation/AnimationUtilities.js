@@ -11,7 +11,7 @@
  * */
 'use strict';
 import Fx from './Fx.js';
-import { defined, getStyle, isArray, isNumber, isObject, merge, objectEach, pick } from '../../Shared/Utilities.js';
+import { defined, getStyle, isArray, isNumber, isObject, merge, objectEach } from '../../Shared/Utilities.js';
 /* *
  *
  *  Functions
@@ -34,7 +34,8 @@ import { defined, getStyle, isArray, isNumber, isObject, merge, objectEach, pick
  * so it should be moved to the SVGRenderer.
  */
 export function setAnimation(animation, chart) {
-    chart.renderer.globalAnimation = pick(animation, chart.options.chart.animation, true);
+    chart.renderer.globalAnimation =
+        animation ?? chart.options.chart.animation ?? true;
 }
 /**
  * Get the animation in object form, where a disabled animation is always
@@ -135,7 +136,9 @@ export function animate(el, params = { pos: 1 }, opt) {
         if (el) {
             stop(el, prop);
         }
-        const fx = new Fx(el, opt, prop), d = params.d;
+        const fx = new Fx(el, opt, prop), d = params.d, 
+        // Discrete value that doesn't animate, apply at once
+        applyImmediately = prop === 'dashstyle';
         let start = 0, end = void 0, unit = '';
         if (prop === 'd' && isArray(d)) {
             fx.paths = fx.initPath(el, el.pathArray, d);
@@ -144,6 +147,9 @@ export function animate(el, params = { pos: 1 }, opt) {
         }
         else if (el?.attr) {
             start = el.attr(prop);
+            if (applyImmediately) {
+                el.attr(prop, val);
+            }
         }
         else if (el) {
             start = +(getStyle(el, prop) || 0);
@@ -158,7 +164,7 @@ export function animate(el, params = { pos: 1 }, opt) {
             end = end.replace(/px/g, ''); // #4351
         }
         // Empty dashstyle animation crashes treemap on hover
-        if (defined(end)) {
+        if (defined(end) && !applyImmediately) {
             fx.run(start, end, unit);
         }
     });

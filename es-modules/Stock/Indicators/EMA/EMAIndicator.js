@@ -18,7 +18,6 @@ import { correctFloat, isArray, merge } from '../../../Shared/Utilities.js';
 /**
  * The EMA series type.
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.ema
  *
@@ -30,6 +29,7 @@ class EMAIndicator extends SMAIndicator {
      *  Functions
      *
      * */
+    /** @internal */
     accumulatePeriodPoints(period, index, yVal) {
         let sum = 0, i = 0, y = 0;
         while (i < period) {
@@ -39,6 +39,7 @@ class EMAIndicator extends SMAIndicator {
         }
         return sum;
     }
+    /** @internal */
     calculateEma(xVal, yVal, i, EMApercent, calEMA, index, SMA) {
         const x = xVal[i - 1], yValue = index < 0 ?
             yVal[i - 1] :
@@ -47,6 +48,7 @@ class EMAIndicator extends SMAIndicator {
             (calEMA * (1 - EMApercent)));
         return [x, y];
     }
+    /** @internal */
     getValues(series, params) {
         const period = params.period, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, EMApercent = 2 / (period + 1), EMA = [], xData = [], yData = [];
         let calEMA, EMAPoint, i, index = -1, sum = 0, SMA = 0;
@@ -94,6 +96,7 @@ class EMAIndicator extends SMAIndicator {
  * @product      highstock
  * @requires     stock/indicators/indicators
  * @optionparent plotOptions.ema
+ * @internal
  */
 EMAIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
     params: {
@@ -117,7 +120,6 @@ SeriesRegistry.registerSeriesType('ema', EMAIndicator);
  *  Default Export
  *
  * */
-/** @internal */
 export default EMAIndicator;
 /* *
  *
@@ -131,7 +133,6 @@ export default EMAIndicator;
  * @extends   series,plotOptions.ema
  * @since     6.0.0
  * @product   highstock
- * @excluding dataParser, dataURL
  * @requires  stock/indicators/indicators
  * @apioption series.ema
  */

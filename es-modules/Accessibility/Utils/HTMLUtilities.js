@@ -20,18 +20,14 @@ const { doc, win } = H;
  *  Constants
  *
  * */
+/** @internal */
 const simulatedEventTarget = win.EventTarget && new win.EventTarget() || 'none';
 /* *
  *
  *  Functions
  *
  * */
-/**
- * @private
- * @param {Highcharts.HTMLDOMElement} el
- * @param {string} className
- * @return {void}
- */
+/** @internal */
 function addClass(el, className) {
     if (el.classList) {
         el.classList.add(className);
@@ -43,12 +39,7 @@ function addClass(el, className) {
         el.className += ' ' + className;
     }
 }
-/**
- * @private
- * @param {Highcharts.HTMLDOMElement} el
- * @param {string} className
- * @return {void}
- */
+/** @internal */
 function removeClass(el, className) {
     if (el.classList) {
         el.classList.remove(className);
@@ -61,7 +52,8 @@ function removeClass(el, className) {
 }
 /**
  * Utility function to clone a mouse event for re-dispatching.
- * @private
+ *
+ * @internal
  */
 function cloneMouseEvent(e) {
     if (typeof win.MouseEvent === 'function') {
@@ -80,7 +72,8 @@ function cloneMouseEvent(e) {
 }
 /**
  * Utility function to clone a touch event for re-dispatching.
- * @private
+ *
+ * @internal
  */
 function cloneTouchEvent(e) {
     const touchListToTouchArray = (l) => {
@@ -119,9 +112,7 @@ function cloneTouchEvent(e) {
     fakeEvt.targetTouches = e.targetTouches;
     return fakeEvt;
 }
-/**
- * @private
- */
+/** @internal */
 function escapeStringForHTML(str) {
     return str
         .replace(/&/g, '&amp;')
@@ -132,17 +123,29 @@ function escapeStringForHTML(str) {
         .replace(/\//g, '&#x2F;');
 }
 /**
- * Get an element by ID
- * @private
+ * Get the shadow root the element lives in, if any. Lookups in the main
+ * document do not cross a shadow boundary. (#22682)
+ *
+ * @internal
  */
-function getElement(id) {
-    return doc.getElementById(id);
+function getShadowRoot(el) {
+    const root = el?.getRootNode();
+    return root?.host ? root : void 0;
+}
+/**
+ * Get an element by ID, from the reference element's shadow root if it has one.
+ *
+ * @internal
+ */
+function getElement(id, referenceElement) {
+    return (getShadowRoot(referenceElement) || doc).getElementById(id);
 }
 /**
  * Get a fake mouse event of a given type. If relatedTarget is not given,
  * it will point to simulatedEventTarget, as an indicator that the event
  * is fake.
- * @private
+ *
+ * @internal
  */
 function getFakeMouseEvent(type, position, relatedTarget) {
     const pos = position || {
@@ -194,10 +197,11 @@ function getFakeMouseEvent(type, position, relatedTarget) {
  * is ambiguous whether or not the nesting is for layout purposes or indicates a
  * separate section.
  *
- * @private
- * @param {Highcharts.HTMLDOMElement} [element]
- * @return {string} The heading tag name (h1, h2 etc).
+ * @return {string}
+ * The heading tag name (h1, h2 etc).
  * If no nearest heading is found, "p" is returned.
+ *
+ * @internal
  */
 function getHeadingTagNameForElement(element) {
     const getIncreasedHeadingLevel = (tagName) => {
@@ -235,9 +239,8 @@ function getHeadingTagNameForElement(element) {
 }
 /**
  * Remove an element from the DOM.
- * @private
- * @param {Highcharts.HTMLDOMElement|Highcharts.SVGDOMElement} [element]
- * @return {void}
+ *
+ * @internal
  */
 function removeElement(element) {
     if (element && element.parentNode) {
@@ -246,9 +249,8 @@ function removeElement(element) {
 }
 /**
  * Remove all child nodes from an element.
- * @private
- * @param {Highcharts.HTMLDOMElement|Highcharts.SVGDOMElement} [element]
- * @return {void}
+ *
+ * @internal
  */
 function removeChildNodes(element) {
     while (element.lastChild) {
@@ -257,7 +259,8 @@ function removeChildNodes(element) {
 }
 /**
  * Utility function. Reverses child nodes of a DOM element.
- * @private
+ *
+ * @internal
  */
 function reverseChildNodes(node) {
     let i = node.childNodes.length;
@@ -268,7 +271,8 @@ function reverseChildNodes(node) {
 /**
  * Used for aria-label attributes, painting on a canvas will fail if the
  * text contains tags.
- * @private
+ *
+ * @internal
  */
 function stripHTMLTagsFromString(str, isForExport = false) {
     return (typeof str === 'string') ?
@@ -279,7 +283,8 @@ function stripHTMLTagsFromString(str, isForExport = false) {
 /**
  * Utility function for hiding an element visually, but still keeping it
  * available to screen reader users.
- * @private
+ *
+ * @internal
  */
 function visuallyHideElement(element) {
     css(element, {
@@ -300,6 +305,7 @@ function visuallyHideElement(element) {
  *  Default Export
  *
  * */
+/** @internal */
 const HTMLUtilities = {
     addClass,
     cloneMouseEvent,
@@ -308,6 +314,7 @@ const HTMLUtilities = {
     getElement,
     getFakeMouseEvent,
     getHeadingTagNameForElement,
+    getShadowRoot,
     removeChildNodes,
     removeClass,
     removeElement,
@@ -316,4 +323,5 @@ const HTMLUtilities = {
     stripHTMLTagsFromString,
     visuallyHideElement
 };
+/** @internal */
 export default HTMLUtilities;

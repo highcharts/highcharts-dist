@@ -13,16 +13,16 @@
  *
  * */
 'use strict';
-import Funnel3DComposition from './Funnel3DComposition.js';
+import ColumnSeries from '../Column/ColumnSeries.js';
+import { composeFunnel3D } from './Funnel3DComposition.js';
 import Funnel3DSeriesDefaults from './Funnel3DSeriesDefaults.js';
 import Funnel3DPoint from './Funnel3DPoint.js';
 import H from '../../Core/Globals.js';
 const { noop } = H;
-import Math3D from '../../Core/Math3D.js';
-const { perspective } = Math3D;
+import { perspective } from '../../Core/Math3D.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-const { series: Series, seriesTypes: { column: ColumnSeries } } = SeriesRegistry;
-import { extend, merge, pick, relativeLength } from '../../Shared/Utilities.js';
+const { series: Series } = SeriesRegistry;
+import { extend, merge, relativeLength } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class
@@ -31,7 +31,6 @@ import { extend, merge, pick, relativeLength } from '../../Shared/Utilities.js';
 /**
  * The funnel3d series type.
  *
- * @private
  * @class
  * @name Highcharts.seriesTypes.funnel3d
  * @augments seriesTypes.column
@@ -45,17 +44,16 @@ class Funnel3DSeries extends ColumnSeries {
      *  Functions
      *
      * */
-    /**
-     * @private
-     */
+    /** @internal */
     alignDataLabel(point, _dataLabel, options) {
-        const series = this, dlBoxRaw = point.dlBoxRaw, inverted = series.chart.inverted, below = point.plotY > pick(series.translatedThreshold, series.yAxis.len), inside = pick(options.inside, !!series.options.stacking), dlBox = {
+        const series = this, dlBoxRaw = point.dlBoxRaw, inverted = series.chart.inverted, below = point.plotY >
+            (series.translatedThreshold ?? series.yAxis.len), inside = (options.inside ?? !!series.options.stacking), dlBox = {
             x: dlBoxRaw.x,
             y: dlBoxRaw.y,
             height: 0
         };
-        options.align = pick(options.align, !inverted || inside ? 'center' : below ? 'right' : 'left');
-        options.verticalAlign = pick(options.verticalAlign, inverted || inside ? 'middle' : below ? 'top' : 'bottom');
+        options.align = options.align ?? (!inverted || inside ? 'center' : below ? 'right' : 'left');
+        options.verticalAlign = options.verticalAlign ?? (inverted || inside ? 'middle' : below ? 'top' : 'bottom');
         if (options.verticalAlign !== 'top') {
             dlBox.y += dlBoxRaw.bottom /
                 (options.verticalAlign === 'bottom' ? 1 : 2);
@@ -82,14 +80,14 @@ class Funnel3DSeries extends ColumnSeries {
             }
         }
         point.dlBox = dlBox;
-        ColumnSeries.prototype.alignDataLabel.apply(series, arguments);
+        super.alignDataLabel.apply(series, arguments);
     }
     /**
      * Override default axis options with series required options for axes.
-     * @private
+     * @internal
      */
     bindAxes() {
-        Series.prototype.bindAxes.apply(this, arguments);
+        super.bindAxes.apply(this, arguments);
         extend(this.xAxis.options, {
             gridLineWidth: 0,
             lineWidth: 0,
@@ -104,9 +102,7 @@ class Funnel3DSeries extends ColumnSeries {
             }
         });
     }
-    /**
-     * @private
-     */
+    /** @internal */
     translate() {
         Series.prototype.translate.apply(this, arguments);
         const series = this, chart = series.chart, options = series.options, reversed = options.reversed, ignoreHiddenPoint = options.ignoreHiddenPoint, plotWidth = chart.plotWidth, plotHeight = chart.plotHeight, center = options.center, centerX = relativeLength(center[0], plotWidth), centerY = relativeLength(center[1], plotHeight), width = relativeLength(options.width, plotWidth), height = relativeLength(options.height, plotHeight), neckWidth = relativeLength(options.neckWidth, plotWidth), neckHeight = relativeLength(options.neckHeight, plotHeight), neckY = (centerY - height / 2) + height - neckHeight, points = series.points;
@@ -161,7 +157,8 @@ class Funnel3DSeries extends ColumnSeries {
             h = y3 - y1;
             shapeArgs = {
                 // For fill setter
-                gradientForSides: pick(point.options.gradientForSides, options.gradientForSides),
+                gradientForSides: point.options.gradientForSides ??
+                    options.gradientForSides,
                 x: centerX,
                 y: y1,
                 height: h,
@@ -241,7 +238,9 @@ class Funnel3DSeries extends ColumnSeries {
  *  Static Properties
  *
  * */
-Funnel3DSeries.compose = Funnel3DComposition.compose;
+/** @internal */
+Funnel3DSeries.compose = composeFunnel3D;
+/** @internal */
 Funnel3DSeries.defaultOptions = merge(ColumnSeries.defaultOptions, Funnel3DSeriesDefaults);
 extend(Funnel3DSeries.prototype, {
     pointClass: Funnel3DPoint,

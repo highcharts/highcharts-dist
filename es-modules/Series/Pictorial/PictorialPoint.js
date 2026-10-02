@@ -24,6 +24,7 @@ class PictorialPoint extends ColumnPoint {
      *  Functions
      *
      * */
+    /** @internal */
     setState() {
         const point = this;
         super.setState.apply(point, arguments);

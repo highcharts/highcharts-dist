@@ -15,7 +15,7 @@ import MU from '../../Maps/MapUtilities.js';
 const { boundsFromPath } = MU;
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const ScatterPoint = SeriesRegistry.seriesTypes.scatter.prototype.pointClass;
-import { extend, internalClearTimeout, isNumber, pick } from '../../Shared/Utilities.js';
+import { extend, internalClearTimeout, isNumber } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class
@@ -31,6 +31,7 @@ class MapPoint extends ScatterPoint {
      * Get the projected path based on the geometry. May also be called on
      * mapData options (not point instances), hence static.
      * @private
+     * @internal
      */
     static getProjectedPath(point, projection) {
         if (!point.projectedPath) {
@@ -76,6 +77,7 @@ class MapPoint extends ScatterPoint {
     /**
      * Get the bounds in terms of projected units
      * @private
+     * @internal
      */
     getProjectedBounds(projection) {
         const path = MapPoint.getProjectedPath(this, projection), bounds = boundsFromPath(path), properties = this.properties, mapView = this.series.chart.mapView;
@@ -90,8 +92,10 @@ class MapPoint extends ScatterPoint {
             }
             else {
                 const propMiddleX = properties?.['hc-middle-x'], propMiddleY = properties?.['hc-middle-y'];
-                bounds.midX = (bounds.x1 + (bounds.x2 - bounds.x1) * pick(this.middleX, isNumber(propMiddleX) ? propMiddleX : 0.5));
-                let middleYFraction = pick(this.middleY, isNumber(propMiddleY) ? propMiddleY : 0.5);
+                bounds.midX = (bounds.x1 + (bounds.x2 - bounds.x1) * (this.middleX ??
+                    (isNumber(propMiddleX) ? propMiddleX : 0.5)));
+                let middleYFraction = this.middleY ??
+                    (isNumber(propMiddleY) ? propMiddleY : 0.5);
                 // No geographic geometry, only path given => flip
                 if (!this.geometry) {
                     middleYFraction = 1 - middleYFraction;
@@ -120,6 +124,7 @@ class MapPoint extends ScatterPoint {
             this.series.onMouseOut();
         }
     }
+    /** @internal */
     setVisible(vis) {
         const method = vis ? 'show' : 'hide';
         this.visible = this.options.visible = !!vis;

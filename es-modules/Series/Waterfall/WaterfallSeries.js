@@ -15,7 +15,7 @@ const { column: ColumnSeries, line: LineSeries } = SeriesRegistry.seriesTypes;
 import WaterfallAxis from '../../Core/Axis/WaterfallAxis.js';
 import WaterfallPoint from './WaterfallPoint.js';
 import WaterfallSeriesDefaults from './WaterfallSeriesDefaults.js';
-import { addEvent, arrayMax, arrayMin, correctFloat, crisp, extend, isNumber, isObject, merge, objectEach, pick } from '../../Shared/Utilities.js';
+import { addEvent, arrayMax, arrayMin, correctFloat, crisp, extend, isNumber, isObject, merge, objectEach } from '../../Shared/Utilities.js';
 /* *
  *
  *  Functions
@@ -51,6 +51,7 @@ class WaterfallSeries extends ColumnSeries {
      *
      * */
     // After generating points, set y-values for all sums.
+    /** @internal */
     generatePoints() {
         // Parent call:
         ColumnSeries.prototype.generatePoints.apply(this);
@@ -66,6 +67,7 @@ class WaterfallSeries extends ColumnSeries {
     }
     // Call default processData then override yData to reflect waterfall's
     // extremes on yAxis
+    /** @internal */
     processData(force) {
         const series = this, options = series.options, yData = series.getColumn('y'), isSumData = series.getColumn('isSum'), isIntermediateSumData = series.getColumn('isIntermediateSum'), 
         // #3710 Update point does not propagate to sum
@@ -98,6 +100,7 @@ class WaterfallSeries extends ColumnSeries {
         return;
     }
     // Return y value or string if point is sum
+    /** @internal */
     toYData(pt) {
         if (pt.isSum) {
             return 'sum';
@@ -108,6 +111,7 @@ class WaterfallSeries extends ColumnSeries {
         return pt.y;
     }
     // Postprocess mapping between options and SVG attributes
+    /** @internal */
     pointAttribs(point, state) {
         const upColor = this.options.upColor;
         // Set or reset up color (#3710, update to negative)
@@ -122,10 +126,12 @@ class WaterfallSeries extends ColumnSeries {
     }
     // Return an empty path initially, because we need to know the stroke-width
     // in order to set the final path.
+    /** @internal */
     getGraphPath() {
         return this.graph?.pathArray || [['M', 0, 0]];
     }
     // Draw columns' connector lines
+    /** @internal */
     getCrispPath() {
         const // Skip points where Y is not a number (#18636)
         data = this.points.filter((d) => isNumber(d.y)), yAxis = this.yAxis, length = data.length, graphLineWidth = this.graph?.strokeWidth() || 0, reversedXAxis = this.xAxis.reversed, reversedYAxis = this.yAxis.reversed, stacking = this.options.stacking, path = [];
@@ -185,6 +191,7 @@ class WaterfallSeries extends ColumnSeries {
     }
     // The graph is initially drawn with an empty definition, then updated with
     // crisp rendering.
+    /** @internal */
     drawGraph() {
         LineSeries.prototype.drawGraph.call(this);
         this.graph?.animate({
@@ -192,6 +199,7 @@ class WaterfallSeries extends ColumnSeries {
         });
     }
     // Waterfall has stacking along the x-values too.
+    /** @internal */
     setStackedPoints(axis) {
         const series = this, options = series.options, waterfallStacks = axis.waterfall?.stacks, seriesThreshold = options.threshold || 0, stackKey = series.stackKey, xData = series.getColumn('x'), yData = series.getColumn('y'), xLength = xData.length;
         let stackThreshold = seriesThreshold, interSum = stackThreshold, actualStackX, totalYVal = 0, actualSum = 0, prevSum = 0, statesLen, posTotal, negTotal, xPoint, yVal, x, alreadyChanged, changed;
@@ -301,6 +309,7 @@ class WaterfallSeries extends ColumnSeries {
     }
     // Extremes for a non-stacked series are recorded in processData.
     // In case of stacking, use Series.stackedYData to calculate extremes.
+    /** @internal */
     getExtremes() {
         const stacking = this.options.stacking, yAxis = this.yAxis, waterfallStacks = yAxis.waterfall?.stacks;
         let stackedYNeg, stackedYPos;
@@ -339,7 +348,9 @@ class WaterfallSeries extends ColumnSeries {
  *  Static Properties
  *
  * */
+/** @internal */
 WaterfallSeries.defaultOptions = merge(ColumnSeries.defaultOptions, WaterfallSeriesDefaults);
+/** @internal */
 WaterfallSeries.compose = WaterfallAxis.compose;
 extend(WaterfallSeries.prototype, {
     pointValKey: 'y',
@@ -350,7 +361,7 @@ extend(WaterfallSeries.prototype, {
 });
 // Translate data points from raw values
 addEvent(WaterfallSeries, 'afterColumnTranslate', function () {
-    const series = this, { options, points, yAxis } = series, minPointLength = pick(options.minPointLength, 5), halfMinPointLength = minPointLength / 2, threshold = options.threshold || 0, stacking = options.stacking, actualStack = yAxis.waterfall?.stacks[series.stackKey], processedYData = series.getColumn('y', true);
+    const series = this, { options, points, yAxis } = series, minPointLength = (options.minPointLength ?? 5), halfMinPointLength = minPointLength / 2, threshold = options.threshold || 0, stacking = options.stacking, actualStack = yAxis.waterfall?.stacks[series.stackKey], processedYData = series.getColumn('y', true);
     let previousIntermediate = threshold, previousY = threshold, y, total, hPos;
     for (let i = 0; i < points.length; i++) {
         const point = points[i], yValue = processedYData[i], shapeArgs = point.shapeArgs, box = extend({

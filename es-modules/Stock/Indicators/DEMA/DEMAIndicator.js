@@ -18,7 +18,6 @@ import { correctFloat, isArray, merge } from '../../../Shared/Utilities.js';
 /**
  * The DEMA series Type
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.dema
  *
@@ -30,9 +29,11 @@ class DEMAIndicator extends EMAIndicator {
      *  Functions
      *
      * */
+    /** @internal */
     getEMA(yVal, prevEMA, SMA, index, i, xVal) {
         return super.calculateEma(xVal || [], yVal, typeof i === 'undefined' ? 1 : i, this.EMApercent, prevEMA, typeof index === 'undefined' ? -1 : index, SMA);
     }
+    /** @internal */
     getValues(series, params) {
         const period = params.period, EMAvalues = [], doubledPeriod = 2 * period, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, DEMA = [], xDataDema = [], yDataDema = [];
         let accumulatePeriodPoints = 0, EMA = 0, 
@@ -116,6 +117,7 @@ class DEMAIndicator extends EMAIndicator {
  * @requires     stock/indicators/indicators
  * @requires     stock/indicators/dema
  * @optionparent plotOptions.dema
+ * @internal
  */
 DEMAIndicator.defaultOptions = merge(EMAIndicator.defaultOptions);
 SeriesRegistry.registerSeriesType('dema', DEMAIndicator);
@@ -124,7 +126,6 @@ SeriesRegistry.registerSeriesType('dema', DEMAIndicator);
  *  Default Export
  *
  * */
-/** @internal */
 export default DEMAIndicator;
 /* *
  *
@@ -138,7 +139,7 @@ export default DEMAIndicator;
  * @extends   series,plotOptions.dema
  * @since     7.0.0
  * @product   highstock
- * @excluding allAreas, colorAxis, compare, compareBase, dataParser, dataURL,
+ * @excluding allAreas, colorAxis, compare, compareBase,
  *            joinBy, keys, navigatorOptions, pointInterval, pointIntervalUnit,
  *            pointPlacement, pointRange, pointStart, showInNavigator, stacking
  * @requires  stock/indicators/indicators

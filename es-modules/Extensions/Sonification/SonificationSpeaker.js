@@ -12,7 +12,40 @@
  *
  * */
 'use strict';
-import { pick } from '../../Shared/Utilities.js';
+/**
+ * Novelty voice names on macOS to skip. Unintelligible at sonification
+ * rates. Matched on the name before the first parenthesis.
+ * @internal
+ */
+const excludedVoices = [
+    'Albert',
+    'Bad News',
+    'Bahh',
+    'Bells',
+    'Boing',
+    'Bubbles',
+    'Cellos',
+    'Eddy',
+    'Flo',
+    'Fred',
+    'Good News',
+    'Grandma',
+    'Grandpa',
+    'Jester',
+    'Junior',
+    'Kathy',
+    'Organ',
+    'Ralph',
+    'Reed',
+    'Rocko',
+    'Sandy',
+    'Shelley',
+    'Superstar',
+    'Trinoids',
+    'Whisper',
+    'Wobble',
+    'Zarvox'
+];
 /**
  * The SonificationSpeaker class. This class represents an announcer using
  * speech synthesis. It allows for scheduling speech announcements, as well
@@ -59,7 +92,9 @@ class SonificationSpeaker {
             utterance.rate = options && options.rate || this.options.rate || 1;
             utterance.pitch = options && options.pitch ||
                 this.options.pitch || 1;
-            utterance.volume = pick(options && options.volume, this.options.volume, 1) * this.masterVolume;
+            utterance.volume = ((options && options.volume) ??
+                this.options.volume ??
+                1) * this.masterVolume;
             this.synthesis.speak(utterance);
         }
     }
@@ -112,20 +147,29 @@ class SonificationSpeaker {
     setVoice() {
         if (this.synthesis) {
             const name = this.options.name, lang = this.options.language || 'en-US', voices = this.synthesis.getVoices(), len = voices.length;
-            let langFallback;
+            let defaultForLang, langFallback, anyForLang, voiceName;
             for (let i = 0; i < len; ++i) {
                 if (name && voices[i].name === name) {
                     this.voice = voices[i];
                     return;
                 }
-                if (!langFallback && voices[i].lang === lang) {
+                if (voices[i].lang !== lang) {
+                    continue;
+                }
+                voiceName = voices[i].name.split('(')[0].trim();
+                anyForLang || (anyForLang = voices[i]);
+                if (voices[i].default) {
+                    defaultForLang || (defaultForLang = voices[i]);
+                }
+                if (!langFallback &&
+                    !excludedVoices.includes(voiceName)) {
                     langFallback = voices[i];
                     if (!name) {
                         break;
                     }
                 }
             }
-            this.voice = langFallback;
+            this.voice = defaultForLang || langFallback || anyForLang;
         }
     }
 }

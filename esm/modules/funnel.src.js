@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.0-modified (2026-08-14)
+ * @license Highcharts JS v13.1.0 (2026-10-02)
  * @module highcharts/modules/funnel
  * @requires highcharts
  *
@@ -18,48 +18,27 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 /******/ 
 /************************************************************************/
 /******/ /* webpack/runtime/compat get default export */
-/******/ (() => {
-/******/ 	// getDefaultExport function for compatibility with non-harmony modules
-/******/ 	__webpack_require__.n = (module) => {
-/******/ 		const getter = module && module.__esModule ?
-/******/ 			() => (module['default']) :
-/******/ 			() => (module);
-/******/ 		__webpack_require__.d(getter, { a: getter });
-/******/ 		return getter;
-/******/ 	};
-/******/ })();
+/******/ // getDefaultExport function for compatibility with non-harmony modules
+/******/ __webpack_require__.n = (module) => {
+/******/ 	const getter = module && module.__esModule ?
+/******/ 		() => (module['default']) :
+/******/ 		() => (module);
+/******/ 	__webpack_require__.d(getter, { a: getter });
+/******/ 	return getter;
+/******/ };
 /******/ 
 /******/ /* webpack/runtime/define property getters */
-/******/ (() => {
-/******/ 	// define getter/value functions for harmony exports
-/******/ 	__webpack_require__.d = (exports, definition) => {
-/******/ 		if(Array.isArray(definition)) {
-/******/ 			var i = 0;
-/******/ 			while(i < definition.length) {
-/******/ 				var key = definition[i++];
-/******/ 				var binding = definition[i++];
-/******/ 				if(!__webpack_require__.o(exports, key)) {
-/******/ 					if(binding === 0) {
-/******/ 						Object.defineProperty(exports, key, { enumerable: true, value: definition[i++] });
-/******/ 					} else {
-/******/ 						Object.defineProperty(exports, key, { enumerable: true, get: binding });
-/******/ 					}
-/******/ 				} else if(binding === 0) { i++; }
-/******/ 			}
-/******/ 		} else {
-/******/ 			for(var key in definition) {
-/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
-/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
-/******/ 				}
-/******/ 			}
+/******/ // define getter/value functions for harmony exports
+/******/ __webpack_require__.d = (exports, definition) => {
+/******/ 	for(var key in definition) {
+/******/ 		if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 			Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
 /******/ 		}
-/******/ 	};
-/******/ })();
+/******/ 	}
+/******/ };
 /******/ 
 /******/ /* webpack/runtime/hasOwnProperty shorthand */
-/******/ (() => {
-/******/ 	__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
-/******/ })();
+/******/ __webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop));
 /******/ 
 /************************************************************************/
 
@@ -171,11 +150,6 @@ const FunnelSeriesDefaults = {
      */
     reversed: false,
     /**
-     * To avoid adapting the data label size in Pie.drawDataLabels.
-     * @ignore-option
-     */
-    size: true,
-    /**
      * @declare Highcharts.SeriesFunnelDataLabelsOptionsObject
      * @extends plotOptions.pie.dataLabels
      */
@@ -191,9 +165,6 @@ const FunnelSeriesDefaults = {
         connectorWidth: 1,
         verticalAlign: 'middle'
     },
-    /**
-     * Options for the series states.
-     */
     states: {
         /**
          * @excluding halo, marker, lineWidth, lineWidthPlus
@@ -225,7 +196,7 @@ const FunnelSeriesDefaults = {
  * not specified, it is inherited from [chart.type](#chart.type).
  *
  * @extends   series,plotOptions.funnel
- * @excluding dataParser, dataURL, stack, xAxis, yAxis, dataSorting,
+ * @excluding stack, xAxis, yAxis, dataSorting,
  *            boostBlending, boostThreshold
  * @product   highcharts
  * @requires  modules/funnel
@@ -276,6 +247,12 @@ const FunnelSeriesDefaults = {
  * @excluding sliced
  * @product   highcharts
  * @apioption series.funnel.data
+ */
+/**
+ * Options for a selected funnel item.
+ *
+ * @excluding halo, marker, lineWidth, lineWidthPlus
+ * @apioption series.funnel.states.select
  */
 ''; // Keeps doclets above separate
 /* *
@@ -719,13 +696,15 @@ const baseAlignDataLabel = (external_highcharts_src_js_default_SeriesRegistry_de
 /**
  * Get positions - either an integer or a percentage string must be
  * given.
- * @private
+ *
  * @param {number|string|undefined} length
  *        Length
  * @param {number} relativeTo
  *        Relative factor
  * @return {number}
  *         Relative position
+ *
+ * @internal
  */
 function getLength(length, relativeTo) {
     return (/%$/).test(length) ?
@@ -738,7 +717,6 @@ function getLength(length, relativeTo) {
  *
  * */
 /**
- * @private
  * @class
  * @name Highcharts.seriesTypes.funnel
  *
@@ -750,9 +728,7 @@ class FunnelSeries extends PieSeries {
      *  Functions
      *
      * */
-    /**
-     * @private
-     */
+    /** @internal */
     alignDataLabel(point, dataLabel, options, alignTo, isNew) {
         const series = point.series, reversed = series.options.reversed, dlBox = point.dlBox || point.shapeArgs, { align, verticalAlign } = options, padding = (0,external_highcharts_src_js_default_namespaceObject.splat)(options.padding || 0), inside = ((series.options || {}).dataLabels || {}).inside, centerY = series.center[1], plotY = point.plotY || 0, pointPlotY = (reversed ?
             2 * centerY - plotY :
@@ -812,14 +788,21 @@ class FunnelSeries extends PieSeries {
     }
     /**
      * Extend the data label method.
-     * @private
+     * @internal
      */
     drawDataLabels() {
         ((0,external_highcharts_src_js_default_namespaceObject.splat)(this.options.dataLabels || {})[0].inside ?
             ColumnSeries :
             PieSeries).prototype.drawDataLabels.call(this);
     }
-    /** @private */
+    /**
+     * Override pie-specific functionality not supported in funnel.
+     * @internal
+     */
+    verifyDataLabelOverflow() {
+        return true;
+    }
+    /** @internal */
     getDataLabelPosition(point, distance) {
         const y = point.plotY || 0, sign = point.half ? 1 : -1, x = this.getXPos(y, !!point.half, point);
         return {
@@ -851,7 +834,7 @@ class FunnelSeries extends PieSeries {
     }
     /**
      * Overrides the pie translate method.
-     * @private
+     * @internal
      */
     translate() {
         const series = this, chart = series.chart, options = series.options, reversed = options.reversed, ignoreHiddenPoint = options.ignoreHiddenPoint, borderRadiusObj = borderRadiusObject(options.borderRadius), plotWidth = chart.plotWidth, plotHeight = chart.plotHeight, center = options.center, centerX = getLength(center[0], plotWidth), centerY = getLength(center[1], plotHeight), width = getLength(options.width, plotWidth), height = getLength(options.height, plotHeight), neckWidth = getLength(options.neckWidth, plotWidth), neckHeight = getLength(options.neckHeight, plotHeight), neckY = (centerY - height / 2) + height - neckHeight, points = series.points, borderRadius = (0,external_highcharts_src_js_default_namespaceObject.relativeLength)(borderRadiusObj.radius, width), radiusScope = borderRadiusObj.scope, half = (options.dataLabels.position === 'left' ?
@@ -1084,7 +1067,7 @@ class FunnelSeries extends PieSeries {
                 y: y1,
                 topWidth: x2 - x1,
                 bottomWidth: x4 - x3,
-                height: Math.abs((0,external_highcharts_src_js_default_namespaceObject.pick)(y5, y3) - y1),
+                height: Math.abs((y5 ?? y3) - y1),
                 width: NaN
             };
             // Slice is a noop on funnel points
@@ -1096,11 +1079,11 @@ class FunnelSeries extends PieSeries {
                 cumulative += fraction;
             }
         }
-        (0,external_highcharts_src_js_default_namespaceObject.fireEvent)(series, 'afterTranslate');
+        ;(0,external_highcharts_src_js_default_namespaceObject.fireEvent)(series, 'afterTranslate');
     }
     /**
      * Funnel items don't have angles (#2289).
-     * @private
+     * @internal
      */
     sortByAngle(points) {
         points.sort((a, b) => (a.plotY - b.plotY));
@@ -1111,6 +1094,7 @@ class FunnelSeries extends PieSeries {
  *  Static Properties
  *
  * */
+/** @internal */
 FunnelSeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(PieSeries.defaultOptions, Funnel_FunnelSeriesDefaults);
 (0,external_highcharts_src_js_default_namespaceObject.extend)(FunnelSeries.prototype, {
     animate: FunnelSeries_noop
@@ -1120,23 +1104,24 @@ FunnelSeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceObj
  *  Class Namespace
  *
  * */
+/** @internal */
 (function (FunnelSeries) {
     /* *
      *
      *  Functions
      *
      * */
-    /** @private */
+    /** @internal */
     function compose(ChartClass) {
         if ((0,external_highcharts_src_js_default_namespaceObject.pushUnique)(composed, 'FunnelSeries')) {
             (0,external_highcharts_src_js_default_namespaceObject.addEvent)(ChartClass, 'afterHideAllOverlappingLabels', onChartAfterHideAllOverlappingLabels);
         }
     }
     FunnelSeries.compose = compose;
-    /** @private */
+    /** @internal */
     function onChartAfterHideAllOverlappingLabels() {
         for (const series of this.series) {
-            let dataLabelsOptions = series.options && series.options.dataLabels;
+            let dataLabelsOptions = series.options?.dataLabels;
             if ((0,external_highcharts_src_js_default_namespaceObject.isArray)(dataLabelsOptions)) {
                 dataLabelsOptions = dataLabelsOptions[0];
             }
@@ -1205,7 +1190,7 @@ const PyramidSeriesDefaults = {
  * not specified, it is inherited from [chart.type](#chart.type).
  *
  * @extends   series,plotOptions.pyramid
- * @excluding dataParser, dataURL, stack, xAxis, yAxis, dataSorting,
+ * @excluding stack, xAxis, yAxis, dataSorting,
  *            boostThreshold, boostBlending
  * @product   highcharts
  * @requires  modules/funnel
@@ -1285,7 +1270,7 @@ const PyramidSeriesDefaults = {
 /**
  * Pyramid series type.
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.pyramid
  *

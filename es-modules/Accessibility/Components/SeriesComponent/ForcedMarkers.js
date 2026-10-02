@@ -20,6 +20,7 @@ import { addEvent, merge, pushUnique } from '../../../Shared/Utilities.js';
  *  Composition
  *
  * */
+/** @internal */
 var ForcedMarkersComposition;
 (function (ForcedMarkersComposition) {
     /* *
@@ -32,9 +33,7 @@ var ForcedMarkersComposition;
      *  Functions
      *
      * */
-    /**
-     * @private
-     */
+    /** @internal */
     function compose(SeriesClass) {
         if (pushUnique(composed, 'A11y.FM')) {
             addEvent(SeriesClass, 'afterSetOptions', seriesOnAfterSetOptions);
@@ -44,9 +43,7 @@ var ForcedMarkersComposition;
         }
     }
     ForcedMarkersComposition.compose = compose;
-    /**
-     * @private
-     */
+    /** @internal */
     function forceZeroOpacityMarkerOptions(options) {
         merge(true, options, {
             marker: {
@@ -60,16 +57,31 @@ var ForcedMarkersComposition;
         });
     }
     /**
-     * @private
+     * The normal state opacity of lowMarker on Arearange-like series is
+     * handled if zero opacity was forced on the main marker(#25279).
+     * @internal
      */
+    function restoreLowMarkerOpacity(series) {
+        const lowMarker = series.options.lowMarker;
+        if (lowMarker && lowMarker?.enabled === true &&
+            typeof lowMarker.states?.normal?.opacity !== 'number') {
+            merge(true, lowMarker, {
+                states: {
+                    normal: {
+                        opacity: series.resetA11yMarkerOptions?.states
+                            ?.normal?.opacity
+                    }
+                }
+            });
+        }
+    }
+    /** @internal */
     function getPointMarkerOpacity(pointOptions) {
         return pointOptions.marker.states &&
             pointOptions.marker.states.normal &&
             pointOptions.marker.states.normal.opacity;
     }
-    /**
-     * @private
-     */
+    /** @internal */
     function handleForcePointMarkers(series) {
         let i = series.points.length;
         while (i--) {
@@ -91,17 +103,13 @@ var ForcedMarkersComposition;
             }
         }
     }
-    /**
-     * @private
-     */
+    /** @internal */
     function hasIndividualPointMarkerOptions(series) {
         return !!(series._hasPointMarkers &&
             series.points &&
             series.points.length);
     }
-    /**
-     * @private
-     */
+    /** @internal */
     function isWithinDescriptionThreshold(series) {
         const a11yOptions = series.chart.options.accessibility;
         return series.points.length <
@@ -111,7 +119,8 @@ var ForcedMarkersComposition;
     }
     /**
      * Process marker graphics after render
-     * @private
+     *
+     * @internal
      */
     function seriesOnAfterRender() {
         const series = this;
@@ -120,6 +129,19 @@ var ForcedMarkersComposition;
         if (series.chart.styledMode) {
             if (series.markerGroup) {
                 series.markerGroup[series.a11yMarkersForced ? 'addClass' : 'removeClass']('highcharts-a11y-markers-hidden');
+            }
+            // Unforce lowMarker zero opacity if enabled
+            // in styled mode (#25279).
+            const lowMarker = series.options.lowMarker;
+            if (lowMarker) {
+                const lowMarkerVisible = !!series.a11yMarkersForced &&
+                    lowMarker.enabled === true;
+                series.points.forEach((point) => {
+                    const lowGraphic = point.graphics?.[0];
+                    if (lowGraphic) {
+                        lowGraphic[lowMarkerVisible ? 'addClass' : 'removeClass']('highcharts-a11y-marker-visible');
+                    }
+                });
             }
             // Do we need to handle individual points?
             if (hasIndividualPointMarkerOptions(series)) {
@@ -137,14 +159,16 @@ var ForcedMarkersComposition;
     }
     /**
      * Keep track of options to reset markers to if no longer forced.
-     * @private
+     *
+     * @internal
      */
     function seriesOnAfterSetOptions(e) {
         this.resetA11yMarkerOptions = merge(e.options.marker || {}, this.userOptions.marker || {});
     }
     /**
      * Keep track of forcing markers.
-     * @private
+     *
+     * @internal
      */
     function seriesOnRender() {
         const series = this, options = series.options;
@@ -152,6 +176,7 @@ var ForcedMarkersComposition;
             if (options.marker?.enabled === false) {
                 series.a11yMarkersForced = true;
                 forceZeroOpacityMarkerOptions(series.options);
+                restoreLowMarkerOpacity(series);
             }
             if (hasIndividualPointMarkerOptions(series)) {
                 handleForcePointMarkers(series);
@@ -174,9 +199,7 @@ var ForcedMarkersComposition;
             destroyPointMarkerGraphics(series);
         }
     }
-    /**
-     * @private
-     */
+    /** @internal */
     function shouldForceMarkers(series) {
         const chart = series.chart, chartA11yEnabled = chart.options.accessibility.enabled, seriesA11yEnabled = (series.options.accessibility &&
             series.options.accessibility.enabled) !== false;
@@ -184,9 +207,7 @@ var ForcedMarkersComposition;
             seriesA11yEnabled &&
             isWithinDescriptionThreshold(series));
     }
-    /**
-     * @private
-     */
+    /** @internal */
     function unforcePointMarkerOptions(pointOptions) {
         merge(true, pointOptions.marker, {
             states: {
@@ -196,9 +217,7 @@ var ForcedMarkersComposition;
             }
         });
     }
-    /**
-     * @private
-     */
+    /** @internal */
     function destroyPointMarkerGraphics(series) {
         series.points?.forEach((point) => {
             if (point.graphic) {
@@ -208,7 +227,8 @@ var ForcedMarkersComposition;
     }
     /**
      * Reset markers to normal
-     * @private
+     *
+     * @internal
      */
     function unforceSeriesMarkerOptions(series) {
         const resetMarkerOptions = series.resetA11yMarkerOptions;
@@ -238,7 +258,8 @@ var ForcedMarkersComposition;
     }
     /**
      * Reset markers if series is boosted and had forced markers (#17320).
-     * @private
+     *
+     * @internal
      */
     function seriesOnRenderCanvas() {
         if (this.boosted && this.a11yMarkersForced) {
@@ -256,4 +277,5 @@ var ForcedMarkersComposition;
  *  Default Export
  *
  * */
+/** @internal */
 export default ForcedMarkersComposition;

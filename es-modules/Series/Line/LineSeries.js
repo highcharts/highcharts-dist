@@ -21,7 +21,6 @@ import { defined, isObject, merge } from '../../Shared/Utilities.js';
 /**
  * The line series is the base type and is therefor the series base prototype.
  *
- * @internal
  */
 class LineSeries extends Series {
     /* *
@@ -231,10 +230,12 @@ class LineSeries extends Series {
  *  Static Functions
  *
  * */
+/** @internal */
 LineSeries.defaultOptions = merge(Series.defaultOptions, {
     /**
      * What type of legend symbol to render for this series. Can be one
-     * of `areaMarker`, `lineMarker` or `rectangle`.
+     * of `areaMarker`, `lineMarker` or `rectangle`. The financial
+     * series of Highcharts Stock add `candlestick`, `hlc` and `ohlc`.
      *
      * @sample {highcharts} highcharts/series/legend-symbol/
      *         Change the legend symbol
@@ -252,7 +253,6 @@ SeriesRegistry.registerSeriesType('line', LineSeries);
  *  Default Export
  *
  * */
-/** @internal */
 export default LineSeries;
 /* *
  *
@@ -277,7 +277,6 @@ export default LineSeries;
  * specified, it is inherited from [chart.type](#chart.type).
  *
  * @extends   series,plotOptions.line
- * @excluding dataParser,dataURL
  * @product   highcharts highstock
  * @apioption series.line
  */

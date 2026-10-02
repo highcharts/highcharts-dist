@@ -18,7 +18,6 @@ import { isNumber, merge } from '../../../Shared/Utilities.js';
 /**
  * The CMO series type.
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.cmo
  *
@@ -30,6 +29,7 @@ class CMOIndicator extends SMAIndicator {
      *  Functions
      *
      * */
+    /** @internal */
     getValues(series, params) {
         const period = params.period, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, CMO = [], xData = [], yData = [];
         let i, index = params.index, values;
@@ -119,6 +119,7 @@ class CMOIndicator extends SMAIndicator {
  * @requires     stock/indicators/indicators
  * @requires     stock/indicators/cmo
  * @optionparent plotOptions.cmo
+ * @internal
  */
 CMOIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
     params: {
@@ -132,7 +133,6 @@ SeriesRegistry.registerSeriesType('cmo', CMOIndicator);
  *  Default Export
  *
  * */
-/** @internal */
 export default CMOIndicator;
 /* *
  *
@@ -146,7 +146,6 @@ export default CMOIndicator;
  * @extends   series,plotOptions.cmo
  * @since 9.1.0
  * @product   highstock
- * @excluding dataParser, dataURL
  * @requires  stock/indicators/indicators
  * @requires  stock/indicators/cmo
  * @apioption series.cmo

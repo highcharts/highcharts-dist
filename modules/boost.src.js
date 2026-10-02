@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.0-modified (2026-08-14)
+ * @license Highcharts JS v13.1.0 (2026-10-02)
  * @module highcharts/modules/boost
  * @requires highcharts
  *
@@ -15,14 +15,14 @@
  * */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(root["_Highcharts"], root["_Highcharts"]["Color"]);
+		module.exports = factory(root["_Highcharts"]["Color"], root["_Highcharts"]);
 	else if(typeof define === 'function' && define.amd)
-		define("highcharts/modules/boost", ["highcharts/highcharts"], function (amd1) {return factory(amd1,amd1["Color"]);});
+		define("highcharts/modules/boost", ["highcharts/highcharts"], function (amd1) {return factory(amd1["Color"],amd1);});
 	else if(typeof exports === 'object')
-		exports["highcharts/modules/boost"] = factory(root["_Highcharts"], root["_Highcharts"]["Color"]);
+		exports["highcharts/modules/boost"] = factory(root["_Highcharts"]["Color"], root["_Highcharts"]);
 	else
-		root["Highcharts"] = factory(root["Highcharts"], root["Highcharts"]["Color"]);
-})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__944__, __WEBPACK_EXTERNAL_MODULE__620__) => {
+		root["Highcharts"] = factory(root["Highcharts"]["Color"], root["Highcharts"]);
+})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__620__, __WEBPACK_EXTERNAL_MODULE__944__) => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
@@ -69,48 +69,27 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__944__;
 /******/ 	
 /************************************************************************/
 /******/ 	/* webpack/runtime/compat get default export */
-/******/ 	(() => {
-/******/ 		// getDefaultExport function for compatibility with non-harmony modules
-/******/ 		__webpack_require__.n = (module) => {
-/******/ 			const getter = module && module.__esModule ?
-/******/ 				() => (module['default']) :
-/******/ 				() => (module);
-/******/ 			__webpack_require__.d(getter, { a: getter });
-/******/ 			return getter;
-/******/ 		};
-/******/ 	})();
+/******/ 	// getDefaultExport function for compatibility with non-harmony modules
+/******/ 	__webpack_require__.n = (module) => {
+/******/ 		const getter = module && module.__esModule ?
+/******/ 			() => (module['default']) :
+/******/ 			() => (module);
+/******/ 		__webpack_require__.d(getter, { a: getter });
+/******/ 		return getter;
+/******/ 	};
 /******/ 	
 /******/ 	/* webpack/runtime/define property getters */
-/******/ 	(() => {
-/******/ 		// define getter/value functions for harmony exports
-/******/ 		__webpack_require__.d = (exports, definition) => {
-/******/ 			if(Array.isArray(definition)) {
-/******/ 				var i = 0;
-/******/ 				while(i < definition.length) {
-/******/ 					var key = definition[i++];
-/******/ 					var binding = definition[i++];
-/******/ 					if(!__webpack_require__.o(exports, key)) {
-/******/ 						if(binding === 0) {
-/******/ 							Object.defineProperty(exports, key, { enumerable: true, value: definition[i++] });
-/******/ 						} else {
-/******/ 							Object.defineProperty(exports, key, { enumerable: true, get: binding });
-/******/ 						}
-/******/ 					} else if(binding === 0) { i++; }
-/******/ 				}
-/******/ 			} else {
-/******/ 				for(var key in definition) {
-/******/ 					if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
-/******/ 						Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
-/******/ 					}
-/******/ 				}
+/******/ 	// define getter/value functions for harmony exports
+/******/ 	__webpack_require__.d = (exports, definition) => {
+/******/ 		for(var key in definition) {
+/******/ 			if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 				Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
 /******/ 			}
-/******/ 		};
-/******/ 	})();
+/******/ 		}
+/******/ 	};
 /******/ 	
 /******/ 	/* webpack/runtime/hasOwnProperty shorthand */
-/******/ 	(() => {
-/******/ 		__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
-/******/ 	})();
+/******/ 	__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop));
 /******/ 	
 /************************************************************************/
 let __webpack_exports__ = {};
@@ -275,6 +254,13 @@ function getBoostClipRect(chart, target) {
     }
     if (target === chart) {
         const verticalAxes = chart.inverted ? chart.xAxis : chart.yAxis; // #14444
+        // Use chart.clipBox dimensions to match what createAndAttachRenderer
+        // compares against. Fractional clipOffset shrinks chart.clipBox below
+        // plotWidth/Height, breaking that check. #22949
+        if (!chart.inverted && !navigator && chart.clipBox) {
+            clipBox.width = chart.clipBox.width;
+            clipBox.height = chart.clipBox.height;
+        }
         if (verticalAxes.length <= 1) {
             clipBox.y = Math.min(verticalAxes[0].pos, clipBox.y);
             clipBox.height = (verticalAxes[0].pos -
@@ -294,7 +280,7 @@ function getBoostClipRect(chart, target) {
  * `true` if the chart is in series boost mode.
  */
 function isChartSeriesBoosting(chart) {
-    const allSeries = chart.series, boost = chart.boost = chart.boost || {}, boostOptions = chart.options.boost || {}, threshold = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(boostOptions.seriesThreshold, 50);
+    const allSeries = chart.series, boost = chart.boost = chart.boost || {}, boostOptions = chart.options.boost || {}, threshold = (boostOptions.seriesThreshold ?? 50);
     if (allSeries.length >= threshold) {
         return true;
     }
@@ -305,8 +291,8 @@ function isChartSeriesBoosting(chart) {
     if (typeof allowBoostForce === 'undefined') {
         allowBoostForce = true;
         for (const axis of chart.xAxis) {
-            if ((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(axis.min, -Infinity) > (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(axis.dataMin, -Infinity) ||
-                (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(axis.max, Infinity) < (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(axis.dataMax, Infinity)) {
+            if ((axis.min ?? -Infinity) > (axis.dataMin ?? -Infinity) ||
+                (axis.max ?? Infinity) < (axis.dataMax ?? Infinity)) {
                 allowBoostForce = false;
                 break;
             }
@@ -407,7 +393,7 @@ function onChartCallback(chart) {
             chart.boost.markerGroup.translate(chart.xAxis[0].pos, chart.yAxis[0].pos);
         }
     }
-    (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.addEvent)(chart, 'predraw', preRender);
+    ;(0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.addEvent)(chart, 'predraw', preRender);
     // Use the load event rather than redraw, otherwise user load events will
     // fire too early (#18755)
     (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.addEvent)(chart, 'load', canvasToSVG, { order: -1 });
@@ -883,9 +869,9 @@ class WGLShader {
         let zMin = Number.MAX_VALUE, zMax = -Number.MAX_VALUE;
         if (this.gl && this.shaderProgram && series.is('bubble')) {
             const pxSizes = series.getPxExtremes();
-            zMin = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(seriesOptions.zMin, (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.clamp)(zCalcMin, seriesOptions.displayNegative === false ?
+            zMin = (seriesOptions.zMin ?? (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.clamp)(zCalcMin, seriesOptions.displayNegative === false ?
                 seriesOptions.zThreshold : -Number.MAX_VALUE, zMin));
-            zMax = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(seriesOptions.zMax, Math.max(zMax, zCalcMax));
+            zMax = (seriesOptions.zMax ?? Math.max(zMax, zCalcMax));
             this.gl.uniform1i(this.isBubbleUniform, 1);
             this.gl.uniform1i(this.isCircleUniform, 1);
             this.gl.uniform1i(this.bubbleSizeAreaUniform, (series.options.sizeBy !== 'width'));
@@ -1393,7 +1379,7 @@ class WGLRenderer {
         if (!('pixelRatio' in options)) {
             options.pixelRatio = 1;
         }
-        (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(true, this.settings, options);
+        ;(0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(true, this.settings, options);
     }
     /**
      * Allocate a float buffer to fit all series
@@ -2117,8 +2103,9 @@ class WGLRenderer {
         this.series.forEach((s, si) => {
             const options = s.series.options, shapeOptions = options.marker, lineWidth = (typeof options.lineWidth !== 'undefined' ?
                 options.lineWidth :
-                1), threshold = options.threshold, hasThreshold = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.isNumber)(threshold), yBottom = s.series.yAxis.getThreshold(threshold), translatedThreshold = yBottom, showMarkers = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(options.marker ? options.marker.enabled : null, s.series.xAxis.isRadial ? true : null, s.series.closestPointRangePx >
-                2 * ((options.marker ?
+                1), threshold = options.threshold, hasThreshold = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.isNumber)(threshold), yBottom = s.series.yAxis.getThreshold(threshold), translatedThreshold = yBottom, showMarkers = ((options.marker ? options.marker.enabled : null) ??
+                (s.series.xAxis.isRadial ? true : null) ??
+                s.series.closestPointRangePx > 2 * ((options.marker ?
                     options.marker.radius :
                     10) || 10)), shapeTexture = this.textureHandles[(shapeOptions && shapeOptions.symbol) ||
                 s.series.symbol] || this.textureHandles.circle;
@@ -2157,7 +2144,7 @@ class WGLRenderer {
             if (s.series.fillOpacity &&
                 options.fillOpacity &&
                 fillColor) {
-                fillColor = new (highcharts_Color_commonjs_highcharts_Color_commonjs2_highcharts_Color_root_Highcharts_Color_default())(fillColor).setOpacity((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(options.fillOpacity, 1.0)).get();
+                fillColor = new (highcharts_Color_commonjs_highcharts_Color_commonjs2_highcharts_Color_root_Highcharts_Color_default())(fillColor).setOpacity((options.fillOpacity ?? 1.0)).get();
             }
             if (typeof fillColor === 'string') {
                 fillColor = resolveColorExpression(chart.boost?.cssVars || {}, fillColor);
@@ -2210,7 +2197,8 @@ class WGLRenderer {
             this.setYAxis(s.series.yAxis);
             this.setThreshold(hasThreshold, translatedThreshold);
             if (s.drawMode === 'POINTS') {
-                shader.setPointSize((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(options.marker && options.marker.radius, 0.5) * 2 * pixelRatio);
+                shader.setPointSize(((options.marker && options.marker.radius) ?? 0.5) *
+                    2 * pixelRatio);
             }
             // If set to true, the toPixels translations in the shader
             // is skipped, i.e it's assumed that the value is a pixel coord.
@@ -2234,7 +2222,8 @@ class WGLRenderer {
                 gl.disable(gl.SCISSOR_TEST);
             }
             if (s.hasMarkers && showMarkers) {
-                shader.setPointSize((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(options.marker && options.marker.radius, 5) * 2 * pixelRatio);
+                shader.setPointSize(((options.marker && options.marker.radius) ?? 5) *
+                    2 * pixelRatio);
                 shader.setDrawAsCircle(true);
                 for (sindex = 0; sindex < s.segments.length; sindex++) {
                     vbuffer.render(s.segments[sindex].from, s.segments[sindex].to, 'POINTS');
@@ -2466,7 +2455,8 @@ class WGLRenderer {
  * @param {boolean} asSubarray
  * If column is a typed array, return a subarray instead of a new array. It
  * is faster `O(1)`, but the entire buffer will be kept in memory until all
- * views of it are destroyed. Default is `false`.
+ * views of it are destroyed. Default is `false`. Ignored when the column
+ * grows, as that always requires a new buffer.
  *
  * @return {DataTableColumn}
  * Modified column.
@@ -2477,6 +2467,12 @@ function setLength(column, length, asSubarray) {
     if (Array.isArray(column)) {
         column.length = length;
         return column;
+    }
+    if (length > column.length) {
+        const Constructor = Object.getPrototypeOf(column)
+            .constructor, grown = new Constructor(length);
+        grown.set(column);
+        return grown;
     }
     return column[asSubarray ? 'subarray' : 'slice'](0, length);
 }
@@ -2691,7 +2687,7 @@ class DataTableCore {
             });
             this.rowCount = length;
         }
-        (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.fireEvent)(this, 'afterDeleteRows', { rowIndex, rowCount });
+        ;(0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.fireEvent)(this, 'afterDeleteRows', { rowIndex, rowCount });
         this.versionTag = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.uniqueKey)();
     }
     /**
@@ -2841,14 +2837,22 @@ class DataTableCore {
      * @emits #afterSetRows
      */
     setRow(row, rowIndex = this.rowCount, insert, eventDetail) {
-        var _a;
         const { columns } = this, indexRowCount = insert ? this.rowCount + 1 : rowIndex + 1, rowKeys = Object.keys(row);
         if (eventDetail?.addColumns !== false) {
             for (let i = 0, iEnd = rowKeys.length; i < iEnd; i++) {
-                columns[_a = rowKeys[i]] || (columns[_a] = new Array(this.rowCount));
+                const rowKey = rowKeys[i];
+                if (rowKey !== '__proto__' &&
+                    rowKey !== 'constructor' &&
+                    !Object.hasOwnProperty.call(columns, rowKey)) {
+                    columns[rowKey] = new Array(this.rowCount);
+                }
             }
         }
-        (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.objectEach)(columns, (column, columnId) => {
+        // Typed arrays ignore out-of-range writes, `insert` grows via `splice`
+        if (!insert && indexRowCount > this.rowCount) {
+            this.applyRowCount(indexRowCount);
+        }
+        ;(0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.objectEach)(columns, (column, columnId) => {
             if (column) {
                 if (insert) {
                     column = DataTableCore_splice(column, rowIndex, 0, true, [row[columnId]]).array;
@@ -3005,10 +3009,10 @@ function allocateIfNotSeriesBoosting(renderer, series) {
  * True, if boost is enabled.
  */
 function boostEnabled(chart) {
-    return (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)((chart &&
+    return ((chart &&
         chart.options &&
         chart.options.boost &&
-        chart.options.boost.enabled), true);
+        chart.options.boost.enabled) ?? true);
 }
 /** @internal */
 function BoostSeries_compose(SeriesClass, seriesTypes, PointClass, wglMode) {
@@ -3019,7 +3023,7 @@ function BoostSeries_compose(SeriesClass, seriesTypes, PointClass, wglMode) {
         if (wglMode) {
             seriesProto.renderCanvas = seriesRenderCanvas;
         }
-        (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.wrap)(seriesProto, 'getExtremes', wrapSeriesGetExtremes);
+        ;(0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.wrap)(seriesProto, 'getExtremes', wrapSeriesGetExtremes);
         (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.wrap)(seriesProto, 'processData', wrapSeriesProcessData);
         (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.wrap)(seriesProto, 'searchPoint', wrapSeriesSearchPoint);
         [
@@ -3265,20 +3269,11 @@ function createAndAttachRenderer(chart, series) {
  */
 function destroyGraphics(series) {
     const points = series.points;
-    if (points) {
-        let point, i;
-        for (i = 0; i < points.length; i = i + 1) {
-            point = points[i];
-            if (point && point.destroyElements) {
-                point.destroyElements(); // #7557
-            }
-        }
-    }
+    points?.forEach((point) => {
+        point?.destroyElements?.(); // #7557
+    });
     ['graph', 'area', 'tracker'].forEach((prop) => {
-        const seriesProp = series[prop];
-        if (seriesProp) {
-            series[prop] = seriesProp.destroy();
-        }
+        series[prop] = series[prop]?.destroy();
     });
     for (const zone of series.zones) {
         (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.destroyObjectProperties)(zone, void 0, true);
@@ -3414,7 +3409,7 @@ function exitBoost(series) {
  * @function Highcharts.Series#hasExtremes
  */
 function hasExtremes(series, checkX) {
-    const options = series.options, threshold = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(options.boostThreshold, Number.MAX_VALUE);
+    const options = series.options, threshold = (options.boostThreshold ?? Number.MAX_VALUE);
     if (threshold === 0) {
         return false;
     }
@@ -3433,7 +3428,7 @@ function hasExtremes(series, checkX) {
  * @internal
  */
 const getSeriesBoosting = (series, data) => {
-    const { options, forceCrop, chart } = series, threshold = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(options.boostThreshold, Number.MAX_VALUE);
+    const { options, forceCrop, chart } = series, threshold = (options.boostThreshold ?? Number.MAX_VALUE);
     // Return early if either will be grouped or boost is disabled.
     if (forceCrop || threshold === 0) {
         return false;
@@ -3537,10 +3532,9 @@ function getPoint(series, boostPoint) {
                 data[pointIndex][keysIndex];
         }
     }
-    point.category = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(xAxis.categories ?
+    point.category = (xAxis.categories ?
         xAxis.categories[point.x] :
-        point.x, // @todo simplify
-    point.x);
+        point.x ?? point.x);
     point.key = point.name ?? point.category;
     point.dist = boostPoint.dist;
     point.distX = boostPoint.distX;
@@ -3674,7 +3668,7 @@ function seriesRenderCanvas() {
         this.getColumn('x') :
         void 0) ||
         this.options.xData ||
-        this.getColumn('x', true)), lineWidth = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(options.lineWidth, 1), nullYSubstitute = options.nullInteraction && yMin, tooltip = chart.tooltip;
+        this.getColumn('x', true)), lineWidth = (options.lineWidth ?? 1), nullYSubstitute = options.nullInteraction && yMin, tooltip = chart.tooltip;
     let renderer = false, lastClientX, yBottom = yAxis.getThreshold(threshold), minVal, maxVal, minI, maxI;
     // Clear mock points and tooltip after zoom (#20330)
     if (!this.boosted) {
@@ -3892,7 +3886,7 @@ function seriesRenderCanvas() {
     const boostOptions = renderer.settings, chunkSize = ((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.isNumber)(boostOptions.chunkSize) && boostOptions.chunkSize > 0 ?
         boostOptions.chunkSize :
         CHUNK_SIZE), doneProcessing = () => {
-        (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.fireEvent)(this, 'renderedCanvas');
+        ;(0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.fireEvent)(this, 'renderedCanvas');
         // Go back to prototype, ready to build
         delete this.buildKDTree;
         // Check that options exist, as async processing
@@ -3966,7 +3960,7 @@ function wrapSeriesFunctions(seriesProto, seriesTypes, method) {
             this.renderCanvas();
         }
     }
-    (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.wrap)(seriesProto, method, branch);
+    ;(0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.wrap)(seriesProto, method, branch);
     // Special case for some types, when translate method is already wrapped
     if (method === 'translate') {
         for (const type of [

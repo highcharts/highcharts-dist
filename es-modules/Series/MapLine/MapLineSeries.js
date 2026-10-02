@@ -50,6 +50,7 @@ class MapLineSeries extends MapSeries {
  *  Static Properties
  *
  * */
+/** @internal */
 MapLineSeries.defaultOptions = merge(MapSeries.defaultOptions, MapLineSeriesDefaults);
 extend(MapLineSeries.prototype, {
     type: 'mapline',

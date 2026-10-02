@@ -21,34 +21,28 @@ import KeyboardNavigationHandler from '../KeyboardNavigationHandler.js';
 import CU from '../Utils/ChartUtilities.js';
 const { getChartTitle } = CU;
 import HU from '../Utils/HTMLUtilities.js';
-import { addEvent, fireEvent, isNumber, pick, syncTimeout } from '../../Shared/Utilities.js';
+import { addEvent, fireEvent, isNumber, syncTimeout } from '../../Shared/Utilities.js';
 const { stripHTMLTagsFromString: stripHTMLTags, addClass, removeClass } = HU;
 /* *
  *
  *  Functions
  *
  * */
-/**
- * @private
- */
+/** @internal */
 function scrollLegendToItem(legend, itemIx) {
     const itemPage = (legend.allItems[itemIx].legendItem || {}).pageIx, curPage = legend.currentPage;
     if (typeof itemPage !== 'undefined' && itemPage + 1 !== curPage) {
         legend.scroll(1 + itemPage - curPage);
     }
 }
-/**
- * @private
- */
+/** @internal */
 function shouldDoLegendA11y(chart) {
     const items = chart.legend && chart.legend.allItems, legendA11yOptions = (chart.options.legend.accessibility || {}), unsupportedColorAxis = chart.colorAxis && chart.colorAxis.some((c) => !c.dataClasses || !c.dataClasses.length);
     return !!(items && items.length &&
         !unsupportedColorAxis &&
         legendA11yOptions.enabled !== false);
 }
-/**
- * @private
- */
+/** @internal */
 function setLegendItemHoverState(hoverActive, item) {
     const legendItem = item.legendItem || {};
     item.setState(hoverActive ? 'hover' : '', true);
@@ -68,9 +62,10 @@ function setLegendItemHoverState(hoverActive, item) {
 /**
  * The LegendComponent class
  *
- * @private
  * @class
  * @name Highcharts.LegendComponent
+ *
+ * @internal
  */
 class LegendComponent extends AccessibilityComponent {
     constructor() {
@@ -90,7 +85,8 @@ class LegendComponent extends AccessibilityComponent {
      * */
     /**
      * Init the component
-     * @private
+     *
+     * @internal
      */
     init() {
         const component = this;
@@ -118,13 +114,14 @@ class LegendComponent extends AccessibilityComponent {
                 this.chart.renderer &&
                 component.recreateProxies()) {
                 syncTimeout(() => component.proxyProvider
-                    .updateGroupProxyElementPositions('legend'), animObject(pick(this.chart.renderer.globalAnimation, true)).duration);
+                    .updateGroupProxyElementPositions('legend'), animObject((this.chart.renderer.globalAnimation ?? true)).duration);
             }
         });
     }
     /**
      * Update visibility of legend items when using paged legend
-     * @private
+     *
+     * @internal
      */
     updateLegendItemProxyVisibility() {
         const chart = this.chart;
@@ -163,17 +160,13 @@ class LegendComponent extends AccessibilityComponent {
             }
         });
     }
-    /**
-     * @private
-     */
+    /** @internal */
     onChartRender() {
         if (!shouldDoLegendA11y(this.chart)) {
             this.removeProxies();
         }
     }
-    /**
-     * @private
-     */
+    /** @internal */
     highlightAdjacentLegendPage(direction) {
         const chart = this.chart;
         const legend = chart.legend;
@@ -193,9 +186,7 @@ class LegendComponent extends AccessibilityComponent {
             }
         }
     }
-    /**
-     * @private
-     */
+    /** @internal */
     updateProxyPositionForItem(item) {
         if (item.a11yProxyElement) {
             item.a11yProxyElement.refreshPosition();
@@ -204,7 +195,8 @@ class LegendComponent extends AccessibilityComponent {
     /**
      * Returns false if legend a11y is disabled and proxies were not created,
      * true otherwise.
-     * @private
+     *
+     * @internal
      */
     recreateProxies() {
         const focusedElement = doc.activeElement;
@@ -224,15 +216,11 @@ class LegendComponent extends AccessibilityComponent {
         }
         return false;
     }
-    /**
-     * @private
-     */
+    /** @internal */
     removeProxies() {
         this.proxyProvider.removeGroup('legend');
     }
-    /**
-     * @private
-     */
+    /** @internal */
     updateLegendTitle() {
         const chart = this.chart;
         const legendTitle = stripHTMLTags((chart.legend &&
@@ -248,9 +236,7 @@ class LegendComponent extends AccessibilityComponent {
             'aria-label': legendLabel
         });
     }
-    /**
-     * @private
-     */
+    /** @internal */
     addLegendProxyGroup() {
         const a11yOptions = this.chart.options.accessibility;
         const groupRole = a11yOptions.landmarkVerbosity === 'all' ?
@@ -262,9 +248,7 @@ class LegendComponent extends AccessibilityComponent {
             role: groupRole
         });
     }
-    /**
-     * @private
-     */
+    /** @internal */
     proxyLegendItems() {
         const component = this, items = (this.chart.legend || {}).allItems || [];
         let legendItem;
@@ -275,10 +259,7 @@ class LegendComponent extends AccessibilityComponent {
             }
         });
     }
-    /**
-     * @private
-     * @param {Highcharts.BubbleLegendItem|Point|Highcharts.Series} item
-     */
+    /** @internal */
     proxyLegendItem(item) {
         const legendItem = item.legendItem || {};
         const legendItemLabel = item.legendItem?.label;
@@ -314,7 +295,8 @@ class LegendComponent extends AccessibilityComponent {
     }
     /**
      * Get keyboard navigation handler for this component.
-     * @private
+     *
+     * @internal
      */
     getKeyboardNavigation() {
         const keys = this.keyCodes, component = this, chart = this.chart;
@@ -356,7 +338,8 @@ class LegendComponent extends AccessibilityComponent {
     }
     /**
      * Arrow key navigation
-     * @private
+     *
+     * @internal
      */
     onKbdArrowKey(keyboardNavigationHandler, key) {
         const { keyCodes: { left, up }, highlightedLegendItemIx, chart } = this, numItems = chart.legend.allItems.length, wrapAround = chart.options.accessibility
@@ -372,9 +355,9 @@ class LegendComponent extends AccessibilityComponent {
         return keyboardNavigationHandler.response.success;
     }
     /**
-     * @private
-     * @param {Highcharts.KeyboardNavigationHandler} keyboardNavigationHandler
      * @return {number} Response code
+     *
+     * @internal
      */
     onKbdClick(keyboardNavigationHandler) {
         const legendItem = this.chart.legend.allItems[this.highlightedLegendItemIx];
@@ -383,9 +366,7 @@ class LegendComponent extends AccessibilityComponent {
         }
         return keyboardNavigationHandler.response.success;
     }
-    /**
-     * @private
-     */
+    /** @internal */
     shouldHaveLegendNavigation() {
         if (!shouldDoLegendA11y(this.chart)) {
             return false;
@@ -397,7 +378,8 @@ class LegendComponent extends AccessibilityComponent {
     }
     /**
      * Clean up
-     * @private
+     *
+     * @internal
      */
     destroy() {
         this.removeProxies();
@@ -408,6 +390,7 @@ class LegendComponent extends AccessibilityComponent {
  *  Class Namespace
  *
  * */
+/** @internal */
 (function (LegendComponent) {
     /* *
      *
@@ -421,7 +404,8 @@ class LegendComponent extends AccessibilityComponent {
      * */
     /**
      * Highlight legend item by index.
-     * @private
+     *
+     * @internal
      */
     function chartHighlightLegendItem(ix) {
         const items = this.legend.allItems;
@@ -444,9 +428,7 @@ class LegendComponent extends AccessibilityComponent {
         }
         return false;
     }
-    /**
-     * @private
-     */
+    /** @internal */
     function compose(ChartClass, LegendClass) {
         const chartProto = ChartClass.prototype;
         if (!chartProto.highlightLegendItem) {
@@ -457,7 +439,8 @@ class LegendComponent extends AccessibilityComponent {
     LegendComponent.compose = compose;
     /**
      * Keep track of pressed state for legend items.
-     * @private
+     *
+     * @internal
      */
     function legendOnAfterColorizeItem(e) {
         const chart = this.chart, a11yOptions = chart.options.accessibility, legendItem = e.item;
@@ -471,4 +454,5 @@ class LegendComponent extends AccessibilityComponent {
  *  Default Export
  *
  * */
+/** @internal */
 export default LegendComponent;

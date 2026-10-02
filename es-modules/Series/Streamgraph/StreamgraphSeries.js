@@ -33,6 +33,7 @@ class StreamgraphSeries extends AreaSplineSeries {
      * */
     // Modifier function for stream stacks. It simply moves the point up or
     // down in order to center the full stack vertically.
+    /** @internal */
     streamStacker(pointExtremes, stack, i) {
         // Y bottom value
         pointExtremes[0] -= stack.total / 2;
@@ -51,6 +52,7 @@ class StreamgraphSeries extends AreaSplineSeries {
  *  Static Properties
  *
  * */
+/** @internal */
 StreamgraphSeries.defaultOptions = merge(AreaSplineSeries.defaultOptions, StreamgraphSeriesDefaults);
 // Reflect the dataMin property, as only dataMax is registered above
 addEvent(StreamgraphSeries, 'afterGetExtremes', (e) => {

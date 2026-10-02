@@ -30,9 +30,11 @@ class VennPoint extends ScatterPoint {
      *  Functions
      *
      * */
+    /** @internal */
     isValid() {
         return isNumber(this.value);
     }
+    /** @internal */
     shouldDraw() {
         // Only draw points with single sets.
         return !!this.shapeArgs;

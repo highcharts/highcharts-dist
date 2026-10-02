@@ -23,6 +23,7 @@ class WaterfallPoint extends ColumnSeries.prototype.pointClass {
      *  Functions
      *
      * */
+    /** @internal */
     getClassName() {
         let className = Point.prototype.getClassName.call(this);
         if (this.isSum) {
@@ -34,6 +35,7 @@ class WaterfallPoint extends ColumnSeries.prototype.pointClass {
         return className;
     }
     // Pass the null test in ColumnSeries.translate.
+    /** @internal */
     isValid() {
         return (isNumber(this.y) ||
             this.isSum ||

@@ -15,18 +15,18 @@
 'use strict';
 import SVGElement3DFunnel from './SVGElement3DFunnel.js';
 import H from '../../Core/Globals.js';
-const { charts } = H;
-import { extend, merge } from '../../Shared/Utilities.js';
+const { charts, composed } = H;
+import { extend, merge, pushUnique } from '../../Shared/Utilities.js';
 import { error } from '../../Core/Utilities.js';
 /* *
  *
  *  Functions
  *
  * */
-/** @private */
-function compose(SVGRendererClass) {
+/** @internal */
+export function composeFunnel3D(SVGRendererClass) {
     const rendererProto = SVGRendererClass.prototype;
-    if (!rendererProto.funnel3d) {
+    if (pushUnique(composed, 'Funnel3dSeries')) {
         rendererProto.Element3D.types.funnel3d = SVGElement3DFunnel;
         extend(rendererProto, {
             funnel3d: rendererFunnel3d,
@@ -34,7 +34,7 @@ function compose(SVGRendererClass) {
         });
     }
 }
-/** @private */
+/** @internal */
 function rendererFunnel3d(shapeArgs) {
     const renderer = this, funnel3d = renderer.element3d('funnel3d', shapeArgs), styledMode = renderer.styledMode, 
     // Hide stroke for Firefox
@@ -66,7 +66,7 @@ function rendererFunnel3d(shapeArgs) {
 }
 /**
  * Generates paths and zIndexes.
- * @private
+ * @internal
  */
 function rendererFunnel3dPath(shapeArgs) {
     // Check getCylinderEnd for better error message if
@@ -158,12 +158,3 @@ function rendererFunnel3dPath(shapeArgs) {
     }
     return ret;
 }
-/* *
- *
- *  Default Export
- *
- * */
-const Funnel3DComposition = {
-    compose
-};
-export default Funnel3DComposition;

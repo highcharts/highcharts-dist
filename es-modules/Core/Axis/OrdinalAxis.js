@@ -12,7 +12,7 @@
 'use strict';
 import DataTableCore from '../../Data/DataTableCore.js';
 import H from '../Globals.js';
-import { correctFloat, defined, isString, isNumber, pick, css, addEvent } from '../../Shared/Utilities.js';
+import { correctFloat, defined, isString, isNumber, css, addEvent } from '../../Shared/Utilities.js';
 import { error, timeUnits } from '../Utilities.js';
 /* *
  *
@@ -51,7 +51,6 @@ var OrdinalAxis;
             axisProto.ordinal2lin = axisProto.val2lin;
             addEvent(AxisClass, 'afterInit', onAxisAfterInit);
             addEvent(AxisClass, 'foundExtremes', onAxisFoundExtremes);
-            addEvent(AxisClass, 'afterSetScale', onAxisAfterSetScale);
             addEvent(AxisClass, 'initialAxisTranslation', onAxisInitialAxisTranslation);
             addEvent(ChartClass, 'pan', onChartPan);
             addEvent(ChartClass, 'touchpan', onChartPan);
@@ -329,20 +328,6 @@ var OrdinalAxis;
             }
         }
     }
-    /**
-     * For ordinal axis, that loads data async, redraw axis after data is
-     * loaded. If we don't do that, axis will have the same extremes as
-     * previously, but ordinal positions won't be calculated. See #10290
-     * @internal
-     */
-    function onAxisAfterSetScale() {
-        const axis = this;
-        if (axis.horiz && !axis.isDirty) {
-            axis.isDirty = axis.isOrdinal &&
-                axis.chart.navigator &&
-                !axis.chart.navigator.adaptToUpdatedData;
-        }
-    }
     /** @internal */
     function onAxisInitialAxisTranslation() {
         const axis = this;
@@ -601,9 +586,7 @@ var OrdinalAxis;
                             // Without a custom function it is sorted as strings
                             return a - b;
                         });
-                        overscrollPointsRange = Math.min(overscrollPointsRange, pick(
-                        // Check for a single-point series:
-                        series.closestPointRange, overscrollPointsRange));
+                        overscrollPointsRange = Math.min(overscrollPointsRange, (series.closestPointRange ?? overscrollPointsRange));
                         if (len) {
                             i = 0;
                             while (i < len - 1) {
@@ -704,7 +687,9 @@ var OrdinalAxis;
                     ordinal.offset = min - (minIndex * slope);
                 }
                 else {
-                    ordinal.overscrollPointsRange = pick(axis.closestPointRange, ordinal.overscrollPointsRange);
+                    ordinal.overscrollPointsRange =
+                        axis.closestPointRange ??
+                            ordinal.overscrollPointsRange;
                     ordinal.positions = axis.ordinal.slope = ordinal.offset =
                         void 0;
                 }
@@ -997,8 +982,10 @@ var OrdinalAxis;
          */
         convertOverscroll(overscroll = 0) {
             const ordinal = this, axis = ordinal.axis, calculateOverscroll = function (overscrollPercentage) {
-                return pick(ordinal.originalOrdinalRange, defined(axis.dataMax) && defined(axis.dataMin) ?
-                    axis.dataMax - axis.dataMin : 0) * overscrollPercentage;
+                return (ordinal.originalOrdinalRange ??
+                    (defined(axis.dataMax) && defined(axis.dataMin) ?
+                        axis.dataMax - axis.dataMin :
+                        0)) * overscrollPercentage;
             };
             if (isString(overscroll)) {
                 const overscrollValue = parseInt(overscroll, 10);

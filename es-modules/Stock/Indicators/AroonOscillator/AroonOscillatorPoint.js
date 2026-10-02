@@ -10,5 +10,4 @@
  *  Default Export
  *
  * */
-/** @internal */
 export default AroonOscillatorPoint;

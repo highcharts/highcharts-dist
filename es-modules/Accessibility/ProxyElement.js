@@ -33,8 +33,9 @@ const { cloneMouseEvent, cloneTouchEvent, getFakeMouseEvent, removeElement } = H
  * Represents a proxy element that overlays a target and relays events
  * to its target.
  *
- * @private
  * @class
+ *
+ * @internal
  */
 class ProxyElement {
     /* *
@@ -220,4 +221,5 @@ class ProxyElement {
  *  Default Export
  *
  * */
+/** @internal */
 export default ProxyElement;

@@ -30,13 +30,14 @@ const { getElement, simulatedEventTarget } = HTMLUtilities;
  *
  * @requires modules/accessibility
  *
- * @private
  * @class
  * @param {Highcharts.Chart} chart
  *        Chart object
  * @param {Object} components
  *        Map of component names to AccessibilityComponent objects.
  * @name Highcharts.KeyboardNavigation
+ *
+ * @internal
  */
 class KeyboardNavigation {
     /* *
@@ -56,11 +57,12 @@ class KeyboardNavigation {
      * */
     /**
      * Initialize the class
-     * @private
      * @param {Highcharts.Chart} chart
      *        Chart object
      * @param {Object} components
      *        Map of component names to AccessibilityComponent objects.
+     *
+     * @internal
      */
     init(chart, components) {
         const ep = this.eventProvider = new EventProvider();
@@ -107,10 +109,11 @@ class KeyboardNavigation {
      * setting focus to this div and not preventing the default tab action. We
      * also use this when users come back into the chart by tabbing back, in
      * order to navigate from the end of the chart.
-     * @private
+     *
+     * @internal
      */
     updateExitAnchor() {
-        const endMarkerId = `highcharts-end-of-chart-marker-${this.chart.index}`, endMarker = getElement(endMarkerId);
+        const endMarkerId = `highcharts-end-of-chart-marker-${this.chart.index}`, endMarker = getElement(endMarkerId, this.chart.renderTo);
         this.removeExitAnchor();
         if (endMarker) {
             this.makeElementAnExitAnchor(endMarker);
@@ -122,11 +125,12 @@ class KeyboardNavigation {
     }
     /**
      * Move to prev/next module.
-     * @private
      * @param {number} direction
      * Direction to move. +1 for next, -1 for prev.
      * @return {boolean}
      * True if there was a valid module in direction.
+     *
+     * @internal
      */
     move(direction) {
         const curModule = this.modules && this.modules[this.currentModuleIx];
@@ -162,8 +166,9 @@ class KeyboardNavigation {
     }
     /**
      * Function to run on container focus
-     * @private
      * @param {global.FocusEvent} e Browser focus event.
+     *
+     * @internal
      */
     onFocus(e) {
         const chart = this.chart, focusComesFromChart = (e.relatedTarget &&
@@ -187,7 +192,8 @@ class KeyboardNavigation {
      * Reset chart navigation state if we mouse click and it's not already
      * reset. Reset fully if outside the chart, otherwise just hide focus
      * indicator.
-     * @private
+     *
+     * @internal
      */
     onMouseUp(e) {
         delete this.isClickingChart;
@@ -212,8 +218,9 @@ class KeyboardNavigation {
     }
     /**
      * Function to run on keydown
-     * @private
      * @param {global.KeyboardEvent} ev Browser keydown event.
+     *
+     * @internal
      */
     onKeydown(ev) {
         const e = ev || win.event, curNavModule = (this.modules &&
@@ -251,7 +258,8 @@ class KeyboardNavigation {
     }
     /**
      * Chart container should have tabindex if navigation is enabled.
-     * @private
+     *
+     * @internal
      */
     updateContainerTabindex() {
         const a11yOptions = this.chart.options.accessibility, keyboardOptions = a11yOptions && a11yOptions.keyboardNavigation, shouldHaveTabindex = !(keyboardOptions && keyboardOptions.enabled === false), chart = this.chart, container = chart.container;
@@ -274,7 +282,8 @@ class KeyboardNavigation {
     }
     /**
      * Add new exit anchor to the chart.
-     * @private
+     *
+     * @internal
      */
     createExitAnchor() {
         const chart = this.chart, exitAnchor = this.exitAnchor = doc.createElement('div');
@@ -284,7 +293,8 @@ class KeyboardNavigation {
     /**
      * Add attributes and events to an element to make it function as an
      * exit anchor.
-     * @private
+     *
+     * @internal
      */
     makeElementAnExitAnchor(el) {
         const chartTabindex = this.tabindexContainer.getAttribute('tabindex') || 0;
@@ -296,7 +306,8 @@ class KeyboardNavigation {
     }
     /**
      * Destroy the exit anchor and remove from DOM.
-     * @private
+     *
+     * @internal
      */
     removeExitAnchor() {
         // Remove event from element and from eventRemovers array to prevent
@@ -314,7 +325,8 @@ class KeyboardNavigation {
     }
     /**
      * Add focus handler to exit anchor element.
-     * @private
+     *
+     * @internal
      */
     addExitAnchorEventsToEl(element) {
         const chart = this.chart, keyboardNavigation = this;
@@ -359,7 +371,8 @@ class KeyboardNavigation {
     /**
      * Get the ix of the first module that either does not require validation or
      * validates positively.
-     * @private
+     *
+     * @internal
      */
     getFirstValidModuleIx() {
         const len = this.modules.length;
@@ -373,7 +386,8 @@ class KeyboardNavigation {
     }
     /**
      * Remove all traces of keyboard navigation.
-     * @private
+     *
+     * @internal
      */
     destroy() {
         this.removeExitAnchor();
@@ -386,6 +400,7 @@ class KeyboardNavigation {
  *  Class Namespace
  *
  * */
+/** @internal */
 (function (KeyboardNavigation) {
     /* *
      *
@@ -399,7 +414,8 @@ class KeyboardNavigation {
      * */
     /**
      * Composition function.
-     * @private
+     *
+     * @internal
      */
     function compose(ChartClass) {
         MenuComponent.compose(ChartClass);
@@ -415,7 +431,8 @@ class KeyboardNavigation {
     KeyboardNavigation.compose = compose;
     /**
      * Dismiss popup content in chart, including export menu and tooltip.
-     * @private
+     *
+     * @internal
      */
     function chartDismissPopupContent() {
         const chart = this;
@@ -429,7 +446,8 @@ class KeyboardNavigation {
     /**
      * Add event listener to document to detect ESC key press and dismiss
      * hover/popup content.
-     * @private
+     *
+     * @internal
      */
     function documentOnKeydown(e) {
         const keycode = e.which || e.keyCode;
@@ -448,4 +466,5 @@ class KeyboardNavigation {
  *  Default Export
  *
  * */
+/** @internal */
 export default KeyboardNavigation;

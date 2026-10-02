@@ -28,18 +28,20 @@ import HU from '../Utils/HTMLUtilities.js';
 const { getFakeMouseEvent } = HU;
 import CU from '../Utils/ChartUtilities.js';
 const { getAxisRangeDescription, fireEventOnWrappedOrUnwrappedElement } = CU;
-import { clamp, internalClearTimeout, pick, syncTimeout } from '../../Shared/Utilities.js';
+import { clamp, internalClearTimeout, syncTimeout } from '../../Shared/Utilities.js';
 /**
  * The NavigatorComponent class
  *
- * @private
  * @class
  * @name Highcharts.NavigatorComponent
+ *
+ * @internal
  */
 class NavigatorComponent extends AccessibilityComponent {
     /**
      * Init the component
-     * @private
+     *
+     * @internal
      */
     init() {
         const chart = this.chart, component = this;
@@ -52,13 +54,14 @@ class NavigatorComponent extends AccessibilityComponent {
                     component.proxyProvider
                         .updateGroupProxyElementPositions('navigator');
                     component.updateHandleValues();
-                }, animObject(pick(this.chart.renderer.globalAnimation, true)).duration);
+                }, animObject((this.chart.renderer.globalAnimation ?? true)).duration);
             }
         });
     }
     /**
      * Called on updates
-     * @private
+     *
+     * @internal
      */
     onChartUpdate() {
         const chart = this.chart, options = chart.options, navigator = options.navigator;
@@ -98,8 +101,9 @@ class NavigatorComponent extends AccessibilityComponent {
     }
     /**
      * Get navigation for a navigator handle.
-     * @private
      * @return {Highcharts.KeyboardNavigationHandler} The module object.
+     *
+     * @internal
      */
     getNavigatorHandleNavigation(handleIx) {
         const component = this, chart = this.chart, proxyEl = handleIx ? this.maxHandleProxy : this.minHandleProxy, keys = this.keyCodes;
@@ -153,7 +157,8 @@ class NavigatorComponent extends AccessibilityComponent {
     }
     /**
      * Update the value of the handles to match current navigator pos.
-     * @private
+     *
+     * @internal
      */
     updateHandleValues() {
         const navigator = this.chart.navigator;
@@ -167,7 +172,8 @@ class NavigatorComponent extends AccessibilityComponent {
     }
     /**
      * Get a navigator handle by its index
-     * @private
+     *
+     * @internal
      */
     getHandleByIx(ix) {
         const navigator = this.chart.navigator;
@@ -176,7 +182,8 @@ class NavigatorComponent extends AccessibilityComponent {
     }
     /**
      * Update navigator to match changed proxy values.
-     * @private
+     *
+     * @internal
      */
     updateNavigator(beforeAnnounce) {
         const performUpdate = (beforeAnnounce) => {
@@ -231,4 +238,5 @@ class NavigatorComponent extends AccessibilityComponent {
  *  Export Default
  *
  * */
+/** @internal */
 export default NavigatorComponent;

@@ -40,6 +40,7 @@ class TreegraphPoint extends TreemapPoint {
      *  Functions
      *
      * */
+    /** @internal */
     draw() {
         super.draw.apply(this, arguments);
         // Run animation of hiding/showing of the point.
@@ -51,6 +52,7 @@ class TreegraphPoint extends TreemapPoint {
         }
         this.renderCollapseButton();
     }
+    /** @internal */
     renderCollapseButton() {
         const point = this, series = point.series, parentGroup = point.graphic && point.graphic.parentGroup, levelOptions = series.mapOptionsToLevel[point.node.level || 0] || {}, btnOptions = merge(series.options.collapseButton, levelOptions.collapseButton, point.options.collapseButton), { width, height, shape, style } = btnOptions, padding = 2, chart = this.series.chart, calculatedOpacity = (point.visible &&
             (point.collapsed ||
@@ -120,6 +122,7 @@ class TreegraphPoint extends TreemapPoint {
             }
         }
     }
+    /** @internal */
     toggleCollapse(state) {
         const series = this.series;
         this.update({
@@ -128,6 +131,7 @@ class TreegraphPoint extends TreemapPoint {
         fireEvent(series, 'toggleCollapse');
         series.redraw();
     }
+    /** @internal */
     destroy() {
         if (this.collapseButton) {
             this.collapseButton.destroy();
@@ -140,6 +144,7 @@ class TreegraphPoint extends TreemapPoint {
         }
         super.destroy.apply(this, arguments);
     }
+    /** @internal */
     getCollapseBtnPosition(btnOptions) {
         const point = this, chart = point.series.chart, inverted = chart.inverted, btnWidth = btnOptions.width, btnHeight = btnOptions.height, { x = 0, y = 0, width = 0, height = 0 } = point.shapeArgs || {};
         return {

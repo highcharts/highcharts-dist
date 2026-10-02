@@ -10,7 +10,7 @@
  * */
 'use strict';
 import { error } from '../../Core/Utilities.js';
-import { clamp, pick } from '../../Shared/Utilities.js';
+import { clamp } from '../../Shared/Utilities.js';
 /* *
  *
  *  Constants
@@ -363,9 +363,9 @@ class WGLShader {
         let zMin = Number.MAX_VALUE, zMax = -Number.MAX_VALUE;
         if (this.gl && this.shaderProgram && series.is('bubble')) {
             const pxSizes = series.getPxExtremes();
-            zMin = pick(seriesOptions.zMin, clamp(zCalcMin, seriesOptions.displayNegative === false ?
+            zMin = (seriesOptions.zMin ?? clamp(zCalcMin, seriesOptions.displayNegative === false ?
                 seriesOptions.zThreshold : -Number.MAX_VALUE, zMin));
-            zMax = pick(seriesOptions.zMax, Math.max(zMax, zCalcMax));
+            zMax = (seriesOptions.zMax ?? Math.max(zMax, zCalcMax));
             this.gl.uniform1i(this.isBubbleUniform, 1);
             this.gl.uniform1i(this.isCircleUniform, 1);
             this.gl.uniform1i(this.bubbleSizeAreaUniform, (series.options.sizeBy !== 'width'));

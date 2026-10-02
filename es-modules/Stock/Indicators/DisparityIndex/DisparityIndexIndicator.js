@@ -22,7 +22,6 @@ import { correctFloat, defined, extend, isArray, merge } from '../../../Shared/U
 /**
  * The Disparity Index series type.
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.disparityindex
  *
@@ -34,6 +33,7 @@ class DisparityIndexIndicator extends SMAIndicator {
      *  Functions
      *
      * */
+    /** @internal */
     init() {
         const args = arguments, ctx = this, // Disparity Index indicator
         params = args[1].params, // Options.params
@@ -42,9 +42,11 @@ class DisparityIndexIndicator extends SMAIndicator {
             .seriesTypes[averageType] || SMAIndicator;
         ctx.averageIndicator.prototype.init.apply(ctx, args);
     }
+    /** @internal */
     calculateDisparityIndex(curPrice, periodAverage) {
         return correctFloat(curPrice - periodAverage) / periodAverage * 100;
     }
+    /** @internal */
     getValues(series, params) {
         const index = params.index, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, disparityIndexPoint = [], xData = [], yData = [], 
         // "as any" because getValues doesn't exist on typeof Series
@@ -96,6 +98,7 @@ class DisparityIndexIndicator extends SMAIndicator {
  * @requires     stock/indicators/indicators
  * @requires     stock/indicators/disparity-index
  * @optionparent plotOptions.disparityindex
+ * @internal
  */
 DisparityIndexIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
     params: {
@@ -128,7 +131,6 @@ SeriesRegistry.registerSeriesType('disparityindex', DisparityIndexIndicator);
  *  Default Export
  *
  * */
-/** @internal */
 export default DisparityIndexIndicator;
 /* *
  *
@@ -143,9 +145,9 @@ export default DisparityIndexIndicator;
  * @extends   series,plotOptions.disparityindex
  * @since 9.1.0
  * @product   highstock
- * @excluding allAreas, colorAxis,  dataParser, dataURL, joinBy, keys,
- *            navigatorOptions, pointInterval, pointIntervalUnit,
- *            pointPlacement, pointRange, pointStart, showInNavigator, stacking
+ * @excluding allAreas, colorAxis, joinBy, keys, navigatorOptions,
+ *            pointInterval, pointIntervalUnit, pointPlacement, pointRange,
+ *            pointStart, showInNavigator, stacking
  * @requires  stock/indicators/indicators
  * @requires  stock/indicators/disparity-index
  * @apioption series.disparityindex

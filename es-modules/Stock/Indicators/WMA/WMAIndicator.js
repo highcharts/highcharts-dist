@@ -49,7 +49,6 @@ function populateAverage(points, xVal, yVal, i) {
 /**
  * The SMA series type.
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.wma
  *
@@ -61,6 +60,7 @@ class WMAIndicator extends SMAIndicator {
      *  Functions
      *
      * */
+    /** @internal */
     getValues(series, params) {
         const period = params.period, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, xValue = xVal[0], wma = [], xData = [], yData = [];
         let range = 1, index = -1, i, wmaPoint, yValue = yVal[0];
@@ -116,6 +116,7 @@ class WMAIndicator extends SMAIndicator {
  * @requires     stock/indicators/indicators
  * @requires     stock/indicators/wma
  * @optionparent plotOptions.wma
+ * @internal
  */
 WMAIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
     params: {
@@ -129,7 +130,6 @@ SeriesRegistry.registerSeriesType('wma', WMAIndicator);
  *  Default Export
  *
  * */
-/** @internal */
 export default WMAIndicator;
 /* *
  *
@@ -143,7 +143,6 @@ export default WMAIndicator;
  * @extends   series,plotOptions.wma
  * @since     6.0.0
  * @product   highstock
- * @excluding dataParser, dataURL
  * @requires  stock/indicators/indicators
  * @requires  stock/indicators/wma
  * @apioption series.wma

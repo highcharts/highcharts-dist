@@ -21,7 +21,6 @@ import { extend, merge } from '../../../Shared/Utilities.js';
 /**
  * The Linear Regression Slope series type.
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.linearRegressionSlope
  *
@@ -33,6 +32,7 @@ class LinearRegressionSlopesIndicator extends LinearRegressionIndicator {
      *  Functions
      *
      * */
+    /** @internal */
     getEndPointY(lineParameters) {
         return lineParameters.slope;
     }
@@ -55,6 +55,7 @@ class LinearRegressionSlopesIndicator extends LinearRegressionIndicator {
  * @requires     stock/indicators/indicators
  * @requires     stock/indicators/regressions
  * @optionparent plotOptions.linearregressionslope
+ * @internal
  */
 LinearRegressionSlopesIndicator.defaultOptions = merge(LinearRegressionIndicator.defaultOptions);
 extend(LinearRegressionSlopesIndicator.prototype, {
@@ -68,7 +69,6 @@ SeriesRegistry.registerSeriesType('linearRegressionSlope', LinearRegressionSlope
  *  Default Export
  *
  * */
-/** @internal */
 export default LinearRegressionSlopesIndicator;
 /* *
  *
@@ -83,7 +83,6 @@ export default LinearRegressionSlopesIndicator;
  * @extends   series,plotOptions.linearregressionslope
  * @since     7.0.0
  * @product   highstock
- * @excluding dataParser,dataURL
  * @requires  stock/indicators/indicators
  * @requires  stock/indicators/regressions
  * @apioption series.linearregressionslope

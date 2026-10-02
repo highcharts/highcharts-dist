@@ -12,16 +12,9 @@
  *
  * */
 'use strict';
-/* *
- *
- *  Imports
- *
- * */
 import { addEvent } from '../../Shared/Utilities.js';
 import H from '../../Core/Globals.js';
-/**
- * @private
- */
+/** @internal */
 class EventProvider {
     /* *
      *
@@ -34,7 +27,8 @@ class EventProvider {
     /**
      * Add an event to an element and keep track of it for later removal.
      * Same args as Highcharts.addEvent.
-     * @private
+     *
+     * @internal
      */
     addEvent() {
         const remover = addEvent.apply(H, arguments);
@@ -46,7 +40,8 @@ class EventProvider {
     }
     /**
      * Remove added event.
-     * @private
+     *
+     * @internal
      */
     removeEvent(event) {
         const pos = this.eventRemovers.map((e) => e.remover).indexOf(event);
@@ -55,7 +50,8 @@ class EventProvider {
     }
     /**
      * Remove all added events.
-     * @private
+     *
+     * @internal
      */
     removeAddedEvents() {
         this.eventRemovers.map((e) => e.remover)
@@ -68,4 +64,5 @@ class EventProvider {
  *  Default Export
  *
  * */
+/** @internal */
 export default EventProvider;

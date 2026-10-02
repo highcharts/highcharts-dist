@@ -62,7 +62,6 @@ function arrayExtremesOHLC(data) {
 /**
  * The Volume By Price (VBP) series type.
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.vbp
  *
@@ -74,6 +73,7 @@ class VBPIndicator extends SMAIndicator {
      *  Functions
      *
      * */
+    /** @internal */
     init(chart, options) {
         const indicator = this;
         // Series.update() sends data that is not necessary as everything is
@@ -99,6 +99,7 @@ class VBPIndicator extends SMAIndicator {
         return indicator;
     }
     // Adds events related with removing series
+    /** @internal */
     addCustomEvents(baseSeries, volumeSeries) {
         const indicator = this, toEmptyIndicator = () => {
             indicator.chart.redraw();
@@ -123,6 +124,7 @@ class VBPIndicator extends SMAIndicator {
         return indicator;
     }
     // Initial animation
+    /** @internal */
     animate(init) {
         const series = this, inverted = series.chart.inverted, group = series.group, attr = {};
         if (!init && group) {
@@ -144,6 +146,7 @@ class VBPIndicator extends SMAIndicator {
             }));
         }
     }
+    /** @internal */
     drawPoints() {
         const indicator = this;
         if (indicator.options.volumeDivision.enabled) {
@@ -154,6 +157,7 @@ class VBPIndicator extends SMAIndicator {
         columnProto.drawPoints.apply(indicator, arguments);
     }
     // Function responsible for dividing volume into positive and negative
+    /** @internal */
     posNegVolume(initVol, pos) {
         const indicator = this, signOrder = pos ?
             ['positive', 'negative'] :
@@ -195,6 +199,7 @@ class VBPIndicator extends SMAIndicator {
                 indicator.posWidths[i];
         }
     }
+    /** @internal */
     translate() {
         const indicator = this, options = indicator.options, chart = indicator.chart, yAxis = indicator.yAxis, yAxisMin = yAxis.min, zoneLinesOptions = indicator.options.zoneLines, priceZones = (indicator.priceZones);
         let yBarOffset = 0, volumeDataArray, maxVolume, primalBarWidth, barHeight, barHeightP, oldBarHeight, barWidth, pointPadding, chartPlotTop, barX, barY;
@@ -245,6 +250,7 @@ class VBPIndicator extends SMAIndicator {
             }
         }
     }
+    /** @internal */
     getExtremes() {
         const prevCompare = this.options.compare, prevCumulative = this.options.cumulative;
         let ret;
@@ -264,6 +270,7 @@ class VBPIndicator extends SMAIndicator {
         }
         return ret;
     }
+    /** @internal */
     getValues(series, params) {
         const indicator = this, xValues = series.getColumn('x', true), yValues = series.processedYData, chart = indicator.chart, ranges = params.ranges, VBP = [], xData = [], yData = [], volumeSeries = chart.get(params.volumeSeriesID);
         // Checks if base series exists
@@ -306,6 +313,7 @@ class VBPIndicator extends SMAIndicator {
         };
     }
     // Specifying where each zone should start ans end
+    /** @internal */
     specifyZones(isOHLC, xValues, yValues, ranges, volumeSeries) {
         const indicator = this, rangeExtremes = (isOHLC ? arrayExtremesOHLC(yValues) : false), zoneStarts = indicator.zoneStarts = [], priceZones = [];
         let lowRange = rangeExtremes ?
@@ -351,6 +359,7 @@ class VBPIndicator extends SMAIndicator {
         return indicator.volumePerZone(isOHLC, priceZones, volumeSeries, xValues, yValues);
     }
     // Calculating sum of volume values for a specific zone
+    /** @internal */
     volumePerZone(isOHLC, priceZones, volumeSeries, xValues, yValues) {
         const indicator = this, volumeXData = volumeSeries.getColumn('x', true), volumeYData = volumeSeries.getColumn('y', true), lastZoneIndex = priceZones.length - 1, baseSeriesLength = yValues.length, volumeSeriesLength = volumeYData.length;
         let previousValue, startFlag, endFlag, value, i;
@@ -417,6 +426,7 @@ class VBPIndicator extends SMAIndicator {
         return priceZones;
     }
     // Function responsible for drawing additional lines indicating zones
+    /** @internal */
     drawZones(chart, yAxis, zonesValues, zonesStyles) {
         const indicator = this, renderer = chart.renderer, leftLinePos = 0, rightLinePos = chart.plotWidth, verticalOffset = chart.plotTop;
         let zoneLinesSVG = indicator.zoneLinesSVG, zoneLinesPath = [], verticalLinePos;
@@ -471,6 +481,7 @@ class VBPIndicator extends SMAIndicator {
  * @requires     stock/indicators/indicators
  * @requires     stock/indicators/volume-by-price
  * @optionparent plotOptions.vbp
+ * @internal
  */
 VBPIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
     /**
@@ -591,7 +602,7 @@ export default VBPIndicator;
  * @extends   series,plotOptions.vbp
  * @since     6.0.0
  * @product   highstock
- * @excluding dataParser, dataURL, compare, compareBase, compareStart
+ * @excluding compare, compareBase, compareStart
  * @requires  stock/indicators/indicators
  * @requires  stock/indicators/volume-by-price
  * @apioption series.vbp

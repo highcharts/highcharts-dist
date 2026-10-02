@@ -18,7 +18,6 @@ import { correctFloat, isArray, merge } from '../../../Shared/Utilities.js';
 /**
  * The TEMA series type.
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.tema
  *
@@ -30,9 +29,11 @@ class TEMAIndicator extends EMAIndicator {
      *  Functions
      *
      * */
+    /** @internal */
     getEMA(yVal, prevEMA, SMA, index, i, xVal) {
         return super.calculateEma(xVal || [], yVal, typeof i === 'undefined' ? 1 : i, this.EMApercent, prevEMA, typeof index === 'undefined' ? -1 : index, SMA);
     }
+    /** @internal */
     getTemaPoint(xVal, tripledPeriod, EMAlevels, i) {
         const TEMAPoint = [
             xVal[i - 3],
@@ -41,6 +42,7 @@ class TEMAIndicator extends EMAIndicator {
         ];
         return TEMAPoint;
     }
+    /** @internal */
     getValues(series, params) {
         const period = params.period, doubledPeriod = 2 * period, tripledPeriod = 3 * period, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, tema = [], xDataTema = [], yDataTema = [], 
         // EMA values array
@@ -149,6 +151,7 @@ class TEMAIndicator extends EMAIndicator {
  * @requires     stock/indicators/indicators
  * @requires     stock/indicators/tema
  * @optionparent plotOptions.tema
+ * @internal
  */
 TEMAIndicator.defaultOptions = merge(EMAIndicator.defaultOptions);
 SeriesRegistry.registerSeriesType('tema', TEMAIndicator);
@@ -157,7 +160,6 @@ SeriesRegistry.registerSeriesType('tema', TEMAIndicator);
  *  Default Export
  *
  * */
-/** @internal */
 export default TEMAIndicator;
 /* *
  *
@@ -171,7 +173,7 @@ export default TEMAIndicator;
  * @extends   series,plotOptions.tema
  * @since     7.0.0
  * @product   highstock
- * @excluding allAreas, colorAxis, compare, compareBase, dataParser, dataURL,
+ * @excluding allAreas, colorAxis, compare, compareBase,
  *            joinBy, keys, navigatorOptions, pointInterval, pointIntervalUnit,
  *            pointPlacement, pointRange, pointStart, showInNavigator, stacking
  * @requires  stock/indicators/indicators

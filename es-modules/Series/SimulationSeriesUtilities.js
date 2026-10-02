@@ -9,7 +9,7 @@ import { syncTimeout } from '../Shared/Utilities.js';
  * Create a setTimeout for the first drawDataLabels()
  * based on the dataLabels.animation.defer value
  * for series which have enabled simulation.
- * @private
+ * @internal
  */
 function initDataLabelsDefer() {
     const dlOptions = this.options.dataLabels;
@@ -31,7 +31,7 @@ function initDataLabelsDefer() {
  * Initialize the SVG group for the DataLabels with correct opacities
  * and correct styles so that the animation for the series that have
  * simulation enabled works fine.
- * @private
+ * @internal
  */
 function initDataLabels() {
     const series = this, dlOptions = series.options.dataLabels;
@@ -64,8 +64,10 @@ function initDataLabels() {
     });
     return series.dataLabelsGroup;
 }
+/** @internal */
 const DataLabelsDeferUtils = {
     initDataLabels,
     initDataLabelsDefer
 };
+/** @internal */
 export default DataLabelsDeferUtils;

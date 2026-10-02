@@ -19,7 +19,6 @@ import { extend, merge } from '../../../Shared/Utilities.js';
 /**
  * The Aroon Oscillator series type.
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.aroonoscillator
  *
@@ -31,6 +30,7 @@ class AroonOscillatorIndicator extends AroonIndicator {
      *  Functions
      *
      * */
+    /** @internal */
     getValues(series, params) {
         // 0- date, 1- Aroon Oscillator
         const ARO = [], xData = [], yData = [];
@@ -75,6 +75,7 @@ class AroonOscillatorIndicator extends AroonIndicator {
  * @requires     stock/indicators/aroon
  * @requires     stock/indicators/aroon-oscillator
  * @optionparent plotOptions.aroonoscillator
+ * @internal
  */
 AroonOscillatorIndicator.defaultOptions = merge(AroonIndicator.defaultOptions, {
     tooltip: {
@@ -94,7 +95,6 @@ SeriesRegistry.registerSeriesType('aroonoscillator', AroonOscillatorIndicator);
  *  Default Export
  *
  * */
-/** @internal */
 export default AroonOscillatorIndicator;
 /* *
  *
@@ -108,8 +108,8 @@ export default AroonOscillatorIndicator;
  * @extends   series,plotOptions.aroonoscillator
  * @since     7.0.0
  * @product   highstock
- * @excluding allAreas, aroonDown, colorAxis, compare, compareBase, dataParser,
- *            dataURL, joinBy, keys, navigatorOptions, pointInterval,
+ * @excluding allAreas, aroonDown, colorAxis, compare, compareBase,
+ *            joinBy, keys, navigatorOptions, pointInterval,
  *            pointIntervalUnit, pointPlacement, pointRange, pointStart,
  *            showInNavigator, stacking
  * @requires  stock/indicators/indicators

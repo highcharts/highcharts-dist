@@ -14,5 +14,4 @@
  *  Export Default
  *
  * */
-/** @internal */
 export default BarPoint;

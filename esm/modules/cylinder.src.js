@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.0-modified (2026-08-14)
+ * @license Highcharts JS v13.1.0 (2026-10-02)
  * @module highcharts/modules/cylinder
  * @requires highcharts
  * @requires highcharts/highcharts-3d
@@ -19,48 +19,27 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 /******/ 
 /************************************************************************/
 /******/ /* webpack/runtime/compat get default export */
-/******/ (() => {
-/******/ 	// getDefaultExport function for compatibility with non-harmony modules
-/******/ 	__webpack_require__.n = (module) => {
-/******/ 		const getter = module && module.__esModule ?
-/******/ 			() => (module['default']) :
-/******/ 			() => (module);
-/******/ 		__webpack_require__.d(getter, { a: getter });
-/******/ 		return getter;
-/******/ 	};
-/******/ })();
+/******/ // getDefaultExport function for compatibility with non-harmony modules
+/******/ __webpack_require__.n = (module) => {
+/******/ 	const getter = module && module.__esModule ?
+/******/ 		() => (module['default']) :
+/******/ 		() => (module);
+/******/ 	__webpack_require__.d(getter, { a: getter });
+/******/ 	return getter;
+/******/ };
 /******/ 
 /******/ /* webpack/runtime/define property getters */
-/******/ (() => {
-/******/ 	// define getter/value functions for harmony exports
-/******/ 	__webpack_require__.d = (exports, definition) => {
-/******/ 		if(Array.isArray(definition)) {
-/******/ 			var i = 0;
-/******/ 			while(i < definition.length) {
-/******/ 				var key = definition[i++];
-/******/ 				var binding = definition[i++];
-/******/ 				if(!__webpack_require__.o(exports, key)) {
-/******/ 					if(binding === 0) {
-/******/ 						Object.defineProperty(exports, key, { enumerable: true, value: definition[i++] });
-/******/ 					} else {
-/******/ 						Object.defineProperty(exports, key, { enumerable: true, get: binding });
-/******/ 					}
-/******/ 				} else if(binding === 0) { i++; }
-/******/ 			}
-/******/ 		} else {
-/******/ 			for(var key in definition) {
-/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
-/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
-/******/ 				}
-/******/ 			}
+/******/ // define getter/value functions for harmony exports
+/******/ __webpack_require__.d = (exports, definition) => {
+/******/ 	for(var key in definition) {
+/******/ 		if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 			Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
 /******/ 		}
-/******/ 	};
-/******/ })();
+/******/ 	}
+/******/ };
 /******/ 
 /******/ /* webpack/runtime/hasOwnProperty shorthand */
-/******/ (() => {
-/******/ 	__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
-/******/ })();
+/******/ __webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop));
 /******/ 
 /************************************************************************/
 
@@ -82,7 +61,6 @@ var external_highcharts_src_js_default_SVGRenderer_default = /*#__PURE__*/__webp
  *
  *
  * */
-
 
 
 const { deg2rad } = (external_highcharts_src_js_default_default());
@@ -171,11 +149,11 @@ function perspective(points, chart, insidePlotArea, useInvertedPersp) {
     /* The useInvertedPersp argument is used for inverted charts with
      * already inverted elements, such as dataLabels or tooltip positions.
      */
-    inverted = (0,external_highcharts_src_js_default_namespaceObject.pick)(useInvertedPersp, insidePlotArea ? chart.inverted : false), origin = {
+    inverted = useInvertedPersp ?? (insidePlotArea ? chart.inverted : false), origin = {
         x: chart.plotWidth / 2,
         y: chart.plotHeight / 2,
         z: options3d.depth / 2,
-        vd: (0,external_highcharts_src_js_default_namespaceObject.pick)(options3d.depth, 1) * (0,external_highcharts_src_js_default_namespaceObject.pick)(options3d.viewDistance, 0)
+        vd: (options3d.depth ?? 1) * (options3d.viewDistance ?? 0)
     }, scale = chart.scale3d || 1, beta = deg2rad * options3d.beta * (inverted ? -1 : 1), alpha = deg2rad * options3d.alpha * (inverted ? -1 : 1), angles = {
         cosA: Math.cos(alpha),
         cosB: Math.cos(-beta),
@@ -254,13 +232,13 @@ function pointCameraDistance(coordinates, chart) {
     const options3d = chart.options.chart.options3d, cameraPosition = {
         x: chart.plotWidth / 2,
         y: chart.plotHeight / 2,
-        z: (0,external_highcharts_src_js_default_namespaceObject.pick)(options3d.depth, 1) * (0,external_highcharts_src_js_default_namespaceObject.pick)(options3d.viewDistance, 0) +
+        z: (options3d.depth ?? 1) * (options3d.viewDistance ?? 0) +
             options3d.depth
     }, 
     // Added support for objects with plotX or x coordinates.
-    distance = Math.sqrt(Math.pow(cameraPosition.x - (0,external_highcharts_src_js_default_namespaceObject.pick)(coordinates.plotX, coordinates.x), 2) +
-        Math.pow(cameraPosition.y - (0,external_highcharts_src_js_default_namespaceObject.pick)(coordinates.plotY, coordinates.y), 2) +
-        Math.pow(cameraPosition.z - (0,external_highcharts_src_js_default_namespaceObject.pick)(coordinates.plotZ, coordinates.z), 2));
+    distance = Math.sqrt(Math.pow(cameraPosition.x - (coordinates.plotX ?? coordinates.x), 2) +
+        Math.pow(cameraPosition.y - (coordinates.plotY ?? coordinates.y), 2) +
+        Math.pow(cameraPosition.z - (coordinates.plotZ ?? coordinates.z), 2));
     return distance;
 }
 /**
@@ -309,21 +287,6 @@ function shapeArea(vertexes) {
 function shapeArea3D(vertexes, chart, insidePlotArea) {
     return shapeArea(perspective(vertexes, chart, insidePlotArea));
 }
-/* *
- *
- *  Default Export
- *
- * */
-/** @internal */
-const Math3D = {
-    perspective,
-    perspective3D,
-    pointCameraDistance,
-    shapeArea,
-    shapeArea3D
-};
-/** @internal */
-/* harmony default export */ const Core_Math3D = (Math3D);
 
 ;// external ["../highcharts.src.js","default","Color"]
 const external_highcharts_src_js_default_Color_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].Color;
@@ -447,7 +410,7 @@ class SVGElement3D extends (external_highcharts_src_js_default_SVGElement_defaul
         for (const part of elem3d.parts) {
             // If different props for different parts
             if (partsProps) {
-                props = (0,external_highcharts_src_js_default_namespaceObject.pick)(partsProps[part], false);
+                props = (partsProps[part] ?? false);
             }
             // Only if something to set, but allow undefined
             if (props !== false) {
@@ -606,7 +569,6 @@ class SVGElement3DCylinder extends SVG_SVGElement3D {
 
 const { charts, deg2rad: CylinderComposition_deg2rad } = (external_highcharts_src_js_default_default());
 
-const { perspective: CylinderComposition_perspective } = Core_Math3D;
 
 
 /* *
@@ -745,7 +707,7 @@ function rendererGetCylinderEnd(chart, shapeArgs, isBottom) {
     const { width = 0, height = 0, alphaCorrection = 0 } = shapeArgs, 
     // A half of the smaller one out of width or depth (optional, because
     // there's no depth for a funnel that reuses the code)
-    depth = (0,external_highcharts_src_js_default_namespaceObject.pick)(shapeArgs.depth, width, 0), radius = Math.min(width, depth) / 2, 
+    depth = (shapeArgs.depth ?? width ?? 0), radius = Math.min(width, depth) / 2, 
     // Approximated longest diameter
     angleOffset = CylinderComposition_deg2rad * (chart.options.chart.options3d.beta - 90 +
         alphaCorrection), 
@@ -816,7 +778,7 @@ function rendererGetCylinderEnd(chart, shapeArgs, isBottom) {
         point.x = (x * cosTheta - z * sinTheta) + centerX;
         point.z = (z * cosTheta + x * sinTheta) + centerZ;
     }
-    const perspectivePoints = CylinderComposition_perspective(points, chart, true);
+    const perspectivePoints = perspective(points, chart, true);
     // Check for sub-pixel curve issue, compare front and back edges
     if (Math.abs(perspectivePoints[3].y - perspectivePoints[9].y) < 2.5 &&
         Math.abs(perspectivePoints[0].y - perspectivePoints[6].y) < 2.5) {
@@ -914,10 +876,9 @@ const { column: { prototype: { pointClass: ColumnPoint } } } = (external_highcha
  *  Class
  *
  * */
-/** @internal */
 class CylinderPoint extends ColumnPoint {
 }
-(0,external_highcharts_src_js_default_namespaceObject.extend)(CylinderPoint.prototype, {
+;(0,external_highcharts_src_js_default_namespaceObject.extend)(CylinderPoint.prototype, {
     shapeType: 'cylinder'
 });
 /* *
@@ -925,7 +886,6 @@ class CylinderPoint extends ColumnPoint {
  *  Default Export
  *
  * */
-/** @internal */
 /* harmony default export */ const Cylinder_CylinderPoint = (CylinderPoint);
 
 ;// ./code/es-modules/Series/Cylinder/CylinderSeriesDefaults.js
@@ -1081,7 +1041,6 @@ const { column: ColumnSeries } = (external_highcharts_src_js_default_SeriesRegis
  * @requires highcharts-3d
  * @requires modules/cylinder
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.cylinder
  *
@@ -1094,7 +1053,9 @@ class CylinderSeries extends ColumnSeries {
  *  Static Properties
  *
  * */
+/** @internal */
 CylinderSeries.compose = Cylinder_CylinderComposition.compose;
+/** @internal */
 CylinderSeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(ColumnSeries.defaultOptions, Cylinder_CylinderSeriesDefaults);
 (0,external_highcharts_src_js_default_namespaceObject.extend)(CylinderSeries.prototype, {
     pointClass: Cylinder_CylinderPoint
@@ -1105,7 +1066,6 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *  Default Export
  *
  * */
-/** @internal */
 /* harmony default export */ const Cylinder_CylinderSeries = (CylinderSeries);
 
 ;// ./code/es-modules/masters/modules/cylinder.src.js

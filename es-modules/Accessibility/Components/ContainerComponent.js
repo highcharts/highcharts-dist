@@ -23,9 +23,10 @@ const { stripHTMLTagsFromString: stripHTMLTags } = HU;
 /**
  * The ContainerComponent class
  *
- * @private
  * @class
  * @name Highcharts.ContainerComponent
+ *
+ * @internal
  */
 class ContainerComponent extends AccessibilityComponent {
     /* *
@@ -43,9 +44,7 @@ class ContainerComponent extends AccessibilityComponent {
         this.setRenderToAttrs();
         this.makeCreditsAccessible();
     }
-    /**
-     * @private
-     */
+    /** @internal */
     handleSVGTitleElement() {
         const chart = this.chart, titleId = 'highcharts-title-' + chart.index, titleContents = stripHTMLTags(chart.langFormat('accessibility.svgContainerTitle', {
             chartTitle: getChartTitle(chart)
@@ -58,9 +57,7 @@ class ContainerComponent extends AccessibilityComponent {
             chart.renderTo.insertBefore(titleElement, chart.renderTo.firstChild);
         }
     }
-    /**
-     * @private
-     */
+    /** @internal */
     setSVGContainerLabel() {
         const chart = this.chart, svgContainerLabel = chart.langFormat('accessibility.svgContainerLabel', {
             chartTitle: getChartTitle(chart)
@@ -69,9 +66,7 @@ class ContainerComponent extends AccessibilityComponent {
             chart.renderer.box.setAttribute('aria-label', svgContainerLabel);
         }
     }
-    /**
-     * @private
-     */
+    /** @internal */
     setGraphicContainerAttrs() {
         const chart = this.chart, label = chart.langFormat('accessibility.graphicContainerLabel', {
             chartTitle: getChartTitle(chart)
@@ -82,7 +77,8 @@ class ContainerComponent extends AccessibilityComponent {
     }
     /**
      * Set attributes on the chart container element.
-     * @private
+     *
+     * @internal
      */
     setRenderToAttrs() {
         const chart = this.chart, shouldHaveLandmark = chart.options.accessibility
@@ -95,9 +91,7 @@ class ContainerComponent extends AccessibilityComponent {
             chart.renderTo.setAttribute('aria-label', containerLabel);
         }
     }
-    /**
-     * @private
-     */
+    /** @internal */
     makeCreditsAccessible() {
         const chart = this.chart, credits = chart.credits;
         if (credits) {
@@ -111,7 +105,8 @@ class ContainerComponent extends AccessibilityComponent {
     }
     /**
      * Empty handler to just set focus on chart
-     * @private
+     *
+     * @internal
      */
     getKeyboardNavigation() {
         const chart = this.chart;
@@ -140,4 +135,5 @@ class ContainerComponent extends AccessibilityComponent {
  *  Default Export
  *
  * */
+/** @internal */
 export default ContainerComponent;

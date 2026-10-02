@@ -25,7 +25,8 @@ import { addEvent, attr } from '../../Shared/Utilities.js';
  * */
 /**
  * Do we want date input navigation
- * @private
+ *
+ * @internal
  */
 function shouldRunInputNavigation(chart) {
     return Boolean(chart.rangeSelector &&
@@ -43,9 +44,10 @@ function shouldRunInputNavigation(chart) {
 /**
  * The RangeSelectorComponent class
  *
- * @private
  * @class
  * @name Highcharts.RangeSelectorComponent
+ *
+ * @internal
  */
 class RangeSelectorComponent extends AccessibilityComponent {
     /* *
@@ -55,7 +57,8 @@ class RangeSelectorComponent extends AccessibilityComponent {
      * */
     /**
      * Init the component
-     * @private
+     *
+     * @internal
      */
     init() {
         const chart = this.chart;
@@ -91,7 +94,8 @@ class RangeSelectorComponent extends AccessibilityComponent {
     }
     /**
      * Hide buttons from AT when showing dropdown, and vice versa.
-     * @private
+     *
+     * @internal
      */
     updateSelectorVisibility() {
         const chart = this.chart;
@@ -117,7 +121,8 @@ class RangeSelectorComponent extends AccessibilityComponent {
     }
     /**
      * Set accessibility related attributes on dropdown element.
-     * @private
+     *
+     * @internal
      */
     setDropdownAttrs() {
         const chart = this.chart;
@@ -131,7 +136,8 @@ class RangeSelectorComponent extends AccessibilityComponent {
     }
     /**
      * Set attrs for a range button
-     * @private
+     *
+     * @internal
      */
     setRangeButtonAttrs(button) {
         attr(button.element, {
@@ -141,7 +147,8 @@ class RangeSelectorComponent extends AccessibilityComponent {
     }
     /**
      * Set attrs for a date input
-     * @private
+     *
+     * @internal
      */
     setRangeInputAttrs(input, langKey) {
         const chart = this.chart;
@@ -152,7 +159,8 @@ class RangeSelectorComponent extends AccessibilityComponent {
     }
     /**
      * Handle arrow key nav
-     * @private
+     *
+     * @internal
      */
     onButtonNavKbdArrowKey(keyboardNavigationHandler, keyCode) {
         const response = keyboardNavigationHandler.response, keys = this.keyCodes, chart = this.chart, wrapAround = chart.options.accessibility
@@ -168,7 +176,8 @@ class RangeSelectorComponent extends AccessibilityComponent {
     }
     /**
      * Handle keyboard click
-     * @private
+     *
+     * @internal
      */
     onButtonNavKbdClick(keyboardNavigationHandler) {
         const response = keyboardNavigationHandler.response, chart = this.chart, wasDisabled = chart.oldRangeSelectorItemState === 3;
@@ -180,7 +189,8 @@ class RangeSelectorComponent extends AccessibilityComponent {
     /**
      * Called whenever a range selector button has been clicked, either by
      * mouse, touch, or kbd/voice/other.
-     * @private
+     *
+     * @internal
      */
     onAfterBtnClick() {
         const chart = this.chart;
@@ -192,7 +202,8 @@ class RangeSelectorComponent extends AccessibilityComponent {
     }
     /**
      * Handle move between input elements with Tab key
-     * @private
+     *
+     * @internal
      */
     onInputKbdMove(direction) {
         const chart = this.chart;
@@ -219,7 +230,8 @@ class RangeSelectorComponent extends AccessibilityComponent {
     }
     /**
      * Init date input navigation
-     * @private
+     *
+     * @internal
      */
     onInputNavInit(direction) {
         const component = this;
@@ -257,7 +269,8 @@ class RangeSelectorComponent extends AccessibilityComponent {
     }
     /**
      * Terminate date input nav
-     * @private
+     *
+     * @internal
      */
     onInputNavTerminate() {
         const rangeSel = (this.chart.rangeSelector || {});
@@ -274,7 +287,8 @@ class RangeSelectorComponent extends AccessibilityComponent {
     }
     /**
      * Init range selector dropdown nav
-     * @private
+     *
+     * @internal
      */
     initDropdownNav() {
         const chart = this.chart;
@@ -301,8 +315,9 @@ class RangeSelectorComponent extends AccessibilityComponent {
     }
     /**
      * Get navigation for the range selector buttons.
-     * @private
      * @return {Highcharts.KeyboardNavigationHandler} The module object.
+     *
+     * @internal
      */
     getRangeSelectorButtonNavigation() {
         const chart = this.chart;
@@ -348,9 +363,10 @@ class RangeSelectorComponent extends AccessibilityComponent {
     }
     /**
      * Get navigation for the range selector input boxes.
-     * @private
      * @return {Highcharts.KeyboardNavigationHandler}
      *         The module object.
+     *
+     * @internal
      */
     getRangeSelectorInputNavigation() {
         const chart = this.chart;
@@ -399,6 +415,7 @@ class RangeSelectorComponent extends AccessibilityComponent {
  *  Class Namespace
  *
  * */
+/** @internal */
 (function (RangeSelectorComponent) {
     /* *
      *
@@ -413,8 +430,9 @@ class RangeSelectorComponent extends AccessibilityComponent {
     /**
      * Highlight range selector button by index.
      *
-     * @private
      * @function Highcharts.Chart#highlightRangeSelectorButton
+     *
+     * @internal
      */
     function chartHighlightRangeSelectorButton(ix) {
         const buttons = (this.rangeSelector &&
@@ -443,7 +461,8 @@ class RangeSelectorComponent extends AccessibilityComponent {
     }
     /**
      * Build compositions
-     * @private
+     *
+     * @internal
      */
     function compose(ChartClass, RangeSelectorClass) {
         const chartProto = ChartClass.prototype;
@@ -456,7 +475,8 @@ class RangeSelectorComponent extends AccessibilityComponent {
     /**
      * Range selector does not have destroy-setup for class instance events - so
      * we set it on the class and call the component from here.
-     * @private
+     *
+     * @internal
      */
     function rangeSelectorAfterBtnClick() {
         const a11y = this.chart.accessibility;
@@ -470,4 +490,5 @@ class RangeSelectorComponent extends AccessibilityComponent {
  *  Export Default
  *
  * */
+/** @internal */
 export default RangeSelectorComponent;

@@ -13,7 +13,7 @@
 import H from './Globals.js';
 const { charts, composed, doc, noop, win } = H;
 import Pointer from './Pointer.js';
-import { addEvent, attr, css, defined, objectEach, pick, pushUnique, removeEvent } from '../Shared/Utilities.js';
+import { addEvent, attr, css, defined, objectEach, pushUnique, removeEvent } from '../Shared/Utilities.js';
 /* *
  *
  *  Constants
@@ -191,7 +191,7 @@ class MSPointer extends Pointer {
         const tooltip = this.chart.tooltip;
         super.setDOMEvents();
         if (this.hasZoom ||
-            pick((tooltip?.options.followTouchMove), true)) {
+            ((tooltip?.options.followTouchMove) ?? true)) {
             this.batchMSEvents(addEvent);
         }
     }

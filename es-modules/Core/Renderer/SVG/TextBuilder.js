@@ -13,7 +13,7 @@
 import AST from '../HTML/AST.js';
 import H from '../../Globals.js';
 const { doc, SVG_NS, win } = H;
-import { attr, extend, fireEvent, isString, objectEach, pick } from '../../../Shared/Utilities.js';
+import { attr, extend, fireEvent, isString, objectEach } from '../../../Shared/Utilities.js';
 // Function used to test string length including an ellipsis
 const stringWithEllipsis = (text, currentIndex) => text.substring(0, currentIndex) + '\u2026';
 /* *
@@ -50,7 +50,7 @@ class TextBuilder {
      * @internal
      */
     buildSVG() {
-        const wrapper = this.svgElement, textNode = wrapper.element, renderer = wrapper.renderer, textStr = pick(wrapper.textStr, '').toString(), hasMarkup = textStr.indexOf('<') !== -1, childNodes = textNode.childNodes, tempParent = !wrapper.added && renderer.box, regexMatchBreaks = /<br.*?>/g, 
+        const wrapper = this.svgElement, textNode = wrapper.element, renderer = wrapper.renderer, textStr = (wrapper.textStr ?? '').toString(), hasMarkup = textStr.indexOf('<') !== -1, childNodes = textNode.childNodes, tempParent = !wrapper.added && renderer.box, regexMatchBreaks = /<br.*?>/g, 
         // The buildText code is quite heavy, so if we're not changing
         // something that affects the text, skip it (#6113).
         textCache = [
@@ -207,8 +207,12 @@ class TextBuilder {
                             this.truncate(textNode, textNode.textContent || '', void 0, 0, 
                             // Target width
                             width, ellipsisWidth, stringWithEllipsis);
-                            textNode.textContent = textNode.textContent
-                                ?.replace('\u2026', '') + '\u2026';
+                            // If there is still text left, add an ellipsis to
+                            // the end of the line
+                            if (textNode.textContent) {
+                                textNode.textContent = textNode.textContent
+                                    ?.replace('\u2026', '') + '\u2026';
+                            }
                         }
                         break;
                     }

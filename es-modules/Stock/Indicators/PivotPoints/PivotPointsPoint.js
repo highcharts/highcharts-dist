@@ -33,17 +33,18 @@ function destroyExtraLabels(point, functionName) {
  *  Class
  *
  * */
-/** @internal */
 class PivotPointsPoint extends SMAPoint {
     /* *
      *
      *  Functions
      *
      * */
+    /** @internal */
     destroyElements() {
         destroyExtraLabels(this, 'destroyElements');
     }
     // This method is called when removing points, e.g. series.update()
+    /** @internal */
     destroy() {
         destroyExtraLabels(this, 'destroyElements');
     }
@@ -53,5 +54,4 @@ class PivotPointsPoint extends SMAPoint {
  *  Default Export
  *
  * */
-/** @internal */
 export default PivotPointsPoint;

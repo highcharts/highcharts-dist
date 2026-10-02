@@ -116,7 +116,7 @@ const VennSeriesDefaults = {
  * not specified, it is inherited from [chart.type](#chart.type).
  *
  * @extends   series,plotOptions.venn
- * @excluding connectEnds, connectNulls, cropThreshold, dataParser, dataURL,
+ * @excluding connectEnds, connectNulls, cropThreshold,
  *            findNearestPointBy, getExtremesFromAll, label, linecap, lineWidth,
  *            linkedTo, marker, negativeColor, pointInterval, pointIntervalUnit,
  *            pointPlacement, pointStart, softThreshold, stack, stacking, steps,

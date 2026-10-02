@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.0-modified (2026-08-14)
+ * @license Highcharts JS v13.1.0 (2026-10-02)
  * @module highcharts/modules/timeline
  * @requires highcharts
  *
@@ -14,14 +14,14 @@
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(root["_Highcharts"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]["Point"]);
+		module.exports = factory(root["_Highcharts"]["Point"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
 	else if(typeof define === 'function' && define.amd)
-		define("highcharts/modules/timeline", ["highcharts/highcharts"], function (amd1) {return factory(amd1,amd1["SeriesRegistry"],amd1["Point"]);});
+		define("highcharts/modules/timeline", ["highcharts/highcharts"], function (amd1) {return factory(amd1["Point"],amd1["SeriesRegistry"],amd1);});
 	else if(typeof exports === 'object')
-		exports["highcharts/modules/timeline"] = factory(root["_Highcharts"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]["Point"]);
+		exports["highcharts/modules/timeline"] = factory(root["_Highcharts"]["Point"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
 	else
-		root["Highcharts"] = factory(root["Highcharts"], root["Highcharts"]["SeriesRegistry"], root["Highcharts"]["Point"]);
-})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__944__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__260__) => {
+		root["Highcharts"] = factory(root["Highcharts"]["Point"], root["Highcharts"]["SeriesRegistry"], root["Highcharts"]);
+})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__260__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__944__) => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
@@ -75,48 +75,27 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__944__;
 /******/ 	
 /************************************************************************/
 /******/ 	/* webpack/runtime/compat get default export */
-/******/ 	(() => {
-/******/ 		// getDefaultExport function for compatibility with non-harmony modules
-/******/ 		__webpack_require__.n = (module) => {
-/******/ 			const getter = module && module.__esModule ?
-/******/ 				() => (module['default']) :
-/******/ 				() => (module);
-/******/ 			__webpack_require__.d(getter, { a: getter });
-/******/ 			return getter;
-/******/ 		};
-/******/ 	})();
+/******/ 	// getDefaultExport function for compatibility with non-harmony modules
+/******/ 	__webpack_require__.n = (module) => {
+/******/ 		const getter = module && module.__esModule ?
+/******/ 			() => (module['default']) :
+/******/ 			() => (module);
+/******/ 		__webpack_require__.d(getter, { a: getter });
+/******/ 		return getter;
+/******/ 	};
 /******/ 	
 /******/ 	/* webpack/runtime/define property getters */
-/******/ 	(() => {
-/******/ 		// define getter/value functions for harmony exports
-/******/ 		__webpack_require__.d = (exports, definition) => {
-/******/ 			if(Array.isArray(definition)) {
-/******/ 				var i = 0;
-/******/ 				while(i < definition.length) {
-/******/ 					var key = definition[i++];
-/******/ 					var binding = definition[i++];
-/******/ 					if(!__webpack_require__.o(exports, key)) {
-/******/ 						if(binding === 0) {
-/******/ 							Object.defineProperty(exports, key, { enumerable: true, value: definition[i++] });
-/******/ 						} else {
-/******/ 							Object.defineProperty(exports, key, { enumerable: true, get: binding });
-/******/ 						}
-/******/ 					} else if(binding === 0) { i++; }
-/******/ 				}
-/******/ 			} else {
-/******/ 				for(var key in definition) {
-/******/ 					if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
-/******/ 						Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
-/******/ 					}
-/******/ 				}
+/******/ 	// define getter/value functions for harmony exports
+/******/ 	__webpack_require__.d = (exports, definition) => {
+/******/ 		for(var key in definition) {
+/******/ 			if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 				Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
 /******/ 			}
-/******/ 		};
-/******/ 	})();
+/******/ 		}
+/******/ 	};
 /******/ 	
 /******/ 	/* webpack/runtime/hasOwnProperty shorthand */
-/******/ 	(() => {
-/******/ 		__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
-/******/ 	})();
+/******/ 	__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop));
 /******/ 	
 /************************************************************************/
 let __webpack_exports__ = {};
@@ -166,6 +145,7 @@ class TimelinePoint extends LinePoint {
      *  Functions
      *
      * */
+    /** @internal */
     alignConnector() {
         const point = this, series = point.series, dataLabel = point.dataLabel, connector = dataLabel.connector, dlOptions = (dataLabel.options || {}), connectorWidth = dlOptions.connectorWidth || 0, chart = point.series.chart, bBox = connector.getBBox(), plotPos = {
             x: bBox.x + (dataLabel.translateX || 0),
@@ -192,6 +172,7 @@ class TimelinePoint extends LinePoint {
             });
         }
     }
+    /** @internal */
     drawConnector() {
         const point = this, { dataLabel, series } = point;
         if (dataLabel) {
@@ -209,6 +190,7 @@ class TimelinePoint extends LinePoint {
             }
         }
     }
+    /** @internal */
     getConnectorPath() {
         const { plotX = 0, plotY = 0, series, dataLabel } = this, chart = series.chart, xAxisLen = series.xAxis.len, inverted = chart.inverted, direction = inverted ? 'x2' : 'y2';
         if (dataLabel) {
@@ -235,7 +217,7 @@ class TimelinePoint extends LinePoint {
                 coords[direction] += dataLabel[inverted ? 'width' : 'height'] || 0;
             }
             // Change coordinates so that they will be relative to data label.
-            (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.objectEach)(coords, (_coord, i) => {
+            ;(0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.objectEach)(coords, (_coord, i) => {
                 coords[i] -= (dataLabel.alignAttr || dataLabel)[i[0]];
             });
             return chart.renderer.crispLine([
@@ -255,9 +237,11 @@ class TimelinePoint extends LinePoint {
             'Null');
         this.y = 1;
     }
+    /** @internal */
     isValid() {
         return this.options.y !== null;
     }
+    /** @internal */
     setState() {
         const proceed = super.setState;
         // Prevent triggering the setState method on null points.
@@ -265,9 +249,10 @@ class TimelinePoint extends LinePoint {
             proceed.apply(this, arguments);
         }
     }
+    /** @internal */
     setVisible(visible, redraw) {
         const point = this, series = point.series;
-        redraw = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(redraw, series.options.ignoreHiddenPoint);
+        redraw = (redraw ?? series.options.ignoreHiddenPoint);
         PiePoint.prototype.setVisible.call(point, visible, false);
         // Process new data
         series.processData();
@@ -275,6 +260,7 @@ class TimelinePoint extends LinePoint {
             series.chart.redraw();
         }
     }
+    /** @internal */
     applyOptions(options, x, isMock) {
         const series = this.series;
         if (!x && !options?.x) {
@@ -485,7 +471,7 @@ const TimelineSeriesDefaults = {
  *
  * @extends   series,plotOptions.timeline
  * @excluding animationLimit, boostThreshold, connectEnds, connectNulls,
- *            cropThreshold, dashStyle, dataParser, dataURL, findNearestPointBy,
+ *            cropThreshold, dashStyle, findNearestPointBy,
  *            getExtremesFromAll, negativeColor, pointInterval,
  *            pointIntervalUnit, pointPlacement, pointStart, softThreshold,
  *            stacking, stack, step, threshold, turboThreshold, zoneAxis, zones,
@@ -597,6 +583,7 @@ class TimelineSeries extends LineSeries {
      *  Functions
      *
      * */
+    /** @internal */
     alignDataLabel(point, dataLabel, _options, _alignTo) {
         const series = this, isInverted = series.chart.inverted, visiblePoints = series.visibilityMap.filter((point) => !!point), visiblePointsCount = series.visiblePointsCount || 0, pointIndex = visiblePoints.indexOf(point), isFirstOrLast = (!pointIndex || pointIndex === visiblePointsCount - 1), dataLabelsOptions = series.options.dataLabels, userDLOptions = point.userDLOptions || {}, 
         // Define multiplier which is used to calculate data label
@@ -614,7 +601,7 @@ class TimelineSeries extends LineSeries {
             if (isInverted) {
                 targetDLWidth = ((distance - pad) * 2 - ((point.itemHeight || 0) / 2));
                 styles = {
-                    width: (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(dataLabelsOptions.style?.width, `${series.yAxis.len * 0.4}px`),
+                    width: (dataLabelsOptions.style?.width ?? `${series.yAxis.len * 0.4}px`),
                     // Apply ellipsis when data label height is exceeded.
                     textOverflow: (dataLabel.width || 0) / targetDLWidth *
                         (dataLabel.height || 0) / 2 > availableSpace *
@@ -636,6 +623,7 @@ class TimelineSeries extends LineSeries {
         }
         super.alignDataLabel.apply(series, arguments);
     }
+    /** @internal */
     bindAxes() {
         const series = this;
         super.bindAxes();
@@ -644,11 +632,13 @@ class TimelineSeries extends LineSeries {
             series.xAxis.categories = series.xAxis.hasNames = true;
         }
     }
+    /** @internal */
     distributeDL() {
         const series = this, dataLabelsOptions = series.options.dataLabels, inverted = series.chart.inverted;
         let visibilityIndex = 1;
         if (dataLabelsOptions) {
-            const distance = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(dataLabelsOptions.distance, inverted ? 20 : 100);
+            const distance = dataLabelsOptions.distance ??
+                (inverted ? 20 : 100);
             for (const point of series.points) {
                 const defaults = {
                     [inverted ? 'x' : 'y']: dataLabelsOptions.alternate && visibilityIndex % 2 ?
@@ -666,6 +656,7 @@ class TimelineSeries extends LineSeries {
             }
         }
     }
+    /** @internal */
     generatePoints() {
         super.generatePoints();
         const series = this, points = series.points, pointsLen = points.length, xData = series.getColumn('x');
@@ -673,6 +664,7 @@ class TimelineSeries extends LineSeries {
             points[i].x = xData[i];
         }
     }
+    /** @internal */
     getVisibilityMap() {
         const series = this, nullInteraction = series.options.nullInteraction, map = ((series.data.length ? series.data : series.options.data) || []).map((point) => (point &&
             point.visible !== false &&
@@ -681,6 +673,7 @@ class TimelineSeries extends LineSeries {
             false));
         return map;
     }
+    /** @internal */
     getXExtremes(xData) {
         const series = this, filteredData = xData.filter((_x, i) => (series.points[i].isValid() &&
             series.points[i].visible));
@@ -689,6 +682,7 @@ class TimelineSeries extends LineSeries {
             max: (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.arrayMax)(filteredData)
         };
     }
+    /** @internal */
     init() {
         const series = this;
         super.init.apply(series, arguments);
@@ -757,6 +751,7 @@ class TimelineSeries extends LineSeries {
             }
         }));
     }
+    /** @internal */
     markerAttribs(point, state) {
         const series = this, seriesMarkerOptions = series.options.marker, pointMarkerOptions = point.marker || {}, symbol = (pointMarkerOptions.symbol ||
             seriesMarkerOptions?.symbol), width = (pointMarkerOptions.width ??
@@ -798,6 +793,7 @@ class TimelineSeries extends LineSeries {
  *  Static Properties
  *
  * */
+/** @internal */
 TimelineSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(LineSeries.defaultOptions, Timeline_TimelineSeriesDefaults);
 // Add series-specific properties after data is already processed, #17890
 (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.addEvent)(TimelineSeries, 'afterProcessData', function () {

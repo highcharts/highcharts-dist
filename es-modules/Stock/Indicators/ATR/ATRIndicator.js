@@ -39,7 +39,6 @@ function populateAverage(points, xVal, yVal, i, period, prevATR) {
 /**
  * The ATR series type.
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.atr
  *
@@ -51,6 +50,7 @@ class ATRIndicator extends SMAIndicator {
      *  Functions
      *
      * */
+    /** @internal */
     getValues(series, params) {
         const period = params.period, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, xValue = xVal[0], yValue = yVal[0], points = [[xValue, yValue]], ATR = [], xData = [], yData = [];
         let point, i, prevATR = 0, range = 1, TR = 0;
@@ -105,6 +105,7 @@ class ATRIndicator extends SMAIndicator {
  * @requires     stock/indicators/indicators
  * @requires     stock/indicators/atr
  * @optionparent plotOptions.atr
+ * @internal
  */
 ATRIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
     /**
@@ -120,7 +121,6 @@ SeriesRegistry.registerSeriesType('atr', ATRIndicator);
  *  Default Export
  *
  * */
-/** @internal */
 export default ATRIndicator;
 /* *
  *
@@ -134,7 +134,6 @@ export default ATRIndicator;
  * @extends   series,plotOptions.atr
  * @since     6.0.0
  * @product   highstock
- * @excluding dataParser, dataURL
  * @requires  stock/indicators/indicators
  * @requires  stock/indicators/atr
  * @apioption series.atr

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.0-modified (2026-08-14)
+ * @license Highcharts JS v13.1.0 (2026-10-02)
  * @module modules/arc-diagram
  * @requires highcharts/modules/sankey
  *
@@ -14,14 +14,14 @@
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(root["_Highcharts"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]["Series"], root["_Highcharts"]["SVGRenderer"], root["_Highcharts"]["SVGElement"]);
+		module.exports = factory(root["_Highcharts"]["SVGElement"], root["_Highcharts"]["SVGRenderer"], root["_Highcharts"]["Series"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
 	else if(typeof define === 'function' && define.amd)
-		define("highcharts/modules/arc-diagram", ["highcharts/highcharts"], function (amd1) {return factory(amd1,amd1["SeriesRegistry"],amd1["Series"],amd1["SVGRenderer"],amd1["SVGElement"]);});
+		define("highcharts/modules/arc-diagram", ["highcharts/highcharts"], function (amd1) {return factory(amd1["SVGElement"],amd1["SVGRenderer"],amd1["Series"],amd1["SeriesRegistry"],amd1);});
 	else if(typeof exports === 'object')
-		exports["highcharts/modules/arc-diagram"] = factory(root["_Highcharts"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]["Series"], root["_Highcharts"]["SVGRenderer"], root["_Highcharts"]["SVGElement"]);
+		exports["highcharts/modules/arc-diagram"] = factory(root["_Highcharts"]["SVGElement"], root["_Highcharts"]["SVGRenderer"], root["_Highcharts"]["Series"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
 	else
-		root["Highcharts"] = factory(root["Highcharts"], root["Highcharts"]["SeriesRegistry"], root["Highcharts"]["Series"], root["Highcharts"]["SVGRenderer"], root["Highcharts"]["SVGElement"]);
-})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__944__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__820__, __WEBPACK_EXTERNAL_MODULE__540__, __WEBPACK_EXTERNAL_MODULE__28__) => {
+		root["Highcharts"] = factory(root["Highcharts"]["SVGElement"], root["Highcharts"]["SVGRenderer"], root["Highcharts"]["Series"], root["Highcharts"]["SeriesRegistry"], root["Highcharts"]);
+})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__28__, __WEBPACK_EXTERNAL_MODULE__540__, __WEBPACK_EXTERNAL_MODULE__820__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__944__) => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
@@ -89,48 +89,27 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__944__;
 /******/ 	
 /************************************************************************/
 /******/ 	/* webpack/runtime/compat get default export */
-/******/ 	(() => {
-/******/ 		// getDefaultExport function for compatibility with non-harmony modules
-/******/ 		__webpack_require__.n = (module) => {
-/******/ 			const getter = module && module.__esModule ?
-/******/ 				() => (module['default']) :
-/******/ 				() => (module);
-/******/ 			__webpack_require__.d(getter, { a: getter });
-/******/ 			return getter;
-/******/ 		};
-/******/ 	})();
+/******/ 	// getDefaultExport function for compatibility with non-harmony modules
+/******/ 	__webpack_require__.n = (module) => {
+/******/ 		const getter = module && module.__esModule ?
+/******/ 			() => (module['default']) :
+/******/ 			() => (module);
+/******/ 		__webpack_require__.d(getter, { a: getter });
+/******/ 		return getter;
+/******/ 	};
 /******/ 	
 /******/ 	/* webpack/runtime/define property getters */
-/******/ 	(() => {
-/******/ 		// define getter/value functions for harmony exports
-/******/ 		__webpack_require__.d = (exports, definition) => {
-/******/ 			if(Array.isArray(definition)) {
-/******/ 				var i = 0;
-/******/ 				while(i < definition.length) {
-/******/ 					var key = definition[i++];
-/******/ 					var binding = definition[i++];
-/******/ 					if(!__webpack_require__.o(exports, key)) {
-/******/ 						if(binding === 0) {
-/******/ 							Object.defineProperty(exports, key, { enumerable: true, value: definition[i++] });
-/******/ 						} else {
-/******/ 							Object.defineProperty(exports, key, { enumerable: true, get: binding });
-/******/ 						}
-/******/ 					} else if(binding === 0) { i++; }
-/******/ 				}
-/******/ 			} else {
-/******/ 				for(var key in definition) {
-/******/ 					if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
-/******/ 						Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
-/******/ 					}
-/******/ 				}
+/******/ 	// define getter/value functions for harmony exports
+/******/ 	__webpack_require__.d = (exports, definition) => {
+/******/ 		for(var key in definition) {
+/******/ 			if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 				Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
 /******/ 			}
-/******/ 		};
-/******/ 	})();
+/******/ 		}
+/******/ 	};
 /******/ 	
 /******/ 	/* webpack/runtime/hasOwnProperty shorthand */
-/******/ 	(() => {
-/******/ 		__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
-/******/ 	})();
+/******/ 	__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop));
 /******/ 	
 /************************************************************************/
 let __webpack_exports__ = {};
@@ -261,13 +240,10 @@ var NodesComposition;
         // For use in formats
         node.name = node.name || node.options.id || '';
         // Mass is used in networkgraph:
-        node.mass = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(
-        // Node:
-        node.options.mass, node.options.marker && node.options.marker.radius, 
-        // Series:
-        this.options.marker && this.options.marker.radius, 
-        // Default:
-        4);
+        node.mass = (node.options.mass ??
+            (node.options.marker && node.options.marker.radius) ??
+            (this.options.marker && this.options.marker.radius) ??
+            4);
         return node;
     }
     NodesComposition.createNode = createNode;
@@ -310,7 +286,9 @@ var NodesComposition;
                 point.fromNode = nodeLookup[point.from];
                 // Point color defaults to the fromNode's color
                 if (chart.styledMode) {
-                    point.colorIndex = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(point.options.colorIndex, nodeLookup[point.from].colorIndex);
+                    point.colorIndex =
+                        point.options.colorIndex ??
+                            nodeLookup[point.from].colorIndex;
                 }
                 else {
                     point.color =
@@ -408,7 +386,7 @@ var NodesComposition;
             else {
                 this.series.options.nodes = [nodeConfig];
             }
-            if ((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(redraw, true)) {
+            if (redraw ?? true) {
                 this.series.chart.redraw(animation);
             }
         }
@@ -446,19 +424,19 @@ const { seriesTypes: { sankey: { prototype: { pointClass: SankeyPoint } } } } = 
  *  Class
  *
  * */
-/** @internal */
 class ArcDiagramPoint extends SankeyPoint {
     /* *
      *
      *  Functions
      *
      * */
+    /** @internal */
     isValid() {
         // No null points here
         return true;
     }
 }
-(0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.extend)(ArcDiagramPoint.prototype, {
+;(0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.extend)(ArcDiagramPoint.prototype, {
     setState: Series_NodesComposition.setNodeState
 });
 /* *
@@ -466,7 +444,6 @@ class ArcDiagramPoint extends SankeyPoint {
  *  Default Export
  *
  * */
-/** @internal */
 /* harmony default export */ const ArcDiagram_ArcDiagramPoint = (ArcDiagramPoint);
 
 ;// ./code/es-modules/Series/ArcDiagram/ArcDiagramSeriesDefaults.js
@@ -814,9 +791,12 @@ var SankeyColumnComposition;
          */
         getTranslationFactor(series) {
             const column = this.points, nodes = column.slice(), chart = series.chart, minLinkWidth = series.options.minLinkWidth || 0;
-            let skipPoint, factor = 0, i, remainingHeight = ((chart.plotSizeY || 0) -
+            let skipPoint, factor = 0, i, remainingHeight = ((series.flowHeight || chart.plotSizeY || 0) -
                 (series.options.borderWidth || 0) -
-                (column.length - 1) * series.nodePadding);
+                (column.length - 1) * series.nodePadding -
+                (series.useCircularLayout ?
+                    column.sankeyColumn.lapSum() :
+                    0));
             // Because the minLinkWidth option doesn't obey the direct
             // translation, we need to run translation iteratively, check
             // node heights, remove those nodes affected by minLinkWidth,
@@ -860,11 +840,22 @@ var SankeyColumnComposition;
                     height += nodePadding;
                 }
                 const nodeHeight = Math.max(node.getSum() * factor, series.options.minLinkWidth || 0);
-                height += nodeHeight;
+                height += nodeHeight + (node.wrapLap || 0);
                 return height;
             }, 0);
-            // Node alignment option handling #19096
-            return (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.getAlignFactor)(series.options.nodeAlignment || 'center') * ((series.chart.plotSizeY || 0) - height);
+            // Node alignment option handling #19096. Circular geometry
+            // shrinks the extent aligned within. #8218
+            return (series.flowTop || 0) +
+                (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.getAlignFactor)(series.options.nodeAlignment || 'center') * ((series.flowHeight || (series.chart.plotSizeY || 0)) -
+                    height);
+        }
+        /**
+         * Flow-axis room this column's nodes reserve for self-link laps.
+         * #8218
+         * @private
+         */
+        lapSum() {
+            return this.points.reduce((sum, node) => (sum + (node.wrapLap || 0)), 0);
         }
         /**
          * Get the left position of the column in pixels
@@ -922,7 +913,9 @@ var SankeyColumnComposition;
                 const height = Math.max(sum * factor, series.options.minLinkWidth || 0);
                 const directionOffset = node.options[series.chart.inverted ?
                     'offsetHorizontal' :
-                    'offsetVertical'], optionOffset = node.options.offset || 0;
+                    'offsetVertical'], optionOffset = node.options.offset || 0, 
+                // A self-link laps the flow-axis start of its node. #8218
+                lap = column[i].wrapLap || 0;
                 if (sum) {
                     totalNodeOffset = height + nodePadding;
                 }
@@ -932,14 +925,14 @@ var SankeyColumnComposition;
                 }
                 if (column[i] === node) {
                     return {
-                        relativeTop: offset + ((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.defined)(directionOffset) ?
+                        relativeTop: offset + lap + ((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.defined)(directionOffset) ?
                             // `directionOffset` is a percent of the node
                             // height
                             (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.relativeLength)(directionOffset, height) :
                             (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.relativeLength)(optionOffset, totalNodeOffset))
                     };
                 }
-                offset += totalNodeOffset;
+                offset += totalNodeOffset + lap;
             }
         }
     }
@@ -1267,7 +1260,6 @@ const { seriesTypes: { column: ColumnSeries, sankey: SankeySeries } } = (highcha
  *
  * */
 /**
- * @internal
  * @class
  * @name Highcharts.seriesTypes.arcdiagram
  *
@@ -1374,9 +1366,11 @@ class ArcDiagramSeries extends SankeySeries {
      * @internal
      */
     translateLink(point) {
-        const series = this, fromNode = point.fromNode, toNode = point.toNode, chart = this.chart, translationFactor = series.translationFactor, pointOptions = point.options, seriesOptions = series.options, linkWeight = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(pointOptions.linkWeight, seriesOptions.linkWeight, Math.max((point.weight || 0) *
-            translationFactor *
-            fromNode.scale, (series.options.minLinkWidth || 0))), centeredLinks = point.series.options.centeredLinks, nodeTop = fromNode.nodeY;
+        const series = this, fromNode = point.fromNode, toNode = point.toNode, chart = this.chart, translationFactor = series.translationFactor, pointOptions = point.options, seriesOptions = series.options, linkWeight = (pointOptions.linkWeight ??
+            seriesOptions.linkWeight ??
+            Math.max((point.weight || 0) *
+                translationFactor *
+                fromNode.scale, series.options.minLinkWidth || 0)), centeredLinks = point.series.options.centeredLinks, nodeTop = fromNode.nodeY;
         const getX = (node, fromOrTo) => {
             const linkLeft = ((node.offset(point, fromOrTo) || 0) *
                 translationFactor);
@@ -1405,7 +1399,7 @@ class ArcDiagramSeries extends SankeySeries {
             toX,
             toX + linkWeight
         ];
-        const linkRadius = ((toX + linkWeight - fromX) / Math.abs(toX + linkWeight - fromX)) * (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(seriesOptions.linkRadius, Math.min(Math.abs(toX + linkWeight - fromX) / 2, fromNode.nodeY - Math.abs(linkWeight)));
+        const linkRadius = ((toX + linkWeight - fromX) / Math.abs(toX + linkWeight - fromX)) * (seriesOptions.linkRadius ?? Math.min(Math.abs(toX + linkWeight - fromX) / 2, fromNode.nodeY - Math.abs(linkWeight)));
         point.shapeArgs = {
             d: [
                 ['M', fromX, bottom],
@@ -1462,7 +1456,7 @@ class ArcDiagramSeries extends SankeySeries {
         const series = this, translationFactor = series.translationFactor, chart = series.chart, maxNodesLength = chart.inverted ?
             chart.plotWidth : chart.plotHeight, options = series.options, maxRadius = Math.min(chart.plotWidth, chart.plotHeight, maxNodesLength / node.series.nodes.length - this.nodePadding), sum = node.getSum() * (column.sankeyColumn.scale || 0), equalNodes = options.equalNodes, nodeHeight = equalNodes ?
             maxRadius :
-            Math.max(sum * translationFactor, this.options.minLinkWidth || 0), lineWidth = options.marker?.lineWidth || 0, nodeOffset = column.sankeyColumn.offset(node, translationFactor), fromNodeLeft = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.crisp)((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(nodeOffset && nodeOffset.absoluteLeft, ((column.sankeyColumn.left(translationFactor) || 0) +
+            Math.max(sum * translationFactor, this.options.minLinkWidth || 0), lineWidth = options.marker?.lineWidth || 0, nodeOffset = column.sankeyColumn.offset(node, translationFactor), fromNodeLeft = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.crisp)(((nodeOffset && nodeOffset.absoluteLeft) ?? ((column.sankeyColumn.left(translationFactor) || 0) +
             (nodeOffset && nodeOffset.relativeLeft || 0))), lineWidth), markerOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(options.marker, node.options.marker), symbol = markerOptions.symbol, markerRadius = markerOptions.radius, top = parseInt(options.offset ?? '100', 10) *
             ((chart.inverted ?
                 chart.plotWidth : chart.plotHeight) - ((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.crisp)(this.colDistance * (node.column || 0) +
@@ -1527,6 +1521,7 @@ class ArcDiagramSeries extends SankeySeries {
     }
     // Networkgraph has two separate collections of nodes and lines, render
     // dataLabels for both sets:
+    /** @internal */
     drawDataLabels() {
         if (this.options.dataLabels) {
             const textPath = this.options.dataLabels.textPath;
@@ -1540,6 +1535,7 @@ class ArcDiagramSeries extends SankeySeries {
             this.options.dataLabels.textPath = textPath;
         }
     }
+    /** @internal */
     pointAttribs(point, 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     state) {
@@ -1550,6 +1546,7 @@ class ArcDiagramSeries extends SankeySeries {
         }
         return super.pointAttribs.apply(this, arguments);
     }
+    /** @internal */
     markerAttribs(point) {
         if (point.isNode) {
             return super.markerAttribs.apply(this, arguments);
@@ -1562,9 +1559,11 @@ class ArcDiagramSeries extends SankeySeries {
  *  Static Properties
  *
  * */
+/** @internal */
 ArcDiagramSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(SankeySeries.defaultOptions, ArcDiagram_ArcDiagramSeriesDefaults);
 (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.extend)(ArcDiagramSeries.prototype, {
-    orderNodes: false
+    orderNodes: false,
+    useCircularLayout: false
 });
 ArcDiagramSeries.prototype.pointClass = ArcDiagram_ArcDiagramPoint;
 highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default().registerSeriesType('arcdiagram', ArcDiagramSeries);
@@ -1573,7 +1572,6 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *  Default Export
  *
  * */
-/** @internal */
 /* harmony default export */ const ArcDiagram_ArcDiagramSeries = ((/* unused pure expression or super */ null && (ArcDiagramSeries)));
 
 ;// ./code/es-modules/masters/modules/arc-diagram.src.js

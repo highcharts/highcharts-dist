@@ -32,12 +32,14 @@ class PointAndFigurePoint extends ScatterPoint {
      *  Functions
      *
      * */
+    /** @internal */
     resolveMarker() {
         const seriesOptions = this.series.options;
         this.marker = this.options.marker =
             this.upTrend ? seriesOptions.markerUp : seriesOptions.marker;
         this.color = this.options.marker.lineColor;
     }
+    /** @internal */
     resolveColor() {
         super.resolveColor();
         this.resolveMarker();

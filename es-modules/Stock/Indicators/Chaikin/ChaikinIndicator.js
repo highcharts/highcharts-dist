@@ -20,7 +20,6 @@ import { error } from '../../../Core/Utilities.js';
 /**
  * The Chaikin series type.
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.chaikin
  *
@@ -32,6 +31,7 @@ class ChaikinIndicator extends EMAIndicator {
      *  Functions
      *
      * */
+    /** @internal */
     getValues(series, params) {
         const periods = params.periods, period = params.period, 
         // 0- date, 1- Chaikin Oscillator
@@ -100,6 +100,7 @@ class ChaikinIndicator extends EMAIndicator {
  * @requires     stock/indicators/indicators
  * @requires     stock/indicators/chaikin
  * @optionparent plotOptions.chaikin
+ * @internal
  */
 ChaikinIndicator.defaultOptions = merge(EMAIndicator.defaultOptions, {
     /**
@@ -141,7 +142,6 @@ SeriesRegistry.registerSeriesType('chaikin', ChaikinIndicator);
  *  Default Export
  *
  * */
-/** @internal */
 export default ChaikinIndicator;
 /* *
  *
@@ -155,7 +155,7 @@ export default ChaikinIndicator;
  * @extends   series,plotOptions.chaikin
  * @since     7.0.0
  * @product   highstock
- * @excluding allAreas, colorAxis, dataParser, dataURL, joinBy, keys,
+ * @excluding allAreas, colorAxis, joinBy, keys,
  *            navigatorOptions, pointInterval, pointIntervalUnit,
  *            pointPlacement, pointRange, pointStart, stacking, showInNavigator
  * @requires  stock/indicators/indicators

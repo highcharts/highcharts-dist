@@ -25,6 +25,7 @@ class WordcloudPoint extends ColumnPoint {
      *  Functions
      *
      * */
+    /** @internal */
     isValid() {
         return true;
     }

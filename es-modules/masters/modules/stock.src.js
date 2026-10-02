@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.0.0-modified (2026-08-14)
+ * @license Highstock JS v13.1.0 (2026-10-02)
  * @module highcharts/modules/stock
  * @requires highcharts
  *
@@ -40,7 +40,7 @@ G.StockChart = G.StockChart || G.stockChart;
 extend(G.StockChart, StockChart);
 // Compositions
 DataModifyComposition.compose(G.Series, G.Axis, G.Point);
-HLCSeries.compose(G.Series, G.SVGRenderer);
+HLCSeries.compose(G.Series, G.Legend, G.SVGRenderer);
 FlagsSeries.compose(G.Renderer);
 OHLCSeries.compose(G.Series);
 G.Navigator.compose(G.Chart, G.Axis, G.Series);

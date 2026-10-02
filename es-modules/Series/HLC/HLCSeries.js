@@ -38,8 +38,9 @@ class HLCSeries extends ColumnSeries {
      *  Static Properties
      *
      * */
-    static compose(_SeriesClass, SVGRendererClass) {
-        FinancialSymbols.compose(SVGRendererClass);
+    /** @internal */
+    static compose(_SeriesClass, LegendClass, SVGRendererClass) {
+        FinancialSymbols.compose(LegendClass, SVGRendererClass);
     }
     /* *
      *
@@ -107,6 +108,7 @@ class HLCSeries extends ColumnSeries {
         }
         return attribs;
     }
+    /** @internal */
     toYData(point) {
         // Return a plain array for speedy calculation
         return [point.high, point.low, point.close];
@@ -147,6 +149,7 @@ class HLCSeries extends ColumnSeries {
         });
     }
 }
+/** @internal */
 HLCSeries.defaultOptions = merge(ColumnSeries.defaultOptions, HLCSeriesDefaults);
 extend(HLCSeries.prototype, {
     pointClass: HLCPoint,
@@ -162,9 +165,13 @@ extend(HLCSeries.prototype, {
 });
 // Extend default lang options with OHLC terms
 const HLCDefaultLangOptions = {
+    /** @internal */
     stockOpen: 'Open',
+    /** @internal */
     stockHigh: 'High',
+    /** @internal */
     stockLow: 'Low',
+    /** @internal */
     stockClose: 'Close'
 };
 extend(defaultOptions.lang, HLCDefaultLangOptions);

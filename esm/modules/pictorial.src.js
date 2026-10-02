@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.0-modified (2026-08-14)
+ * @license Highcharts JS v13.1.0 (2026-10-02)
  * @module highcharts/modules/pictorial
  * @requires highcharts
  *
@@ -18,48 +18,27 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 /******/ 
 /************************************************************************/
 /******/ /* webpack/runtime/compat get default export */
-/******/ (() => {
-/******/ 	// getDefaultExport function for compatibility with non-harmony modules
-/******/ 	__webpack_require__.n = (module) => {
-/******/ 		const getter = module && module.__esModule ?
-/******/ 			() => (module['default']) :
-/******/ 			() => (module);
-/******/ 		__webpack_require__.d(getter, { a: getter });
-/******/ 		return getter;
-/******/ 	};
-/******/ })();
+/******/ // getDefaultExport function for compatibility with non-harmony modules
+/******/ __webpack_require__.n = (module) => {
+/******/ 	const getter = module && module.__esModule ?
+/******/ 		() => (module['default']) :
+/******/ 		() => (module);
+/******/ 	__webpack_require__.d(getter, { a: getter });
+/******/ 	return getter;
+/******/ };
 /******/ 
 /******/ /* webpack/runtime/define property getters */
-/******/ (() => {
-/******/ 	// define getter/value functions for harmony exports
-/******/ 	__webpack_require__.d = (exports, definition) => {
-/******/ 		if(Array.isArray(definition)) {
-/******/ 			var i = 0;
-/******/ 			while(i < definition.length) {
-/******/ 				var key = definition[i++];
-/******/ 				var binding = definition[i++];
-/******/ 				if(!__webpack_require__.o(exports, key)) {
-/******/ 					if(binding === 0) {
-/******/ 						Object.defineProperty(exports, key, { enumerable: true, value: definition[i++] });
-/******/ 					} else {
-/******/ 						Object.defineProperty(exports, key, { enumerable: true, get: binding });
-/******/ 					}
-/******/ 				} else if(binding === 0) { i++; }
-/******/ 			}
-/******/ 		} else {
-/******/ 			for(var key in definition) {
-/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
-/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
-/******/ 				}
-/******/ 			}
+/******/ // define getter/value functions for harmony exports
+/******/ __webpack_require__.d = (exports, definition) => {
+/******/ 	for(var key in definition) {
+/******/ 		if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 			Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
 /******/ 		}
-/******/ 	};
-/******/ })();
+/******/ 	}
+/******/ };
 /******/ 
 /******/ /* webpack/runtime/hasOwnProperty shorthand */
-/******/ (() => {
-/******/ 	__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
-/******/ })();
+/******/ __webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop));
 /******/ 
 /************************************************************************/
 
@@ -359,7 +338,9 @@ function onRendererComplexColor(args) {
         }
         // Add it. This function does nothing if an element with this ID
         // already exists.
-        this.addPattern(pattern, !this.forExport && (0,external_highcharts_src_js_default_namespaceObject.pick)(pattern.animation, this.globalAnimation, { duration: 100 }));
+        this.addPattern(pattern, !this.forExport && (pattern.animation ??
+            this.globalAnimation ??
+            { duration: 100 }));
         value = `url(${this.url}#${pattern.id + (this.forExport ? '-export' : '')})`;
     }
     else {
@@ -523,7 +504,7 @@ function pointCalculatePatternDimensions(pattern) {
  * @requires modules/pattern-fill
  */
 function rendererAddPattern(options, animation) {
-    const animate = (0,external_highcharts_src_js_default_namespaceObject.pick)(animation, true), animationOptions = (0,external_highcharts_src_js_default_namespaceObject.animObject)(animate), color = options.color ||
+    const animate = (animation ?? true), animationOptions = (0,external_highcharts_src_js_default_namespaceObject.animObject)(animate), color = options.color ||
         'var(--highcharts-neutral-color-80)', defaultSize = 32, height = options.height ||
         (typeof options._height === 'number' ? options._height : 0) ||
         defaultSize, width = options.width ||
@@ -591,7 +572,7 @@ function rendererAddPattern(options, animation) {
         };
         if (!this.styledMode) {
             attribs.stroke = path.stroke || color;
-            attribs['stroke-width'] = (0,external_highcharts_src_js_default_namespaceObject.pick)(path.strokeWidth, 2);
+            attribs['stroke-width'] = (path.strokeWidth ?? 2);
             attribs.fill = path.fill || 'none';
         }
         if (path.transform) {
@@ -606,7 +587,7 @@ function rendererAddPattern(options, animation) {
             this.image(options.image, 0, 0, width, height, function () {
                 // Onload
                 this.animate({
-                    opacity: (0,external_highcharts_src_js_default_namespaceObject.pick)(options.opacity, 1)
+                    opacity: (options.opacity ?? 1)
                 }, animationOptions);
                 (0,external_highcharts_src_js_default_namespaceObject.removeEvent)(this.element, 'load');
             }).attr({ opacity: 0 }).add(pattern);
@@ -942,6 +923,7 @@ class PictorialPoint extends ColumnPoint {
      *  Functions
      *
      * */
+    /** @internal */
     setState() {
         const point = this;
         super.setState.apply(point, arguments);
@@ -959,6 +941,53 @@ class PictorialPoint extends ColumnPoint {
  *
  * */
 /* harmony default export */ const Pictorial_PictorialPoint = (PictorialPoint);
+
+;// ./code/es-modules/Series/Pictorial/PictorialSeriesDefaults.js
+/* *
+ *
+ *  (c) 2010-2026 Highsoft AS
+ *
+ *  Authors: Torstein Hønsi, Magdalena Gut
+ *
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
+ *
+ *
+ * */
+
+/* *
+ *
+ *  API Options
+ *
+ * */
+/**
+ * A pictorial chart uses vector images to represents the data.
+ * The shape of the data point is taken from the path parameter.
+ *
+ * @sample       {highcharts} highcharts/demo/pictorial/
+ *               Pictorial chart
+ *
+ * @extends      plotOptions.column
+ * @since 11.0.0
+ * @product      highcharts
+ * @excluding    allAreas, borderRadius,
+ *               centerInCategory, colorAxis, colorKey, connectEnds,
+ *               connectNulls, crisp, compare, compareBase, dataSorting,
+ *               dashStyle, dataAsColumns, linecap, lineWidth, shadow,
+ *               onPoint
+ * @requires     modules/pictorial
+ * @optionparent plotOptions.pictorial
+ */
+const PictorialSeriesDefaults = {
+    borderWidth: 0
+};
+/* *
+ *
+ *  Default Export
+ *
+ * */
+/* harmony default export */ const Pictorial_PictorialSeriesDefaults = (PictorialSeriesDefaults);
 
 ;// external ["../highcharts.src.js","default","Series"]
 const external_highcharts_src_js_default_Series_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].Series;
@@ -998,6 +1027,7 @@ var external_highcharts_src_js_default_SVGRenderer_default = /*#__PURE__*/__webp
 
 
 
+
 /* *
  *
  *  Composition
@@ -1019,7 +1049,7 @@ const { getStackMetrics: PictorialSeries_getStackMetrics, invertShadowGroup: Pic
 /**
  * The pictorial series type.
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.pictorial
  *
@@ -1074,8 +1104,11 @@ class PictorialSeries extends ColumnSeries {
                 .animate(finalBox, animation);
         }
     }
+    /** @internal */
     animateDrilldown() { }
+    /** @internal */
     animateDrillupFrom() { }
+    /** @internal */
     pointAttribs(point) {
         const pointAttribs = super.pointAttribs.apply(this, arguments), seriesOptions = this.options, series = this, paths = seriesOptions.paths;
         if (point && point.shapeArgs && paths) {
@@ -1131,28 +1164,8 @@ class PictorialSeries extends ColumnSeries {
  *  Static Properties
  *
  * */
-PictorialSeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(ColumnSeries.defaultOptions, 
-/**
- * A pictorial chart uses vector images to represents the data.
- * The shape of the data point is taken from the path parameter.
- *
- * @sample       {highcharts} highcharts/demo/pictorial/
- *               Pictorial chart
- *
- * @extends      plotOptions.column
- * @since 11.0.0
- * @product      highcharts
- * @excluding    allAreas, borderRadius,
- *               centerInCategory, colorAxis, colorKey, connectEnds,
- *               connectNulls, crisp, compare, compareBase, dataSorting,
- *               dashStyle, dataAsColumns, linecap, lineWidth, shadow,
- *               onPoint
- * @requires     modules/pictorial
- * @optionparent plotOptions.pictorial
- */
-{
-    borderWidth: 0
-});
+/** @internal */
+PictorialSeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(ColumnSeries.defaultOptions, Pictorial_PictorialSeriesDefaults);
 /* *
  *
  *  Events
@@ -1198,7 +1211,9 @@ function renderStackShadow(stack) {
         stack.axis.hasData() &&
         series.xAxis.hasData()) {
         const xAxis = series.xAxis, options = stack.axis.options, chart = stack.axis.chart, stackShadow = stack.shadow, xCenter = xAxis.toPixels(stack.x, true), x = chart.inverted ? xAxis.len - xCenter : xCenter, paths = series.options.paths || [], index = stack.x % paths.length, shape = paths[index], width = series.getColumnMetrics &&
-            series.getColumnMetrics().width, { height, y } = PictorialSeries_getStackMetrics(series.yAxis, shape), shadowOptions = options.stackShadow, strokeWidth = (0,external_highcharts_src_js_default_namespaceObject.pick)(shadowOptions && shadowOptions.borderWidth, series.options.borderWidth, 1);
+            series.getColumnMetrics().width, { height, y } = PictorialSeries_getStackMetrics(series.yAxis, shape), shadowOptions = options.stackShadow, strokeWidth = ((shadowOptions && shadowOptions.borderWidth) ??
+            series.options.borderWidth ??
+            1);
         if (!stackShadow &&
             shadowOptions &&
             shadowOptions.enabled &&
@@ -1294,7 +1309,7 @@ function forEachStack(chart, callback) {
         });
     }
 }
-(0,external_highcharts_src_js_default_namespaceObject.addEvent)((external_highcharts_src_js_default_Chart_default()), 'render', function () {
+;(0,external_highcharts_src_js_default_namespaceObject.addEvent)((external_highcharts_src_js_default_Chart_default()), 'render', function () {
     forEachStack(this, renderStackShadow);
 });
 (0,external_highcharts_src_js_default_namespaceObject.addEvent)((external_highcharts_src_js_default_StackItem_default()), 'afterSetOffset', function (e) {
@@ -1321,7 +1336,7 @@ function destroyAllStackShadows(chart) {
     });
 }
 // This is a workaround due to no implementation of the animation drilldown.
-(0,external_highcharts_src_js_default_namespaceObject.addEvent)((external_highcharts_src_js_default_Chart_default()), 'afterDrilldown', function () {
+;(0,external_highcharts_src_js_default_namespaceObject.addEvent)((external_highcharts_src_js_default_Chart_default()), 'afterDrilldown', function () {
     destroyAllStackShadows(this);
 });
 (0,external_highcharts_src_js_default_namespaceObject.addEvent)((external_highcharts_src_js_default_Chart_default()), 'afterDrillUp', function () {
@@ -1347,9 +1362,9 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  * @extends   series,plotOptions.pictorial
  * @since 11.0.0
  * @product   highcharts
- * @excluding dataParser, borderRadius, boostBlending, boostThreshold,
+ * @excluding borderRadius, boostBlending, boostThreshold,
  *            borderColor, borderWidth, centerInCategory, connectEnds,
- *            connectNulls, crisp, colorKey, dataURL, dataAsColumns, depth,
+ *            connectNulls, crisp, colorKey, dataAsColumns, depth,
  *            dragDrop, edgeColor, edgeWidth, linecap, lineWidth,  marker,
  *            dataSorting, dashStyle, onPoint, relativeXValue, shadow, zoneAxis,
  *            zones

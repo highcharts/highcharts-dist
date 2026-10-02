@@ -19,7 +19,6 @@ import { error } from '../../../Core/Utilities.js';
 /**
  * The PPO series type.
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.ppo
  *
@@ -31,6 +30,7 @@ class PPOIndicator extends EMAIndicator {
      *  Functions
      *
      * */
+    /** @internal */
     getValues(series, params) {
         const periods = params.periods, index = params.index, 
         // 0- date, 1- Percentage Price Oscillator
@@ -95,6 +95,7 @@ class PPOIndicator extends EMAIndicator {
  * @requires     stock/indicators/indicators
  * @requires     stock/indicators/ppo
  * @optionparent plotOptions.ppo
+ * @internal
  */
 PPOIndicator.defaultOptions = merge(EMAIndicator.defaultOptions, {
     /**
@@ -124,7 +125,6 @@ SeriesRegistry.registerSeriesType('ppo', PPOIndicator);
  *  Default Export
  *
  * */
-/** @internal */
 export default PPOIndicator;
 /* *
  *
@@ -138,7 +138,7 @@ export default PPOIndicator;
  * @extends   series,plotOptions.ppo
  * @since        7.0.0
  * @product   highstock
- * @excluding allAreas, colorAxis, dataParser, dataURL, joinBy, keys,
+ * @excluding allAreas, colorAxis, joinBy, keys,
  *            navigatorOptions, pointInterval, pointIntervalUnit,
  *            pointPlacement, pointRange, pointStart, showInNavigator, stacking
  * @requires  stock/indicators/indicators

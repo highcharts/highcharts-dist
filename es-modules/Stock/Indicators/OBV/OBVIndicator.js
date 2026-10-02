@@ -19,7 +19,6 @@ import { error } from '../../../Core/Utilities.js';
 /**
  * The OBV series type.
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.obv
  *
@@ -31,6 +30,7 @@ class OBVIndicator extends SMAIndicator {
      *  Functions
      *
      * */
+    /** @internal */
     getValues(series, params) {
         const volumeSeries = series.chart.get(params.volumeSeriesID), xVal = series.xData, yVal = series.yData, OBV = [], xData = [], yData = [], hasOHLC = !isNumber(yVal[0]);
         let OBVPoint = [], i = 1, previousOBV = 0, currentOBV = 0, previousClose = 0, currentClose = 0, volume;
@@ -102,6 +102,7 @@ class OBVIndicator extends SMAIndicator {
  *               pointInterval, pointIntervalUnit, pointPlacement,
  *               pointRange, pointStart, showInNavigator, stacking
  * @optionparent plotOptions.obv
+ * @internal
  */
 OBVIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
     marker: {
@@ -133,7 +134,6 @@ SeriesRegistry.registerSeriesType('obv', OBVIndicator);
  *  Default Export
  *
  * */
-/** @internal */
 export default OBVIndicator;
 /* *
  *
@@ -147,7 +147,6 @@ export default OBVIndicator;
  * @extends   series,plotOptions.obv
  * @since     9.1.0
  * @product   highstock
- * @excluding dataParser, dataURL
  * @requires  stock/indicators/indicators
  * @requires  stock/indicators/obv
  * @apioption series.obv

@@ -30,7 +30,6 @@ import { addEvent, defined, extend, isNumber, merge, objectEach, wrap } from '..
 /**
  * The Flags series.
  *
- * @private
  * @class
  * @name Highcharts.seriesTypes.flags
  *
@@ -44,7 +43,7 @@ class FlagsSeries extends ColumnSeries {
      * */
     /**
      * Disable animation, but keep clipping (#8546).
-     * @private
+     * @internal
      */
     animate(init) {
         if (init) {
@@ -53,7 +52,7 @@ class FlagsSeries extends ColumnSeries {
     }
     /**
      * Draw the markers.
-     * @private
+     * @internal
      */
     drawPoints() {
         const series = this, points = series.points, chart = series.chart, renderer = chart.renderer, inverted = chart.inverted, options = series.options, optionsY = options.y, yAxis = series.yAxis, boxesMap = {}, boxes = [], borderRadius = isNumber(options.borderRadius) ?
@@ -195,7 +194,7 @@ class FlagsSeries extends ColumnSeries {
     /**
      * Extend the column trackers with listeners to expand and contract
      * stacks.
-     * @private
+     * @internal
      */
     drawTracker() {
         const series = this, points = series.points;
@@ -238,7 +237,7 @@ class FlagsSeries extends ColumnSeries {
     }
     /**
      * Get presentational attributes
-     * @private
+     * @internal
      */
     pointAttribs(point, state) {
         const options = this.options, color = point?.color || this.color;
@@ -255,7 +254,7 @@ class FlagsSeries extends ColumnSeries {
         };
     }
     /**
-     * @private
+     * @internal
      */
     setClip() {
         Series.prototype.setClip.apply(this, arguments);
@@ -271,7 +270,9 @@ class FlagsSeries extends ColumnSeries {
  *  Static Properties
  *
  * */
+/** @internal */
 FlagsSeries.compose = FlagsSymbols.compose;
+/** @internal */
 FlagsSeries.defaultOptions = merge(ColumnSeries.defaultOptions, FlagsSeriesDefaults);
 OnSeriesComposition.compose(FlagsSeries);
 extend(FlagsSeries.prototype, {
@@ -286,7 +287,7 @@ extend(FlagsSeries.prototype, {
     buildKDTree: noop,
     /**
      * Inherit the initialization from base Series.
-     * @private
+     * @internal
      */
     init: Series.prototype.init
 });

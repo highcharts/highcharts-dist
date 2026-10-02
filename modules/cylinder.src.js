@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.0-modified (2026-08-14)
+ * @license Highcharts JS v13.1.0 (2026-10-02)
  * @module highcharts/modules/cylinder
  * @requires highcharts
  * @requires highcharts/highcharts-3d
@@ -15,14 +15,14 @@
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(root["_Highcharts"], root["_Highcharts"]["SVGRenderer"], root["_Highcharts"]["Color"], root["_Highcharts"]["SVGElement"], root["_Highcharts"]["SeriesRegistry"]);
+		module.exports = factory(root["_Highcharts"]["Color"], root["_Highcharts"]["SVGElement"], root["_Highcharts"]["SVGRenderer"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
 	else if(typeof define === 'function' && define.amd)
-		define("highcharts/modules/cylinder", ["highcharts/highcharts"], function (amd1) {return factory(amd1,amd1["SVGRenderer"],amd1["Color"],amd1["SVGElement"],amd1["SeriesRegistry"]);});
+		define("highcharts/modules/cylinder", ["highcharts/highcharts"], function (amd1) {return factory(amd1["Color"],amd1["SVGElement"],amd1["SVGRenderer"],amd1["SeriesRegistry"],amd1);});
 	else if(typeof exports === 'object')
-		exports["highcharts/modules/cylinder"] = factory(root["_Highcharts"], root["_Highcharts"]["SVGRenderer"], root["_Highcharts"]["Color"], root["_Highcharts"]["SVGElement"], root["_Highcharts"]["SeriesRegistry"]);
+		exports["highcharts/modules/cylinder"] = factory(root["_Highcharts"]["Color"], root["_Highcharts"]["SVGElement"], root["_Highcharts"]["SVGRenderer"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
 	else
-		root["Highcharts"] = factory(root["Highcharts"], root["Highcharts"]["SVGRenderer"], root["Highcharts"]["Color"], root["Highcharts"]["SVGElement"], root["Highcharts"]["SeriesRegistry"]);
-})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__944__, __WEBPACK_EXTERNAL_MODULE__540__, __WEBPACK_EXTERNAL_MODULE__620__, __WEBPACK_EXTERNAL_MODULE__28__, __WEBPACK_EXTERNAL_MODULE__512__) => {
+		root["Highcharts"] = factory(root["Highcharts"]["Color"], root["Highcharts"]["SVGElement"], root["Highcharts"]["SVGRenderer"], root["Highcharts"]["SeriesRegistry"], root["Highcharts"]);
+})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__620__, __WEBPACK_EXTERNAL_MODULE__28__, __WEBPACK_EXTERNAL_MODULE__540__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__944__) => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
@@ -90,48 +90,27 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__944__;
 /******/ 	
 /************************************************************************/
 /******/ 	/* webpack/runtime/compat get default export */
-/******/ 	(() => {
-/******/ 		// getDefaultExport function for compatibility with non-harmony modules
-/******/ 		__webpack_require__.n = (module) => {
-/******/ 			const getter = module && module.__esModule ?
-/******/ 				() => (module['default']) :
-/******/ 				() => (module);
-/******/ 			__webpack_require__.d(getter, { a: getter });
-/******/ 			return getter;
-/******/ 		};
-/******/ 	})();
+/******/ 	// getDefaultExport function for compatibility with non-harmony modules
+/******/ 	__webpack_require__.n = (module) => {
+/******/ 		const getter = module && module.__esModule ?
+/******/ 			() => (module['default']) :
+/******/ 			() => (module);
+/******/ 		__webpack_require__.d(getter, { a: getter });
+/******/ 		return getter;
+/******/ 	};
 /******/ 	
 /******/ 	/* webpack/runtime/define property getters */
-/******/ 	(() => {
-/******/ 		// define getter/value functions for harmony exports
-/******/ 		__webpack_require__.d = (exports, definition) => {
-/******/ 			if(Array.isArray(definition)) {
-/******/ 				var i = 0;
-/******/ 				while(i < definition.length) {
-/******/ 					var key = definition[i++];
-/******/ 					var binding = definition[i++];
-/******/ 					if(!__webpack_require__.o(exports, key)) {
-/******/ 						if(binding === 0) {
-/******/ 							Object.defineProperty(exports, key, { enumerable: true, value: definition[i++] });
-/******/ 						} else {
-/******/ 							Object.defineProperty(exports, key, { enumerable: true, get: binding });
-/******/ 						}
-/******/ 					} else if(binding === 0) { i++; }
-/******/ 				}
-/******/ 			} else {
-/******/ 				for(var key in definition) {
-/******/ 					if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
-/******/ 						Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
-/******/ 					}
-/******/ 				}
+/******/ 	// define getter/value functions for harmony exports
+/******/ 	__webpack_require__.d = (exports, definition) => {
+/******/ 		for(var key in definition) {
+/******/ 			if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 				Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
 /******/ 			}
-/******/ 		};
-/******/ 	})();
+/******/ 		}
+/******/ 	};
 /******/ 	
 /******/ 	/* webpack/runtime/hasOwnProperty shorthand */
-/******/ 	(() => {
-/******/ 		__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
-/******/ 	})();
+/******/ 	__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop));
 /******/ 	
 /************************************************************************/
 let __webpack_exports__ = {};
@@ -159,7 +138,6 @@ var highcharts_SVGRenderer_commonjs_highcharts_SVGRenderer_commonjs2_highcharts_
  *
  *
  * */
-
 
 
 const { deg2rad } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
@@ -248,11 +226,11 @@ function perspective(points, chart, insidePlotArea, useInvertedPersp) {
     /* The useInvertedPersp argument is used for inverted charts with
      * already inverted elements, such as dataLabels or tooltip positions.
      */
-    inverted = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(useInvertedPersp, insidePlotArea ? chart.inverted : false), origin = {
+    inverted = useInvertedPersp ?? (insidePlotArea ? chart.inverted : false), origin = {
         x: chart.plotWidth / 2,
         y: chart.plotHeight / 2,
         z: options3d.depth / 2,
-        vd: (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(options3d.depth, 1) * (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(options3d.viewDistance, 0)
+        vd: (options3d.depth ?? 1) * (options3d.viewDistance ?? 0)
     }, scale = chart.scale3d || 1, beta = deg2rad * options3d.beta * (inverted ? -1 : 1), alpha = deg2rad * options3d.alpha * (inverted ? -1 : 1), angles = {
         cosA: Math.cos(alpha),
         cosB: Math.cos(-beta),
@@ -331,13 +309,13 @@ function pointCameraDistance(coordinates, chart) {
     const options3d = chart.options.chart.options3d, cameraPosition = {
         x: chart.plotWidth / 2,
         y: chart.plotHeight / 2,
-        z: (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(options3d.depth, 1) * (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(options3d.viewDistance, 0) +
+        z: (options3d.depth ?? 1) * (options3d.viewDistance ?? 0) +
             options3d.depth
     }, 
     // Added support for objects with plotX or x coordinates.
-    distance = Math.sqrt(Math.pow(cameraPosition.x - (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(coordinates.plotX, coordinates.x), 2) +
-        Math.pow(cameraPosition.y - (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(coordinates.plotY, coordinates.y), 2) +
-        Math.pow(cameraPosition.z - (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(coordinates.plotZ, coordinates.z), 2));
+    distance = Math.sqrt(Math.pow(cameraPosition.x - (coordinates.plotX ?? coordinates.x), 2) +
+        Math.pow(cameraPosition.y - (coordinates.plotY ?? coordinates.y), 2) +
+        Math.pow(cameraPosition.z - (coordinates.plotZ ?? coordinates.z), 2));
     return distance;
 }
 /**
@@ -386,21 +364,6 @@ function shapeArea(vertexes) {
 function shapeArea3D(vertexes, chart, insidePlotArea) {
     return shapeArea(perspective(vertexes, chart, insidePlotArea));
 }
-/* *
- *
- *  Default Export
- *
- * */
-/** @internal */
-const Math3D = {
-    perspective,
-    perspective3D,
-    pointCameraDistance,
-    shapeArea,
-    shapeArea3D
-};
-/** @internal */
-/* harmony default export */ const Core_Math3D = (Math3D);
 
 // EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Color"],"commonjs":["highcharts","Color"],"commonjs2":["highcharts","Color"],"root":["Highcharts","Color"]}
 var highcharts_Color_commonjs_highcharts_Color_commonjs2_highcharts_Color_root_Highcharts_Color_ = __webpack_require__(620);
@@ -524,7 +487,7 @@ class SVGElement3D extends (highcharts_SVGElement_commonjs_highcharts_SVGElement
         for (const part of elem3d.parts) {
             // If different props for different parts
             if (partsProps) {
-                props = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(partsProps[part], false);
+                props = (partsProps[part] ?? false);
             }
             // Only if something to set, but allow undefined
             if (props !== false) {
@@ -683,7 +646,6 @@ class SVGElement3DCylinder extends SVG_SVGElement3D {
 
 const { charts, deg2rad: CylinderComposition_deg2rad } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 
-const { perspective: CylinderComposition_perspective } = Core_Math3D;
 
 
 /* *
@@ -822,7 +784,7 @@ function rendererGetCylinderEnd(chart, shapeArgs, isBottom) {
     const { width = 0, height = 0, alphaCorrection = 0 } = shapeArgs, 
     // A half of the smaller one out of width or depth (optional, because
     // there's no depth for a funnel that reuses the code)
-    depth = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(shapeArgs.depth, width, 0), radius = Math.min(width, depth) / 2, 
+    depth = (shapeArgs.depth ?? width ?? 0), radius = Math.min(width, depth) / 2, 
     // Approximated longest diameter
     angleOffset = CylinderComposition_deg2rad * (chart.options.chart.options3d.beta - 90 +
         alphaCorrection), 
@@ -893,7 +855,7 @@ function rendererGetCylinderEnd(chart, shapeArgs, isBottom) {
         point.x = (x * cosTheta - z * sinTheta) + centerX;
         point.z = (z * cosTheta + x * sinTheta) + centerZ;
     }
-    const perspectivePoints = CylinderComposition_perspective(points, chart, true);
+    const perspectivePoints = perspective(points, chart, true);
     // Check for sub-pixel curve issue, compare front and back edges
     if (Math.abs(perspectivePoints[3].y - perspectivePoints[9].y) < 2.5 &&
         Math.abs(perspectivePoints[0].y - perspectivePoints[6].y) < 2.5) {
@@ -991,10 +953,9 @@ const { column: { prototype: { pointClass: ColumnPoint } } } = (highcharts_Serie
  *  Class
  *
  * */
-/** @internal */
 class CylinderPoint extends ColumnPoint {
 }
-(0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.extend)(CylinderPoint.prototype, {
+;(0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.extend)(CylinderPoint.prototype, {
     shapeType: 'cylinder'
 });
 /* *
@@ -1002,7 +963,6 @@ class CylinderPoint extends ColumnPoint {
  *  Default Export
  *
  * */
-/** @internal */
 /* harmony default export */ const Cylinder_CylinderPoint = (CylinderPoint);
 
 ;// ./code/es-modules/Series/Cylinder/CylinderSeriesDefaults.js
@@ -1158,7 +1118,6 @@ const { column: ColumnSeries } = (highcharts_SeriesRegistry_commonjs_highcharts_
  * @requires highcharts-3d
  * @requires modules/cylinder
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.cylinder
  *
@@ -1171,7 +1130,9 @@ class CylinderSeries extends ColumnSeries {
  *  Static Properties
  *
  * */
+/** @internal */
 CylinderSeries.compose = Cylinder_CylinderComposition.compose;
+/** @internal */
 CylinderSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(ColumnSeries.defaultOptions, Cylinder_CylinderSeriesDefaults);
 (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.extend)(CylinderSeries.prototype, {
     pointClass: Cylinder_CylinderPoint
@@ -1182,7 +1143,6 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *  Default Export
  *
  * */
-/** @internal */
 /* harmony default export */ const Cylinder_CylinderSeries = (CylinderSeries);
 
 ;// ./code/es-modules/masters/modules/cylinder.src.js

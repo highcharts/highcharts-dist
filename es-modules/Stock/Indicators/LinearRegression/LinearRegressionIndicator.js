@@ -21,7 +21,6 @@ import { extend, isArray, merge } from '../../../Shared/Utilities.js';
 /**
  * Linear regression series type.
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.linearregression
  *
@@ -129,6 +128,7 @@ class LinearRegressionIndicator extends SMAIndicator {
         return closestDistance;
     }
     // Required to be implemented - starting point for indicator's logic
+    /** @internal */
     getValues(baseSeries, regressionSeriesParams) {
         const xData = baseSeries.xData, yData = baseSeries.yData, period = regressionSeriesParams.period, 
         // Format required to be returned
@@ -185,6 +185,7 @@ class LinearRegressionIndicator extends SMAIndicator {
  * @requires     stock/indicators/indicators
  * @requires     stock/indicators/regressions
  * @optionparent plotOptions.linearregression
+ * @internal
  */
 LinearRegressionIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
     params: {
@@ -253,7 +254,6 @@ SeriesRegistry.registerSeriesType('linearRegression', LinearRegressionIndicator)
  *  Default Export
  *
  * */
-/** @internal */
 export default LinearRegressionIndicator;
 /* *
  *
@@ -268,7 +268,6 @@ export default LinearRegressionIndicator;
  * @extends   series,plotOptions.linearregression
  * @since     7.0.0
  * @product   highstock
- * @excluding dataParser,dataURL
  * @requires  stock/indicators/indicators
  * @requires  stock/indicators/regressions
  * @apioption series.linearregression

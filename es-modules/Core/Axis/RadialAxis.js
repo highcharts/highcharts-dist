@@ -16,7 +16,7 @@ import D from '../Defaults.js';
 const { defaultOptions } = D;
 import H from '../Globals.js';
 const { composed, noop } = H;
-import { addEvent, clamp, correctFloat, defined, extend, fireEvent, isNumber, isObject, merge, pick, pushUnique, relativeLength, splat, wrap } from '../../Shared/Utilities.js';
+import { addEvent, clamp, correctFloat, defined, extend, fireEvent, isNumber, isObject, merge, pushUnique, relativeLength, splat, wrap } from '../../Shared/Utilities.js';
 /* *
  *
  *  Composition
@@ -47,7 +47,7 @@ var RadialAxis;
         // one closestPointRange is added to the X axis to prevent the last
         // point from overlapping the first.
         this.autoConnect = (this.isCircular &&
-            typeof pick(this.userMax, this.options.max) === 'undefined' &&
+            typeof (this.userMax ?? this.options.max) === 'undefined' &&
             correctFloat(this.endAngleRad - this.startAngleRad) ===
                 correctFloat(2 * Math.PI));
         // This will lead to add an extra tick to xAxis in order to display
@@ -175,7 +175,7 @@ var RadialAxis;
      */
     function getLinePath(_lineWidth, radius, innerRadius) {
         const center = this.pane.center, chart = this.chart, left = this.left || 0, top = this.top || 0;
-        let end, path, r = pick(radius, center[2] / 2 - this.offset);
+        let end, path, r = (radius ?? center[2] / 2 - this.offset);
         innerRadius ?? (innerRadius = this.horiz ? 0 : this.center && -this.center[3] / 2);
         // In case when innerSize of pane is set, it must be included
         if (innerRadius && innerRadius > 0) {
@@ -241,7 +241,7 @@ var RadialAxis;
         }, center = this.center, { endAngleRad, startAngleRad } = this, borderRadius = borderRadiusObject(options.borderRadius ??
             this.pane.options.borderRadius), fullRadius = center[2] / 2, offset = Math.min(this.offset || 0, 0), left = this.left || 0, top = this.top || 0, percentRegex = /%$/, isCircular = this.isCircular, // X axis in a polar chart
         trueBands = this.options.plotBands || [], index = trueBands.indexOf(options);
-        let start, end, angle, xOnPerimeter, open, path, outerRadius = pick(radiusToPixels(options.outerRadius), fullRadius), innerRadius = radiusToPixels(options.innerRadius), thickness = radiusToPixels(options.thickness), brStart = true, brEnd = true;
+        let start, end, angle, xOnPerimeter, open, path, outerRadius = (radiusToPixels(options.outerRadius) ?? fullRadius), innerRadius = radiusToPixels(options.innerRadius), thickness = radiusToPixels(options.thickness), brStart = true, brEnd = true;
         // Apply conditional border radius, only for ends of band stacks
         if (borderRadius.radius &&
             borderRadius.scope === 'stack' &&
@@ -300,7 +300,9 @@ var RadialAxis;
                 // Math is for reversed yAxis (#3606)
                 start: Math.min(start, end),
                 end: Math.max(start, end),
-                innerR: pick(innerRadius, isNumber(thickness) ? outerRadius - thickness : void 0, this.center[3] / 2),
+                innerR: innerRadius ?? (isNumber(thickness) ?
+                    outerRadius - thickness :
+                    this.center[3] / 2),
                 open,
                 borderRadius: borderRadius.radius,
                 brStart,
@@ -430,13 +432,16 @@ var RadialAxis;
      */
     function getPosition(value, length) {
         const translatedVal = this.translate(value);
+        const centerRadius = ((this.center && this.center[2]) || 0) / 2;
         return this.postTranslate(this.isCircular ? translatedVal : this.angleRad, // #2848
         // In case when translatedVal is negative, the 0 value must be
         // used instead, in order to deal with lines and labels that
         // fall out of the visible range near the center of a pane
-        pick(this.isCircular ?
-            length :
-            (translatedVal < 0 ? 0 : translatedVal), this.center[2] / 2) - this.offset);
+        (this.isCircular ?
+            (length ?? centerRadius) :
+            (typeof translatedVal === 'number' && translatedVal < 0 ?
+                0 :
+                translatedVal ?? centerRadius)) - this.offset);
     }
     /**
      * Find the position for the axis title, by default inside the gauge.
@@ -455,6 +460,47 @@ var RadialAxis;
                     center[2]) +
                 (titleOptions.y || 0))
         };
+    }
+    /**
+     * Before modifying the axis properities, save references to the unmodified
+     * properties so that they can be restored when switching back from radial
+     * to cartesian.
+     */
+    function saveUnmodified(axis) {
+        axis.unmodifiedProps || (axis.unmodifiedProps = [
+            'beforeSetTickPositions',
+            'createLabelCollector',
+            'getCrosshairPosition',
+            'getLinePath',
+            'getOffset',
+            'getPlotBandPath',
+            'getPlotLinePath',
+            'getPosition',
+            'getTitlePosition',
+            'isHidden',
+            'postTranslate',
+            'redraw',
+            'render',
+            'setAxisSize',
+            'setAxisTranslation',
+            'setCategories',
+            'setOptions',
+            'setScale',
+            'setTitle'
+        ].reduce((obj, fnName) => {
+            obj[fnName] = axis[fnName];
+            return obj;
+        }, {}));
+    }
+    /**
+     * Restore unmodified axis properties.
+     */
+    function unmodify(axis) {
+        const props = axis.unmodifiedProps;
+        if (isObject(props)) {
+            extend(axis, props);
+            delete axis.unmodifiedProps;
+        }
     }
     /**
      * Modify radial axis.
@@ -503,7 +549,8 @@ var RadialAxis;
             // Start and end angle options are given in degrees relative to
             // top, while internal computations are in radians relative to
             // right (like SVG).
-            start = (startAngle - 90) * Math.PI / 180, end = (pick(paneOptions.endAngle, startAngle + (chart.angular ? 270 : 360)) - 90) * Math.PI / 180;
+            start = (startAngle - 90) * Math.PI / 180, end = ((paneOptions.endAngle ??
+                startAngle + (chart.angular ? 270 : 360)) - 90) * Math.PI / 180;
             // Y axis in polar charts
             this.angleRad = (options.angle || 0) * Math.PI / 180;
             // Gauges
@@ -578,6 +625,7 @@ var RadialAxis;
             return;
         }
         // Before prototype.init
+        saveUnmodified(this);
         if (angular) {
             if (isHidden) {
                 modifyAsHidden(this);
@@ -591,6 +639,9 @@ var RadialAxis;
             modify(this);
             // Check which axis is circular
             isCircular = this.horiz;
+        }
+        else {
+            unmodify(this);
         }
         // Disable certain features on angular and polar axes
         if (angular || polar) {
@@ -636,7 +687,7 @@ var RadialAxis;
             correctAngle + 360 : correctAngle, reducedAngle2 = reducedAngle1, translateY = 0, translateX = 0;
         if (axis.isRadial) { // Both X and Y axes in a polar chart
             ret = axis.getPosition(this.pos, (axis.center[2] / 2) +
-                relativeLength(labelOptions.distance ?? -25, axis.center[2] / 2) +
+                relativeLength(labelOptions.distance ?? 15, axis.center[2] / 2) +
                 axis.offset);
             // Automatically rotated
             if (labelOptions.rotation === 'auto') {
@@ -817,6 +868,8 @@ var RadialAxis;
                 start = this.postTranslate(this.angleRad, center[3] / 2);
                 center[0] = start.x - this.chart.plotLeft;
                 center[1] = start.y - this.chart.plotTop;
+                // After updating chart.inverted
+                delete this.sector;
                 // Axis len is used to lay out the ticks
                 this.len = this.width = this.height =
                     (center[2] - center[3]) / 2;
@@ -907,12 +960,8 @@ var RadialAxis;
         if (axis.isRadial) {
             endPoint = axis.getPosition(this.pos, axis.center[2] / 2 + tickLength);
             ret = [
-                'M',
-                x,
-                y,
-                'L',
-                endPoint.x,
-                endPoint.y
+                ['M', x, y],
+                ['L', endPoint.x, endPoint.y]
             ];
         }
         else {

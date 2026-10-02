@@ -84,6 +84,7 @@ class HeikinAshiSeries extends CandlestickSeries {
          *
          * */
         super(...arguments);
+        /** @internal */
         this.heikinashiData = [];
     }
     /* *
@@ -91,6 +92,7 @@ class HeikinAshiSeries extends CandlestickSeries {
      *  Static Functions
      *
      * */
+    /** @internal */
     static compose(SeriesClass, AxisClass) {
         CandlestickSeries.compose(SeriesClass);
         if (pushUnique(composed, 'HeikinAshi')) {
@@ -157,6 +159,7 @@ class HeikinAshiSeries extends CandlestickSeries {
         this.heikinashiData.push([newOpen, newHigh, newLow, newClose]);
     }
 }
+/** @internal */
 HeikinAshiSeries.defaultOptions = merge(CandlestickSeries.defaultOptions, HeikinAshiSeriesDefaults);
 /* *
  *

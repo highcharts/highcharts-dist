@@ -26,6 +26,7 @@ class VariwidePoint extends ColumnPoint {
      *  Functions
      *
      * */
+    /** @internal */
     isValid() {
         return isNumber(this.y) && isNumber(this.z);
     }

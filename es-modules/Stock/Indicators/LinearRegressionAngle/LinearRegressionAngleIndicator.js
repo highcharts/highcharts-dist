@@ -21,7 +21,6 @@ import { extend, merge } from '../../../Shared/Utilities.js';
 /**
  * The Linear Regression Angle series type.
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.linearRegressionAngle
  *
@@ -43,6 +42,7 @@ class LinearRegressionAngleIndicator extends LinearRegressionIndicator {
     slopeToAngle(slope) {
         return Math.atan(slope) * (180 / Math.PI); // Rad to deg
     }
+    /** @internal */
     getEndPointY(lineParameters) {
         return this.slopeToAngle(lineParameters.slope);
     }
@@ -65,6 +65,7 @@ class LinearRegressionAngleIndicator extends LinearRegressionIndicator {
  * @requires     stock/indicators/indicators
  * @requires     stock/indicators/regressions
  * @optionparent plotOptions.linearregressionangle
+ * @internal
  */
 LinearRegressionAngleIndicator.defaultOptions = merge(LinearRegressionIndicator.defaultOptions, {
     tooltip: {
@@ -83,7 +84,6 @@ SeriesRegistry.registerSeriesType('linearRegressionAngle', LinearRegressionAngle
  *  Default Export
  *
  * */
-/** @internal */
 export default LinearRegressionAngleIndicator;
 /**
  * A linear regression angle series. If the
@@ -93,7 +93,6 @@ export default LinearRegressionAngleIndicator;
  * @extends   series,plotOptions.linearregressionangle
  * @since     7.0.0
  * @product   highstock
- * @excluding dataParser,dataURL
  * @requires  stock/indicators/indicators
  * @requires  stock/indicators/regressions
  * @apioption series.linearregressionangle

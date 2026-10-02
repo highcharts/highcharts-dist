@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.0-modified (2026-08-14)
+ * @license Highcharts JS v13.1.0 (2026-10-02)
  * @module highcharts/modules/dependency-wheel
  * @requires highcharts
  * @requires highcharts/modules/sankey
@@ -19,48 +19,27 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 /******/ 
 /************************************************************************/
 /******/ /* webpack/runtime/compat get default export */
-/******/ (() => {
-/******/ 	// getDefaultExport function for compatibility with non-harmony modules
-/******/ 	__webpack_require__.n = (module) => {
-/******/ 		const getter = module && module.__esModule ?
-/******/ 			() => (module['default']) :
-/******/ 			() => (module);
-/******/ 		__webpack_require__.d(getter, { a: getter });
-/******/ 		return getter;
-/******/ 	};
-/******/ })();
+/******/ // getDefaultExport function for compatibility with non-harmony modules
+/******/ __webpack_require__.n = (module) => {
+/******/ 	const getter = module && module.__esModule ?
+/******/ 		() => (module['default']) :
+/******/ 		() => (module);
+/******/ 	__webpack_require__.d(getter, { a: getter });
+/******/ 	return getter;
+/******/ };
 /******/ 
 /******/ /* webpack/runtime/define property getters */
-/******/ (() => {
-/******/ 	// define getter/value functions for harmony exports
-/******/ 	__webpack_require__.d = (exports, definition) => {
-/******/ 		if(Array.isArray(definition)) {
-/******/ 			var i = 0;
-/******/ 			while(i < definition.length) {
-/******/ 				var key = definition[i++];
-/******/ 				var binding = definition[i++];
-/******/ 				if(!__webpack_require__.o(exports, key)) {
-/******/ 					if(binding === 0) {
-/******/ 						Object.defineProperty(exports, key, { enumerable: true, value: definition[i++] });
-/******/ 					} else {
-/******/ 						Object.defineProperty(exports, key, { enumerable: true, get: binding });
-/******/ 					}
-/******/ 				} else if(binding === 0) { i++; }
-/******/ 			}
-/******/ 		} else {
-/******/ 			for(var key in definition) {
-/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
-/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
-/******/ 				}
-/******/ 			}
+/******/ // define getter/value functions for harmony exports
+/******/ __webpack_require__.d = (exports, definition) => {
+/******/ 	for(var key in definition) {
+/******/ 		if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 			Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
 /******/ 		}
-/******/ 	};
-/******/ })();
+/******/ 	}
+/******/ };
 /******/ 
 /******/ /* webpack/runtime/hasOwnProperty shorthand */
-/******/ (() => {
-/******/ 	__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
-/******/ })();
+/******/ __webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop));
 /******/ 
 /************************************************************************/
 
@@ -488,7 +467,6 @@ const { sankey: { prototype: { pointClass: SankeyPoint } } } = (external_highcha
  *  Class
  *
  * */
-/** @internal */
 class DependencyWheelPoint extends SankeyPoint {
     /* *
      *
@@ -547,6 +525,7 @@ class DependencyWheelPoint extends SankeyPoint {
             .add(renderer.defs);
         return point.dataLabelPath;
     }
+    /** @internal */
     isValid() {
         // No null points here
         return true;
@@ -557,7 +536,6 @@ class DependencyWheelPoint extends SankeyPoint {
  *  Default Export
  *
  * */
-/** @internal */
 /* harmony default export */ const DependencyWheel_DependencyWheelPoint = (DependencyWheelPoint);
 
 ;// ./code/es-modules/Series/DependencyWheel/DependencyWheelSeriesDefaults.js
@@ -864,9 +842,12 @@ var SankeyColumnComposition;
          */
         getTranslationFactor(series) {
             const column = this.points, nodes = column.slice(), chart = series.chart, minLinkWidth = series.options.minLinkWidth || 0;
-            let skipPoint, factor = 0, i, remainingHeight = ((chart.plotSizeY || 0) -
+            let skipPoint, factor = 0, i, remainingHeight = ((series.flowHeight || chart.plotSizeY || 0) -
                 (series.options.borderWidth || 0) -
-                (column.length - 1) * series.nodePadding);
+                (column.length - 1) * series.nodePadding -
+                (series.useCircularLayout ?
+                    column.sankeyColumn.lapSum() :
+                    0));
             // Because the minLinkWidth option doesn't obey the direct
             // translation, we need to run translation iteratively, check
             // node heights, remove those nodes affected by minLinkWidth,
@@ -910,11 +891,22 @@ var SankeyColumnComposition;
                     height += nodePadding;
                 }
                 const nodeHeight = Math.max(node.getSum() * factor, series.options.minLinkWidth || 0);
-                height += nodeHeight;
+                height += nodeHeight + (node.wrapLap || 0);
                 return height;
             }, 0);
-            // Node alignment option handling #19096
-            return (0,external_highcharts_src_js_default_namespaceObject.getAlignFactor)(series.options.nodeAlignment || 'center') * ((series.chart.plotSizeY || 0) - height);
+            // Node alignment option handling #19096. Circular geometry
+            // shrinks the extent aligned within. #8218
+            return (series.flowTop || 0) +
+                (0,external_highcharts_src_js_default_namespaceObject.getAlignFactor)(series.options.nodeAlignment || 'center') * ((series.flowHeight || (series.chart.plotSizeY || 0)) -
+                    height);
+        }
+        /**
+         * Flow-axis room this column's nodes reserve for self-link laps.
+         * #8218
+         * @private
+         */
+        lapSum() {
+            return this.points.reduce((sum, node) => (sum + (node.wrapLap || 0)), 0);
         }
         /**
          * Get the left position of the column in pixels
@@ -972,7 +964,9 @@ var SankeyColumnComposition;
                 const height = Math.max(sum * factor, series.options.minLinkWidth || 0);
                 const directionOffset = node.options[series.chart.inverted ?
                     'offsetHorizontal' :
-                    'offsetVertical'], optionOffset = node.options.offset || 0;
+                    'offsetVertical'], optionOffset = node.options.offset || 0, 
+                // A self-link laps the flow-axis start of its node. #8218
+                lap = column[i].wrapLap || 0;
                 if (sum) {
                     totalNodeOffset = height + nodePadding;
                 }
@@ -982,14 +976,14 @@ var SankeyColumnComposition;
                 }
                 if (column[i] === node) {
                     return {
-                        relativeTop: offset + ((0,external_highcharts_src_js_default_namespaceObject.defined)(directionOffset) ?
+                        relativeTop: offset + lap + ((0,external_highcharts_src_js_default_namespaceObject.defined)(directionOffset) ?
                             // `directionOffset` is a percent of the node
                             // height
                             (0,external_highcharts_src_js_default_namespaceObject.relativeLength)(directionOffset, height) :
                             (0,external_highcharts_src_js_default_namespaceObject.relativeLength)(optionOffset, totalNodeOffset))
                     };
                 }
-                offset += totalNodeOffset;
+                offset += totalNodeOffset + lap;
             }
         }
     }
@@ -1312,7 +1306,6 @@ composeTextPath((external_highcharts_src_js_default_SVGElement_default()));
  *
  * */
 /**
- * @internal
  * @class
  * @name Highcharts.seriesTypes.dependencywheel
  *
@@ -1324,6 +1317,7 @@ class DependencyWheelSeries extends SankeySeries {
      *  Functions
      *
      * */
+    /** @internal */
     animate(init) {
         const series = this;
         if (!init) {
@@ -1351,6 +1345,7 @@ class DependencyWheelSeries extends SankeySeries {
             }
         }
     }
+    /** @internal */
     createNode(id) {
         const node = super.createNode(id);
         /**
@@ -1542,11 +1537,13 @@ class DependencyWheelSeries extends SankeySeries {
  *  Static Properties
  *
  * */
+/** @internal */
 DependencyWheelSeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(SankeySeries.defaultOptions, DependencyWheel_DependencyWheelSeriesDefaults);
 (0,external_highcharts_src_js_default_namespaceObject.extend)(DependencyWheelSeries.prototype, {
     orderNodes: false,
     pointArrayMap: ['from', 'to', 'weight', 'weightTo'],
-    getCenter: PieSeries.prototype.getCenter
+    getCenter: PieSeries.prototype.getCenter,
+    useCircularLayout: false
 });
 DependencyWheelSeries.prototype.pointClass = DependencyWheel_DependencyWheelPoint;
 external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('dependencywheel', DependencyWheelSeries);
@@ -1555,7 +1552,6 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *  Default Export
  *
  * */
-/** @internal */
 /* harmony default export */ const DependencyWheel_DependencyWheelSeries = ((/* unused pure expression or super */ null && (DependencyWheelSeries)));
 
 ;// ./code/es-modules/masters/modules/dependency-wheel.src.js

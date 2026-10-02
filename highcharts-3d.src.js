@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.0-modified (2026-08-14)
+ * @license Highcharts JS v13.1.0 (2026-10-02)
  * @module highcharts/highcharts-3d
  * @requires highcharts
  *
@@ -13,14 +13,14 @@
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(root["_Highcharts"], root["_Highcharts"]["Color"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]["Series"], root["_Highcharts"]["StackItem"], root["_Highcharts"]["SVGRenderer"], root["_Highcharts"]["SVGElement"], root["_Highcharts"]["Axis"], root["_Highcharts"]["Series"]["types"]["scatter"]);
+		module.exports = factory(root["_Highcharts"]["Axis"], root["_Highcharts"]["Color"], root["_Highcharts"]["SVGElement"], root["_Highcharts"]["SVGRenderer"], root["_Highcharts"]["Series"]["types"]["scatter"], root["_Highcharts"]["Series"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]["StackItem"], root["_Highcharts"]);
 	else if(typeof define === 'function' && define.amd)
-		define("highcharts/highcharts-3d", ["highcharts/highcharts"], function (amd1) {return factory(amd1,amd1["Color"],amd1["SeriesRegistry"],amd1["Series"],amd1["StackItem"],amd1["SVGRenderer"],amd1["SVGElement"],amd1["Axis"],amd1["Series"],["types"],["scatter"]);});
+		define("highcharts/highcharts-3d", ["highcharts/highcharts"], function (amd1) {return factory(amd1["Axis"],amd1["Color"],amd1["SVGElement"],amd1["SVGRenderer"],amd1["Series"],["types"],["scatter"],amd1["Series"],amd1["SeriesRegistry"],amd1["StackItem"],amd1);});
 	else if(typeof exports === 'object')
-		exports["highcharts/highcharts-3d"] = factory(root["_Highcharts"], root["_Highcharts"]["Color"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]["Series"], root["_Highcharts"]["StackItem"], root["_Highcharts"]["SVGRenderer"], root["_Highcharts"]["SVGElement"], root["_Highcharts"]["Axis"], root["_Highcharts"]["Series"]["types"]["scatter"]);
+		exports["highcharts/highcharts-3d"] = factory(root["_Highcharts"]["Axis"], root["_Highcharts"]["Color"], root["_Highcharts"]["SVGElement"], root["_Highcharts"]["SVGRenderer"], root["_Highcharts"]["Series"]["types"]["scatter"], root["_Highcharts"]["Series"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]["StackItem"], root["_Highcharts"]);
 	else
-		root["Highcharts"] = factory(root["Highcharts"], root["Highcharts"]["Color"], root["Highcharts"]["SeriesRegistry"], root["Highcharts"]["Series"], root["Highcharts"]["StackItem"], root["Highcharts"]["SVGRenderer"], root["Highcharts"]["SVGElement"], root["Highcharts"]["Axis"], root["Highcharts"]["Series"]["types"]["scatter"]);
-})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__944__, __WEBPACK_EXTERNAL_MODULE__620__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__820__, __WEBPACK_EXTERNAL_MODULE__184__, __WEBPACK_EXTERNAL_MODULE__540__, __WEBPACK_EXTERNAL_MODULE__28__, __WEBPACK_EXTERNAL_MODULE__532__, __WEBPACK_EXTERNAL_MODULE__632__) => {
+		root["Highcharts"] = factory(root["Highcharts"]["Axis"], root["Highcharts"]["Color"], root["Highcharts"]["SVGElement"], root["Highcharts"]["SVGRenderer"], root["Highcharts"]["Series"]["types"]["scatter"], root["Highcharts"]["Series"], root["Highcharts"]["SeriesRegistry"], root["Highcharts"]["StackItem"], root["Highcharts"]);
+})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__532__, __WEBPACK_EXTERNAL_MODULE__620__, __WEBPACK_EXTERNAL_MODULE__28__, __WEBPACK_EXTERNAL_MODULE__540__, __WEBPACK_EXTERNAL_MODULE__632__, __WEBPACK_EXTERNAL_MODULE__820__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__184__, __WEBPACK_EXTERNAL_MODULE__944__) => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
@@ -116,48 +116,27 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__944__;
 /******/ 	
 /************************************************************************/
 /******/ 	/* webpack/runtime/compat get default export */
-/******/ 	(() => {
-/******/ 		// getDefaultExport function for compatibility with non-harmony modules
-/******/ 		__webpack_require__.n = (module) => {
-/******/ 			const getter = module && module.__esModule ?
-/******/ 				() => (module['default']) :
-/******/ 				() => (module);
-/******/ 			__webpack_require__.d(getter, { a: getter });
-/******/ 			return getter;
-/******/ 		};
-/******/ 	})();
+/******/ 	// getDefaultExport function for compatibility with non-harmony modules
+/******/ 	__webpack_require__.n = (module) => {
+/******/ 		const getter = module && module.__esModule ?
+/******/ 			() => (module['default']) :
+/******/ 			() => (module);
+/******/ 		__webpack_require__.d(getter, { a: getter });
+/******/ 		return getter;
+/******/ 	};
 /******/ 	
 /******/ 	/* webpack/runtime/define property getters */
-/******/ 	(() => {
-/******/ 		// define getter/value functions for harmony exports
-/******/ 		__webpack_require__.d = (exports, definition) => {
-/******/ 			if(Array.isArray(definition)) {
-/******/ 				var i = 0;
-/******/ 				while(i < definition.length) {
-/******/ 					var key = definition[i++];
-/******/ 					var binding = definition[i++];
-/******/ 					if(!__webpack_require__.o(exports, key)) {
-/******/ 						if(binding === 0) {
-/******/ 							Object.defineProperty(exports, key, { enumerable: true, value: definition[i++] });
-/******/ 						} else {
-/******/ 							Object.defineProperty(exports, key, { enumerable: true, get: binding });
-/******/ 						}
-/******/ 					} else if(binding === 0) { i++; }
-/******/ 				}
-/******/ 			} else {
-/******/ 				for(var key in definition) {
-/******/ 					if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
-/******/ 						Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
-/******/ 					}
-/******/ 				}
+/******/ 	// define getter/value functions for harmony exports
+/******/ 	__webpack_require__.d = (exports, definition) => {
+/******/ 		for(var key in definition) {
+/******/ 			if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 				Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
 /******/ 			}
-/******/ 		};
-/******/ 	})();
+/******/ 		}
+/******/ 	};
 /******/ 	
 /******/ 	/* webpack/runtime/hasOwnProperty shorthand */
-/******/ 	(() => {
-/******/ 		__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
-/******/ 	})();
+/******/ 	__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop));
 /******/ 	
 /************************************************************************/
 let __webpack_exports__ = {};
@@ -185,7 +164,6 @@ var highcharts_Color_commonjs_highcharts_Color_commonjs2_highcharts_Color_root_H
  *
  *
  * */
-
 
 
 const { deg2rad } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
@@ -274,11 +252,11 @@ function perspective(points, chart, insidePlotArea, useInvertedPersp) {
     /* The useInvertedPersp argument is used for inverted charts with
      * already inverted elements, such as dataLabels or tooltip positions.
      */
-    inverted = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(useInvertedPersp, insidePlotArea ? chart.inverted : false), origin = {
+    inverted = useInvertedPersp ?? (insidePlotArea ? chart.inverted : false), origin = {
         x: chart.plotWidth / 2,
         y: chart.plotHeight / 2,
         z: options3d.depth / 2,
-        vd: (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(options3d.depth, 1) * (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(options3d.viewDistance, 0)
+        vd: (options3d.depth ?? 1) * (options3d.viewDistance ?? 0)
     }, scale = chart.scale3d || 1, beta = deg2rad * options3d.beta * (inverted ? -1 : 1), alpha = deg2rad * options3d.alpha * (inverted ? -1 : 1), angles = {
         cosA: Math.cos(alpha),
         cosB: Math.cos(-beta),
@@ -357,13 +335,13 @@ function pointCameraDistance(coordinates, chart) {
     const options3d = chart.options.chart.options3d, cameraPosition = {
         x: chart.plotWidth / 2,
         y: chart.plotHeight / 2,
-        z: (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(options3d.depth, 1) * (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(options3d.viewDistance, 0) +
+        z: (options3d.depth ?? 1) * (options3d.viewDistance ?? 0) +
             options3d.depth
     }, 
     // Added support for objects with plotX or x coordinates.
-    distance = Math.sqrt(Math.pow(cameraPosition.x - (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(coordinates.plotX, coordinates.x), 2) +
-        Math.pow(cameraPosition.y - (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(coordinates.plotY, coordinates.y), 2) +
-        Math.pow(cameraPosition.z - (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(coordinates.plotZ, coordinates.z), 2));
+    distance = Math.sqrt(Math.pow(cameraPosition.x - (coordinates.plotX ?? coordinates.x), 2) +
+        Math.pow(cameraPosition.y - (coordinates.plotY ?? coordinates.y), 2) +
+        Math.pow(cameraPosition.z - (coordinates.plotZ ?? coordinates.z), 2));
     return distance;
 }
 /**
@@ -412,21 +390,6 @@ function shapeArea(vertexes) {
 function shapeArea3D(vertexes, chart, insidePlotArea) {
     return shapeArea(perspective(vertexes, chart, insidePlotArea));
 }
-/* *
- *
- *  Default Export
- *
- * */
-/** @internal */
-const Math3D = {
-    perspective,
-    perspective3D,
-    pointCameraDistance,
-    shapeArea,
-    shapeArea3D
-};
-/** @internal */
-/* harmony default export */ const Core_Math3D = (Math3D);
 
 ;// ./code/es-modules/Core/Chart/Chart3D.js
 /* *
@@ -448,7 +411,6 @@ const { parse: color } = (highcharts_Color_commonjs_highcharts_Color_commonjs2_h
 
 const { defaultOptions: genericDefaultOptions } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 
-const { perspective: Chart3D_perspective, shapeArea3D: Chart3D_shapeArea3D } = Core_Math3D;
 
 /* *
  *
@@ -1655,7 +1617,7 @@ var Chart3D;
         /** @internal */
         get3dFrame() {
             const chart = this.chart, options3d = chart.options.chart.options3d, frameOptions = options3d.frame, xm = chart.plotLeft, xp = chart.plotLeft + chart.plotWidth, ym = chart.plotTop, yp = chart.plotTop + chart.plotHeight, zm = 0, zp = options3d.depth, faceOrientation = function (vertexes) {
-                const area = Chart3D_shapeArea3D(vertexes, chart);
+                const area = shapeArea3D(vertexes, chart);
                 // Give it 0.5 squared-pixel as a margin for rounding errors
                 if (area > 0.5) {
                     return 1;
@@ -1743,8 +1705,8 @@ var Chart3D;
                     isVisible = faceOrientation > 0;
                 }
                 return {
-                    size: (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(options.size, 1),
-                    color: (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(options.color, 'none'),
+                    size: (options.size ?? 1),
+                    color: (options.color ?? 'none'),
                     frontFacing: faceOrientation > 0,
                     visible: isVisible
                 };
@@ -1895,7 +1857,7 @@ var Chart3D;
                     if (edges.length === 1) {
                         return edges[0];
                     }
-                    const projections = Chart3D_perspective(edges, chart, false);
+                    const projections = perspective(edges, chart, false);
                     let best = 0;
                     for (let i = 1; i < projections.length; i++) {
                         if (mult * projections[i][axis] >
@@ -2021,7 +1983,7 @@ var Chart3D;
                 });
             });
             // Calculate 3D corners:
-            corners = Chart3D_perspective(corners, chart, false);
+            corners = perspective(corners, chart, false);
             // Get bounding box of 3D element:
             corners.forEach(function (corner) {
                 bbox3d.minX = Math.min(bbox3d.minX, corner.x);
@@ -2118,7 +2080,6 @@ var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highc
 
 const { composed } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 
-const { perspective: Area3DSeries_perspective } = Core_Math3D;
 
 const { line: { prototype: lineProto } } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
 
@@ -2160,7 +2121,7 @@ function wrapAreaSeriesGetGraphPath(proceed) {
         }
     }
     const options3d = series.chart.options.chart.options3d;
-    bottomPoints = Area3DSeries_perspective(bottomPoints, series.chart, true).map((point) => ({ plotX: point.x, plotY: point.y, plotZ: point.z }));
+    bottomPoints = perspective(bottomPoints, series.chart, true).map((point) => ({ plotX: point.x, plotY: point.y, plotZ: point.z }));
     if (series.group && options3d && options3d.depth && options3d.beta) {
         // Markers should take the global zIndex of series group.
         if (series.markerGroup) {
@@ -2423,9 +2384,8 @@ const Tick3DAdditions = {
 
 const { defaultOptions } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 
-const { deg2rad: Axis3DComposition_deg2rad } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
+const { composed: Axis3DComposition_composed, deg2rad: Axis3DComposition_deg2rad } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 
-const { perspective: Axis3DComposition_perspective, perspective3D: Axis3DComposition_perspective3D, shapeArea: Axis3DComposition_shapeArea } = Core_Math3D;
 
 
 /* *
@@ -2438,8 +2398,8 @@ function onAxisAfterSetOptions() {
     const axis = this, chart = axis.chart, options = axis.options;
     if (chart.is3d?.() && axis.coll !== 'colorAxis') {
         this.clippable = false;
-        options.tickWidth = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(options.tickWidth, 0);
-        options.gridLineWidth = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(options.gridLineWidth, 1);
+        options.tickWidth = (options.tickWidth ?? 0);
+        options.gridLineWidth = (options.gridLineWidth ?? 1);
     }
 }
 /** @internal */
@@ -2558,7 +2518,7 @@ function wrapAxisGetPlotLinePath(proceed) {
                 pathSegments.push(pArr[2], pArr[3]);
             }
         }
-        pathSegments = Axis3DComposition_perspective(pathSegments, this.chart, false);
+        pathSegments = perspective(pathSegments, this.chart, false);
     }
     return chart.renderer.toLineSegments(pathSegments);
 }
@@ -2573,20 +2533,19 @@ function wrapAxisGetSlotWidth(proceed, tick) {
         chart.frameShapes &&
         chart.is3d() &&
         gridGroup &&
-        tick &&
-        tick.label) {
-        const firstGridLine = (gridGroup.element.childNodes[0].getBBox()), frame3DLeft = chart.frameShapes.left.getBBox(), options3d = chart.options.chart.options3d, origin = {
+        tick?.label) {
+        const options3d = chart.options.chart.options3d, origin = {
             x: chart.plotWidth / 2,
             y: chart.plotHeight / 2,
             z: options3d.depth / 2,
-            vd: ((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(options3d.depth, 1) *
-                (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(options3d.viewDistance, 0))
+            vd: ((options3d.depth ?? 1) *
+                (options3d.viewDistance ?? 0))
         }, index = tickPositions.indexOf(tick.pos), prevTick = ticks[tickPositions[index - 1]], nextTick = ticks[tickPositions[index + 1]];
         let labelPos, prevLabelPos, nextLabelPos;
         // Check whether the tick is not the first one and previous tick
         // exists, then calculate position of previous label.
         if (prevTick?.label?.xy) {
-            prevLabelPos = Axis3DComposition_perspective3D({
+            prevLabelPos = perspective3D({
                 x: prevTick.label.xy.x,
                 y: prevTick.label.xy.y,
                 z: null
@@ -2595,7 +2554,7 @@ function wrapAxisGetSlotWidth(proceed, tick) {
         // If next label position is defined, then recalculate its position
         // basing on the perspective.
         if (nextTick?.label?.xy) {
-            nextLabelPos = Axis3DComposition_perspective3D({
+            nextLabelPos = perspective3D({
                 x: nextTick.label.xy.x,
                 y: nextTick.label.xy.y,
                 z: null
@@ -2606,16 +2565,16 @@ function wrapAxisGetSlotWidth(proceed, tick) {
             y: tick.label.xy.y,
             z: null
         };
-        labelPos = Axis3DComposition_perspective3D(labelPos, origin, origin.vd);
-        // If tick is first one, check whether next label position is
-        // already calculated, then return difference between the first and
-        // the second label. If there is no next label position calculated,
-        // return the difference between the first grid line and left 3d
-        // frame.
+        labelPos = perspective3D(labelPos, origin, origin.vd);
+        // If the tick is the first one, check whether the next label position
+        // is already calculated, then return the difference between the first
+        // and the second label. If there is no next label position calculated,
+        // return the difference between the first grid line and left 3d frame.
         return Math.abs(prevLabelPos ?
-            labelPos.x - prevLabelPos.x : nextLabelPos ?
-            nextLabelPos.x - labelPos.x :
-            firstGridLine.x - frame3DLeft.x);
+            labelPos.x - prevLabelPos.x :
+            nextLabelPos ?
+                nextLabelPos.x - labelPos.x :
+                axis.len / (tickPositions.length + 1));
     }
     return proceed.apply(axis, [].slice.call(arguments, 1));
 }
@@ -2648,9 +2607,8 @@ class Axis3DAdditions {
      */
     static compose(AxisClass, TickClass) {
         Tick3DComposition.compose(TickClass);
-        if (!AxisClass.keepProps.includes('axis3D')) {
+        if ((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pushUnique)(Axis3DComposition_composed, 'Axis.3D')) {
             (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(true, defaultOptions.xAxis, Axis_Axis3DDefaults);
-            AxisClass.keepProps.push('axis3D');
             (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.addEvent)(AxisClass, 'init', onAxisInit);
             (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.addEvent)(AxisClass, 'afterSetOptions', onAxisAfterSetOptions);
             (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.addEvent)(AxisClass, 'drawCrosshair', onAxisDrawCrosshair);
@@ -2695,7 +2653,9 @@ class Axis3DAdditions {
             !chart.is3d()) {
             return pos;
         }
-        const alpha = Axis3DComposition_deg2rad * chart.options.chart.options3d.alpha, beta = Axis3DComposition_deg2rad * chart.options.chart.options3d.beta, positionMode = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(isTitle && axis.options.title.position3d, axis.options.labels.position3d), skew = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(isTitle && axis.options.title.skew3d, axis.options.labels.skew3d), frame = chart.chart3d.frame3d, plotLeft = chart.plotLeft, plotRight = chart.plotWidth + plotLeft, plotTop = chart.plotTop, plotBottom = chart.plotHeight + plotTop;
+        const alpha = Axis3DComposition_deg2rad * chart.options.chart.options3d.alpha, beta = Axis3DComposition_deg2rad * chart.options.chart.options3d.beta, positionMode = ((isTitle && axis.options.title.position3d) ??
+            axis.options.labels.position3d), skew = ((isTitle && axis.options.title.skew3d) ??
+            axis.options.labels.skew3d), frame = chart.chart3d.frame3d, plotLeft = chart.plotLeft, plotRight = chart.plotWidth + plotLeft, plotTop = chart.plotTop, plotBottom = chart.plotHeight + plotTop;
         let offsetX = 0, offsetY = 0, vecX, vecY = { x: 0, y: 1, z: 0 }, 
         // Indicates that we are labelling an X or Z axis on the "back" of
         // the chart
@@ -2827,10 +2787,10 @@ class Axis3DAdditions {
         pos.x += offsetX * vecX.x + offsetY * vecY.x;
         pos.y += offsetX * vecX.y + offsetY * vecY.y;
         pos.z += offsetX * vecX.z + offsetY * vecY.z;
-        const projected = Axis3DComposition_perspective([pos], axis.chart)[0];
+        const projected = perspective([pos], axis.chart)[0];
         if (skew) {
             // Check if the label text would be mirrored
-            const isMirrored = Axis3DComposition_shapeArea(Axis3DComposition_perspective([
+            const isMirrored = shapeArea(perspective([
                 pos,
                 { x: pos.x + vecX.x, y: pos.y + vecX.y, z: pos.z + vecX.z },
                 { x: pos.x + vecY.x, y: pos.y + vecY.y, z: pos.z + vecY.z }
@@ -2838,7 +2798,7 @@ class Axis3DAdditions {
             if (isMirrored) {
                 vecX = { x: -vecX.x, y: -vecX.y, z: -vecX.z };
             }
-            const pointsProjected = Axis3DComposition_perspective([
+            const pointsProjected = perspective([
                 { x: pos.x, y: pos.y, z: pos.z },
                 { x: pos.x + vecX.x, y: pos.y + vecX.y, z: pos.z + vecX.z },
                 { x: pos.x + vecY.x, y: pos.y + vecY.y, z: pos.z + vecY.z }
@@ -2901,7 +2861,6 @@ var highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_roo
 
 const { composed: Series3D_composed } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 
-const { perspective: Series3D_perspective } = Core_Math3D;
 
 
 /* *
@@ -2938,7 +2897,7 @@ class Series3D extends (highcharts_Series_commonjs_highcharts_Series_commonjs2_h
      * @internal
      */
     translate3dPoints() {
-        const series = this, seriesOptions = series.options, chart = series.chart, zAxis = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(series.zAxis, chart.options.zAxis[0]), rawPoints = [], rawPointsX = [], stack = seriesOptions.stacking ?
+        const series = this, seriesOptions = series.options, chart = series.chart, zAxis = (series.zAxis ?? chart.options.zAxis[0]), rawPoints = [], rawPointsX = [], stack = seriesOptions.stacking ?
             ((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.isNumber)(seriesOptions.stack) ? seriesOptions.stack : 0) :
             series.index || 0;
         let projectedPoint, zValue;
@@ -2969,7 +2928,7 @@ class Series3D extends (highcharts_Series_commonjs_highcharts_Series_commonjs2_h
             rawPointsX.push(rawPoint.plotX || 0);
         });
         series.rawPointsX = rawPointsX;
-        const projectedPoints = Series3D_perspective(rawPoints, chart, true);
+        const projectedPoints = perspective(rawPoints, chart, true);
         series.points.forEach((rawPoint, i) => {
             projectedPoint = projectedPoints[i];
             rawPoint.plotX = projectedPoint.x;
@@ -3117,7 +3076,7 @@ class SVGElement3D extends (highcharts_SVGElement_commonjs_highcharts_SVGElement
         for (const part of elem3d.parts) {
             // If different props for different parts
             if (partsProps) {
-                props = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(partsProps[part], false);
+                props = (partsProps[part] ?? false);
             }
             // Only if something to set, but allow undefined
             if (props !== false) {
@@ -3217,7 +3176,6 @@ const { parse: SVGRenderer3D_color } = (highcharts_Color_commonjs_highcharts_Col
 
 const { charts, deg2rad: SVGRenderer3D_deg2rad } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 
-const { perspective: SVGRenderer3D_perspective, shapeArea: SVGRenderer3D_shapeArea } = Core_Math3D;
 
 
 /* *
@@ -3350,13 +3308,14 @@ var SVGRenderer3D;
                 ((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.defined)(hash.enabled) ||
                     (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.defined)(hash.vertexes) ||
                     (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.defined)(hash.insidePlotArea))) {
-                this.enabled = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(hash.enabled, this.enabled);
-                this.vertexes = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(hash.vertexes, this.vertexes);
-                this.insidePlotArea = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(hash.insidePlotArea, this.insidePlotArea);
+                this.enabled = (hash.enabled ?? this.enabled);
+                this.vertexes = (hash.vertexes ?? this.vertexes);
+                this.insidePlotArea =
+                    hash.insidePlotArea ?? this.insidePlotArea;
                 delete hash.enabled;
                 delete hash.vertexes;
                 delete hash.insidePlotArea;
-                const chart = charts[renderer.chartIndex], vertexes2d = SVGRenderer3D_perspective(this.vertexes, chart, this.insidePlotArea), path = renderer.toLinePath(vertexes2d, true), area = SVGRenderer3D_shapeArea(vertexes2d);
+                const chart = charts[renderer.chartIndex], vertexes2d = perspective(this.vertexes, chart, this.insidePlotArea), path = renderer.toLinePath(vertexes2d, true), area = shapeArea(vertexes2d);
                 hash.d = path;
                 hash.visibility = (this.enabled && area > 0) ?
                     'inherit' : 'hidden';
@@ -3368,13 +3327,14 @@ var SVGRenderer3D;
                 ((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.defined)(params.enabled) ||
                     (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.defined)(params.vertexes) ||
                     (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.defined)(params.insidePlotArea))) {
-                this.enabled = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(params.enabled, this.enabled);
-                this.vertexes = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(params.vertexes, this.vertexes);
-                this.insidePlotArea = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(params.insidePlotArea, this.insidePlotArea);
+                this.enabled = (params.enabled ?? this.enabled);
+                this.vertexes = (params.vertexes ?? this.vertexes);
+                this.insidePlotArea =
+                    params.insidePlotArea ?? this.insidePlotArea;
                 delete params.enabled;
                 delete params.vertexes;
                 delete params.insidePlotArea;
-                const chart = charts[renderer.chartIndex], vertexes2d = SVGRenderer3D_perspective(this.vertexes, chart, this.insidePlotArea), path = renderer.toLinePath(vertexes2d, true), area = SVGRenderer3D_shapeArea(vertexes2d), visibility = (this.enabled && area > 0) ?
+                const chart = charts[renderer.chartIndex], vertexes2d = perspective(this.vertexes, chart, this.insidePlotArea), path = renderer.toLinePath(vertexes2d, true), area = shapeArea(vertexes2d), visibility = (this.enabled && area > 0) ?
                     'visible' : 'hidden';
                 params.d = path;
                 this.attr('visibility', visibility);
@@ -3509,7 +3469,7 @@ var SVGRenderer3D;
                 z: z + d
             }];
         // Apply perspective
-        pArr = SVGRenderer3D_perspective(pArr, chart, shapeArgs.insidePlotArea);
+        pArr = perspective(pArr, chart, shapeArgs.insidePlotArea);
         /**
          * Helper method to decide which side is visible
          * @internal
@@ -3578,18 +3538,18 @@ var SVGRenderer3D;
             // face calculation
             dummyFace1 = verticesIndex1.map(mapSidePath), dummyFace2 = verticesIndex2.map(mapSidePath);
             let ret = [[], -1];
-            if (SVGRenderer3D_shapeArea(face1) < 0) {
+            if (shapeArea(face1) < 0) {
                 ret = [face1, 0];
             }
-            else if (SVGRenderer3D_shapeArea(face2) < 0) {
+            else if (shapeArea(face2) < 0) {
                 ret = [face2, 1];
             }
             else if (side) {
                 forcedSides.push(side);
-                if (SVGRenderer3D_shapeArea(dummyFace1) < 0) {
+                if (shapeArea(dummyFace1) < 0) {
                     ret = [face1, 0];
                 }
-                else if (SVGRenderer3D_shapeArea(dummyFace2) < 0) {
+                else if (shapeArea(dummyFace2) < 0) {
                     ret = [face2, 1];
                 }
                 else {
@@ -3766,7 +3726,7 @@ var SVGRenderer3D;
                     if (ca.beta !== void 0) {
                         ca.beta *= SVGRenderer3D_deg2rad;
                     }
-                    (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.extend)(wrapper.attribs, ca);
+                    ;(0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.extend)(wrapper.attribs, ca);
                     if (wrapper.attribs) {
                         wrapper.setPaths(wrapper.attribs);
                     }
@@ -3784,7 +3744,7 @@ var SVGRenderer3D;
             // been in the attribs collection in the first place.
             delete params.center;
             delete params.z;
-            const anim = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.animObject)((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(animation, this.renderer.globalAnimation));
+            const anim = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.animObject)((animation ?? this.renderer.globalAnimation));
             if (anim.duration) {
                 const paramArr = extractCustom(params);
                 // Params need to have a property in order for the step to run
@@ -3794,7 +3754,7 @@ var SVGRenderer3D;
                 wrapper[randomProp + 'Setter'] = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default()).noop;
                 if (paramArr) {
                     const to = paramArr[0], // Custom attr
-                    interpolate = (key, pos) => (from[key] + ((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(to[key], from[key]) -
+                    interpolate = (key, pos) => (from[key] + ((to[key] ?? from[key]) -
                         from[key]) * pos);
                     anim.step = function (a, fx) {
                         if (fx.prop === randomProp && fx.elem) {
@@ -4176,7 +4136,6 @@ class ZAxis extends (highcharts_Axis_commonjs_highcharts_Axis_commonjs2_highchar
 
 const { composed: Column3DComposition_composed } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 
-const { perspective: Column3DComposition_perspective } = Core_Math3D;
 
 /* *
  *
@@ -4265,10 +4224,10 @@ function columnSeriesTranslate3dShapes() {
             point.axisZpos = point2dPos.z;
             // Calculate and store point's position in 3D,
             // using perspective method.
-            point.plot3d = Column3DComposition_perspective([point2dPos], chart, true, false)[0];
+            point.plot3d = perspective([point2dPos], chart, true, false)[0];
             // Translate the tooltip position in 3d space
             if (tooltipPos) {
-                const translatedTTPos = Column3DComposition_perspective([{
+                const translatedTTPos = perspective([{
                         x: tooltipPos[0],
                         y: tooltipPos[1],
                         z: z + depth / 2 // The center of column in Z dimension
@@ -4321,7 +4280,8 @@ function retrieveStacks(chart, stacking) {
     const series = chart.series, stacks = { totalStacks: 0 };
     let stackNumber, i = 1;
     series.forEach(function (s) {
-        stackNumber = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(s.options.stack, (stacking ? 0 : series.length - 1 - s.index)); // #3841, #4532
+        stackNumber = (s.options.stack ??
+            (stacking ? 0 : series.length - 1 - s.index)); // #3841, #4532
         if (!stacks[stackNumber]) {
             stacks[stackNumber] = { series: [s], position: i };
             i++;
@@ -4453,7 +4413,7 @@ function wrapColumnSeriesPointAttribs(proceed) {
     if (this.chart.is3d && this.chart.is3d()) {
         // Set the fill color to the fill color to provide a smooth edge
         attr.stroke = this.options.edgeColor || attr.fill;
-        attr['stroke-width'] = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(this.options.edgeWidth, 1); // #4055
+        attr['stroke-width'] = (this.options.edgeWidth ?? 1); // #4055
     }
     return attr;
 }
@@ -4483,7 +4443,7 @@ function wrapColumnSeriesSetVisible(proceed, vis) {
         for (const point of series.points) {
             point.visible = point.options.visible = vis =
                 typeof vis === 'undefined' ?
-                    !(0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(series.visible, point.visible) : vis;
+                    !(series.visible ?? point.visible) : vis;
             if (series.options.data) {
                 series.options.data[series.data.indexOf(point)] = point.options;
             }
@@ -4511,7 +4471,7 @@ function wrapSeriesAlignDataLabel(proceed, point, _dataLabel, options, alignTo) 
     // Only do this for 3D columns and it's derived series
     if (chart.is3d() &&
         this.is('column')) {
-        const series = this, seriesOptions = series.options, inside = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(options.inside, !!series.options.stacking), options3d = chart.options.chart.options3d, xOffset = (point.pointWidth || 0) / 2;
+        const series = this, seriesOptions = series.options, inside = (options.inside ?? !!series.options.stacking), options3d = chart.options.chart.options3d, xOffset = (point.pointWidth || 0) / 2;
         let dLPosition = {
             x: alignTo.x + xOffset,
             y: alignTo.y,
@@ -4533,7 +4493,7 @@ function wrapSeriesAlignDataLabel(proceed, point, _dataLabel, options, alignTo) 
             }
         }
         // `dLPosition` is recalculated for 3D graphs
-        dLPosition = Column3DComposition_perspective([dLPosition], chart, true, false)[0];
+        dLPosition = perspective([dLPosition], chart, true, false)[0];
         alignTo.x = dLPosition.x - xOffset;
         // #7103 If point is outside of plotArea, hide data label.
         alignTo.y = point.outside3dPlot ? -9e9 : dLPosition.y;
@@ -4583,7 +4543,7 @@ function wrapStackItemGetStackBox(proceed, stackBoxProps) {
                     dLPosition.y += xWidth;
                 }
             }
-            dLPosition = Column3DComposition_perspective([dLPosition], chart, true, false)[0];
+            dLPosition = perspective([dLPosition], chart, true, false)[0];
             stackBox.x = dLPosition.x - xWidth / 2;
             stackBox.y = dLPosition.y;
         }
@@ -4675,7 +4635,7 @@ class Pie3DPoint extends PiePoint {
      *
      * */
     /**
-     * @private
+     * @internal
      */
     haloPath() {
         return this.series?.chart.is3d() ?
@@ -4721,6 +4681,7 @@ class Pie3DSeries extends PieSeries {
      *  Static Functions
      *
      * */
+    /** @internal */
     static compose(SeriesClass) {
         if ((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pushUnique)(Pie3DSeries_composed, 'Pie3D')) {
             SeriesClass.types.pie = Pie3DSeries;
@@ -4732,7 +4693,7 @@ class Pie3DSeries extends PieSeries {
      *
      * */
     /**
-     * @private
+     * @internal
      */
     addPoint() {
         super.addPoint.apply(this, arguments);
@@ -4742,7 +4703,7 @@ class Pie3DSeries extends PieSeries {
         }
     }
     /**
-     * @private
+     * @internal
      */
     animate(init) {
         if (!this.chart.is3d()) {
@@ -4757,8 +4718,12 @@ class Pie3DSeries extends PieSeries {
             // Initialize the animation
             if (init) {
                 // Scale down the group and place it in the center
-                group.oldtranslateX = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(group.oldtranslateX, group.translateX);
-                group.oldtranslateY = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(group.oldtranslateY, group.translateY);
+                group.oldtranslateX =
+                    group.oldtranslateX ??
+                        group.translateX;
+                group.oldtranslateY =
+                    group.oldtranslateY ??
+                        group.translateY;
                 attribs = {
                     translateX: center[0],
                     translateY: center[1],
@@ -4787,7 +4752,7 @@ class Pie3DSeries extends PieSeries {
         }
     }
     /**
-     * @private
+     * @internal
      */
     getDataLabelPosition(point, distance) {
         const labelPosition = super.getDataLabelPosition(point, distance);
@@ -4810,18 +4775,18 @@ class Pie3DSeries extends PieSeries {
         return labelPosition;
     }
     /**
-     * @private
+     * @internal
      */
     pointAttribs(point) {
         const attr = super.pointAttribs.apply(this, arguments), options = this.options;
         if (this.chart.is3d() && !this.chart.styledMode) {
             attr.stroke = options.edgeColor || point.color || this.color;
-            attr['stroke-width'] = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(options.edgeWidth, 1);
+            attr['stroke-width'] = (options.edgeWidth ?? 1);
         }
         return attr;
     }
     /**
-     * @private
+     * @internal
      */
     translate() {
         super.translate.apply(this, arguments);
@@ -4857,7 +4822,7 @@ class Pie3DSeries extends PieSeries {
         }
     }
     /**
-     * @private
+     * @internal
      */
     drawTracker() {
         super.drawTracker.apply(this, arguments);
@@ -4876,7 +4841,7 @@ class Pie3DSeries extends PieSeries {
         }
     }
 }
-(0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.extend)(Pie3DSeries.prototype, {
+;(0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.extend)(Pie3DSeries.prototype, {
     pointClass: Pie3D_Pie3DPoint
 });
 /* *
@@ -4934,6 +4899,7 @@ class Scatter3DPoint extends ScatterPoint {
      *  Functions
      *
      * */
+    /** @internal */
     applyOptions() {
         super.applyOptions.apply(this, arguments);
         if (!(0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.defined)(this.z)) {
@@ -5086,7 +5052,6 @@ const Scatter3DSeriesDefaults = {
  * */
 
 
-const { pointCameraDistance: Scatter3DSeries_pointCameraDistance } = Core_Math3D;
 
 
 
@@ -5110,11 +5075,12 @@ class Scatter3DSeries extends (highcharts_Series_types_scatter_commonjs_highchar
      *  Functions
      *
      * */
+    /** @internal */
     pointAttribs(point) {
         const attribs = super.pointAttribs.apply(this, arguments);
         if (this.chart.is3d() && point) {
             attribs.zIndex =
-                Scatter3DSeries_pointCameraDistance(point, this.chart);
+                pointCameraDistance(point, this.chart);
         }
         return attribs;
     }
@@ -5124,6 +5090,7 @@ class Scatter3DSeries extends (highcharts_Series_types_scatter_commonjs_highchar
  *  Static Properties
  *
  * */
+/** @internal */
 Scatter3DSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)((highcharts_Series_types_scatter_commonjs_highcharts_Series_types_scatter_commonjs2_highcharts_Series_types_scatter_root_Highcharts_Series_types_scatter_default()).defaultOptions, Scatter3D_Scatter3DSeriesDefaults);
 (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.extend)(Scatter3DSeries.prototype, {
     axisTypes: ['xAxis', 'yAxis', 'zAxis'],

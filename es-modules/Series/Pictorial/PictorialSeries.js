@@ -20,12 +20,13 @@ import { composePatternFill } from '../../Extensions/PatternFill.js';
 import { animObject } from '../../Core/Animation/AnimationUtilities.js';
 import Chart from '../../Core/Chart/Chart.js';
 import PictorialPoint from './PictorialPoint.js';
+import PictorialSeriesDefaults from './PictorialSeriesDefaults.js';
 import PictorialUtilities from './PictorialUtilities.js';
 import Series from '../../Core/Series/Series.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 import StackItem from '../../Core/Axis/Stacking/StackItem.js';
 import SVGRenderer from '../../Core/Renderer/SVG/SVGRenderer.js';
-import { addEvent, defined, merge, objectEach, pick } from '../../Shared/Utilities.js';
+import { addEvent, defined, merge, objectEach } from '../../Shared/Utilities.js';
 /* *
  *
  *  Composition
@@ -47,7 +48,7 @@ const { getStackMetrics, invertShadowGroup, rescalePatternFill } = PictorialUtil
 /**
  * The pictorial series type.
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.pictorial
  *
@@ -102,8 +103,11 @@ class PictorialSeries extends ColumnSeries {
                 .animate(finalBox, animation);
         }
     }
+    /** @internal */
     animateDrilldown() { }
+    /** @internal */
     animateDrillupFrom() { }
+    /** @internal */
     pointAttribs(point) {
         const pointAttribs = super.pointAttribs.apply(this, arguments), seriesOptions = this.options, series = this, paths = seriesOptions.paths;
         if (point && point.shapeArgs && paths) {
@@ -159,28 +163,8 @@ class PictorialSeries extends ColumnSeries {
  *  Static Properties
  *
  * */
-PictorialSeries.defaultOptions = merge(ColumnSeries.defaultOptions, 
-/**
- * A pictorial chart uses vector images to represents the data.
- * The shape of the data point is taken from the path parameter.
- *
- * @sample       {highcharts} highcharts/demo/pictorial/
- *               Pictorial chart
- *
- * @extends      plotOptions.column
- * @since 11.0.0
- * @product      highcharts
- * @excluding    allAreas, borderRadius,
- *               centerInCategory, colorAxis, colorKey, connectEnds,
- *               connectNulls, crisp, compare, compareBase, dataSorting,
- *               dashStyle, dataAsColumns, linecap, lineWidth, shadow,
- *               onPoint
- * @requires     modules/pictorial
- * @optionparent plotOptions.pictorial
- */
-{
-    borderWidth: 0
-});
+/** @internal */
+PictorialSeries.defaultOptions = merge(ColumnSeries.defaultOptions, PictorialSeriesDefaults);
 /* *
  *
  *  Events
@@ -226,7 +210,9 @@ function renderStackShadow(stack) {
         stack.axis.hasData() &&
         series.xAxis.hasData()) {
         const xAxis = series.xAxis, options = stack.axis.options, chart = stack.axis.chart, stackShadow = stack.shadow, xCenter = xAxis.toPixels(stack.x, true), x = chart.inverted ? xAxis.len - xCenter : xCenter, paths = series.options.paths || [], index = stack.x % paths.length, shape = paths[index], width = series.getColumnMetrics &&
-            series.getColumnMetrics().width, { height, y } = getStackMetrics(series.yAxis, shape), shadowOptions = options.stackShadow, strokeWidth = pick(shadowOptions && shadowOptions.borderWidth, series.options.borderWidth, 1);
+            series.getColumnMetrics().width, { height, y } = getStackMetrics(series.yAxis, shape), shadowOptions = options.stackShadow, strokeWidth = ((shadowOptions && shadowOptions.borderWidth) ??
+            series.options.borderWidth ??
+            1);
         if (!stackShadow &&
             shadowOptions &&
             shadowOptions.enabled &&
@@ -375,9 +361,9 @@ export default PictorialSeries;
  * @extends   series,plotOptions.pictorial
  * @since 11.0.0
  * @product   highcharts
- * @excluding dataParser, borderRadius, boostBlending, boostThreshold,
+ * @excluding borderRadius, boostBlending, boostThreshold,
  *            borderColor, borderWidth, centerInCategory, connectEnds,
- *            connectNulls, crisp, colorKey, dataURL, dataAsColumns, depth,
+ *            connectNulls, crisp, colorKey, dataAsColumns, depth,
  *            dragDrop, edgeColor, edgeWidth, linecap, lineWidth,  marker,
  *            dataSorting, dashStyle, onPoint, relativeXValue, shadow, zoneAxis,
  *            zones

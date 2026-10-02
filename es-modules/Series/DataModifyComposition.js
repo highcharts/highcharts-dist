@@ -13,12 +13,13 @@
 import Point from '../Core/Series/Point.js';
 const { tooltipFormatter: pointTooltipFormatter } = Point.prototype;
 import Series from '../Core/Series/Series.js';
-import { addEvent, arrayMax, arrayMin, correctFloat, defined, isArray, isNumber, isString, pick } from '../Shared/Utilities.js';
+import { addEvent, arrayMax, arrayMin, correctFloat, defined, isArray, isNumber, isString } from '../Shared/Utilities.js';
 /* *
  *
  *  Composition
  *
  * */
+/** @internal */
 var DataModifyComposition;
 (function (DataModifyComposition) {
     /* *
@@ -35,7 +36,7 @@ var DataModifyComposition;
      * Extends the series, axis and point classes with
      * compare and cumulative support.
      *
-     * @private
+     * @internal
      */
     function compose(SeriesClass, AxisClass, PointClass) {
         const axisProto = AxisClass.prototype, pointProto = PointClass.prototype, seriesProto = SeriesClass.prototype;
@@ -61,7 +62,7 @@ var DataModifyComposition;
     /**
      * Shared code for the axis.setCompare() and the axis.setCumulative()
      * methods. Inits the 'compare' or the 'cumulative' mode.
-     * @private
+     * @internal
      */
     function setModifier(mode, modeState, redraw) {
         if (!this.isXAxis) {
@@ -75,7 +76,7 @@ var DataModifyComposition;
                     series.setCumulative(modeState, false);
                 }
             });
-            if (pick(redraw, true)) {
+            if (redraw ?? true) {
                 this.chart.redraw();
             }
         }
@@ -92,7 +93,7 @@ var DataModifyComposition;
     function tooltipFormatter(pointFormat) {
         const point = this, { numberFormatter } = point.series.chart, replace = function (value) {
             pointFormat = pointFormat.replace('{point.' + value + '}', (point[value] > 0 && value === 'change' ? '+' : '') +
-                numberFormatter(point[value], pick(point.series.tooltipOptions.changeDecimals, 2)));
+                numberFormatter(point[value], (point.series.tooltipOptions.changeDecimals ?? 2)));
         };
         if (defined(point.change)) {
             replace('change');
@@ -120,7 +121,9 @@ var DataModifyComposition;
                 chart.series[this.index - 1] :
                 chart.get(linkedTo);
             if (linkedSeries instanceof Series) {
-                this.options.compare = pick(this.userOptions.compare, linkedSeries.options.compare);
+                this.options.compare =
+                    this.userOptions.compare ??
+                        linkedSeries.options.compare;
             }
         }
         const compare = this.options.compare;
@@ -142,7 +145,7 @@ var DataModifyComposition;
     }
     /**
      * Adjust the extremes (compare and cumulative modify the data).
-     * @private
+     * @internal
      */
     function afterGetExtremes(e) {
         const dataExtremes = e.dataExtremes, activeYData = dataExtremes.activeYData;
@@ -194,7 +197,7 @@ var DataModifyComposition;
         // Survive to export, #5485 (and for options generally)
         this.options.compare = this.userOptions.compare = compare;
         // Fire series.init() that will set or delete series.dataModify
-        this.update({}, pick(redraw, true));
+        this.update({}, (redraw ?? true));
         if (this.dataModify && (compare === 'value' || compare === 'percent')) {
             this.dataModify.initCompare(compare);
         }
@@ -281,11 +284,11 @@ var DataModifyComposition;
      */
     function seriesSetCumulative(cumulative, redraw) {
         // Set default value to false
-        cumulative = pick(cumulative, false);
+        cumulative = (cumulative ?? false);
         // Survive to export, #5485 (and for options generally)
         this.options.cumulative = this.userOptions.cumulative = cumulative;
         // Fire series.init() that will set or delete series.dataModify
-        this.update({}, pick(redraw, true));
+        this.update({}, (redraw ?? true));
         // If should, turn on the Cumulative Sum mode
         if (this.dataModify) {
             this.dataModify.initCumulative();
@@ -326,7 +329,7 @@ var DataModifyComposition;
      *
      * */
     /**
-     * @private
+     * @internal
      */
     class Additions {
         /* *
@@ -335,7 +338,7 @@ var DataModifyComposition;
          *
          * */
         /**
-         * @private
+         * @internal
          */
         constructor(series) {
             this.series = series;
@@ -346,7 +349,7 @@ var DataModifyComposition;
         *
         * */
         /**
-         * @private
+         * @internal
          */
         modifyValue() {
             return 0;
@@ -449,6 +452,7 @@ var DataModifyComposition;
  *  Default Export
  *
  * */
+/** @internal */
 export default DataModifyComposition;
 /* *
  *

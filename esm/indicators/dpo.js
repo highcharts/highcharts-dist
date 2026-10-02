@@ -1,5 +1,5 @@
 /**
- * Highstock JS v13.0.0-modified (2026-08-14)
+ * Highstock JS v13.1.0 (2026-10-02)
  * @module highcharts/indicators/dpo
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -11,4 +11,4 @@
  *
  * A commercial license may be required depending on use,
  * see www.highcharts.com/license
- */import*as e from"../highcharts.js";let t={};t.n=e=>{let r=e&&e.__esModule?()=>e.default:()=>e;return t.d(r,{a:r}),r},t.d=(e,r)=>{if(Array.isArray(r))for(var a=0;a<r.length;){var o=r[a++],l=r[a++];t.o(e,o)?0===l&&a++:0===l?Object.defineProperty(e,o,{enumerable:!0,value:r[a++]}):Object.defineProperty(e,o,{enumerable:!0,get:l})}else for(var o in r)t.o(r,o)&&!t.o(e,o)&&Object.defineProperty(e,o,{enumerable:!0,get:r[o]})},t.o=(e,t)=>Object.prototype.hasOwnProperty.call(e,t);let r=e.default;var a=t.n(r);let o=e.default.SeriesRegistry;var l=t.n(o);let{sma:s}=l().seriesTypes;function n(e,t,a,o,l){let s=(0,r.pick)(t[a][o],t[a]);return l?(0,r.correctFloat)(e-s):(0,r.correctFloat)(e+s)}class p extends s{getValues(e,t){let a=t.period,o=t.index,l=Math.floor(a/2+1),s=a+l,p=e.xData||[],i=e.yData||[],d=i.length,u=[],f=[],c=[],y,h,g,m,O,b=0;if(!(p.length<=s)){for(m=0;m<a-1;m++)b=n(b,i,m,o);for(O=0;O<=d-s;O++)h=O+a-1,g=O+s-1,b=n(b,i,h,o),y=(0,r.pick)(i[g][o],i[g])-b/a,b=n(b,i,O,o,!0),u.push([p[g],y]),f.push(p[g]),c.push(y);return{values:u,xData:f,yData:c}}}}p.defaultOptions=(0,r.merge)(s.defaultOptions,{params:{index:0,period:21}}),(0,r.extend)(p.prototype,{nameBase:"DPO"}),l().registerSeriesType("dpo",p);let i=a();export{i as default};
+ */import*as e from"../highcharts.js";let t={};t.n=e=>{let r=e&&e.__esModule?()=>e.default:()=>e;return t.d(r,{a:r}),r},t.d=(e,r)=>{for(var a in r)t.o(r,a)&&!t.o(e,a)&&Object.defineProperty(e,a,{enumerable:!0,get:r[a]})},t.o=(e,t)=>Object.prototype.hasOwnProperty.call(e,t);let r=e.default;var a=t.n(r);let o=e.default.SeriesRegistry;var s=t.n(o);let{sma:l}=s().seriesTypes;function n(e,t,a,o,s){let l=t[a][o]??t[a];return s?(0,r.correctFloat)(e-l):(0,r.correctFloat)(e+l)}class p extends l{getValues(e,t){let r=t.period,a=t.index,o=Math.floor(r/2+1),s=r+o,l=e.xData||[],p=e.yData||[],d=p.length,i=[],u=[],f=[],c,h,y,g,m,x=0;if(!(l.length<=s)){for(g=0;g<r-1;g++)x=n(x,p,g,a);for(m=0;m<=d-s;m++)h=m+r-1,y=m+s-1,x=n(x,p,h,a),c=(p[y][a]??p[y])-x/r,x=n(x,p,m,a,!0),i.push([l[y],c]),u.push(l[y]),f.push(c);return{values:i,xData:u,yData:f}}}}p.defaultOptions=(0,r.merge)(l.defaultOptions,{params:{index:0,period:21}}),(0,r.extend)(p.prototype,{nameBase:"DPO"}),s().registerSeriesType("dpo",p);let d=a();export{d as default};

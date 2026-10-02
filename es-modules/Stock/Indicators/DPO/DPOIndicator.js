@@ -9,7 +9,7 @@
 'use strict';
 import SeriesRegistry from '../../../Core/Series/SeriesRegistry.js';
 const { sma: SMAIndicator } = SeriesRegistry.seriesTypes;
-import { correctFloat, extend, merge, pick } from '../../../Shared/Utilities.js';
+import { correctFloat, extend, merge } from '../../../Shared/Utilities.js';
 /* *
  *
  *  Functions
@@ -18,7 +18,7 @@ import { correctFloat, extend, merge, pick } from '../../../Shared/Utilities.js'
 // Utils:
 /** @internal */
 function accumulatePoints(sum, yVal, i, index, subtract) {
-    const price = pick(yVal[i][index], yVal[i]);
+    const price = (yVal[i][index] ?? yVal[i]);
     if (subtract) {
         return correctFloat(sum - price);
     }
@@ -32,7 +32,6 @@ function accumulatePoints(sum, yVal, i, index, subtract) {
 /**
  * The DPO series type.
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.dpo
  *
@@ -44,6 +43,7 @@ class DPOIndicator extends SMAIndicator {
      *  Functions
      *
      * */
+    /** @internal */
     getValues(series, params) {
         const period = params.period, index = params.index, offset = Math.floor(period / 2 + 1), range = period + offset, xVal = series.xData || [], yVal = series.yData || [], yValLen = yVal.length, 
         // 0- date, 1- Detrended Price Oscillator
@@ -63,7 +63,8 @@ class DPOIndicator extends SMAIndicator {
             rangeIndex = j + range - 1;
             // Adding the last period point
             sum = accumulatePoints(sum, yVal, periodIndex, index);
-            price = pick(yVal[rangeIndex][index], yVal[rangeIndex]);
+            price = yVal[rangeIndex][index] ??
+                yVal[rangeIndex];
             oscillator = price - sum / period;
             // Subtracting the first period point
             sum = accumulatePoints(sum, yVal, j, index, true);
@@ -100,6 +101,7 @@ class DPOIndicator extends SMAIndicator {
  * @requires     stock/indicators/indicators
  * @requires     stock/indicators/dpo
  * @optionparent plotOptions.dpo
+ * @internal
  */
 DPOIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
     /**
@@ -123,7 +125,6 @@ SeriesRegistry.registerSeriesType('dpo', DPOIndicator);
  *  Default Export
  *
  * */
-/** @internal */
 export default DPOIndicator;
 /* *
  *
@@ -137,7 +138,7 @@ export default DPOIndicator;
  * @extends   series,plotOptions.dpo
  * @since     7.0.0
  * @product   highstock
- * @excluding allAreas, colorAxis, compare, compareBase, dataParser, dataURL,
+ * @excluding allAreas, colorAxis, compare, compareBase,
  *            joinBy, keys, navigatorOptions, pointInterval, pointIntervalUnit,
  *            pointPlacement, pointRange, pointStart, showInNavigator, stacking
  * @requires  stock/indicators/indicators

@@ -28,7 +28,7 @@ class PackedBubblePoint extends BubblePoint {
     /**
      * Destroy point.
      * Then remove point from the layout.
-     * @private
+     * @internal
      */
     destroy() {
         if (this.series?.layout) {
@@ -36,6 +36,7 @@ class PackedBubblePoint extends BubblePoint {
         }
         return Point.prototype.destroy.apply(this, arguments);
     }
+    /** @internal */
     firePointEvent() {
         const series = this.series, seriesOptions = series.options;
         if (this.isParentNode && seriesOptions.parentNode) {
@@ -48,6 +49,7 @@ class PackedBubblePoint extends BubblePoint {
             Point.prototype.firePointEvent.apply(this, arguments);
         }
     }
+    /** @internal */
     select() {
         const point = this, series = this.series, chart = series.chart;
         if (point.isParentNode) {
@@ -59,6 +61,7 @@ class PackedBubblePoint extends BubblePoint {
             Point.prototype.select.apply(this, arguments);
         }
     }
+    /** @internal */
     setState(state, move) {
         if (this?.graphic?.parentGroup?.element) {
             super.setState(state, move);

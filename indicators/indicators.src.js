@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.0.0-modified (2026-08-14)
+ * @license Highstock JS v13.1.0 (2026-10-02)
  * @module highcharts/indicators/indicators
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -15,14 +15,14 @@
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(root["_Highcharts"], root["_Highcharts"]["Chart"], root["_Highcharts"]["SeriesRegistry"]);
+		module.exports = factory(root["_Highcharts"]["Chart"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
 	else if(typeof define === 'function' && define.amd)
-		define("highcharts/indicators/indicators", ["highcharts/highcharts"], function (amd1) {return factory(amd1,amd1["Chart"],amd1["SeriesRegistry"]);});
+		define("highcharts/indicators/indicators", ["highcharts/highcharts"], function (amd1) {return factory(amd1["Chart"],amd1["SeriesRegistry"],amd1);});
 	else if(typeof exports === 'object')
-		exports["highcharts/indicators/indicators"] = factory(root["_Highcharts"], root["_Highcharts"]["Chart"], root["_Highcharts"]["SeriesRegistry"]);
+		exports["highcharts/indicators/indicators"] = factory(root["_Highcharts"]["Chart"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
 	else
-		root["Highcharts"] = factory(root["Highcharts"], root["Highcharts"]["Chart"], root["Highcharts"]["SeriesRegistry"]);
-})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__944__, __WEBPACK_EXTERNAL_MODULE__960__, __WEBPACK_EXTERNAL_MODULE__512__) => {
+		root["Highcharts"] = factory(root["Highcharts"]["Chart"], root["Highcharts"]["SeriesRegistry"], root["Highcharts"]);
+})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__960__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__944__) => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
@@ -76,48 +76,27 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__944__;
 /******/ 	
 /************************************************************************/
 /******/ 	/* webpack/runtime/compat get default export */
-/******/ 	(() => {
-/******/ 		// getDefaultExport function for compatibility with non-harmony modules
-/******/ 		__webpack_require__.n = (module) => {
-/******/ 			const getter = module && module.__esModule ?
-/******/ 				() => (module['default']) :
-/******/ 				() => (module);
-/******/ 			__webpack_require__.d(getter, { a: getter });
-/******/ 			return getter;
-/******/ 		};
-/******/ 	})();
+/******/ 	// getDefaultExport function for compatibility with non-harmony modules
+/******/ 	__webpack_require__.n = (module) => {
+/******/ 		const getter = module && module.__esModule ?
+/******/ 			() => (module['default']) :
+/******/ 			() => (module);
+/******/ 		__webpack_require__.d(getter, { a: getter });
+/******/ 		return getter;
+/******/ 	};
 /******/ 	
 /******/ 	/* webpack/runtime/define property getters */
-/******/ 	(() => {
-/******/ 		// define getter/value functions for harmony exports
-/******/ 		__webpack_require__.d = (exports, definition) => {
-/******/ 			if(Array.isArray(definition)) {
-/******/ 				var i = 0;
-/******/ 				while(i < definition.length) {
-/******/ 					var key = definition[i++];
-/******/ 					var binding = definition[i++];
-/******/ 					if(!__webpack_require__.o(exports, key)) {
-/******/ 						if(binding === 0) {
-/******/ 							Object.defineProperty(exports, key, { enumerable: true, value: definition[i++] });
-/******/ 						} else {
-/******/ 							Object.defineProperty(exports, key, { enumerable: true, get: binding });
-/******/ 						}
-/******/ 					} else if(binding === 0) { i++; }
-/******/ 				}
-/******/ 			} else {
-/******/ 				for(var key in definition) {
-/******/ 					if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
-/******/ 						Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
-/******/ 					}
-/******/ 				}
+/******/ 	// define getter/value functions for harmony exports
+/******/ 	__webpack_require__.d = (exports, definition) => {
+/******/ 		for(var key in definition) {
+/******/ 			if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 				Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
 /******/ 			}
-/******/ 		};
-/******/ 	})();
+/******/ 		}
+/******/ 	};
 /******/ 	
 /******/ 	/* webpack/runtime/hasOwnProperty shorthand */
-/******/ 	(() => {
-/******/ 		__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
-/******/ 	})();
+/******/ 	__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop));
 /******/ 	
 /************************************************************************/
 let __webpack_exports__ = {};
@@ -164,7 +143,8 @@ var highcharts_Chart_commonjs_highcharts_Chart_commonjs2_highcharts_Chart_root_H
  * @param {boolean} asSubarray
  * If column is a typed array, return a subarray instead of a new array. It
  * is faster `O(1)`, but the entire buffer will be kept in memory until all
- * views of it are destroyed. Default is `false`.
+ * views of it are destroyed. Default is `false`. Ignored when the column
+ * grows, as that always requires a new buffer.
  *
  * @return {DataTableColumn}
  * Modified column.
@@ -175,6 +155,12 @@ function setLength(column, length, asSubarray) {
     if (Array.isArray(column)) {
         column.length = length;
         return column;
+    }
+    if (length > column.length) {
+        const Constructor = Object.getPrototypeOf(column)
+            .constructor, grown = new Constructor(length);
+        grown.set(column);
+        return grown;
     }
     return column[asSubarray ? 'subarray' : 'slice'](0, length);
 }
@@ -389,7 +375,7 @@ class DataTableCore {
             });
             this.rowCount = length;
         }
-        (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.fireEvent)(this, 'afterDeleteRows', { rowIndex, rowCount });
+        ;(0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.fireEvent)(this, 'afterDeleteRows', { rowIndex, rowCount });
         this.versionTag = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.uniqueKey)();
     }
     /**
@@ -539,14 +525,22 @@ class DataTableCore {
      * @emits #afterSetRows
      */
     setRow(row, rowIndex = this.rowCount, insert, eventDetail) {
-        var _a;
         const { columns } = this, indexRowCount = insert ? this.rowCount + 1 : rowIndex + 1, rowKeys = Object.keys(row);
         if (eventDetail?.addColumns !== false) {
             for (let i = 0, iEnd = rowKeys.length; i < iEnd; i++) {
-                columns[_a = rowKeys[i]] || (columns[_a] = new Array(this.rowCount));
+                const rowKey = rowKeys[i];
+                if (rowKey !== '__proto__' &&
+                    rowKey !== 'constructor' &&
+                    !Object.hasOwnProperty.call(columns, rowKey)) {
+                    columns[rowKey] = new Array(this.rowCount);
+                }
             }
         }
-        (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.objectEach)(columns, (column, columnId) => {
+        // Typed arrays ignore out-of-range writes, `insert` grows via `splice`
+        if (!insert && indexRowCount > this.rowCount) {
+            this.applyRowCount(indexRowCount);
+        }
+        ;(0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.objectEach)(columns, (column, columnId) => {
             if (column) {
                 if (insert) {
                     column = DataTableCore_splice(column, rowIndex, 0, true, [row[columnId]]).array;
@@ -680,7 +674,6 @@ const tableToMultiYData = (series, processed) => {
 /**
  * The SMA series type.
  *
- * @internal
  */
 class SMAIndicator extends LineSeries {
     /* *
@@ -702,7 +695,7 @@ class SMAIndicator extends LineSeries {
         if (!name) {
             (this.nameComponents || []).forEach(function (component, index) {
                 params.push(this.options.params[component] +
-                    (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(this.nameSuffixes[index], ''));
+                    (this.nameSuffixes[index] ?? ''));
             }, this);
             name = (this.nameBase || this.type.toUpperCase()) +
                 (this.nameComponents ? ' (' + params.join(', ') + ')' : '');
@@ -933,6 +926,7 @@ class SMAIndicator extends LineSeries {
  * @product      highstock
  * @requires     stock/indicators/indicators
  * @optionparent plotOptions.sma
+ * @internal
  */
 SMAIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(LineSeries.defaultOptions, {
     /**
@@ -1000,7 +994,6 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *  Default Export
  *
  * */
-/** @internal */
 /* harmony default export */ const SMA_SMAIndicator = ((/* unused pure expression or super */ null && (SMAIndicator)));
 /* *
  *
@@ -1014,7 +1007,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @extends   series,plotOptions.sma
  * @since     6.0.0
  * @product   highstock
- * @excluding dataParser, dataURL, useOhlcData
+ * @excluding useOhlcData
  * @requires  stock/indicators/indicators
  * @apioption series.sma
  */
@@ -1041,7 +1034,6 @@ const { sma: EMAIndicator_SMAIndicator } = (highcharts_SeriesRegistry_commonjs_h
 /**
  * The EMA series type.
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.ema
  *
@@ -1053,6 +1045,7 @@ class EMAIndicator extends EMAIndicator_SMAIndicator {
      *  Functions
      *
      * */
+    /** @internal */
     accumulatePeriodPoints(period, index, yVal) {
         let sum = 0, i = 0, y = 0;
         while (i < period) {
@@ -1062,6 +1055,7 @@ class EMAIndicator extends EMAIndicator_SMAIndicator {
         }
         return sum;
     }
+    /** @internal */
     calculateEma(xVal, yVal, i, EMApercent, calEMA, index, SMA) {
         const x = xVal[i - 1], yValue = index < 0 ?
             yVal[i - 1] :
@@ -1070,6 +1064,7 @@ class EMAIndicator extends EMAIndicator_SMAIndicator {
             (calEMA * (1 - EMApercent)));
         return [x, y];
     }
+    /** @internal */
     getValues(series, params) {
         const period = params.period, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, EMApercent = 2 / (period + 1), EMA = [], xData = [], yData = [];
         let calEMA, EMAPoint, i, index = -1, sum = 0, SMA = 0;
@@ -1117,6 +1112,7 @@ class EMAIndicator extends EMAIndicator_SMAIndicator {
  * @product      highstock
  * @requires     stock/indicators/indicators
  * @optionparent plotOptions.ema
+ * @internal
  */
 EMAIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(EMAIndicator_SMAIndicator.defaultOptions, {
     params: {
@@ -1140,7 +1136,6 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *  Default Export
  *
  * */
-/** @internal */
 /* harmony default export */ const EMA_EMAIndicator = ((/* unused pure expression or super */ null && (EMAIndicator)));
 /* *
  *
@@ -1154,7 +1149,6 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @extends   series,plotOptions.ema
  * @since     6.0.0
  * @product   highstock
- * @excluding dataParser, dataURL
  * @requires  stock/indicators/indicators
  * @apioption series.ema
  */

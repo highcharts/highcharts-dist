@@ -15,7 +15,7 @@ import D from '../Defaults.js';
 const { getOptions } = D;
 import SVGRenderer from '../Renderer/SVG/SVGRenderer.js';
 import '../../Maps/MapSymbols.js';
-import { isNumber, merge, pick } from '../../Shared/Utilities.js';
+import { isNumber, merge } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class
@@ -65,9 +65,11 @@ class MapChart extends Chart {
                 type: 'map'
             },
             credits: {
-                mapText: pick(defaultCreditsOptions.mapText, ' \u00a9 <a href="{geojson.copyrightUrl}">' +
-                    '{geojson.copyrightShort}</a>'),
-                mapTextFull: pick(defaultCreditsOptions.mapTextFull, '{geojson.copyright}')
+                mapText: (defaultCreditsOptions.mapText ??
+                    ' \u00a9 <a href="{geojson.copyrightUrl}">' +
+                        '{geojson.copyrightShort}</a>'),
+                mapTextFull: defaultCreditsOptions.mapTextFull ??
+                    '{geojson.copyright}'
             },
             mapView: {}, // Required to enable Chart.mapView
             tooltip: {
@@ -190,7 +192,7 @@ class MapChart extends Chart {
      */
     function mapChart(a, b, c) {
         const chart = new MapChart(a, b, c);
-        return chart.promise || chart;
+        return chart.promise ?? chart;
     }
     MapChart.mapChart = mapChart;
     /* eslint-enable jsdoc/check-param-names */

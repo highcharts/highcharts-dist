@@ -21,7 +21,6 @@ import { extend, merge } from '../../../Shared/Utilities.js';
 /**
  * The Zig Zag series type.
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.zigzag
  *
@@ -33,6 +32,7 @@ class ZigzagIndicator extends SMAIndicator {
      *  Functions
      *
      * */
+    /** @internal */
     getValues(series, params) {
         const lowIndex = params.lowIndex, highIndex = params.highIndex, deviation = params.deviation / 100, deviations = {
             'low': 1 + deviation,
@@ -146,6 +146,7 @@ class ZigzagIndicator extends SMAIndicator {
  * @requires     stock/indicators/indicators
  * @requires     stock/indicators/zigzag
  * @optionparent plotOptions.zigzag
+ * @internal
  */
 ZigzagIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
     /**
@@ -191,7 +192,6 @@ SeriesRegistry.registerSeriesType('zigzag', ZigzagIndicator);
  *  Default Export
  *
  * */
-/** @internal */
 export default ZigzagIndicator;
 /* *
  *
@@ -205,7 +205,6 @@ export default ZigzagIndicator;
  * @extends   series,plotOptions.zigzag
  * @since     6.0.0
  * @product   highstock
- * @excluding dataParser, dataURL
  * @requires  stock/indicators/indicators
  * @requires  stock/indicators/zigzag
  * @apioption series.zigzag

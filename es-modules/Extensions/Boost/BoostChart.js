@@ -12,7 +12,7 @@
 import BoostableMap from './BoostableMap.js';
 import H from '../../Core/Globals.js';
 const { composed } = H;
-import { addEvent, pick, pushUnique } from '../../Shared/Utilities.js';
+import { addEvent, pushUnique } from '../../Shared/Utilities.js';
 /* *
  *
  *  Functions
@@ -68,6 +68,13 @@ function getBoostClipRect(chart, target) {
     }
     if (target === chart) {
         const verticalAxes = chart.inverted ? chart.xAxis : chart.yAxis; // #14444
+        // Use chart.clipBox dimensions to match what createAndAttachRenderer
+        // compares against. Fractional clipOffset shrinks chart.clipBox below
+        // plotWidth/Height, breaking that check. #22949
+        if (!chart.inverted && !navigator && chart.clipBox) {
+            clipBox.width = chart.clipBox.width;
+            clipBox.height = chart.clipBox.height;
+        }
         if (verticalAxes.length <= 1) {
             clipBox.y = Math.min(verticalAxes[0].pos, clipBox.y);
             clipBox.height = (verticalAxes[0].pos -
@@ -87,7 +94,7 @@ function getBoostClipRect(chart, target) {
  * `true` if the chart is in series boost mode.
  */
 function isChartSeriesBoosting(chart) {
-    const allSeries = chart.series, boost = chart.boost = chart.boost || {}, boostOptions = chart.options.boost || {}, threshold = pick(boostOptions.seriesThreshold, 50);
+    const allSeries = chart.series, boost = chart.boost = chart.boost || {}, boostOptions = chart.options.boost || {}, threshold = (boostOptions.seriesThreshold ?? 50);
     if (allSeries.length >= threshold) {
         return true;
     }
@@ -98,8 +105,8 @@ function isChartSeriesBoosting(chart) {
     if (typeof allowBoostForce === 'undefined') {
         allowBoostForce = true;
         for (const axis of chart.xAxis) {
-            if (pick(axis.min, -Infinity) > pick(axis.dataMin, -Infinity) ||
-                pick(axis.max, Infinity) < pick(axis.dataMax, Infinity)) {
+            if ((axis.min ?? -Infinity) > (axis.dataMin ?? -Infinity) ||
+                (axis.max ?? Infinity) < (axis.dataMax ?? Infinity)) {
                 allowBoostForce = false;
                 break;
             }

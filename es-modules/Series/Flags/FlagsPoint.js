@@ -26,6 +26,7 @@ class FlagsPoint extends ColumnPoint {
          *
          * */
         super(...arguments);
+        /** @internal */
         this.ttBelow = false;
     }
     /* *
@@ -34,7 +35,7 @@ class FlagsPoint extends ColumnPoint {
      *
      * */
     /**
-     * @private
+     * @internal
      */
     isValid() {
         // #9233 - Prevent from treating flags as null points (even if
@@ -42,7 +43,7 @@ class FlagsPoint extends ColumnPoint {
         return isNumber(this.y) || typeof this.y === 'undefined';
     }
     /**
-     * @private
+     * @internal
      */
     hasNewShapeType() {
         const shape = this.options.shape || this.series.options.shape;

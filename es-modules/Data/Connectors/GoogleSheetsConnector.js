@@ -19,7 +19,7 @@
 'use strict';
 import DataConnector from './DataConnector.js';
 import GoogleSheetsConverter from '../Converters/GoogleSheetsConverter.js';
-import { fireEvent, merge, pick } from '../../Shared/Utilities.js';
+import { fireEvent, merge } from '../../Shared/Utilities.js';
 /* *
  *
  *  Functions
@@ -193,7 +193,7 @@ export function buildQueryRange(options = {}) {
     return googleSpreadsheetRange || ((alphabet[startColumn || 0] || 'A') +
         (Math.max((startRow || 0), 0) + 1) +
         ':' +
-        (alphabet[pick(endColumn, 25)] || 'Z') +
+        (alphabet[(endColumn ?? 25)] || 'Z') +
         (endRow ?
             Math.max(endRow, 0) :
             'Z'));

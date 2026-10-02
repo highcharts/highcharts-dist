@@ -20,7 +20,6 @@ import { extend, isArray, merge } from '../../../Shared/Utilities.js';
 /**
  * The Stochastic series type.
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.stochastic
  *
@@ -32,6 +31,7 @@ class StochasticIndicator extends SMAIndicator {
      *  Functions
      *
      * */
+    /** @internal */
     init() {
         super.init.apply(this, arguments);
         // Set default color for lines:
@@ -43,6 +43,7 @@ class StochasticIndicator extends SMAIndicator {
             }
         }, this.options);
     }
+    /** @internal */
     getValues(series, params) {
         const periodK = params.periods[0], periodD = params.periods[1], xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, 
         // 0- date, 1-%K, 2-%D
@@ -131,6 +132,7 @@ class StochasticIndicator extends SMAIndicator {
  * @requires     stock/indicators/indicators
  * @requires     stock/indicators/stochastic
  * @optionparent plotOptions.stochastic
+ * @internal
  */
 StochasticIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
     /**
@@ -196,7 +198,6 @@ SeriesRegistry.registerSeriesType('stochastic', StochasticIndicator);
  *  Default Export
  *
  * */
-/** @internal */
 export default StochasticIndicator;
 /* *
  *
@@ -210,9 +211,9 @@ export default StochasticIndicator;
  * @extends   series,plotOptions.stochastic
  * @since     6.0.0
  * @product   highstock
- * @excluding allAreas, colorAxis,  dataParser, dataURL, joinBy, keys,
- *            navigatorOptions, pointInterval, pointIntervalUnit,
- *            pointPlacement, pointRange, pointStart, showInNavigator, stacking
+ * @excluding allAreas, colorAxis, joinBy, keys, navigatorOptions,
+ *            pointInterval, pointIntervalUnit, pointPlacement, pointRange,
+ *            pointStart, showInNavigator, stacking
  * @requires  stock/indicators/indicators
  * @requires  stock/indicators/stochastic
  * @apioption series.stochastic

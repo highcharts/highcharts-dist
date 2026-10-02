@@ -19,9 +19,6 @@ const { seriesTypes: { scatter: { prototype: { pointClass: ScatterPoint } } } } 
  *  Class
  *
  * */
-/**
- * @internal
- */
 class BubblePoint extends ScatterPoint {
     /* *
      *
@@ -58,7 +55,4 @@ extend(BubblePoint.prototype, {
  *  Default Export
  *
  * */
-/**
- * @internal
- */
 export default BubblePoint;

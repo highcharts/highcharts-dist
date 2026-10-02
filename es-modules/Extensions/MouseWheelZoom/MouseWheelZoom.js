@@ -11,7 +11,7 @@
  * */
 'use strict';
 import NBU from '../Annotations/NavigationBindingsUtilities.js';
-import { addEvent, defined, internalClearTimeout, isObject, merge, pick } from '../../Shared/Utilities.js';
+import { addEvent, defined, internalClearTimeout, isObject, merge } from '../../Shared/Utilities.js';
 const { getAssignedAxis } = NBU;
 /* *
  *
@@ -40,7 +40,7 @@ const optionsToObject = (options) => {
 };
 /** @internal */
 const zoomBy = function (chart, howMuch, xAxis, yAxis, mouseX, mouseY, options) {
-    const type = pick(options.type, chart.zooming.type, '');
+    const type = (options.type ?? chart.zooming.type ?? '');
     let axes = [];
     if (type === 'x') {
         axes = xAxis;

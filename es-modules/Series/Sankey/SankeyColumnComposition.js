@@ -80,9 +80,12 @@ var SankeyColumnComposition;
          */
         getTranslationFactor(series) {
             const column = this.points, nodes = column.slice(), chart = series.chart, minLinkWidth = series.options.minLinkWidth || 0;
-            let skipPoint, factor = 0, i, remainingHeight = ((chart.plotSizeY || 0) -
+            let skipPoint, factor = 0, i, remainingHeight = ((series.flowHeight || chart.plotSizeY || 0) -
                 (series.options.borderWidth || 0) -
-                (column.length - 1) * series.nodePadding);
+                (column.length - 1) * series.nodePadding -
+                (series.useCircularLayout ?
+                    column.sankeyColumn.lapSum() :
+                    0));
             // Because the minLinkWidth option doesn't obey the direct
             // translation, we need to run translation iteratively, check
             // node heights, remove those nodes affected by minLinkWidth,
@@ -126,11 +129,22 @@ var SankeyColumnComposition;
                     height += nodePadding;
                 }
                 const nodeHeight = Math.max(node.getSum() * factor, series.options.minLinkWidth || 0);
-                height += nodeHeight;
+                height += nodeHeight + (node.wrapLap || 0);
                 return height;
             }, 0);
-            // Node alignment option handling #19096
-            return getAlignFactor(series.options.nodeAlignment || 'center') * ((series.chart.plotSizeY || 0) - height);
+            // Node alignment option handling #19096. Circular geometry
+            // shrinks the extent aligned within. #8218
+            return (series.flowTop || 0) +
+                getAlignFactor(series.options.nodeAlignment || 'center') * ((series.flowHeight || (series.chart.plotSizeY || 0)) -
+                    height);
+        }
+        /**
+         * Flow-axis room this column's nodes reserve for self-link laps.
+         * #8218
+         * @private
+         */
+        lapSum() {
+            return this.points.reduce((sum, node) => (sum + (node.wrapLap || 0)), 0);
         }
         /**
          * Get the left position of the column in pixels
@@ -188,7 +202,9 @@ var SankeyColumnComposition;
                 const height = Math.max(sum * factor, series.options.minLinkWidth || 0);
                 const directionOffset = node.options[series.chart.inverted ?
                     'offsetHorizontal' :
-                    'offsetVertical'], optionOffset = node.options.offset || 0;
+                    'offsetVertical'], optionOffset = node.options.offset || 0, 
+                // A self-link laps the flow-axis start of its node. #8218
+                lap = column[i].wrapLap || 0;
                 if (sum) {
                     totalNodeOffset = height + nodePadding;
                 }
@@ -198,14 +214,14 @@ var SankeyColumnComposition;
                 }
                 if (column[i] === node) {
                     return {
-                        relativeTop: offset + (defined(directionOffset) ?
+                        relativeTop: offset + lap + (defined(directionOffset) ?
                             // `directionOffset` is a percent of the node
                             // height
                             relativeLength(directionOffset, height) :
                             relativeLength(optionOffset, totalNodeOffset))
                     };
                 }
-                offset += totalNodeOffset;
+                offset += totalNodeOffset + lap;
             }
         }
     }

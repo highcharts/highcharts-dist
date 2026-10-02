@@ -19,7 +19,6 @@ import { correctFloat, extend, isArray, merge } from '../../../Shared/Utilities.
 /**
  * The AO series type
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.ao
  *
@@ -31,6 +30,7 @@ class AOIndicator extends SMAIndicator {
      *  Functions
      *
      * */
+    /** @internal */
     drawGraph() {
         const indicator = this, options = indicator.options, points = indicator.points, userColor = indicator.userOptions.color, positiveColor = options.greaterBarColor, negativeColor = options.lowerBarColor, firstPoint = points[0];
         let i;
@@ -49,6 +49,7 @@ class AOIndicator extends SMAIndicator {
             }
         }
     }
+    /** @internal */
     getValues(series) {
         const shortPeriod = 5, longPeriod = 34, xVal = series.xData || [], yVal = series.yData || [], yValLen = yVal.length, AO = [], // 0- date, 1- Awesome Oscillator
         xData = [], yData = [], high = 1, low = 2;
@@ -114,6 +115,7 @@ class AOIndicator extends SMAIndicator {
  * @requires     stock/indicators/indicators
  * @requires     stock/indicators/ao
  * @optionparent plotOptions.ao
+ * @internal
  */
 AOIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
     params: {
@@ -173,7 +175,6 @@ SeriesRegistry.registerSeriesType('ao', AOIndicator);
  *  Default Export
  *
  * */
-/** @internal */
 export default AOIndicator;
 /* *
  *
@@ -187,7 +188,7 @@ export default AOIndicator;
  * @extends   series,plotOptions.ao
  * @since     7.0.0
  * @product   highstock
- * @excluding allAreas, colorAxis, dataParser, dataURL, joinBy, keys,
+ * @excluding allAreas, colorAxis, joinBy, keys,
  *            navigatorOptions, pointInterval, pointIntervalUnit,
  *            pointPlacement, pointRange, pointStart, showInNavigator, stacking
  * @requires  stock/indicators/indicators

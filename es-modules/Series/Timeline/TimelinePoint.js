@@ -16,7 +16,7 @@
 import Point from '../../Core/Series/Point.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { line: { prototype: { pointClass: LinePoint } }, pie: { prototype: { pointClass: PiePoint } } } = SeriesRegistry.seriesTypes;
-import { defined, isNumber, merge, objectEach, pick } from '../../Shared/Utilities.js';
+import { defined, isNumber, merge, objectEach } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class
@@ -28,6 +28,7 @@ class TimelinePoint extends LinePoint {
      *  Functions
      *
      * */
+    /** @internal */
     alignConnector() {
         const point = this, series = point.series, dataLabel = point.dataLabel, connector = dataLabel.connector, dlOptions = (dataLabel.options || {}), connectorWidth = dlOptions.connectorWidth || 0, chart = point.series.chart, bBox = connector.getBBox(), plotPos = {
             x: bBox.x + (dataLabel.translateX || 0),
@@ -54,6 +55,7 @@ class TimelinePoint extends LinePoint {
             });
         }
     }
+    /** @internal */
     drawConnector() {
         const point = this, { dataLabel, series } = point;
         if (dataLabel) {
@@ -71,6 +73,7 @@ class TimelinePoint extends LinePoint {
             }
         }
     }
+    /** @internal */
     getConnectorPath() {
         const { plotX = 0, plotY = 0, series, dataLabel } = this, chart = series.chart, xAxisLen = series.xAxis.len, inverted = chart.inverted, direction = inverted ? 'x2' : 'y2';
         if (dataLabel) {
@@ -117,9 +120,11 @@ class TimelinePoint extends LinePoint {
             'Null');
         this.y = 1;
     }
+    /** @internal */
     isValid() {
         return this.options.y !== null;
     }
+    /** @internal */
     setState() {
         const proceed = super.setState;
         // Prevent triggering the setState method on null points.
@@ -127,9 +132,10 @@ class TimelinePoint extends LinePoint {
             proceed.apply(this, arguments);
         }
     }
+    /** @internal */
     setVisible(visible, redraw) {
         const point = this, series = point.series;
-        redraw = pick(redraw, series.options.ignoreHiddenPoint);
+        redraw = (redraw ?? series.options.ignoreHiddenPoint);
         PiePoint.prototype.setVisible.call(point, visible, false);
         // Process new data
         series.processData();
@@ -137,6 +143,7 @@ class TimelinePoint extends LinePoint {
             series.chart.redraw();
         }
     }
+    /** @internal */
     applyOptions(options, x, isMock) {
         const series = this.series;
         if (!x && !options?.x) {

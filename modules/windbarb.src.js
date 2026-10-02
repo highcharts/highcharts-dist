@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.0-modified (2026-08-14)
+ * @license Highcharts JS v13.1.0 (2026-10-02)
  * @module highcharts/modules/windbarb
  * @requires highcharts
  *
@@ -14,14 +14,14 @@
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(root["_Highcharts"], root["_Highcharts"]["dataGrouping"]["approximations"], root["_Highcharts"]["Series"]["types"]["column"], root["_Highcharts"]["Series"], root["_Highcharts"]["SeriesRegistry"]);
+		module.exports = factory(root["_Highcharts"]["Series"]["types"]["column"], root["_Highcharts"]["Series"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]["dataGrouping"]["approximations"], root["_Highcharts"]);
 	else if(typeof define === 'function' && define.amd)
-		define("highcharts/modules/windbarb", ["highcharts/highcharts"], function (amd1) {return factory(amd1,amd1["dataGrouping"],["approximations"],amd1["Series"],["types"],["column"],amd1["Series"],amd1["SeriesRegistry"]);});
+		define("highcharts/modules/windbarb", ["highcharts/highcharts"], function (amd1) {return factory(amd1["Series"],["types"],["column"],amd1["Series"],amd1["SeriesRegistry"],amd1["dataGrouping"],["approximations"],amd1);});
 	else if(typeof exports === 'object')
-		exports["highcharts/modules/windbarb"] = factory(root["_Highcharts"], root["_Highcharts"]["dataGrouping"]["approximations"], root["_Highcharts"]["Series"]["types"]["column"], root["_Highcharts"]["Series"], root["_Highcharts"]["SeriesRegistry"]);
+		exports["highcharts/modules/windbarb"] = factory(root["_Highcharts"]["Series"]["types"]["column"], root["_Highcharts"]["Series"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]["dataGrouping"]["approximations"], root["_Highcharts"]);
 	else
-		root["Highcharts"] = factory(root["Highcharts"], root["Highcharts"]["dataGrouping"]["approximations"], root["Highcharts"]["Series"]["types"]["column"], root["Highcharts"]["Series"], root["Highcharts"]["SeriesRegistry"]);
-})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__944__, __WEBPACK_EXTERNAL_MODULE__956__, __WEBPACK_EXTERNAL_MODULE__448__, __WEBPACK_EXTERNAL_MODULE__820__, __WEBPACK_EXTERNAL_MODULE__512__) => {
+		root["Highcharts"] = factory(root["Highcharts"]["Series"]["types"]["column"], root["Highcharts"]["Series"], root["Highcharts"]["SeriesRegistry"], root["Highcharts"]["dataGrouping"]["approximations"], root["Highcharts"]);
+})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__448__, __WEBPACK_EXTERNAL_MODULE__820__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__956__, __WEBPACK_EXTERNAL_MODULE__944__) => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
@@ -89,48 +89,27 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__944__;
 /******/ 	
 /************************************************************************/
 /******/ 	/* webpack/runtime/compat get default export */
-/******/ 	(() => {
-/******/ 		// getDefaultExport function for compatibility with non-harmony modules
-/******/ 		__webpack_require__.n = (module) => {
-/******/ 			const getter = module && module.__esModule ?
-/******/ 				() => (module['default']) :
-/******/ 				() => (module);
-/******/ 			__webpack_require__.d(getter, { a: getter });
-/******/ 			return getter;
-/******/ 		};
-/******/ 	})();
+/******/ 	// getDefaultExport function for compatibility with non-harmony modules
+/******/ 	__webpack_require__.n = (module) => {
+/******/ 		const getter = module && module.__esModule ?
+/******/ 			() => (module['default']) :
+/******/ 			() => (module);
+/******/ 		__webpack_require__.d(getter, { a: getter });
+/******/ 		return getter;
+/******/ 	};
 /******/ 	
 /******/ 	/* webpack/runtime/define property getters */
-/******/ 	(() => {
-/******/ 		// define getter/value functions for harmony exports
-/******/ 		__webpack_require__.d = (exports, definition) => {
-/******/ 			if(Array.isArray(definition)) {
-/******/ 				var i = 0;
-/******/ 				while(i < definition.length) {
-/******/ 					var key = definition[i++];
-/******/ 					var binding = definition[i++];
-/******/ 					if(!__webpack_require__.o(exports, key)) {
-/******/ 						if(binding === 0) {
-/******/ 							Object.defineProperty(exports, key, { enumerable: true, value: definition[i++] });
-/******/ 						} else {
-/******/ 							Object.defineProperty(exports, key, { enumerable: true, get: binding });
-/******/ 						}
-/******/ 					} else if(binding === 0) { i++; }
-/******/ 				}
-/******/ 			} else {
-/******/ 				for(var key in definition) {
-/******/ 					if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
-/******/ 						Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
-/******/ 					}
-/******/ 				}
+/******/ 	// define getter/value functions for harmony exports
+/******/ 	__webpack_require__.d = (exports, definition) => {
+/******/ 		for(var key in definition) {
+/******/ 			if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 				Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
 /******/ 			}
-/******/ 		};
-/******/ 	})();
+/******/ 		}
+/******/ 	};
 /******/ 	
 /******/ 	/* webpack/runtime/hasOwnProperty shorthand */
-/******/ 	(() => {
-/******/ 		__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
-/******/ 	})();
+/******/ 	__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop));
 /******/ 	
 /************************************************************************/
 let __webpack_exports__ = {};
@@ -397,6 +376,7 @@ class WindbarbPoint extends (highcharts_Series_types_column_commonjs_highcharts_
      *  Functions
      *
      * */
+    /** @internal */
     isValid() {
         return (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.isNumber)(this.value) && this.value >= 0;
     }
@@ -539,7 +519,7 @@ const WindbarbSeriesDefaults = {
  * specified, it is inherited from [chart.type](#chart.type).
  *
  * @extends   series,plotOptions.windbarb
- * @excluding dataParser, dataURL, boostThreshold, boostBlending
+ * @excluding boostThreshold, boostBlending
  * @product   highcharts highstock
  * @requires  modules/windbarb
  * @apioption series.windbarb
@@ -686,10 +666,12 @@ class WindbarbSeries extends ColumnSeries {
      *  Functions
      *
      * */
+    /** @internal */
     init(chart, options) {
         super.init(chart, options);
     }
     // Get presentational attributes.
+    /** @internal */
     pointAttribs(point, state) {
         const options = this.options;
         let stroke = point?.color || this.color, strokeWidth = options.lineWidth;
@@ -705,6 +687,7 @@ class WindbarbSeries extends ColumnSeries {
     }
     // Create a single wind arrow. It is later rotated around the zero
     // centerpoint.
+    /** @internal */
     windArrow(point) {
         const level = point.beaufortLevel, u = this.options.vectorLength / 20;
         let knots = point.value * 1.943844, barbs, pos = -10;
@@ -753,6 +736,7 @@ class WindbarbSeries extends ColumnSeries {
         }
         return path;
     }
+    /** @internal */
     drawPoints() {
         const chart = this.chart, yAxis = this.yAxis, inverted = chart.inverted, shapeOffset = this.options.vectorLength / 2;
         for (const point of this.points) {
@@ -768,7 +752,7 @@ class WindbarbSeries extends ColumnSeries {
                         .add(this.markerGroup)
                         .addClass('highcharts-point ' +
                         'highcharts-color-' +
-                        (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(point.colorIndex, point.series.colorIndex));
+                        (point.colorIndex ?? point.series.colorIndex));
                 }
                 // Position the graphic
                 point.graphic
@@ -798,6 +782,7 @@ class WindbarbSeries extends ColumnSeries {
         }
     }
     // Fade in the arrows on initializing series.
+    /** @internal */
     animate(init) {
         if (init) {
             this.markerGroup.attr({
@@ -810,12 +795,15 @@ class WindbarbSeries extends ColumnSeries {
             }, (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.animObject)(this.options.animation));
         }
     }
+    /** @internal */
     markerAttribs() {
         return {};
     }
+    /** @internal */
     getExtremes() {
         return {};
     }
+    /** @internal */
     shouldShowTooltip(plotX, plotY, options = {}) {
         options.ignoreX = this.chart.inverted;
         options.ignoreY = !options.ignoreX;
@@ -827,6 +815,7 @@ class WindbarbSeries extends ColumnSeries {
  *  Static Properties
  *
  * */
+/** @internal */
 WindbarbSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(ColumnSeries.defaultOptions, Windbarb_WindbarbSeriesDefaults);
 Series_OnSeriesComposition.compose(WindbarbSeries);
 (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.extend)(WindbarbSeries.prototype, {

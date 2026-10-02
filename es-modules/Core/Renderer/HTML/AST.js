@@ -499,7 +499,6 @@ AST.allowedTags = [
     'span',
     'stop',
     'strong',
-    'style',
     'sub',
     'sup',
     'svg',

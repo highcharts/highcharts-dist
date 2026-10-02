@@ -28,6 +28,7 @@ const { seriesTypes: { scatter: ScatterSeries } } = SeriesRegistry;
  * */
 /** @internal */
 class ContourSeries extends ScatterSeries {
+    /** @internal */
     static compose(SVGRendererClass) {
         CrossSymbol.compose(SVGRendererClass);
     }
@@ -48,6 +49,7 @@ class ContourSeries extends ScatterSeries {
      * Methods
      *
      * */
+    /** @internal */
     getContourData() {
         const points = this.points, len = points.length, points3d = new Float32Array(len * 3), points2d = new Float64Array(len * 2);
         for (let i = 0; i < len; i++) {
@@ -60,6 +62,7 @@ class ContourSeries extends ScatterSeries {
         }
         return [new Delaunay(points2d).triangles, points3d];
     }
+    /** @internal */
     update(options, redraw) {
         options = diffObjects(options, this.userOptions);
         const uniformOptions = [
@@ -121,6 +124,7 @@ class ContourSeries extends ScatterSeries {
             this.run();
         }
     }
+    /** @internal */
     async run() {
         const series = this, chart = series.chart, renderer = chart.renderer, canvas = series.canvas, gpu = navigator.gpu, context = series.context = canvas.getContext('webgpu');
         if (!gpu || !context) {
@@ -320,6 +324,7 @@ class ContourSeries extends ScatterSeries {
             chart.onload();
         }
     }
+    /** @internal */
     destroy() {
         // Remove the foreign object. The canvas will be removed with it.
         // For some reason, `series.update` calls `series.destroy` even if
@@ -329,6 +334,7 @@ class ContourSeries extends ScatterSeries {
         this.canvas?.parentElement?.remove();
         super.destroy();
     }
+    /** @internal */
     drawGraph() {
         // Do nothing
     }
@@ -338,6 +344,7 @@ class ContourSeries extends ScatterSeries {
      * @param {boolean} renderFrame
      * Whether to rerender the series' context after setting the uniforms.
      * Defaults to `true`.
+     * @internal
      */
     setUniforms(renderFrame = true) {
         this.setFrameExtremesUniform(false);
@@ -356,6 +363,7 @@ class ContourSeries extends ScatterSeries {
      * @param {boolean} renderFrame
      * Whether to rerender the series' context after setting the uniform.
      * Defaults to `true`.
+     * @internal
      */
     setContourIntervalUniform(renderFrame = true) {
         if (this.device && this.buffers?.contourIntervalUniform) {
@@ -367,6 +375,7 @@ class ContourSeries extends ScatterSeries {
     }
     /**
      * Set the contour offset uniform according to the series options.
+     * @internal
      */
     setContourOffsetUniform(renderFrame = true) {
         if (this.device && this.buffers?.contourOffsetUniform) {
@@ -378,6 +387,7 @@ class ContourSeries extends ScatterSeries {
     }
     /**
      * Set the smooth coloring uniform according to the series options.
+     * @internal
      */
     setSmoothColoringUniform(renderFrame = true) {
         if (this.device && this.buffers?.smoothColoringUniform) {
@@ -389,6 +399,7 @@ class ContourSeries extends ScatterSeries {
     }
     /**
      * Set the line width uniform according to the series options.
+     * @internal
      */
     setLineWidthUniform(renderFrame = true) {
         if (this.device && this.buffers?.lineWidthUniform) {
@@ -400,6 +411,7 @@ class ContourSeries extends ScatterSeries {
     }
     /**
      * Set the contour line color uniform according to the series options.
+     * @internal
      */
     setContourLineColorUniform(renderFrame = true) {
         if (this.device && this.buffers?.contourLineColor) {
@@ -411,6 +423,7 @@ class ContourSeries extends ScatterSeries {
     }
     /**
      * Set the frame extremes uniform according to the series options.
+     * @internal
      */
     setFrameExtremesUniform(renderFrame = true) {
         if (this.device && this.buffers?.extremesUniform) {
@@ -422,6 +435,7 @@ class ContourSeries extends ScatterSeries {
     }
     /**
      * Set the value extremes uniform according to the series data.
+     * @internal
      */
     setValueExtremesUniform(renderFrame = true) {
         if (this.device && this.buffers?.valueExtremesUniform) {
@@ -433,6 +447,7 @@ class ContourSeries extends ScatterSeries {
     }
     /**
      * Set the color axis stops uniforms according to the color axis options.
+     * @internal
      */
     setColorAxisStopsUniforms(renderFrame = true) {
         const stopsBuffer = this.buffers?.colorAxisStopsUniform;
@@ -450,6 +465,7 @@ class ContourSeries extends ScatterSeries {
     }
     /**
      * Set the is inverted uniform according to the series options.
+     * @internal
      */
     setIsInvertedUniform(renderFrame = true) {
         if (this.device && this.buffers?.isInvertedUniform) {
@@ -566,6 +582,7 @@ class ContourSeries extends ScatterSeries {
      * */
     /**
      * Returns the RGBA color as a fraction of the 255 range.
+     * @internal
      */
     static rgbaAsFrac(rgba) {
         return [
@@ -580,6 +597,7 @@ class ContourSeries extends ScatterSeries {
  * Static Properties
  *
  * */
+/** @internal */
 ContourSeries.defaultOptions = merge(ScatterSeries.defaultOptions, ContourSeriesDefaults);
 export default ContourSeries;
 extend(ContourSeries.prototype, {

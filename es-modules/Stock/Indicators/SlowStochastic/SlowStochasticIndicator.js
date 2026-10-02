@@ -18,7 +18,6 @@ import { extend, merge } from '../../../Shared/Utilities.js';
 /**
  * The Slow Stochastic series type.
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.slowstochastic
  *
@@ -30,6 +29,7 @@ class SlowStochasticIndicator extends StochasticIndicator {
      *  Functions
      *
      * */
+    /** @internal */
     getValues(series, params) {
         const periods = params.periods, fastValues = super.getValues.call(this, series, params), slowValues = {
             values: [],
@@ -87,6 +87,7 @@ class SlowStochasticIndicator extends StochasticIndicator {
  * @requires     stock/indicators/stochastic
  * @requires     stock/indicators/slow-stochastic
  * @optionparent plotOptions.slowstochastic
+ * @internal
  */
 SlowStochasticIndicator.defaultOptions = merge(StochasticIndicator.defaultOptions, {
     params: {
@@ -108,7 +109,6 @@ SeriesRegistry.registerSeriesType('slowstochastic', SlowStochasticIndicator);
  *  Default Export
  *
  * */
-/** @internal */
 export default SlowStochasticIndicator;
 /* *
  *

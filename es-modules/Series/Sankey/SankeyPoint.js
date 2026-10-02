@@ -47,7 +47,9 @@ class SankeyPoint extends ColumnSeries.prototype.pointClass {
     }
     /**
      * If there are incoming links, place it to the right of the
-     * highest order column that links to this one.
+     * highest order column that links to this one. Circular links are
+     * ignored, so a node reached only through a cycle still anchors to its
+     * non-circular predecessors (or column 0 when it has none).
      *
      * @private
      */
@@ -55,12 +57,15 @@ class SankeyPoint extends ColumnSeries.prototype.pointClass {
         const node = this;
         let fromColumn = -1, fromNode;
         for (let i = 0; i < node.linksTo.length; i++) {
-            const point = node.linksTo[i];
-            if (point.fromNode.column > fromColumn &&
-                point.fromNode !== node // #16080
-            ) {
+            const point = node.linksTo[i], 
+            // A link may be missing its `from` end
+            column = point.fromNode?.column;
+            if (defined(column) &&
+                column > fromColumn &&
+                point.fromNode !== node && // #16080
+                !point.isCircular) {
                 fromNode = point.fromNode;
-                fromColumn = fromNode.column;
+                fromColumn = column;
             }
         }
         return { fromNode, fromColumn };

@@ -74,6 +74,7 @@ class OHLCPoint extends HLCSeries.prototype.pointClass {
      * Extend the parent method by resolving up/down colors (#15849)
      * @private
      **/
+    /** @internal */
     applyOptions() {
         super.applyOptions.apply(this, arguments);
         if (this.resolveColor) {

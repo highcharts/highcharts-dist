@@ -18,7 +18,7 @@ import StockToolsDefaults from './StockToolsDefaults.js';
 import Toolbar from './StockToolbar.js';
 import getIcon from '../../Shared/BaseFormUtils.js';
 import StockToolsIcons from './StockToolsIcons.js';
-import { addEvent, getStyle, merge, pick } from '../../Shared/Utilities.js';
+import { addEvent, getStyle, merge } from '../../Shared/Utilities.js';
 /* *
  *
  *  Functions
@@ -82,7 +82,9 @@ function setOffset(chart) {
         chart.stockTools.width = offsetWidth;
         let dirty = false;
         if (offsetWidth < chart.plotWidth) {
-            const nextX = pick(optionsChart.spacingLeft, optionsChart.spacing && optionsChart.spacing[3], 0) + offsetWidth;
+            const nextX = (optionsChart.spacingLeft ??
+                (optionsChart.spacing && optionsChart.spacing[3]) ??
+                0) + offsetWidth;
             const diff = nextX - chart.spacingBox.x;
             chart.spacingBox.x = nextX;
             chart.spacingBox.width -= diff;

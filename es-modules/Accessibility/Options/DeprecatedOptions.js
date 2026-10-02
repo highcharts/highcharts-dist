@@ -64,7 +64,6 @@
  */
 /* eslint-enable max-len */
 'use strict';
-import { pick } from '../../Shared/Utilities.js';
 import { error } from '../../Core/Utilities.js';
 /* *
  *
@@ -74,28 +73,25 @@ import { error } from '../../Core/Utilities.js';
 /**
  * Set a new option on a root prop, where the option is defined as an array of
  * suboptions.
- * @private
- * @param {Record<string, *>} root
- * @param {Array<string>} optionAsArray
- * @param {*} val
- * @return {void}
+ *
+ * @internal
  */
 function traverseSetOption(root, optionAsArray, val) {
     let opt = root, prop, i = 0;
     for (; i < optionAsArray.length - 1; ++i) {
         prop = optionAsArray[i];
-        opt = opt[prop] = pick(opt[prop], {});
+        opt = opt[prop] = (opt[prop] ?? {});
     }
     opt[optionAsArray[optionAsArray.length - 1]] = val;
 }
 /**
  * If we have a clear root option node for old and new options and a mapping
  * between, we can use this generic function for the copy and warn logic.
+ *
+ * @internal
  */
 function deprecateFromOptionsMap(chart, rootOldAsArray, rootNewAsArray, mapToNewOptions) {
-    /**
-     * @private
-     */
+    /** @internal */
     function getChildProp(root, propAsArray) {
         return propAsArray.reduce(function (acc, cur) {
             return acc[cur];
@@ -113,9 +109,7 @@ function deprecateFromOptionsMap(chart, rootOldAsArray, rootNewAsArray, mapToNew
         }
     });
 }
-/**
- * @private
- */
+/** @internal */
 function copyDeprecatedChartOptions(chart) {
     const chartOptions = chart.options.chart, a11yOptions = chart.options.accessibility || {};
     ['description', 'typeDescription'].forEach(function (prop) {
@@ -125,9 +119,7 @@ function copyDeprecatedChartOptions(chart) {
         }
     });
 }
-/**
- * @private
- */
+/** @internal */
 function copyDeprecatedAxisOptions(chart) {
     chart.axes.forEach(function (axis) {
         const opts = axis.options;
@@ -140,9 +132,7 @@ function copyDeprecatedAxisOptions(chart) {
         }
     });
 }
-/**
- * @private
- */
+/** @internal */
 function copyDeprecatedSeriesOptions(chart) {
     // Map of deprecated series options. New options are defined as
     // arrays of paths under series.options.
@@ -187,9 +177,7 @@ function copyDeprecatedSeriesOptions(chart) {
         });
     });
 }
-/**
- * @private
- */
+/** @internal */
 function copyDeprecatedTopLevelAccessibilityOptions(chart) {
     deprecateFromOptionsMap(chart, ['accessibility'], ['accessibility'], {
         pointDateFormat: ['point', 'dateFormat'],
@@ -216,18 +204,14 @@ function copyDeprecatedTopLevelAccessibilityOptions(chart) {
         axisRangeDateFormat: ['screenReaderSection', 'axisRangeDateFormat']
     });
 }
-/**
- * @private
- */
+/** @internal */
 function copyDeprecatedKeyboardNavigationOptions(chart) {
     deprecateFromOptionsMap(chart, ['accessibility', 'keyboardNavigation'], ['accessibility', 'keyboardNavigation', 'seriesNavigation'], {
         skipNullPoints: ['skipNullPoints'],
         mode: ['mode']
     });
 }
-/**
- * @private
- */
+/** @internal */
 function copyDeprecatedLangOptions(chart) {
     deprecateFromOptionsMap(chart, ['lang', 'accessibility'], ['lang', 'accessibility'], {
         legendItem: ['legend', 'legendItem'],
@@ -251,7 +235,7 @@ function copyDeprecatedLangOptions(chart) {
  * Copy options that are deprecated over to new options. Logs warnings to
  * console if deprecated options are used.
  *
- * @private
+ * @internal
  */
 function copyDeprecatedOptions(chart) {
     copyDeprecatedChartOptions(chart);
@@ -268,4 +252,5 @@ function copyDeprecatedOptions(chart) {
  *  Default Export
  *
  * */
+/** @internal */
 export default copyDeprecatedOptions;

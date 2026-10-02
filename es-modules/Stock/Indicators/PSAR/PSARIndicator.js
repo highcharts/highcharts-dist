@@ -105,7 +105,6 @@ function getPSAR(pdir, sDir, PSAR, pACCMulti, sLow, pLow, pHigh, sHigh, pEP) {
 /**
  * The Parabolic SAR series type.
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.psar
  *
@@ -119,6 +118,7 @@ class PSARIndicator extends SMAIndicator {
          *
          * */
         super(...arguments);
+        /** @internal */
         this.nameComponents = void 0;
     }
     /* *
@@ -126,6 +126,7 @@ class PSARIndicator extends SMAIndicator {
      *  Functions
      *
      * */
+    /** @internal */
     getValues(series, params) {
         const xVal = series.xData, yVal = series.yData, maxAccelerationFactor = params.maxAccelerationFactor, increment = params.increment, 
         // Set initial acc factor (for every new trend!)
@@ -197,6 +198,7 @@ class PSARIndicator extends SMAIndicator {
  * @requires     stock/indicators/indicators
  * @requires     stock/indicators/psar
  * @optionparent plotOptions.psar
+ * @internal
  */
 PSARIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
     lineWidth: 0,
@@ -255,7 +257,6 @@ SeriesRegistry.registerSeriesType('psar', PSARIndicator);
  *  Default Export
  *
  * */
-/** @internal */
 export default PSARIndicator;
 /* *
  *
@@ -269,7 +270,6 @@ export default PSARIndicator;
  * @extends   series,plotOptions.psar
  * @since     6.0.0
  * @product   highstock
- * @excluding dataParser, dataURL
  * @requires  stock/indicators/indicators
  * @requires  stock/indicators/psar
  * @apioption series.psar

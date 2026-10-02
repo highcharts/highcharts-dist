@@ -27,6 +27,7 @@ class PolygonSeries extends ScatterSeries {
      *  Functions
      *
      * */
+    /** @internal */
     getGraphPath() {
         const graphPath = LineSeries.prototype.getGraphPath.call(this);
         let i = graphPath.length + 1;
@@ -39,6 +40,7 @@ class PolygonSeries extends ScatterSeries {
         this.areaPath = graphPath;
         return graphPath;
     }
+    /** @internal */
     drawGraph() {
         // Borrow the fill logic from area.drawGraph, honoring `fillOpacity`
         // and an optional `fillColor`
@@ -50,6 +52,7 @@ class PolygonSeries extends ScatterSeries {
  *  Static Properties
  *
  * */
+/** @internal */
 PolygonSeries.defaultOptions = merge(ScatterSeries.defaultOptions, PolygonSeriesDefaults);
 extend(PolygonSeries.prototype, {
     type: 'polygon',

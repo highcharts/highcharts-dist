@@ -12,6 +12,7 @@ import { crisp, isNumber } from '../Shared/Utilities.js';
  *  Declarations
  *
  * */
+/** @internal */
 var RangeDataLabel;
 (function (RangeDataLabel) {
     const plotYKeys = {
@@ -47,6 +48,7 @@ var RangeDataLabel;
         }
         return false;
     }
+    /** @internal */
     function compose(SeriesClass) {
         const seriesProto = SeriesClass.prototype;
         seriesProto.alignDataLabel = alignDataLabel;
@@ -87,12 +89,14 @@ var RangeDataLabel;
         }
     }
     RangeDataLabel.applyAlignToKeyValue = applyAlignToKeyValue;
+    /** @internal */
     function resolveAlignToKey(series, rawKey) {
         return rawKey && series.pointArrayMap.indexOf(rawKey) > -1 ?
             rawKey :
             series.pointValKey;
     }
     RangeDataLabel.resolveAlignToKey = resolveAlignToKey;
+    /** @internal */
     function alignDataLabel(point, dataLabel, options, alignTo, isNew) {
         const series = this, alignToKey = resolveAlignToKey(series, options.alignToKey), plotY = getPointPlotY(point, alignToKey), shapeArgs = point.shapeArgs, originalPlotY = point.plotY, originalDlBox = point.dlBox, originalBelow = point.below;
         if (isNumber(plotY)) {
@@ -125,4 +129,5 @@ var RangeDataLabel;
  *  Default Export
  *
  * */
+/** @internal */
 export default RangeDataLabel;

@@ -27,6 +27,7 @@ class SunburstPoint extends TreemapPoint {
      *  Functions
      *
      * */
+    /** @internal */
     getDataLabelPath(label) {
         const renderer = this.series.chart.renderer, shapeArgs = this.shapeExisting, r = shapeArgs.r + pInt(label.options?.distance || 0);
         let start = shapeArgs.start, end = shapeArgs.end;
@@ -72,6 +73,7 @@ class SunburstPoint extends TreemapPoint {
             .add(renderer.defs);
         return this.dataLabelPath;
     }
+    /** @internal */
     isValid() {
         return true;
     }

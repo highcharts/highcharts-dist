@@ -24,6 +24,7 @@ import { attr, internalClearTimeout } from '../../Shared/Utilities.js';
  *  Class
  *
  * */
+/** @internal */
 class Announcer {
     /* *
      *
@@ -90,4 +91,5 @@ class Announcer {
  *  Default Export
  *
  * */
+/** @internal */
 export default Announcer;

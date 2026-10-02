@@ -62,6 +62,7 @@ class PointAndFigureSeries extends ScatterSeries {
      *  Static Functions
      *
      * */
+    /** @internal */
     static compose(SVGRendererClass) {
         if (pushUnique(composed, 'pointandfigure')) {
             CrossSymbol.compose(SVGRendererClass);
@@ -72,10 +73,12 @@ class PointAndFigureSeries extends ScatterSeries {
      *  Functions
      *
      * */
+    /** @internal */
     init() {
         super.init.apply(this, arguments);
         this.pnfDataGroups = [];
     }
+    /** @internal */
     getProcessedData() {
         if (!this.pnfDataGroups) {
             return {
@@ -184,6 +187,7 @@ class PointAndFigureSeries extends ScatterSeries {
             closestPointRange: 1
         };
     }
+    /** @internal */
     markerAttribs(point) {
         const series = this, options = series.options, attribs = {}, pos = point.pos();
         attribs.width = series.markerWidth;
@@ -198,6 +202,7 @@ class PointAndFigureSeries extends ScatterSeries {
         }
         return attribs;
     }
+    /** @internal */
     translate() {
         const metrics = this.getColumnMetrics(), calculatedBoxSize = this.calculatedBoxSize;
         this.markerWidth = metrics.width + metrics.paddedWidth + metrics.offset;
@@ -206,6 +211,7 @@ class PointAndFigureSeries extends ScatterSeries {
         super.translate();
     }
 }
+/** @internal */
 PointAndFigureSeries.defaultOptions = merge(ScatterSeries.defaultOptions, PointAndFigureSeriesDefaults);
 extend(PointAndFigureSeries.prototype, {
     takeOrdinalPosition: true,

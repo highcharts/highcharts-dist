@@ -19,7 +19,7 @@ import { addEvent, defined } from '../Shared/Utilities.js';
  *  Composition
  *
  * */
-var ColorMapComposition;
+export var ColorMapComposition;
 (function (ColorMapComposition) {
     /* *
      *

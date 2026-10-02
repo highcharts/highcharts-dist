@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.0-modified (2026-08-14)
+ * @license Highcharts JS v13.1.0 (2026-10-02)
  * @module highcharts/modules/flowmap
  * @requires highcharts
  * @requires highcharts/modules/map
@@ -16,48 +16,27 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 /******/ 
 /************************************************************************/
 /******/ /* webpack/runtime/compat get default export */
-/******/ (() => {
-/******/ 	// getDefaultExport function for compatibility with non-harmony modules
-/******/ 	__webpack_require__.n = (module) => {
-/******/ 		const getter = module && module.__esModule ?
-/******/ 			() => (module['default']) :
-/******/ 			() => (module);
-/******/ 		__webpack_require__.d(getter, { a: getter });
-/******/ 		return getter;
-/******/ 	};
-/******/ })();
+/******/ // getDefaultExport function for compatibility with non-harmony modules
+/******/ __webpack_require__.n = (module) => {
+/******/ 	const getter = module && module.__esModule ?
+/******/ 		() => (module['default']) :
+/******/ 		() => (module);
+/******/ 	__webpack_require__.d(getter, { a: getter });
+/******/ 	return getter;
+/******/ };
 /******/ 
 /******/ /* webpack/runtime/define property getters */
-/******/ (() => {
-/******/ 	// define getter/value functions for harmony exports
-/******/ 	__webpack_require__.d = (exports, definition) => {
-/******/ 		if(Array.isArray(definition)) {
-/******/ 			var i = 0;
-/******/ 			while(i < definition.length) {
-/******/ 				var key = definition[i++];
-/******/ 				var binding = definition[i++];
-/******/ 				if(!__webpack_require__.o(exports, key)) {
-/******/ 					if(binding === 0) {
-/******/ 						Object.defineProperty(exports, key, { enumerable: true, value: definition[i++] });
-/******/ 					} else {
-/******/ 						Object.defineProperty(exports, key, { enumerable: true, get: binding });
-/******/ 					}
-/******/ 				} else if(binding === 0) { i++; }
-/******/ 			}
-/******/ 		} else {
-/******/ 			for(var key in definition) {
-/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
-/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
-/******/ 				}
-/******/ 			}
+/******/ // define getter/value functions for harmony exports
+/******/ __webpack_require__.d = (exports, definition) => {
+/******/ 	for(var key in definition) {
+/******/ 		if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 			Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
 /******/ 		}
-/******/ 	};
-/******/ })();
+/******/ 	}
+/******/ };
 /******/ 
 /******/ /* webpack/runtime/hasOwnProperty shorthand */
-/******/ (() => {
-/******/ 	__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
-/******/ })();
+/******/ __webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop));
 /******/ 
 /************************************************************************/
 
@@ -81,7 +60,7 @@ var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__w
  * */
 
 
-const { seriesTypes: { mapline: { prototype: { pointClass: MapLinePoint } } } } = (external_highcharts_src_js_default_SeriesRegistry_default());
+const { mapline: { prototype: { pointClass: MapLinePoint } } } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
 
 /* *
  *
@@ -94,16 +73,16 @@ class FlowMapPoint extends MapLinePoint {
      *  Functions
      *
      * */
-    /**
-     * @private
-     */
+    /** @internal */
     isValid() {
         let valid = !!(this.options.to && this.options.from);
         [this.options.to, this.options.from]
             .forEach(function (toOrFrom) {
             valid = !!(valid && (toOrFrom && ((0,external_highcharts_src_js_default_namespaceObject.isString)(toOrFrom) || ( // Point id or has lat/lon coords
-            (0,external_highcharts_src_js_default_namespaceObject.isNumber)((0,external_highcharts_src_js_default_namespaceObject.pick)(toOrFrom[0], toOrFrom.lat)) &&
-                (0,external_highcharts_src_js_default_namespaceObject.isNumber)((0,external_highcharts_src_js_default_namespaceObject.pick)(toOrFrom[1], toOrFrom.lon))))));
+            (0,external_highcharts_src_js_default_namespaceObject.isNumber)(toOrFrom[0] ??
+                toOrFrom.lat) &&
+                (0,external_highcharts_src_js_default_namespaceObject.isNumber)(toOrFrom[1] ??
+                    toOrFrom.lon)))));
         });
         return valid;
     }
@@ -114,6 +93,191 @@ class FlowMapPoint extends MapLinePoint {
  *
  * */
 /* harmony default export */ const FlowMap_FlowMapPoint = (FlowMapPoint);
+
+;// ./code/es-modules/Series/FlowMap/FlowMapSeriesDefaults.js
+/* *
+ *
+ *  (c) 2010-2026 Highsoft AS
+ *
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
+ *
+ * */
+
+/* *
+ *
+ *  API Options
+ *
+ * */
+/**
+ * A flowmap series is a series laid out on top of a map series allowing to
+ * display route paths (e.g. flight or ship routes) or flows on a map. It
+ * creates a link between two points on a map chart.
+ *
+ * @since 11.0.0
+ * @extends      plotOptions.mapline
+ * @excluding    affectsMapView, allAreas, allowPointSelect, boostBlending,
+ * boostThreshold, borderColor, borderWidth, dashStyle, dataLabels,
+ * dragDrop, joinBy, mapData, negativeColor, onPoint, shadow, showCheckbox
+ * @product      highmaps
+ * @requires     modules/flowmap
+ * @optionparent plotOptions.flowmap
+ */
+const FlowMapSeriesDefaults = {
+    animation: true,
+    /**
+     * The `curveFactor` option for all links. Value higher than 0 will
+     * curve the link clockwise. A negative value will curve it counter
+     * clockwise. If the value is 0 the link will be a straight line. By
+     * default undefined curveFactor get an automatic curve.
+     *
+     * @sample {highmaps} maps/series-flowmap/curve-factor Setting different
+     *         values for curveFactor
+     *
+     * @type      {number}
+     * @default   undefined
+     * @apioption plotOptions.flowmap.curveFactor
+     */
+    /**
+     * The fill color of all the links. If not set, the series color will be
+     * used with the opacity set in
+     * [fillOpacity](#plotOptions.flowmap.fillOpacity).
+     *
+     * @type      {Highcharts.ColorType}
+     * @apioption plotOptions.flowmap.fillColor
+     */
+    /**
+     * The opacity of the color fill for all links.
+     *
+     * @type   {number}
+     * @sample {highmaps} maps/series-flowmap/fill-opacity
+     *         Setting different values for fillOpacity
+     */
+    fillOpacity: 0.5,
+    /**
+     * Whether the series' lines grow towards their end, unless overridden in
+     * each point.
+     *
+     * @type      {boolean}
+     * @apioption plotOptions.flowmap.growTowards
+     */
+    /**
+     * The [id](#series.id) of another series to link to. Additionally, the
+     * value can be ":previous" to link to the previous series. When two
+     * series are linked, only the first one appears in the legend. Toggling
+     * the visibility of this also toggles the linked series, which is
+     * necessary for operations such as zoom or updates on the flowmap
+     * series.
+     *
+     * @type      {string}
+     * @apioption plotOptions.flowmap.linkedTo
+     */
+    /**
+     * A `markerEnd` creates an arrow symbol indicating the direction of
+     * flow at the destination. Specifying a `markerEnd` here will create
+     * one for each link.
+     *
+     * @declare Highcharts.SeriesFlowMapSeriesOptionsObject
+     */
+    markerEnd: {
+        /**
+         * Enable or disable the `markerEnd`.
+         *
+         * @type   {boolean}
+         * @sample {highmaps} maps/series-flowmap/marker-end
+         *         Setting different markerType for markerEnd
+         */
+        enabled: true,
+        /**
+         * Height of the `markerEnd`. Can be a number in pixels or a
+         * percentage based on the weight of the link.
+         *
+         * @type  {number|string}
+         */
+        height: '40%',
+        /**
+         * Width of the `markerEnd`. Can be a number in pixels or a
+         * percentage based on the weight of the link.
+         *
+         * @type  {number|string}
+         */
+        width: '40%',
+        /**
+         * Change the shape of the `markerEnd`.
+         * Can be `arrow` or `mushroom`.
+         *
+         * @type {string}
+         */
+        markerType: 'arrow'
+    },
+    /**
+     * If no weight has previously been specified, this will set the width
+     * of all the links without being compared to and scaled according to
+     * other weights.
+     *
+     * @type  {number}
+     */
+    width: 1,
+    /**
+     * Maximum width of a link expressed in pixels. The weight of a link is
+     * mapped between `maxWidth` and `minWidth`.
+     *
+     * @type  {number}
+     */
+    maxWidth: 25,
+    /**
+     * Minimum width of a link expressed in pixels. The weight of a link is
+     * mapped between `maxWidth` and `minWidth`.
+     *
+     * @type  {number}
+     */
+    minWidth: 5,
+    /**
+     * Specify the `lineWidth` of the links if they are not specified.
+     *
+     * @type  {number}
+     */
+    lineWidth: void 0,
+    /**
+     * The opacity of all the links. Affects the opacity for the entire
+     * link, including stroke. See also
+     * [fillOpacity](#plotOptions.flowmap.fillOpacity), that affects the
+     * opacity of only the fill color.
+     *
+     * @apioption plotOptions.flowmap.opacity
+     */
+    /**
+     * The weight for all links with unspecified weights. The weight of a
+     * link determines its thickness compared to other links.
+     *
+     * @sample {highmaps} maps/series-flowmap/ship-route/ Example ship route
+     *
+     * @type      {number}
+     * @product   highmaps
+     * @apioption plotOptions.flowmap.weight
+     */
+    tooltip: {
+        /**
+         * The HTML for the flowmaps' route description in the tooltip. It
+         * consists of the `headerFormat` and `pointFormat`, which can be
+         * edited. Variables are enclosed by curly brackets. Available
+         * variables are `series.name`, `point.options.from`,
+         * `point.options.to`, `point.options.weight` and other properties in
+         * the same form.
+         *
+         * @product   highmaps
+         */
+        headerFormat: '<span style="font-size: 0.8em">{series.name}</span><br/>',
+        pointFormat: '{point.options.from} \u2192 {point.options.to}: <b>{point.options.weight}</b>'
+    }
+};
+/* *
+ *
+ *  Default Export
+ *
+ * */
+/* harmony default export */ const FlowMap_FlowMapSeriesDefaults = (FlowMapSeriesDefaults);
 
 ;// ./code/es-modules/Series/FlowMap/FlowMapSeries.js
 /* *
@@ -132,10 +296,10 @@ class FlowMapPoint extends MapLinePoint {
 
 const { series: { prototype: { pointClass: Point } }, seriesTypes: { column: ColumnSeries, map: MapSeries, mapline: MapLineSeries } } = (external_highcharts_src_js_default_SeriesRegistry_default());
 
+
 /**
  * The flowmap series type
  *
- * @private
  * @class
  * @name Highcharts.seriesTypes.flowmap
  *
@@ -149,14 +313,14 @@ class FlowMapSeries extends MapLineSeries {
      * */
     /**
      * Get vector length.
-     * @private
+     * @internal
      */
     static getLength(x, y) {
         return Math.sqrt(x * x + y * y);
     }
     /**
      * Return a normalized vector.
-     * @private
+     * @internal
      */
     static normalize(x, y) {
         const length = this.getLength(x, y);
@@ -164,7 +328,7 @@ class FlowMapSeries extends MapLineSeries {
     }
     /**
      * Return an SVGPath for markerEnd.
-     * @private
+     * @internal
      */
     static markerEndPath(lCorner, rCorner, topCorner, options) {
         const width = (0,external_highcharts_src_js_default_namespaceObject.relativeLength)(options.width || 0, this.getLength(rCorner[0] - lCorner[0], rCorner[1] - lCorner[1]));
@@ -211,7 +375,7 @@ class FlowMapSeries extends MapLineSeries {
     /**
      * Animate the flowmap point one by one from 'fromPoint'.
      *
-     * @private
+     * @internal
      * @function Highcharts.seriesTypes.flowmap#animate
      *
      * @param {boolean} init
@@ -252,7 +416,7 @@ class FlowMapSeries extends MapLineSeries {
     /**
      * Get the actual width of a link either as a mapped weight between
      * `minWidth` and `maxWidth` or a specified width.
-     * @private
+     * @internal
      */
     getLinkWidth(point) {
         const width = this.options.width, weight = point.options.weight || this.options.weight;
@@ -270,7 +434,7 @@ class FlowMapSeries extends MapLineSeries {
     }
     /**
      * Automatically calculate the optimal curve based on a reference point.
-     * @private
+     * @internal
      */
     autoCurve(fromX, fromY, toX, toY, centerX, centerY) {
         const linkV = {
@@ -296,13 +460,21 @@ class FlowMapSeries extends MapLineSeries {
     }
     /**
      * Get point attributes.
-     * @private
+     * @internal
      */
     pointAttribs(point, state) {
         const attrs = MapSeries.prototype.pointAttribs.call(this, point, state);
-        attrs.fill = (0,external_highcharts_src_js_default_namespaceObject.pick)(point.options.fillColor, point.options.color, this.options.fillColor === 'none' ? null : this.options.fillColor, this.color);
-        attrs['fill-opacity'] = (0,external_highcharts_src_js_default_namespaceObject.pick)(point.options.fillOpacity, this.options.fillOpacity);
-        attrs['stroke-width'] = (0,external_highcharts_src_js_default_namespaceObject.pick)(point.options.lineWidth, this.options.lineWidth, 1);
+        attrs.fill =
+            point.options.fillColor ??
+                point.options.color ??
+                (this.options.fillColor === 'none' ?
+                    void 0 :
+                    this.options.fillColor) ??
+                this.color;
+        attrs['fill-opacity'] =
+            point.options.fillOpacity ?? this.options.fillOpacity;
+        attrs['stroke-width'] =
+            point.options.lineWidth ?? this.options.lineWidth ?? 1;
         if (point.options.opacity) {
             attrs.opacity = point.options.opacity;
         }
@@ -313,7 +485,7 @@ class FlowMapSeries extends MapLineSeries {
      * need two loops: first loop to calculate data, like smallest/greatest
      * weights and centerOfPoints, which needs the calculated positions, second
      * loop for calculating shapes of points based on previous calculations.
-     * @private
+     * @internal
      */
     translate() {
         if (this.chart.hasRendered && (this.isDirtyData || !this.hasRendered)) {
@@ -369,8 +541,8 @@ class FlowMapSeries extends MapLineSeries {
                 averageX += (fromPos.x + toPos.x) / 2;
                 averageY += (fromPos.y + toPos.y) / 2;
             }
-            if ((0,external_highcharts_src_js_default_namespaceObject.pick)(point.options.weight, this.options.weight)) {
-                weights.push((0,external_highcharts_src_js_default_namespaceObject.pick)(point.options.weight, this.options.weight));
+            if (point.options.weight ?? this.options.weight) {
+                weights.push(point.options.weight ?? this.options.weight);
             }
         });
         this.smallestWeight = (0,external_highcharts_src_js_default_namespaceObject.arrayMin)(weights);
@@ -396,16 +568,17 @@ class FlowMapSeries extends MapLineSeries {
             point.shapeArgs = this.getPointShapeArgs(point);
             // When updating point from null to normal value, set a real color
             // (don't keep nullColor).
-            point.color = (0,external_highcharts_src_js_default_namespaceObject.pick)(point.options.color, point.series.color);
+            point.color = (point.options.color ?? point.series.color);
         });
     }
+    /** @internal */
     getPointShapeArgs(point) {
         const { fromPos, toPos } = point;
         if (!fromPos || !toPos) {
             return {};
         }
-        const finalWidth = this.getLinkWidth(point) / 2, pointOptions = point.options, markerEndOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(this.options.markerEnd, pointOptions.markerEnd), growTowards = (0,external_highcharts_src_js_default_namespaceObject.pick)(pointOptions.growTowards, this.options.growTowards), fromX = fromPos.x || 0, fromY = fromPos.y || 0;
-        let toX = toPos.x || 0, toY = toPos.y || 0, curveFactor = (0,external_highcharts_src_js_default_namespaceObject.pick)(pointOptions.curveFactor, this.options.curveFactor), offset = markerEndOptions && markerEndOptions.enabled &&
+        const finalWidth = this.getLinkWidth(point) / 2, pointOptions = point.options, markerEndOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(this.options.markerEnd, pointOptions.markerEnd), growTowards = pointOptions.growTowards ?? this.options.growTowards, fromX = fromPos.x || 0, fromY = fromPos.y || 0;
+        let toX = toPos.x || 0, toY = toPos.y || 0, curveFactor = pointOptions.curveFactor ?? this.options.curveFactor, offset = markerEndOptions && markerEndOptions.enabled &&
             markerEndOptions.height || 0;
         if (!(0,external_highcharts_src_js_default_namespaceObject.defined)(curveFactor)) { // Automate the curveFactor value.
             curveFactor = this.autoCurve(fromX, fromY, toX, toY, this.centerOfPoints.x, this.centerOfPoints.y);
@@ -521,164 +694,8 @@ class FlowMapSeries extends MapLineSeries {
  *  Static properties
  *
  * */
-/**
- * A flowmap series is a series laid out on top of a map series allowing to
- * display route paths (e.g. flight or ship routes) or flows on a map. It
- * creates a link between two points on a map chart.
- *
- * @since 11.0.0
- * @extends      plotOptions.mapline
- * @excluding    affectsMapView, allAreas, allowPointSelect, boostBlending,
- * boostThreshold, borderColor, borderWidth, dashStyle, dataLabels,
- * dragDrop, joinBy, mapData, negativeColor, onPoint, shadow, showCheckbox
- * @product      highmaps
- * @requires     modules/flowmap
- * @optionparent plotOptions.flowmap
- */
-FlowMapSeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(MapLineSeries.defaultOptions, {
-    animation: true,
-    /**
-     * The `curveFactor` option for all links. Value higher than 0 will
-     * curve the link clockwise. A negative value will curve it counter
-     * clockwise. If the value is 0 the link will be a straight line. By
-     * default undefined curveFactor get an automatic curve.
-     *
-     * @sample {highmaps} maps/series-flowmap/curve-factor Setting different
-     *         values for curveFactor
-     *
-     * @type      {number}
-     * @default   undefined
-     * @apioption plotOptions.flowmap.curveFactor
-     */
-    dataLabels: {
-        enabled: false
-    },
-    /**
-     * The fill color of all the links. If not set, the series color will be
-     * used with the opacity set in
-     * [fillOpacity](#plotOptions.flowmap.fillOpacity).
-     *
-     * @type      {Highcharts.ColorType}
-     * @apioption plotOptions.flowmap.fillColor
-     */
-    /**
-     * The opacity of the color fill for all links.
-     *
-     * @type   {number}
-     * @sample {highmaps} maps/series-flowmap/fill-opacity
-     *         Setting different values for fillOpacity
-     */
-    fillOpacity: 0.5,
-    /**
-     * The [id](#series.id) of another series to link to. Additionally, the
-     * value can be ":previous" to link to the previous series. When two
-     * series are linked, only the first one appears in the legend. Toggling
-     * the visibility of this also toggles the linked series, which is
-     * necessary for operations such as zoom or updates on the flowmap
-     * series.
-     *
-     * @type      {string}
-     * @apioption plotOptions.flowmap.linkedTo
-     */
-    /**
-     * A `markerEnd` creates an arrow symbol indicating the direction of
-     * flow at the destination. Specifying a `markerEnd` here will create
-     * one for each link.
-     *
-     * @declare Highcharts.SeriesFlowMapSeriesOptionsObject
-     */
-    markerEnd: {
-        /**
-         * Enable or disable the `markerEnd`.
-         *
-         * @type   {boolean}
-         * @sample {highmaps} maps/series-flowmap/marker-end
-         *         Setting different markerType for markerEnd
-         */
-        enabled: true,
-        /**
-         * Height of the `markerEnd`. Can be a number in pixels or a
-         * percentage based on the weight of the link.
-         *
-         * @type  {number|string}
-         */
-        height: '40%',
-        /**
-         * Width of the `markerEnd`. Can be a number in pixels or a
-         * percentage based on the weight of the link.
-         *
-         * @type  {number|string}
-         */
-        width: '40%',
-        /**
-         * Change the shape of the `markerEnd`.
-         * Can be `arrow` or `mushroom`.
-         *
-         * @type {string}
-         */
-        markerType: 'arrow'
-    },
-    /**
-     * If no weight has previously been specified, this will set the width
-     * of all the links without being compared to and scaled according to
-     * other weights.
-     *
-     * @type  {number}
-     */
-    width: 1,
-    /**
-     * Maximum width of a link expressed in pixels. The weight of a link is
-     * mapped between `maxWidth` and `minWidth`.
-     *
-     * @type  {number}
-     */
-    maxWidth: 25,
-    /**
-     * Minimum width of a link expressed in pixels. The weight of a link is
-     * mapped between `maxWidth` and `minWidth`.
-     *
-     * @type  {number}
-     */
-    minWidth: 5,
-    /**
-     * Specify the `lineWidth` of the links if they are not specified.
-     *
-     * @type  {number}
-     */
-    lineWidth: void 0,
-    /**
-     * The opacity of all the links. Affects the opacity for the entire
-     * link, including stroke. See also
-     * [fillOpacity](#plotOptions.flowmap.fillOpacity), that affects the
-     * opacity of only the fill color.
-     *
-     * @apioption plotOptions.flowmap.opacity
-     */
-    /**
-     * The weight for all links with unspecified weights. The weight of a
-     * link determines its thickness compared to other links.
-     *
-     * @sample {highmaps} maps/series-flowmap/ship-route/ Example ship route
-     *
-     * @type      {number}
-     * @product   highmaps
-     * @apioption plotOptions.flowmap.weight
-     */
-    tooltip: {
-        /**
-         * The HTML for the flowmaps' route description in the tooltip. It
-         * consists of the `headerFormat` and `pointFormat`, which can be
-         * edited. Variables are enclosed by curly brackets. Available
-         * variables are `series.name`, `point.options.from`,
-         * `point.options.to`, `point.options.weight` and other properties in the
-         * same form.
-         *
-         * @product   highmaps
-         */
-        headerFormat: '<span style="font-size: 0.8em">{series.name}</span><br/>',
-        pointFormat: '{point.options.from} \u2192 {point.options.to}: <b>{point.options.weight}</b>'
-    }
-});
+/** @internal */
+FlowMapSeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(MapLineSeries.defaultOptions, FlowMap_FlowMapSeriesDefaults);
 (0,external_highcharts_src_js_default_namespaceObject.extend)(FlowMapSeries.prototype, {
     pointClass: FlowMap_FlowMapPoint,
     pointArrayMap: ['from', 'to', 'weight'],

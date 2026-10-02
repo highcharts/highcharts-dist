@@ -21,7 +21,6 @@ const { column: { prototype: { pointClass: ColumnPoint } } } = SeriesRegistry.se
  *  Class
  *
  * */
-/** @internal */
 class CylinderPoint extends ColumnPoint {
 }
 extend(CylinderPoint.prototype, {
@@ -32,5 +31,4 @@ extend(CylinderPoint.prototype, {
  *  Default Export
  *
  * */
-/** @internal */
 export default CylinderPoint;

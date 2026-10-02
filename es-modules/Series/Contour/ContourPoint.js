@@ -22,7 +22,6 @@ const { scatter: { prototype: { pointClass: ScatterPoint } } } = SeriesRegistry.
  *  Class
  *
  * */
-/** @internal */
 class ContourPoint extends ScatterPoint {
 }
 /* *
@@ -30,5 +29,4 @@ class ContourPoint extends ScatterPoint {
  *  Default Export
  *
  * */
-/** @internal */
 export default ContourPoint;

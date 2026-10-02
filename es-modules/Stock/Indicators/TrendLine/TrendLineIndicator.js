@@ -18,7 +18,6 @@ import { extend, isArray, merge } from '../../../Shared/Utilities.js';
 /**
  * The Trend line series type.
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.trendline
  *
@@ -32,6 +31,7 @@ class TrendLineIndicator extends SMAIndicator {
          *
          * */
         super(...arguments);
+        /** @internal */
         this.updateAllPoints = true;
     }
     /* *
@@ -39,6 +39,7 @@ class TrendLineIndicator extends SMAIndicator {
      *  Functions
      *
      * */
+    /** @internal */
     getValues(series, params) {
         const orgXVal = series.xData, yVal = series.yData, xVal = [], LR = [], xData = [], yData = [], index = params.index;
         let numerator = 0, denominator = 0, xValSum = 0, yValSum = 0, counter = 0;
@@ -91,6 +92,7 @@ class TrendLineIndicator extends SMAIndicator {
  * @requires     stock/indicators/indicators
  * @requires     stock/indicators/trendline
  * @optionparent plotOptions.trendline
+ * @internal
  */
 TrendLineIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
     /**
@@ -118,7 +120,6 @@ SeriesRegistry.registerSeriesType('trendline', TrendLineIndicator);
  *  Default Export
  *
  * */
-/** @internal */
 export default TrendLineIndicator;
 /* *
  *
@@ -132,7 +133,6 @@ export default TrendLineIndicator;
  * @extends   series,plotOptions.trendline
  * @since     7.1.3
  * @product   highstock
- * @excluding dataParser, dataURL
  * @requires  stock/indicators/indicators
  * @requires  stock/indicators/trendline
  * @apioption series.trendline

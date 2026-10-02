@@ -100,7 +100,6 @@ function ichimokuAverages() {
 /**
  * The IKH series type.
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.ikh
  *
@@ -122,6 +121,7 @@ class IKHIndicator extends SMAIndicator {
         this.data = [];
         this.options = {};
         this.points = [];
+        /** @internal */
         this.graphCollection = [];
     }
     /* *
@@ -129,6 +129,7 @@ class IKHIndicator extends SMAIndicator {
      * Functions
      *
      * */
+    /** @internal */
     init() {
         super.init.apply(this, arguments);
         // Set default color for lines:
@@ -167,6 +168,7 @@ class IKHIndicator extends SMAIndicator {
             }
         }, this.options);
     }
+    /** @internal */
     toYData(point) {
         return [
             point.tenkanSen,
@@ -176,6 +178,7 @@ class IKHIndicator extends SMAIndicator {
             point.senkouSpanB
         ];
     }
+    /** @internal */
     translate() {
         const indicator = this;
         SeriesRegistry.seriesTypes.sma.prototype.translate.apply(indicator);
@@ -196,6 +199,7 @@ class IKHIndicator extends SMAIndicator {
             }
         }
     }
+    /** @internal */
     drawGraph() {
         const indicator = this, mainLinePoints = indicator.points, mainLineOptions = indicator.options, mainLinePath = indicator.graph, mainColor = indicator.color, gappedExtend = {
             options: {
@@ -374,6 +378,7 @@ class IKHIndicator extends SMAIndicator {
         indicator.graph = mainLinePath;
         indicator.color = mainColor;
     }
+    /** @internal */
     getGraphPath(points) {
         const indicator = this;
         let path = [], spanA, spanAarr = [];
@@ -399,6 +404,7 @@ class IKHIndicator extends SMAIndicator {
         }
         return path;
     }
+    /** @internal */
     getValues(series, params) {
         const period = params.period, periodTenkan = params.periodTenkan, periodSenkouSpanB = params.periodSenkouSpanB, xVal = series.xData, yVal = series.yData, xAxis = series.xAxis, yValLen = (yVal && yVal.length) || 0, closestPointRange = getClosestDistance(xAxis.series.map((s) => s.getColumn('x'))), IKH = [], xData = [];
         let date, slicedTSY, slicedKSY, slicedSSBY, pointTS, pointKS, pointSSB, i, TS, KS, CS, SSA, SSB;
@@ -485,6 +491,7 @@ class IKHIndicator extends SMAIndicator {
  * @requires     stock/indicators/indicators
  * @requires     stock/indicators/ichimoku-kinko-hyo
  * @optionparent plotOptions.ikh
+ * @internal
  */
 IKHIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
     /**
@@ -665,7 +672,6 @@ SeriesRegistry.registerSeriesType('ikh', IKHIndicator);
  *  Default Export
  *
  * */
-/** @internal */
 export default IKHIndicator;
 /* *
  *
@@ -679,7 +685,6 @@ export default IKHIndicator;
  * @extends   series,plotOptions.ikh
  * @since     6.0.0
  * @product   highstock
- * @excluding dataParser, dataURL
  * @requires  stock/indicators/indicators
  * @requires  stock/indicators/ichimoku-kinko-hyo
  * @apioption series.ikh

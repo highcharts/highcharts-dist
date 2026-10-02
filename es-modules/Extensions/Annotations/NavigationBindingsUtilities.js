@@ -10,7 +10,7 @@
  *
  * */
 'use strict';
-import { defined, find, isNumber, pick } from '../../Shared/Utilities.js';
+import { defined, find, isNumber } from '../../Shared/Utilities.js';
 /* *
  *
  *  Constants
@@ -56,7 +56,7 @@ function getAssignedAxis(coords) {
         const extremes = coord.axis.getExtremes(), axisMin = extremes.min, axisMax = extremes.max, 
         // Correct axis edges when axis has series
         // with pointRange (like column)
-        minPointOffset = pick(coord.axis.minPointOffset, 0);
+        minPointOffset = (coord.axis.minPointOffset ?? 0);
         return isNumber(axisMin) && isNumber(axisMax) &&
             coord.value >= (axisMin - minPointOffset) &&
             coord.value <= (axisMax + minPointOffset) &&

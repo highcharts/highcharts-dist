@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.0-modified (2026-08-14)
+ * @license Highcharts JS v13.1.0 (2026-10-02)
  * @module highcharts/modules/accessibility
  * @requires highcharts
  *
@@ -18,48 +18,27 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 /******/ 
 /************************************************************************/
 /******/ /* webpack/runtime/compat get default export */
-/******/ (() => {
-/******/ 	// getDefaultExport function for compatibility with non-harmony modules
-/******/ 	__webpack_require__.n = (module) => {
-/******/ 		const getter = module && module.__esModule ?
-/******/ 			() => (module['default']) :
-/******/ 			() => (module);
-/******/ 		__webpack_require__.d(getter, { a: getter });
-/******/ 		return getter;
-/******/ 	};
-/******/ })();
+/******/ // getDefaultExport function for compatibility with non-harmony modules
+/******/ __webpack_require__.n = (module) => {
+/******/ 	const getter = module && module.__esModule ?
+/******/ 		() => (module['default']) :
+/******/ 		() => (module);
+/******/ 	__webpack_require__.d(getter, { a: getter });
+/******/ 	return getter;
+/******/ };
 /******/ 
 /******/ /* webpack/runtime/define property getters */
-/******/ (() => {
-/******/ 	// define getter/value functions for harmony exports
-/******/ 	__webpack_require__.d = (exports, definition) => {
-/******/ 		if(Array.isArray(definition)) {
-/******/ 			var i = 0;
-/******/ 			while(i < definition.length) {
-/******/ 				var key = definition[i++];
-/******/ 				var binding = definition[i++];
-/******/ 				if(!__webpack_require__.o(exports, key)) {
-/******/ 					if(binding === 0) {
-/******/ 						Object.defineProperty(exports, key, { enumerable: true, value: definition[i++] });
-/******/ 					} else {
-/******/ 						Object.defineProperty(exports, key, { enumerable: true, get: binding });
-/******/ 					}
-/******/ 				} else if(binding === 0) { i++; }
-/******/ 			}
-/******/ 		} else {
-/******/ 			for(var key in definition) {
-/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
-/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
-/******/ 				}
-/******/ 			}
+/******/ // define getter/value functions for harmony exports
+/******/ __webpack_require__.d = (exports, definition) => {
+/******/ 	for(var key in definition) {
+/******/ 		if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 			Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
 /******/ 		}
-/******/ 	};
-/******/ })();
+/******/ 	}
+/******/ };
 /******/ 
 /******/ /* webpack/runtime/hasOwnProperty shorthand */
-/******/ (() => {
-/******/ 	__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
-/******/ })();
+/******/ __webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop));
 /******/ 
 /************************************************************************/
 
@@ -89,18 +68,14 @@ const { doc, win } = (external_highcharts_src_js_default_default());
  *  Constants
  *
  * */
+/** @internal */
 const simulatedEventTarget = win.EventTarget && new win.EventTarget() || 'none';
 /* *
  *
  *  Functions
  *
  * */
-/**
- * @private
- * @param {Highcharts.HTMLDOMElement} el
- * @param {string} className
- * @return {void}
- */
+/** @internal */
 function addClass(el, className) {
     if (el.classList) {
         el.classList.add(className);
@@ -112,12 +87,7 @@ function addClass(el, className) {
         el.className += ' ' + className;
     }
 }
-/**
- * @private
- * @param {Highcharts.HTMLDOMElement} el
- * @param {string} className
- * @return {void}
- */
+/** @internal */
 function removeClass(el, className) {
     if (el.classList) {
         el.classList.remove(className);
@@ -130,7 +100,8 @@ function removeClass(el, className) {
 }
 /**
  * Utility function to clone a mouse event for re-dispatching.
- * @private
+ *
+ * @internal
  */
 function cloneMouseEvent(e) {
     if (typeof win.MouseEvent === 'function') {
@@ -149,7 +120,8 @@ function cloneMouseEvent(e) {
 }
 /**
  * Utility function to clone a touch event for re-dispatching.
- * @private
+ *
+ * @internal
  */
 function cloneTouchEvent(e) {
     const touchListToTouchArray = (l) => {
@@ -188,9 +160,7 @@ function cloneTouchEvent(e) {
     fakeEvt.targetTouches = e.targetTouches;
     return fakeEvt;
 }
-/**
- * @private
- */
+/** @internal */
 function escapeStringForHTML(str) {
     return str
         .replace(/&/g, '&amp;')
@@ -201,17 +171,29 @@ function escapeStringForHTML(str) {
         .replace(/\//g, '&#x2F;');
 }
 /**
- * Get an element by ID
- * @private
+ * Get the shadow root the element lives in, if any. Lookups in the main
+ * document do not cross a shadow boundary. (#22682)
+ *
+ * @internal
  */
-function getElement(id) {
-    return doc.getElementById(id);
+function getShadowRoot(el) {
+    const root = el?.getRootNode();
+    return root?.host ? root : void 0;
+}
+/**
+ * Get an element by ID, from the reference element's shadow root if it has one.
+ *
+ * @internal
+ */
+function getElement(id, referenceElement) {
+    return (getShadowRoot(referenceElement) || doc).getElementById(id);
 }
 /**
  * Get a fake mouse event of a given type. If relatedTarget is not given,
  * it will point to simulatedEventTarget, as an indicator that the event
  * is fake.
- * @private
+ *
+ * @internal
  */
 function getFakeMouseEvent(type, position, relatedTarget) {
     const pos = position || {
@@ -263,10 +245,11 @@ function getFakeMouseEvent(type, position, relatedTarget) {
  * is ambiguous whether or not the nesting is for layout purposes or indicates a
  * separate section.
  *
- * @private
- * @param {Highcharts.HTMLDOMElement} [element]
- * @return {string} The heading tag name (h1, h2 etc).
+ * @return {string}
+ * The heading tag name (h1, h2 etc).
  * If no nearest heading is found, "p" is returned.
+ *
+ * @internal
  */
 function getHeadingTagNameForElement(element) {
     const getIncreasedHeadingLevel = (tagName) => {
@@ -304,9 +287,8 @@ function getHeadingTagNameForElement(element) {
 }
 /**
  * Remove an element from the DOM.
- * @private
- * @param {Highcharts.HTMLDOMElement|Highcharts.SVGDOMElement} [element]
- * @return {void}
+ *
+ * @internal
  */
 function removeElement(element) {
     if (element && element.parentNode) {
@@ -315,9 +297,8 @@ function removeElement(element) {
 }
 /**
  * Remove all child nodes from an element.
- * @private
- * @param {Highcharts.HTMLDOMElement|Highcharts.SVGDOMElement} [element]
- * @return {void}
+ *
+ * @internal
  */
 function removeChildNodes(element) {
     while (element.lastChild) {
@@ -326,7 +307,8 @@ function removeChildNodes(element) {
 }
 /**
  * Utility function. Reverses child nodes of a DOM element.
- * @private
+ *
+ * @internal
  */
 function reverseChildNodes(node) {
     let i = node.childNodes.length;
@@ -337,7 +319,8 @@ function reverseChildNodes(node) {
 /**
  * Used for aria-label attributes, painting on a canvas will fail if the
  * text contains tags.
- * @private
+ *
+ * @internal
  */
 function stripHTMLTagsFromString(str, isForExport = false) {
     return (typeof str === 'string') ?
@@ -348,10 +331,11 @@ function stripHTMLTagsFromString(str, isForExport = false) {
 /**
  * Utility function for hiding an element visually, but still keeping it
  * available to screen reader users.
- * @private
+ *
+ * @internal
  */
 function visuallyHideElement(element) {
-    (0,external_highcharts_src_js_default_namespaceObject.css)(element, {
+    ;(0,external_highcharts_src_js_default_namespaceObject.css)(element, {
         position: 'absolute',
         width: '1px',
         height: '1px',
@@ -369,6 +353,7 @@ function visuallyHideElement(element) {
  *  Default Export
  *
  * */
+/** @internal */
 const HTMLUtilities = {
     addClass,
     cloneMouseEvent,
@@ -377,6 +362,7 @@ const HTMLUtilities = {
     getElement,
     getFakeMouseEvent,
     getHeadingTagNameForElement,
+    getShadowRoot,
     removeChildNodes,
     removeClass,
     removeElement,
@@ -385,6 +371,7 @@ const HTMLUtilities = {
     stripHTMLTagsFromString,
     visuallyHideElement
 };
+/** @internal */
 /* harmony default export */ const Utils_HTMLUtilities = (HTMLUtilities);
 
 ;// external ["../highcharts.src.js","default","Templating"]
@@ -413,6 +400,7 @@ const { format } = (external_highcharts_src_js_default_Templating_default());
  *  Composition
  *
  * */
+/** @internal */
 var A11yI18nComposition;
 (function (A11yI18nComposition) {
     /* *
@@ -425,9 +413,7 @@ var A11yI18nComposition;
      *  Functions
      *
      * */
-    /**
-     * @private
-     */
+    /** @internal */
     function compose(ChartClass) {
         const chartProto = ChartClass.prototype;
         if (!chartProto.langFormat) {
@@ -441,11 +427,14 @@ var A11yI18nComposition;
      * returns the statement within brackets.  Invalid array statements return
      * an empty string.
      *
-     * @private
      * @function formatExtendedStatement
+     *
      * @param {string} statement
+     *
      * @param {Highcharts.Dictionary<*>} ctx
      * Context to apply to the format string.
+     *
+     * @internal
      */
     function formatExtendedStatement(statement, ctx) {
         const eachStart = statement.indexOf('#each('), pluralStart = statement.indexOf('#plural('), indexStart = statement.indexOf('['), indexEnd = statement.indexOf(']');
@@ -473,13 +462,13 @@ var A11yI18nComposition;
             const pluralEnd = (statement.slice(pluralStart).indexOf(')') + pluralStart), pluralStatement = statement.substring(pluralStart + 8, pluralEnd), pluralArguments = pluralStatement.split(','), num = Number((0,external_highcharts_src_js_default_namespaceObject.getNestedProperty)(pluralArguments[0], ctx));
             switch (num) {
                 case 0:
-                    result = (0,external_highcharts_src_js_default_namespaceObject.pick)(pluralArguments[4], pluralArguments[1]);
+                    result = (pluralArguments[4] ?? pluralArguments[1]);
                     break;
                 case 1:
-                    result = (0,external_highcharts_src_js_default_namespaceObject.pick)(pluralArguments[2], pluralArguments[1]);
+                    result = (pluralArguments[2] ?? pluralArguments[1]);
                     break;
                 case 2:
-                    result = (0,external_highcharts_src_js_default_namespaceObject.pick)(pluralArguments[3], pluralArguments[1]);
+                    result = (pluralArguments[3] ?? pluralArguments[1]);
                     break;
                 default:
                     result = pluralArguments[1];
@@ -524,7 +513,6 @@ var A11yI18nComposition;
      *
      * - Result: 'This is the first index: 0. The last: 5.'
      *
-     *
      * They can also be iterated using the #each() function.  This will repeat
      * the contents of the bracket expression for each element.  Example:
      *
@@ -533,7 +521,6 @@ var A11yI18nComposition;
      * - Context: { myArray: [0, 1, 2] }
      *
      * - Result: 'List contains: 0cm 1cm 2cm '
-     *
      *
      * The #each() function optionally takes a length parameter.  If positive,
      * this parameter specifies the max number of elements to iterate through.
@@ -546,7 +533,6 @@ var A11yI18nComposition;
      *
      * - Result: 'List contains: 0, 1, 2, and 3.'
      *
-     *
      * Use the #plural() function to pick a string depending on whether or not a
      * context object is 1.  Arguments are #plural(obj, plural, singular).
      * Example:
@@ -557,7 +543,6 @@ var A11yI18nComposition;
      *
      * - Result: 'Has 5 points.'
      *
-     *
      * Optionally there are additional parameters for dual and none:
      * #plural(obj, plural, singular, dual, none).  Example:
      *
@@ -567,7 +552,6 @@ var A11yI18nComposition;
      * - Context: { numPoints: 2 }
      *
      * - Result: 'Has two points.'
-     *
      *
      * The dual or none parameters will take precedence if they are supplied.
      *
@@ -662,7 +646,6 @@ var A11yI18nComposition;
             i18nFormat(formatString, context, this) : '';
     }
     /**
-     * @private
      * @function stringTrim
      *
      * @param {string} str
@@ -670,6 +653,8 @@ var A11yI18nComposition;
      *
      * @return {string}
      * The trimmed string
+     *
+     * @internal
      */
     function stringTrim(str) {
         return str.trim && str.trim() || str.replace(/^\s+|\s+$/g, '');
@@ -680,6 +665,7 @@ var A11yI18nComposition;
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const A11yI18n = (A11yI18nComposition);
 
 ;// ./code/es-modules/Accessibility/Utils/ChartUtilities.js
@@ -710,7 +696,8 @@ const { stripHTMLTagsFromString: stripHTMLTags } = Utils_HTMLUtilities;
 /**
  * Fire an event on an element that is either wrapped by Highcharts,
  * or a DOM element.
- * @private
+ *
+ * @internal
  */
 function fireEventOnWrappedOrUnwrappedElement(el, eventObject) {
     const type = eventObject.type;
@@ -731,16 +718,15 @@ function fireEventOnWrappedOrUnwrappedElement(el, eventObject) {
         fireEventOnWrappedOrUnwrappedElement(el.element, eventObject);
     }
 }
-/**
- * @private
- */
+/** @internal */
 function getChartTitle(chart) {
     return stripHTMLTags(chart.options.title.text ||
         chart.langFormat('accessibility.defaultChartTitle', { chart: chart }), chart.renderer.forExport);
 }
 /**
  * Return string with the axis name/title.
- * @private
+ *
+ * @internal
  */
 function getAxisDescription(axis) {
     return axis && (axis.options.accessibility?.description ||
@@ -752,11 +738,14 @@ function getAxisDescription(axis) {
 }
 /**
  * Return string with text description of the axis range.
- * @private
+ *
  * @param {Highcharts.Axis} axis
  * The axis to get range desc of.
+ *
  * @return {string}
  * A string with the range description for the axis.
+ *
+ * @internal
  */
 function getAxisRangeDescription(axis) {
     const axisOptions = axis.options || {};
@@ -779,7 +768,8 @@ function getAxisRangeDescription(axis) {
 }
 /**
  * Describe the range of a category axis.
- * @private
+ *
+ * @internal
  */
 function getCategoryAxisRangeDesc(axis) {
     const chart = axis.chart;
@@ -794,7 +784,8 @@ function getCategoryAxisRangeDesc(axis) {
 }
 /**
  * Describe the length of the time window shown on an axis.
- * @private
+ *
+ * @internal
  */
 function getAxisTimeLengthDesc(axis) {
     const chart = axis.chart, range = {}, min = axis.dataMin || axis.min || 0, max = axis.dataMax || axis.max || 0;
@@ -820,7 +811,8 @@ function getAxisTimeLengthDesc(axis) {
 }
 /**
  * Describe an axis from-to range.
- * @private
+ *
+ * @internal
  */
 function getAxisFromToDescription(axis) {
     const chart = axis.chart, options = chart.options, dateRangeFormat = (options &&
@@ -843,11 +835,14 @@ function getAxisFromToDescription(axis) {
 }
 /**
  * Get the DOM element for the first point in the series.
- * @private
+ *
  * @param {Highcharts.Series} series
  * The series to get element for.
+ *
  * @return {Highcharts.HTMLDOMElement|Highcharts.SVGDOMElement|undefined}
  * The DOM element for the point.
+ *
+ * @internal
  */
 function getSeriesFirstPointElement(series) {
     if (series.points && series.points.length) {
@@ -859,11 +854,14 @@ function getSeriesFirstPointElement(series) {
 }
 /**
  * Get the DOM element for the series that we put accessibility info on.
- * @private
+ *
  * @param {Highcharts.Series} series
  * The series to get element for.
+ *
  * @return {Highcharts.HTMLDOMElement|Highcharts.SVGDOMElement|undefined}
  * The DOM element for the series
+ *
+ * @internal
  */
 function getSeriesA11yElement(series) {
     const firstPointEl = getSeriesFirstPointElement(series);
@@ -875,7 +873,8 @@ function getSeriesA11yElement(series) {
 /**
  * Remove aria-hidden from element. Also unhides parents of the element, and
  * hides siblings that are not explicitly unhidden.
- * @private
+ *
+ * @internal
  */
 function unhideChartElementFromAT(chart, element) {
     element.setAttribute('aria-hidden', false);
@@ -896,7 +895,8 @@ function unhideChartElementFromAT(chart, element) {
 }
 /**
  * Hide series from screen readers.
- * @private
+ *
+ * @internal
  */
 function hideSeriesFromAT(series) {
     const seriesEl = getSeriesA11yElement(series);
@@ -906,7 +906,8 @@ function hideSeriesFromAT(series) {
 }
 /**
  * Get series objects by series name.
- * @private
+ *
+ * @internal
  */
 function getSeriesFromName(chart, name) {
     if (!name) {
@@ -918,7 +919,8 @@ function getSeriesFromName(chart, name) {
 }
 /**
  * Get point in a series from x/y values.
- * @private
+ *
+ * @internal
  */
 function getPointFromXY(series, x, y) {
     let i = series.length, res;
@@ -933,7 +935,8 @@ function getPointFromXY(series, x, y) {
 }
 /**
  * Get relative position of point on an x/y axis from 0 to 1.
- * @private
+ *
+ * @internal
  */
 function getRelativePointAxisPosition(axis, point) {
     if (!(0,external_highcharts_src_js_default_namespaceObject.defined)(axis.dataMin) || !(0,external_highcharts_src_js_default_namespaceObject.defined)(axis.dataMax)) {
@@ -946,7 +949,8 @@ function getRelativePointAxisPosition(axis, point) {
 }
 /**
  * Get relative position of point on an x/y axis from 0 to 1.
- * @private
+ *
+ * @internal
  */
 function scrollAxisToPoint(point) {
     const xAxis = point.series.xAxis, yAxis = point.series.yAxis, axis = (xAxis && xAxis.scrollbar ? xAxis : yAxis), scrollbar = (axis && axis.scrollbar);
@@ -967,6 +971,7 @@ function scrollAxisToPoint(point) {
  *  Default Export
  *
  * */
+/** @internal */
 const ChartUtilities = {
     fireEventOnWrappedOrUnwrappedElement,
     getChartTitle,
@@ -980,6 +985,7 @@ const ChartUtilities = {
     hideSeriesFromAT,
     scrollAxisToPoint
 };
+/** @internal */
 /* harmony default export */ const Utils_ChartUtilities = (ChartUtilities);
 
 ;// ./code/es-modules/Accessibility/Utils/DOMElementProvider.js
@@ -1008,7 +1014,10 @@ const { removeElement: DOMElementProvider_removeElement } = Utils_HTMLUtilities;
  *
  * */
 /**
- * @private
+ * Class that can keep track of elements added to DOM and clean them up on
+ * destroy.
+ *
+ * @internal
  */
 class DOMElementProvider {
     /* *
@@ -1022,7 +1031,8 @@ class DOMElementProvider {
     /**
      * Create an element and keep track of it for later removal.
      * Same args as document.createElement
-     * @private
+     *
+     * @internal
      */
     createElement() {
         const el = DOMElementProvider_doc.createElement.apply(DOMElementProvider_doc, arguments);
@@ -1031,7 +1041,8 @@ class DOMElementProvider {
     }
     /**
      * Destroy created element, removing it from the DOM.
-     * @private
+     *
+     * @internal
      */
     removeElement(element) {
         DOMElementProvider_removeElement(element);
@@ -1039,7 +1050,8 @@ class DOMElementProvider {
     }
     /**
      * Destroy all created elements, removing them from the DOM.
-     * @private
+     *
+     * @internal
      */
     destroyCreatedElements() {
         this.elements.forEach(function (element) {
@@ -1053,6 +1065,7 @@ class DOMElementProvider {
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const Utils_DOMElementProvider = (DOMElementProvider);
 
 ;// ./code/es-modules/Accessibility/Utils/EventProvider.js
@@ -1070,16 +1083,9 @@ class DOMElementProvider {
  *
  * */
 
-/* *
- *
- *  Imports
- *
- * */
 
 
-/**
- * @private
- */
+/** @internal */
 class EventProvider {
     /* *
      *
@@ -1092,7 +1098,8 @@ class EventProvider {
     /**
      * Add an event to an element and keep track of it for later removal.
      * Same args as Highcharts.addEvent.
-     * @private
+     *
+     * @internal
      */
     addEvent() {
         const remover = external_highcharts_src_js_default_namespaceObject.addEvent.apply((external_highcharts_src_js_default_default()), arguments);
@@ -1104,7 +1111,8 @@ class EventProvider {
     }
     /**
      * Remove added event.
-     * @private
+     *
+     * @internal
      */
     removeEvent(event) {
         const pos = this.eventRemovers.map((e) => e.remover).indexOf(event);
@@ -1113,7 +1121,8 @@ class EventProvider {
     }
     /**
      * Remove all added events.
-     * @private
+     *
+     * @internal
      */
     removeAddedEvents() {
         this.eventRemovers.map((e) => e.remover)
@@ -1126,6 +1135,7 @@ class EventProvider {
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const Utils_EventProvider = (EventProvider);
 
 ;// ./code/es-modules/Accessibility/AccessibilityComponent.js
@@ -1169,6 +1179,8 @@ const { getFakeMouseEvent: AccessibilityComponent_getFakeMouseEvent } = Utils_HT
  * @requires modules/accessibility
  * @class
  * @name Highcharts.AccessibilityComponent
+ *
+ * @internal
  */
 class AccessibilityComponent {
     /* *
@@ -1277,6 +1289,7 @@ class AccessibilityComponent {
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const Accessibility_AccessibilityComponent = (AccessibilityComponent);
 
 ;// ./code/es-modules/Accessibility/KeyboardNavigationHandler.js
@@ -1434,9 +1447,10 @@ const { stripHTMLTagsFromString: ContainerComponent_stripHTMLTags } = Utils_HTML
 /**
  * The ContainerComponent class
  *
- * @private
  * @class
  * @name Highcharts.ContainerComponent
+ *
+ * @internal
  */
 class ContainerComponent extends Accessibility_AccessibilityComponent {
     /* *
@@ -1454,9 +1468,7 @@ class ContainerComponent extends Accessibility_AccessibilityComponent {
         this.setRenderToAttrs();
         this.makeCreditsAccessible();
     }
-    /**
-     * @private
-     */
+    /** @internal */
     handleSVGTitleElement() {
         const chart = this.chart, titleId = 'highcharts-title-' + chart.index, titleContents = ContainerComponent_stripHTMLTags(chart.langFormat('accessibility.svgContainerTitle', {
             chartTitle: ContainerComponent_getChartTitle(chart)
@@ -1469,9 +1481,7 @@ class ContainerComponent extends Accessibility_AccessibilityComponent {
             chart.renderTo.insertBefore(titleElement, chart.renderTo.firstChild);
         }
     }
-    /**
-     * @private
-     */
+    /** @internal */
     setSVGContainerLabel() {
         const chart = this.chart, svgContainerLabel = chart.langFormat('accessibility.svgContainerLabel', {
             chartTitle: ContainerComponent_getChartTitle(chart)
@@ -1480,9 +1490,7 @@ class ContainerComponent extends Accessibility_AccessibilityComponent {
             chart.renderer.box.setAttribute('aria-label', svgContainerLabel);
         }
     }
-    /**
-     * @private
-     */
+    /** @internal */
     setGraphicContainerAttrs() {
         const chart = this.chart, label = chart.langFormat('accessibility.graphicContainerLabel', {
             chartTitle: ContainerComponent_getChartTitle(chart)
@@ -1493,7 +1501,8 @@ class ContainerComponent extends Accessibility_AccessibilityComponent {
     }
     /**
      * Set attributes on the chart container element.
-     * @private
+     *
+     * @internal
      */
     setRenderToAttrs() {
         const chart = this.chart, shouldHaveLandmark = chart.options.accessibility
@@ -1506,9 +1515,7 @@ class ContainerComponent extends Accessibility_AccessibilityComponent {
             chart.renderTo.setAttribute('aria-label', containerLabel);
         }
     }
-    /**
-     * @private
-     */
+    /** @internal */
     makeCreditsAccessible() {
         const chart = this.chart, credits = chart.credits;
         if (credits) {
@@ -1522,7 +1529,8 @@ class ContainerComponent extends Accessibility_AccessibilityComponent {
     }
     /**
      * Empty handler to just set focus on chart
-     * @private
+     *
+     * @internal
      */
     getKeyboardNavigation() {
         const chart = this.chart;
@@ -1551,6 +1559,7 @@ class ContainerComponent extends Accessibility_AccessibilityComponent {
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const Components_ContainerComponent = (ContainerComponent);
 
 ;// ./code/es-modules/Accessibility/FocusBorder.js
@@ -1574,6 +1583,7 @@ class ContainerComponent extends Accessibility_AccessibilityComponent {
  *  Composition
  *
  * */
+/** @internal */
 var FocusBorderComposition;
 (function (FocusBorderComposition) {
     /* *
@@ -1595,9 +1605,7 @@ var FocusBorderComposition;
      *  Functions
      *
      * */
-    /**
-     * @private
-     */
+    /** @internal */
     function compose(ChartClass, SVGElementClass) {
         const chartProto = ChartClass.prototype, svgElementProto = SVGElementClass.prototype;
         if (!chartProto.renderFocusBorder) {
@@ -1613,8 +1621,9 @@ var FocusBorderComposition;
     /**
      * Redraws the focus border on the currently focused element.
      *
-     * @private
      * @function Highcharts.Chart#renderFocusBorder
+     *
+     * @internal
      */
     function chartRenderFocusBorder() {
         const focusElement = this.focusElement, focusBorderOptions = this.options.accessibility.keyboardNavigation.focusBorder;
@@ -1633,7 +1642,6 @@ var FocusBorderComposition;
      * Set chart's focus to an SVGElement. Calls focus() on it, and draws the
      * focus border. This is used by multiple components.
      *
-     * @private
      * @function Highcharts.Chart#setFocusToElement
      *
      * @param {Highcharts.SVGElement} svgElement
@@ -1642,6 +1650,8 @@ var FocusBorderComposition;
      * @param {SVGDOMElement|HTMLDOMElement} [focusElement]
      * If supplied, it draws the border around svgElement and sets the focus to
      * focusElement.
+     *
+     * @internal
      */
     function chartSetFocusToElement(svgElement, focusElement) {
         const focusBorderOptions = this.options.accessibility.keyboardNavigation.focusBorder, browserFocusElement = focusElement || svgElement.element;
@@ -1673,8 +1683,9 @@ var FocusBorderComposition;
     /**
      * Add hook to destroy focus border if SVG element is destroyed, unless
      * hook already exists.
-     * @private
      * @param {object} el Element to add destroy hook to
+     *
+     * @internal
      */
     function svgElementAddDestroyFocusBorderHook(el) {
         if (el.focusBorderDestroyHook) {
@@ -1693,12 +1704,9 @@ var FocusBorderComposition;
      * Add focus border functionality to SVGElements. Draws a new rect on top of
      * element around its bounding box. This is used by multiple components.
      *
-     * @private
      * @function Highcharts.SVGElement#addFocusBorder
      *
-     * @param {number} margin
-     *
-     * @param {SVGAttributes} attribs
+     * @internal
      */
     function svgElementAddFocusBorder(margin, attribs) {
         // Allow updating by just adding new border
@@ -1706,14 +1714,15 @@ var FocusBorderComposition;
             this.removeFocusBorder();
         }
         // Add the border rect
-        const bb = this.getBBox(), pad = (0,external_highcharts_src_js_default_namespaceObject.pick)(margin, 3), parent = this.parentGroup, scaleX = this.scaleX || parent && parent.scaleX, scaleY = this.scaleY || parent && parent.scaleY, oneDefined = scaleX ? !scaleY : scaleY, scaleBoth = oneDefined ? Math.abs(scaleX || scaleY || 1) :
+        const bb = this.getBBox(), pad = (margin ?? 3), parent = this.parentGroup, scaleX = this.scaleX || parent && parent.scaleX, scaleY = this.scaleY || parent && parent.scaleY, oneDefined = scaleX ? !scaleY : scaleY, scaleBoth = oneDefined ? Math.abs(scaleX || scaleY || 1) :
             (Math.abs(scaleX || 1) + Math.abs(scaleY || 1)) / 2, lineHeight = this.renderer.fontMetrics(this).h;
         bb.x += this.translateX ? this.translateX : 0;
         bb.y += this.translateY ? this.translateY : 0;
         let borderPosX = bb.x - pad, borderPosY = bb.y - pad, borderWidth = bb.width + 2 * pad, borderHeight = bb.height + 2 * pad;
         /**
          * For text elements, apply x and y offset, #11397.
-         * @private
+         *
+         * @internal
          */
         function getTextAnchorCorrection(text) {
             let posXCorrection = 0, posYCorrection = 0;
@@ -1781,9 +1790,10 @@ var FocusBorderComposition;
     /**
      * Add hooks to update the focus border of an element when the element
      * size/position is updated, unless already added.
-     * @private
      * @param {object} el Element to add update hooks to
      * @param {...*} updateParams Parameters to pass through to addFocusBorder when updating.
+     *
+     * @internal
      */
     function avgElementAddUpdateFocusBorderHooks(el, ...updateParams) {
         if (el.focusBorderUpdateHooks) {
@@ -1804,8 +1814,9 @@ var FocusBorderComposition;
     /**
      * Remove hook from SVG element added by addDestroyFocusBorderHook, if
      * existing.
-     * @private
      * @param {object} el Element to remove destroy hook from
+     *
+     * @internal
      */
     function svgElementRemoveDestroyFocusBorderHook(el) {
         if (!el.focusBorderDestroyHook) {
@@ -1817,8 +1828,9 @@ var FocusBorderComposition;
     /**
      * Add focus border functionality to SVGElements. Draws a new rect on top of
      * element around its bounding box. This is used by multiple components.
-     * @private
      * @function Highcharts.SVGElement#removeFocusBorder
+     *
+     * @internal
      */
     function svgElementRemoveFocusBorder() {
         svgElementRemoveUpdateFocusBorderHooks(this);
@@ -1831,8 +1843,9 @@ var FocusBorderComposition;
     /**
      * Remove hooks from SVG element added by addUpdateFocusBorderHooks, if
      * existing.
-     * @private
      * @param {object} el Element to remove update hooks from
+     *
+     * @internal
      */
     function svgElementRemoveUpdateFocusBorderHooks(el) {
         if (!el.focusBorderUpdateHooks) {
@@ -1855,6 +1868,7 @@ var FocusBorderComposition;
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const FocusBorder = (FocusBorderComposition);
 
 ;// external ["../highcharts.src.js","default","AST"]
@@ -1887,6 +1901,7 @@ const { addClass: Announcer_addClass, visuallyHideElement: Announcer_visuallyHid
  *  Class
  *
  * */
+/** @internal */
 class Announcer {
     /* *
      *
@@ -1953,6 +1968,7 @@ class Announcer {
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const Utils_Announcer = (Announcer);
 
 ;// ./code/es-modules/Accessibility/Components/AnnotationsA11y.js
@@ -1980,9 +1996,10 @@ const { escapeStringForHTML: AnnotationsA11y_escapeStringForHTML, stripHTMLTagsF
 /**
  * Get list of all annotation labels in the chart.
  *
- * @private
  * @param {Highcharts.Chart} chart The chart to get annotation info on.
  * @return {Array<object>} The labels, or empty array if none.
+ *
+ * @internal
  */
 function getChartAnnotationLabels(chart) {
     const annotations = chart.annotations || [];
@@ -1997,9 +2014,10 @@ function getChartAnnotationLabels(chart) {
 /**
  * Get the text of an annotation label.
  *
- * @private
  * @param {Object} label The annotation label object
  * @return {string} The text in the label.
+ *
+ * @internal
  */
 function getLabelText(label) {
     return ((label.options &&
@@ -2013,9 +2031,10 @@ function getLabelText(label) {
 /**
  * Describe an annotation label.
  *
- * @private
  * @param {Object} label The annotation label object to describe
  * @return {string} The description for the label.
+ *
+ * @internal
  */
 function getAnnotationLabelDescription(label) {
     const a11yDesc = (label.options &&
@@ -2063,9 +2082,10 @@ function getAnnotationLabelDescription(label) {
 /**
  * Return array of HTML strings for each annotation label in the chart.
  *
- * @private
  * @param {Highcharts.Chart} chart The chart to get annotation info on.
  * @return {Array<string>} Array of strings with HTML content for each annotation label.
+ *
+ * @internal
  */
 function getAnnotationListItems(chart) {
     const labels = getChartAnnotationLabels(chart);
@@ -2077,9 +2097,10 @@ function getAnnotationListItems(chart) {
 /**
  * Return the annotation info for a chart as string.
  *
- * @private
  * @param {Highcharts.Chart} chart The chart to get annotation info on.
  * @return {string} String with HTML content or empty string if no annotations.
+ *
+ * @internal
  */
 function getAnnotationsInfoHTML(chart) {
     const annotations = chart.annotations;
@@ -2093,9 +2114,10 @@ function getAnnotationsInfoHTML(chart) {
  * Return the texts for the annotation(s) connected to a point, or empty array
  * if none.
  *
- * @private
  * @param {Highcharts.Point} point The data point to get the annotation info from.
  * @return {Array<string>} Annotation texts
+ *
+ * @internal
  */
 function getPointAnnotationTexts(point) {
     const labels = getChartAnnotationLabels(point.series.chart);
@@ -2111,12 +2133,14 @@ function getPointAnnotationTexts(point) {
  *  Default Export
  *
  * */
+/** @internal */
 const AnnotationsA11y = {
     getAnnotationsInfoHTML,
     getAnnotationLabelDescription,
     getAnnotationListItems,
     getPointAnnotationTexts
 };
+/** @internal */
 /* harmony default export */ const Components_AnnotationsA11y = (AnnotationsA11y);
 
 ;// ./code/es-modules/Accessibility/Components/InfoRegionsComponent.js
@@ -2147,42 +2171,32 @@ const { format: InfoRegionsComponent_format } = (external_highcharts_src_js_defa
 
 const { doc: InfoRegionsComponent_doc } = (external_highcharts_src_js_default_default());
 
-const { addClass: InfoRegionsComponent_addClass, getElement: InfoRegionsComponent_getElement, getHeadingTagNameForElement: InfoRegionsComponent_getHeadingTagNameForElement, stripHTMLTagsFromString: InfoRegionsComponent_stripHTMLTagsFromString, visuallyHideElement: InfoRegionsComponent_visuallyHideElement } = Utils_HTMLUtilities;
+const { addClass: InfoRegionsComponent_addClass, getElement: InfoRegionsComponent_getElement, getHeadingTagNameForElement: InfoRegionsComponent_getHeadingTagNameForElement, getShadowRoot: InfoRegionsComponent_getShadowRoot, stripHTMLTagsFromString: InfoRegionsComponent_stripHTMLTagsFromString, visuallyHideElement: InfoRegionsComponent_visuallyHideElement } = Utils_HTMLUtilities;
 
 /* *
  *
  *  Functions
  *
  * */
-/**
- * @private
- */
+/** @internal */
 function getTableSummary(chart) {
     return chart.langFormat('accessibility.table.tableSummary', { chart: chart });
 }
-/**
- * @private
- */
+/** @internal */
 function getTypeDescForMapChart(chart, formatContext) {
     return formatContext.mapTitle ?
         chart.langFormat('accessibility.chartTypes.mapTypeDescription', formatContext) :
         chart.langFormat('accessibility.chartTypes.unknownMap', formatContext);
 }
-/**
- * @private
- */
+/** @internal */
 function getTypeDescForCombinationChart(chart, formatContext) {
     return chart.langFormat('accessibility.chartTypes.combinationChart', formatContext);
 }
-/**
- * @private
- */
+/** @internal */
 function getTypeDescForEmptyChart(chart, formatContext) {
     return chart.langFormat('accessibility.chartTypes.emptyChart', formatContext);
 }
-/**
- * @private
- */
+/** @internal */
 function buildTypeDescriptionFromSeries(chart, types, context) {
     const firstType = types[0], typeExplanation = chart.langFormat('accessibility.seriesTypeDescriptions.' + firstType, context), multi = chart.series && chart.series.length < 2 ? 'Single' : 'Multiple';
     return (chart.langFormat('accessibility.chartTypes.' + firstType + multi, context) ||
@@ -2193,11 +2207,12 @@ function buildTypeDescriptionFromSeries(chart, types, context) {
  * familiar to most users, but in those cases we try to add an explanation
  * of the type.
  *
- * @private
  * @function Highcharts.Chart#getTypeDescription
  * @param {Highcharts.Chart} chart The associated Chart instance.
  * @param {Array<string>} types The series types in this chart.
  * @return {string} The text description of the chart type.
+ *
+ * @internal
  */
 function getTypeDescription(chart, types) {
     const firstType = types[0], firstSeries = chart.series && chart.series[0] || {}, mapTitle = chart.mapView && chart.mapView.geoMap &&
@@ -2218,9 +2233,7 @@ function getTypeDescription(chart, types) {
     }
     return buildTypeDescriptionFromSeries(chart, types, formatContext);
 }
-/**
- * @private
- */
+/** @internal */
 function stripEmptyHTMLTags(str) {
     // Scan alert #[71]: Loop for nested patterns
     return (0,external_highcharts_src_js_default_namespaceObject.replaceNested)(str, [/<([\w\-.:!]+)\b[^<>]*>\s*<\/\1>/g, '']);
@@ -2233,9 +2246,10 @@ function stripEmptyHTMLTags(str) {
 /**
  * The InfoRegionsComponent class
  *
- * @private
  * @class
  * @name Highcharts.InfoRegionsComponent
+ *
+ * @internal
  */
 class InfoRegionsComponent extends Accessibility_AccessibilityComponent {
     constructor() {
@@ -2254,7 +2268,8 @@ class InfoRegionsComponent extends Accessibility_AccessibilityComponent {
      * */
     /**
      * Init the component
-     * @private
+     *
+     * @internal
      */
     init() {
         const chart = this.chart;
@@ -2289,9 +2304,7 @@ class InfoRegionsComponent extends Accessibility_AccessibilityComponent {
         }
         this.announcer = new Utils_Announcer(chart, 'assertive');
     }
-    /**
-     * @private
-     */
+    /** @internal */
     initRegionsDefinitions() {
         const component = this, accessibilityOptions = this.chart.options.accessibility;
         this.screenReaderSections = {
@@ -2351,9 +2364,7 @@ class InfoRegionsComponent extends Accessibility_AccessibilityComponent {
             component.updateScreenReaderSection(regionKey);
         });
     }
-    /**
-     * @private
-     */
+    /** @internal */
     getLinkedDescriptionElement() {
         const chartOptions = this.chart.options, linkedDescOption = chartOptions.accessibility.linkedDescription;
         if (!linkedDescOption) {
@@ -2362,14 +2373,16 @@ class InfoRegionsComponent extends Accessibility_AccessibilityComponent {
         if (typeof linkedDescOption !== 'string') {
             return linkedDescOption;
         }
-        const query = InfoRegionsComponent_format(linkedDescOption, this.chart), queryMatch = InfoRegionsComponent_doc.querySelectorAll(query);
+        const query = InfoRegionsComponent_format(linkedDescOption, this.chart), shadowRoot = InfoRegionsComponent_getShadowRoot(this.chart.renderTo), shadowMatch = shadowRoot?.querySelectorAll(query), 
+        // The description may also live outside the shadow root (#22682)
+        queryMatch = shadowMatch?.length ?
+            shadowMatch :
+            InfoRegionsComponent_doc.querySelectorAll(query);
         if (queryMatch.length === 1) {
             return queryMatch[0];
         }
     }
-    /**
-     * @private
-     */
+    /** @internal */
     setLinkedDescriptionAttrs() {
         const el = this.linkedDescriptionElement;
         if (el) {
@@ -2378,9 +2391,10 @@ class InfoRegionsComponent extends Accessibility_AccessibilityComponent {
         }
     }
     /**
-     * @private
      * @param {string} regionKey
      * The name/key of the region to update
+     *
+     * @internal
      */
     updateScreenReaderSection(regionKey) {
         const chart = this.chart;
@@ -2413,9 +2427,10 @@ class InfoRegionsComponent extends Accessibility_AccessibilityComponent {
     }
     /**
      * Apply a11y attributes to a screen reader info section
-     * @private
      * @param {Highcharts.HTMLDOMElement} sectionDiv The section element
      * @param {string} regionKey Name/key of the region we are setting attrs for
+     *
+     * @internal
      */
     setScreenReaderSectionAttribs(sectionDiv, regionKey) {
         const chart = this.chart, labelText = chart.langFormat('accessibility.screenReaderSection.' + regionKey +
@@ -2432,9 +2447,7 @@ class InfoRegionsComponent extends Accessibility_AccessibilityComponent {
                 'region' : 'group');
         }
     }
-    /**
-     * @private
-     */
+    /** @internal */
     defaultBeforeChartFormatter() {
         const chart = this.chart, format = chart.options.accessibility.screenReaderSection
             .beforeChartFormat;
@@ -2464,9 +2477,7 @@ class InfoRegionsComponent extends Accessibility_AccessibilityComponent {
         this.sonifyButtonId = sonifyButtonId;
         return stripEmptyHTMLTags(formattedString);
     }
-    /**
-     * @private
-     */
+    /** @internal */
     defaultAfterChartFormatter() {
         const chart = this.chart;
         const format = chart.options.accessibility.screenReaderSection
@@ -2478,16 +2489,12 @@ class InfoRegionsComponent extends Accessibility_AccessibilityComponent {
         const formattedString = A11yI18n.i18nFormat(format, context, chart);
         return stripEmptyHTMLTags(formattedString);
     }
-    /**
-     * @private
-     */
+    /** @internal */
     getLinkedDescription() {
         const el = this.linkedDescriptionElement, content = el && el.innerHTML || '';
         return InfoRegionsComponent_stripHTMLTagsFromString(content, this.chart.renderer.forExport);
     }
-    /**
-     * @private
-     */
+    /** @internal */
     getLongdescText() {
         const chartOptions = this.chart.options, captionOptions = chartOptions.caption, captionText = captionOptions && captionOptions.text, linkedDescription = this.getLinkedDescription();
         return (chartOptions.accessibility.description ||
@@ -2495,25 +2502,19 @@ class InfoRegionsComponent extends Accessibility_AccessibilityComponent {
             captionText ||
             '');
     }
-    /**
-     * @private
-     */
+    /** @internal */
     getTypeDescriptionText() {
         const chart = this.chart;
         return chart.types ?
             chart.options.accessibility.typeDescription ||
                 getTypeDescription(chart, chart.types) : '';
     }
-    /**
-     * @private
-     */
+    /** @internal */
     getDataTableButtonText(buttonId) {
         const chart = this.chart, buttonText = chart.langFormat('accessibility.table.viewAsDataTableButtonText', { chart: chart, chartTitle: InfoRegionsComponent_getChartTitle(chart) });
         return '<button id="' + buttonId + '">' + buttonText + '</button>';
     }
-    /**
-     * @private
-     */
+    /** @internal */
     getSonifyButtonText(buttonId) {
         const chart = this.chart;
         if (chart.options.sonification &&
@@ -2523,28 +2524,21 @@ class InfoRegionsComponent extends Accessibility_AccessibilityComponent {
         const buttonText = chart.langFormat('accessibility.sonification.playAsSoundButtonText', { chart: chart, chartTitle: InfoRegionsComponent_getChartTitle(chart) });
         return '<button id="' + buttonId + '">' + buttonText + '</button>';
     }
-    /**
-     * @private
-     */
+    /** @internal */
     getSubtitleText() {
         const subtitle = (this.chart.options.subtitle);
         return InfoRegionsComponent_stripHTMLTagsFromString(subtitle && subtitle.text || '', this.chart.renderer.forExport);
     }
-    /**
-     * @private
-     */
+    /** @internal */
     getEndOfChartMarkerText() {
-        const endMarkerId = `highcharts-end-of-chart-marker-${this.chart.index}`, endMarker = InfoRegionsComponent_getElement(endMarkerId);
+        const endMarkerId = `highcharts-end-of-chart-marker-${this.chart.index}`, endMarker = InfoRegionsComponent_getElement(endMarkerId, this.chart.renderTo);
         if (endMarker) {
             return endMarker.outerHTML;
         }
         const chart = this.chart, markerText = chart.langFormat('accessibility.screenReaderSection.endOfChartMarker', { chart: chart }), id = 'highcharts-end-of-chart-marker-' + chart.index;
         return '<div id="' + id + '">' + markerText + '</div>';
     }
-    /**
-     * @private
-     * @param {Highcharts.Dictionary<string>} e
-     */
+    /** @internal */
     onDataTableCreated(e) {
         const chart = this.chart;
         if (chart.options.accessibility.enabled) {
@@ -2557,22 +2551,17 @@ class InfoRegionsComponent extends Accessibility_AccessibilityComponent {
             e.tree.attributes = attributes;
         }
     }
-    /**
-     * @private
-     */
+    /** @internal */
     focusDataTable() {
         const tableDiv = this.dataTableDiv, table = tableDiv && tableDiv.getElementsByTagName('table')[0];
         if (table && table.focus) {
             table.focus();
         }
     }
-    /**
-     * @private
-     * @param {string} sonifyButtonId
-     */
+    /** @internal */
     initSonifyButton(sonifyButtonId) {
-        const el = this.sonifyButton = InfoRegionsComponent_getElement(sonifyButtonId);
         const chart = this.chart;
+        const el = this.sonifyButton = InfoRegionsComponent_getElement(sonifyButtonId, chart.renderTo);
         const defaultHandler = (e) => {
             if (el) {
                 el.setAttribute('aria-hidden', 'true');
@@ -2604,15 +2593,15 @@ class InfoRegionsComponent extends Accessibility_AccessibilityComponent {
     }
     /**
      * Set attribs and handlers for default viewAsDataTable button if exists.
-     * @private
-     * @param {string} tableButtonId
+     *
+     * @internal
      */
     initDataTableButton(tableButtonId) {
-        const el = this.viewDataTableButton = InfoRegionsComponent_getElement(tableButtonId), chart = this.chart, tableId = tableButtonId.replace('hc-linkto-', '');
+        const chart = this.chart, el = this.viewDataTableButton = InfoRegionsComponent_getElement(tableButtonId, chart.renderTo), tableId = tableButtonId.replace('hc-linkto-', '');
         if (el) {
             (0,external_highcharts_src_js_default_namespaceObject.attr)(el, {
                 tabindex: -1,
-                'aria-expanded': !!InfoRegionsComponent_getElement(tableId)
+                'aria-expanded': !!InfoRegionsComponent_getElement(tableId, chart.renderTo)
             });
             el.onclick = chart.options.accessibility
                 .screenReaderSection.onViewDataTableClick ||
@@ -2623,14 +2612,17 @@ class InfoRegionsComponent extends Accessibility_AccessibilityComponent {
     }
     /**
      * Return object with text description of each of the chart's axes.
-     * @private
+     *
+     * @internal
      */
     getAxesDescription() {
         const chart = this.chart, shouldDescribeColl = function (collectionKey, defaultCondition) {
             const axes = chart[collectionKey];
-            return axes.length > 1 || axes[0] &&
-                (0,external_highcharts_src_js_default_namespaceObject.pick)(axes[0].options.accessibility &&
-                    axes[0].options.accessibility.enabled, defaultCondition);
+            const axisA11yEnabled = axes[0] ?
+                (axes[0].options.accessibility &&
+                    axes[0].options.accessibility.enabled) :
+                void 0;
+            return axes.length > 1 || (axisA11yEnabled ?? defaultCondition);
         }, hasNoMap = !!chart.types &&
             chart.types.indexOf('map') < 0 &&
             chart.types.indexOf('treemap') < 0 &&
@@ -2643,9 +2635,7 @@ class InfoRegionsComponent extends Accessibility_AccessibilityComponent {
         }
         return desc;
     }
-    /**
-     * @private
-     */
+    /** @internal */
     getAxisDescriptionText(collectionKey) {
         const chart = this.chart;
         const axes = chart[collectionKey];
@@ -2674,6 +2664,7 @@ class InfoRegionsComponent extends Accessibility_AccessibilityComponent {
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const Components_InfoRegionsComponent = (InfoRegionsComponent);
 
 ;// ./code/es-modules/Accessibility/Components/MenuComponent.js
@@ -2705,14 +2696,13 @@ const { getFakeMouseEvent: MenuComponent_getFakeMouseEvent } = Utils_HTMLUtiliti
  * */
 /**
  * Get the wrapped export button element of a chart.
- * @private
+ *
+ * @internal
  */
 function getExportMenuButtonElement(chart) {
     return chart.exporting?.svgElements?.[0];
 }
-/**
- * @private
- */
+/** @internal */
 function exportingShouldHaveA11y(chart) {
     const exportingOpts = chart.options.exporting, exportButton = getExportMenuButtonElement(chart);
     return !!(exportingOpts &&
@@ -2730,9 +2720,10 @@ function exportingShouldHaveA11y(chart) {
 /**
  * The MenuComponent class
  *
- * @private
  * @class
  * @name Highcharts.MenuComponent
+ *
+ * @internal
  */
 class MenuComponent extends Accessibility_AccessibilityComponent {
     /* *
@@ -2753,9 +2744,7 @@ class MenuComponent extends Accessibility_AccessibilityComponent {
         });
         this.createProxyGroup();
     }
-    /**
-     * @private
-     */
+    /** @internal */
     onMenuHidden() {
         const menu = this.chart.exporting?.contextMenuEl;
         if (menu) {
@@ -2763,9 +2752,7 @@ class MenuComponent extends Accessibility_AccessibilityComponent {
         }
         this.setExportButtonExpandedState('false');
     }
-    /**
-     * @private
-     */
+    /** @internal */
     onMenuShown() {
         const chart = this.chart, menu = chart.exporting?.contextMenuEl;
         if (menu) {
@@ -2774,10 +2761,7 @@ class MenuComponent extends Accessibility_AccessibilityComponent {
         }
         this.setExportButtonExpandedState('true');
     }
-    /**
-     * @private
-     * @param {string} stateStr
-     */
+    /** @internal */
     setExportButtonExpandedState(stateStr) {
         if (this.exportButtonProxy) {
             this.exportButtonProxy.innerElement.setAttribute('aria-expanded', stateStr);
@@ -2802,9 +2786,7 @@ class MenuComponent extends Accessibility_AccessibilityComponent {
             }
         }
     }
-    /**
-     * @private
-     */
+    /** @internal */
     proxyMenuButton() {
         const chart = this.chart;
         const proxyProvider = this.proxyProvider;
@@ -2820,18 +2802,14 @@ class MenuComponent extends Accessibility_AccessibilityComponent {
             });
         }
     }
-    /**
-     * @private
-     */
+    /** @internal */
     createProxyGroup() {
         const chart = this.chart;
         if (chart && this.proxyProvider) {
             this.proxyProvider.addGroup('chartMenu');
         }
     }
-    /**
-     * @private
-     */
+    /** @internal */
     addAccessibleContextMenuAttribs() {
         const chart = this.chart, exportList = chart.exporting?.divElements;
         if (exportList && exportList.length) {
@@ -2861,7 +2839,8 @@ class MenuComponent extends Accessibility_AccessibilityComponent {
     }
     /**
      * Get keyboard navigation handler for this component.
-     * @private
+     *
+     * @internal
      */
     getKeyboardNavigation() {
         const keys = this.keyCodes, chart = this.chart, component = this;
@@ -2916,9 +2895,9 @@ class MenuComponent extends Accessibility_AccessibilityComponent {
         });
     }
     /**
-     * @private
-     * @param {Highcharts.KeyboardNavigationHandler} keyboardNavigationHandler
      * @return {number} Response code
+     *
+     * @internal
      */
     onKbdPrevious(keyboardNavigationHandler) {
         const chart = this.chart;
@@ -2940,9 +2919,9 @@ class MenuComponent extends Accessibility_AccessibilityComponent {
         return response.prev;
     }
     /**
-     * @private
-     * @param {Highcharts.KeyboardNavigationHandler} keyboardNavigationHandler
      * @return {number} Response code
+     *
+     * @internal
      */
     onKbdNext(keyboardNavigationHandler) {
         const chart = this.chart;
@@ -2963,9 +2942,9 @@ class MenuComponent extends Accessibility_AccessibilityComponent {
         return response.next;
     }
     /**
-     * @private
-     * @param {Highcharts.KeyboardNavigationHandler} keyboardNavigationHandler
      * @return {number} Response code
+     *
+     * @internal
      */
     onKbdClick(keyboardNavigationHandler) {
         const chart = this.chart;
@@ -2987,6 +2966,7 @@ class MenuComponent extends Accessibility_AccessibilityComponent {
  *  Class Namespace
  *
  * */
+/** @internal */
 (function (MenuComponent) {
     /* *
      *
@@ -2998,9 +2978,7 @@ class MenuComponent extends Accessibility_AccessibilityComponent {
      *  Functions
      *
      * */
-    /**
-     * @private
-     */
+    /** @internal */
     function compose(ChartClass) {
         const chartProto = ChartClass.prototype;
         if (!chartProto.hideExportMenu) {
@@ -3014,8 +2992,9 @@ class MenuComponent extends Accessibility_AccessibilityComponent {
     /**
      * Show the export menu and focus the first item (if exists).
      *
-     * @private
      * @function Highcharts.Chart#showExportMenu
+     *
+     * @internal
      */
     function chartShowExportMenu() {
         const exportButton = getExportMenuButtonElement(this);
@@ -3029,8 +3008,9 @@ class MenuComponent extends Accessibility_AccessibilityComponent {
         }
     }
     /**
-     * @private
      * @function Highcharts.Chart#hideExportMenu
+     *
+     * @internal
      */
     function chartHideExportMenu() {
         const chart = this, exportList = chart.exporting?.divElements;
@@ -3055,8 +3035,9 @@ class MenuComponent extends Accessibility_AccessibilityComponent {
     /**
      * Highlight export menu item by index.
      *
-     * @private
      * @function Highcharts.Chart#highlightExportItem
+     *
+     * @internal
      */
     function chartHighlightExportItem(ix) {
         const listItem = this.exporting?.divElements?.[ix], curHighlighted = this.highlightedExportItemIx !== void 0 &&
@@ -3085,8 +3066,9 @@ class MenuComponent extends Accessibility_AccessibilityComponent {
     /**
      * Try to highlight the last valid export menu item.
      *
-     * @private
      * @function Highcharts.Chart#highlightLastExportItem
+     *
+     * @internal
      */
     function chartHighlightLastExportItem() {
         const chart = this;
@@ -3106,6 +3088,7 @@ class MenuComponent extends Accessibility_AccessibilityComponent {
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const Components_MenuComponent = (MenuComponent);
 
 ;// ./code/es-modules/Accessibility/KeyboardNavigation.js
@@ -3141,13 +3124,14 @@ const { getElement: KeyboardNavigation_getElement, simulatedEventTarget: Keyboar
  *
  * @requires modules/accessibility
  *
- * @private
  * @class
  * @param {Highcharts.Chart} chart
  *        Chart object
  * @param {Object} components
  *        Map of component names to AccessibilityComponent objects.
  * @name Highcharts.KeyboardNavigation
+ *
+ * @internal
  */
 class KeyboardNavigation {
     /* *
@@ -3167,11 +3151,12 @@ class KeyboardNavigation {
      * */
     /**
      * Initialize the class
-     * @private
      * @param {Highcharts.Chart} chart
      *        Chart object
      * @param {Object} components
      *        Map of component names to AccessibilityComponent objects.
+     *
+     * @internal
      */
     init(chart, components) {
         const ep = this.eventProvider = new Utils_EventProvider();
@@ -3218,10 +3203,11 @@ class KeyboardNavigation {
      * setting focus to this div and not preventing the default tab action. We
      * also use this when users come back into the chart by tabbing back, in
      * order to navigate from the end of the chart.
-     * @private
+     *
+     * @internal
      */
     updateExitAnchor() {
-        const endMarkerId = `highcharts-end-of-chart-marker-${this.chart.index}`, endMarker = KeyboardNavigation_getElement(endMarkerId);
+        const endMarkerId = `highcharts-end-of-chart-marker-${this.chart.index}`, endMarker = KeyboardNavigation_getElement(endMarkerId, this.chart.renderTo);
         this.removeExitAnchor();
         if (endMarker) {
             this.makeElementAnExitAnchor(endMarker);
@@ -3233,11 +3219,12 @@ class KeyboardNavigation {
     }
     /**
      * Move to prev/next module.
-     * @private
      * @param {number} direction
      * Direction to move. +1 for next, -1 for prev.
      * @return {boolean}
      * True if there was a valid module in direction.
+     *
+     * @internal
      */
     move(direction) {
         const curModule = this.modules && this.modules[this.currentModuleIx];
@@ -3273,8 +3260,9 @@ class KeyboardNavigation {
     }
     /**
      * Function to run on container focus
-     * @private
      * @param {global.FocusEvent} e Browser focus event.
+     *
+     * @internal
      */
     onFocus(e) {
         const chart = this.chart, focusComesFromChart = (e.relatedTarget &&
@@ -3298,7 +3286,8 @@ class KeyboardNavigation {
      * Reset chart navigation state if we mouse click and it's not already
      * reset. Reset fully if outside the chart, otherwise just hide focus
      * indicator.
-     * @private
+     *
+     * @internal
      */
     onMouseUp(e) {
         delete this.isClickingChart;
@@ -3323,8 +3312,9 @@ class KeyboardNavigation {
     }
     /**
      * Function to run on keydown
-     * @private
      * @param {global.KeyboardEvent} ev Browser keydown event.
+     *
+     * @internal
      */
     onKeydown(ev) {
         const e = ev || KeyboardNavigation_win.event, curNavModule = (this.modules &&
@@ -3362,7 +3352,8 @@ class KeyboardNavigation {
     }
     /**
      * Chart container should have tabindex if navigation is enabled.
-     * @private
+     *
+     * @internal
      */
     updateContainerTabindex() {
         const a11yOptions = this.chart.options.accessibility, keyboardOptions = a11yOptions && a11yOptions.keyboardNavigation, shouldHaveTabindex = !(keyboardOptions && keyboardOptions.enabled === false), chart = this.chart, container = chart.container;
@@ -3385,7 +3376,8 @@ class KeyboardNavigation {
     }
     /**
      * Add new exit anchor to the chart.
-     * @private
+     *
+     * @internal
      */
     createExitAnchor() {
         const chart = this.chart, exitAnchor = this.exitAnchor = KeyboardNavigation_doc.createElement('div');
@@ -3395,7 +3387,8 @@ class KeyboardNavigation {
     /**
      * Add attributes and events to an element to make it function as an
      * exit anchor.
-     * @private
+     *
+     * @internal
      */
     makeElementAnExitAnchor(el) {
         const chartTabindex = this.tabindexContainer.getAttribute('tabindex') || 0;
@@ -3407,7 +3400,8 @@ class KeyboardNavigation {
     }
     /**
      * Destroy the exit anchor and remove from DOM.
-     * @private
+     *
+     * @internal
      */
     removeExitAnchor() {
         // Remove event from element and from eventRemovers array to prevent
@@ -3425,7 +3419,8 @@ class KeyboardNavigation {
     }
     /**
      * Add focus handler to exit anchor element.
-     * @private
+     *
+     * @internal
      */
     addExitAnchorEventsToEl(element) {
         const chart = this.chart, keyboardNavigation = this;
@@ -3470,7 +3465,8 @@ class KeyboardNavigation {
     /**
      * Get the ix of the first module that either does not require validation or
      * validates positively.
-     * @private
+     *
+     * @internal
      */
     getFirstValidModuleIx() {
         const len = this.modules.length;
@@ -3484,7 +3480,8 @@ class KeyboardNavigation {
     }
     /**
      * Remove all traces of keyboard navigation.
-     * @private
+     *
+     * @internal
      */
     destroy() {
         this.removeExitAnchor();
@@ -3497,6 +3494,7 @@ class KeyboardNavigation {
  *  Class Namespace
  *
  * */
+/** @internal */
 (function (KeyboardNavigation) {
     /* *
      *
@@ -3510,7 +3508,8 @@ class KeyboardNavigation {
      * */
     /**
      * Composition function.
-     * @private
+     *
+     * @internal
      */
     function compose(ChartClass) {
         Components_MenuComponent.compose(ChartClass);
@@ -3526,7 +3525,8 @@ class KeyboardNavigation {
     KeyboardNavigation.compose = compose;
     /**
      * Dismiss popup content in chart, including export menu and tooltip.
-     * @private
+     *
+     * @internal
      */
     function chartDismissPopupContent() {
         const chart = this;
@@ -3540,7 +3540,8 @@ class KeyboardNavigation {
     /**
      * Add event listener to document to detect ESC key press and dismiss
      * hover/popup content.
-     * @private
+     *
+     * @internal
      */
     function documentOnKeydown(e) {
         const keycode = e.which || e.keyCode;
@@ -3559,6 +3560,7 @@ class KeyboardNavigation {
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const Accessibility_KeyboardNavigation = (KeyboardNavigation);
 
 ;// external ["../highcharts.src.js","default","Legend"]
@@ -3595,27 +3597,21 @@ const { stripHTMLTagsFromString: LegendComponent_stripHTMLTags, addClass: Legend
  *  Functions
  *
  * */
-/**
- * @private
- */
+/** @internal */
 function scrollLegendToItem(legend, itemIx) {
     const itemPage = (legend.allItems[itemIx].legendItem || {}).pageIx, curPage = legend.currentPage;
     if (typeof itemPage !== 'undefined' && itemPage + 1 !== curPage) {
         legend.scroll(1 + itemPage - curPage);
     }
 }
-/**
- * @private
- */
+/** @internal */
 function shouldDoLegendA11y(chart) {
     const items = chart.legend && chart.legend.allItems, legendA11yOptions = (chart.options.legend.accessibility || {}), unsupportedColorAxis = chart.colorAxis && chart.colorAxis.some((c) => !c.dataClasses || !c.dataClasses.length);
     return !!(items && items.length &&
         !unsupportedColorAxis &&
         legendA11yOptions.enabled !== false);
 }
-/**
- * @private
- */
+/** @internal */
 function setLegendItemHoverState(hoverActive, item) {
     const legendItem = item.legendItem || {};
     item.setState(hoverActive ? 'hover' : '', true);
@@ -3635,9 +3631,10 @@ function setLegendItemHoverState(hoverActive, item) {
 /**
  * The LegendComponent class
  *
- * @private
  * @class
  * @name Highcharts.LegendComponent
+ *
+ * @internal
  */
 class LegendComponent extends Accessibility_AccessibilityComponent {
     constructor() {
@@ -3657,7 +3654,8 @@ class LegendComponent extends Accessibility_AccessibilityComponent {
      * */
     /**
      * Init the component
-     * @private
+     *
+     * @internal
      */
     init() {
         const component = this;
@@ -3685,13 +3683,14 @@ class LegendComponent extends Accessibility_AccessibilityComponent {
                 this.chart.renderer &&
                 component.recreateProxies()) {
                 (0,external_highcharts_src_js_default_namespaceObject.syncTimeout)(() => component.proxyProvider
-                    .updateGroupProxyElementPositions('legend'), (0,external_highcharts_src_js_default_namespaceObject.animObject)((0,external_highcharts_src_js_default_namespaceObject.pick)(this.chart.renderer.globalAnimation, true)).duration);
+                    .updateGroupProxyElementPositions('legend'), (0,external_highcharts_src_js_default_namespaceObject.animObject)((this.chart.renderer.globalAnimation ?? true)).duration);
             }
         });
     }
     /**
      * Update visibility of legend items when using paged legend
-     * @private
+     *
+     * @internal
      */
     updateLegendItemProxyVisibility() {
         const chart = this.chart;
@@ -3730,17 +3729,13 @@ class LegendComponent extends Accessibility_AccessibilityComponent {
             }
         });
     }
-    /**
-     * @private
-     */
+    /** @internal */
     onChartRender() {
         if (!shouldDoLegendA11y(this.chart)) {
             this.removeProxies();
         }
     }
-    /**
-     * @private
-     */
+    /** @internal */
     highlightAdjacentLegendPage(direction) {
         const chart = this.chart;
         const legend = chart.legend;
@@ -3760,9 +3755,7 @@ class LegendComponent extends Accessibility_AccessibilityComponent {
             }
         }
     }
-    /**
-     * @private
-     */
+    /** @internal */
     updateProxyPositionForItem(item) {
         if (item.a11yProxyElement) {
             item.a11yProxyElement.refreshPosition();
@@ -3771,7 +3764,8 @@ class LegendComponent extends Accessibility_AccessibilityComponent {
     /**
      * Returns false if legend a11y is disabled and proxies were not created,
      * true otherwise.
-     * @private
+     *
+     * @internal
      */
     recreateProxies() {
         const focusedElement = LegendComponent_doc.activeElement;
@@ -3791,15 +3785,11 @@ class LegendComponent extends Accessibility_AccessibilityComponent {
         }
         return false;
     }
-    /**
-     * @private
-     */
+    /** @internal */
     removeProxies() {
         this.proxyProvider.removeGroup('legend');
     }
-    /**
-     * @private
-     */
+    /** @internal */
     updateLegendTitle() {
         const chart = this.chart;
         const legendTitle = LegendComponent_stripHTMLTags((chart.legend &&
@@ -3815,9 +3805,7 @@ class LegendComponent extends Accessibility_AccessibilityComponent {
             'aria-label': legendLabel
         });
     }
-    /**
-     * @private
-     */
+    /** @internal */
     addLegendProxyGroup() {
         const a11yOptions = this.chart.options.accessibility;
         const groupRole = a11yOptions.landmarkVerbosity === 'all' ?
@@ -3829,9 +3817,7 @@ class LegendComponent extends Accessibility_AccessibilityComponent {
             role: groupRole
         });
     }
-    /**
-     * @private
-     */
+    /** @internal */
     proxyLegendItems() {
         const component = this, items = (this.chart.legend || {}).allItems || [];
         let legendItem;
@@ -3842,10 +3828,7 @@ class LegendComponent extends Accessibility_AccessibilityComponent {
             }
         });
     }
-    /**
-     * @private
-     * @param {Highcharts.BubbleLegendItem|Point|Highcharts.Series} item
-     */
+    /** @internal */
     proxyLegendItem(item) {
         const legendItem = item.legendItem || {};
         const legendItemLabel = item.legendItem?.label;
@@ -3881,7 +3864,8 @@ class LegendComponent extends Accessibility_AccessibilityComponent {
     }
     /**
      * Get keyboard navigation handler for this component.
-     * @private
+     *
+     * @internal
      */
     getKeyboardNavigation() {
         const keys = this.keyCodes, component = this, chart = this.chart;
@@ -3923,7 +3907,8 @@ class LegendComponent extends Accessibility_AccessibilityComponent {
     }
     /**
      * Arrow key navigation
-     * @private
+     *
+     * @internal
      */
     onKbdArrowKey(keyboardNavigationHandler, key) {
         const { keyCodes: { left, up }, highlightedLegendItemIx, chart } = this, numItems = chart.legend.allItems.length, wrapAround = chart.options.accessibility
@@ -3939,9 +3924,9 @@ class LegendComponent extends Accessibility_AccessibilityComponent {
         return keyboardNavigationHandler.response.success;
     }
     /**
-     * @private
-     * @param {Highcharts.KeyboardNavigationHandler} keyboardNavigationHandler
      * @return {number} Response code
+     *
+     * @internal
      */
     onKbdClick(keyboardNavigationHandler) {
         const legendItem = this.chart.legend.allItems[this.highlightedLegendItemIx];
@@ -3950,9 +3935,7 @@ class LegendComponent extends Accessibility_AccessibilityComponent {
         }
         return keyboardNavigationHandler.response.success;
     }
-    /**
-     * @private
-     */
+    /** @internal */
     shouldHaveLegendNavigation() {
         if (!shouldDoLegendA11y(this.chart)) {
             return false;
@@ -3964,7 +3947,8 @@ class LegendComponent extends Accessibility_AccessibilityComponent {
     }
     /**
      * Clean up
-     * @private
+     *
+     * @internal
      */
     destroy() {
         this.removeProxies();
@@ -3975,6 +3959,7 @@ class LegendComponent extends Accessibility_AccessibilityComponent {
  *  Class Namespace
  *
  * */
+/** @internal */
 (function (LegendComponent) {
     /* *
      *
@@ -3988,7 +3973,8 @@ class LegendComponent extends Accessibility_AccessibilityComponent {
      * */
     /**
      * Highlight legend item by index.
-     * @private
+     *
+     * @internal
      */
     function chartHighlightLegendItem(ix) {
         const items = this.legend.allItems;
@@ -4011,9 +3997,7 @@ class LegendComponent extends Accessibility_AccessibilityComponent {
         }
         return false;
     }
-    /**
-     * @private
-     */
+    /** @internal */
     function compose(ChartClass, LegendClass) {
         const chartProto = ChartClass.prototype;
         if (!chartProto.highlightLegendItem) {
@@ -4024,7 +4008,8 @@ class LegendComponent extends Accessibility_AccessibilityComponent {
     LegendComponent.compose = compose;
     /**
      * Keep track of pressed state for legend items.
-     * @private
+     *
+     * @internal
      */
     function legendOnAfterColorizeItem(e) {
         const chart = this.chart, a11yOptions = chart.options.accessibility, legendItem = e.item;
@@ -4038,6 +4023,7 @@ class LegendComponent extends Accessibility_AccessibilityComponent {
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const Components_LegendComponent = (LegendComponent);
 
 ;// external ["../highcharts.src.js","default","Axis"]
@@ -4082,7 +4068,8 @@ function compose(ChartClass, NavigatorClass) {
         const chartProto = ChartClass.prototype;
         NavigatorConstructor = NavigatorClass;
         chartProto.callbacks.push(onChartCallback);
-        (0,external_highcharts_src_js_default_namespaceObject.addEvent)(ChartClass, 'afterAddSeries', onChartAfterAddSeries);
+        (0,external_highcharts_src_js_default_namespaceObject.addEvent)(ChartClass, 'afterAddSeries', resetBaseSeries);
+        (0,external_highcharts_src_js_default_namespaceObject.addEvent)(ChartClass, 'afterDrillUp', resetBaseSeries);
         (0,external_highcharts_src_js_default_namespaceObject.addEvent)(ChartClass, 'afterSetChartSize', onChartAfterSetChartSize);
         (0,external_highcharts_src_js_default_namespaceObject.addEvent)(ChartClass, 'afterUpdate', onChartAfterUpdate);
         (0,external_highcharts_src_js_default_namespaceObject.addEvent)(ChartClass, 'beforeRender', onChartBeforeRender);
@@ -4091,13 +4078,12 @@ function compose(ChartClass, NavigatorClass) {
     }
 }
 /**
- * Handle adding new series.
+ * Reset the base series.
  * @internal
  */
-function onChartAfterAddSeries() {
+function resetBaseSeries() {
     if (this.navigator) {
-        // Recompute which series should be shown in navigator, and add them
-        this.navigator.setBaseSeries(null, false);
+        this.navigator.setBaseSeries(void 0, false);
     }
 }
 /**
@@ -4124,7 +4110,7 @@ function onChartAfterSetChartSize() {
             navigator.top = this.plotTop + scrollButtonSize;
         }
         else {
-            navigator.left = (0,external_highcharts_src_js_default_namespaceObject.pick)(xAxis.left, this.plotLeft + scrollButtonSize);
+            navigator.left = (xAxis.left ?? this.plotLeft + scrollButtonSize);
             navigator.top = navigator.navigatorOptions.top ||
                 this.chartHeight -
                     navigator.height -
@@ -4140,7 +4126,7 @@ function onChartAfterSetChartSize() {
                         legendOptions.enabled &&
                         !legendOptions.floating) ?
                         legend.legendHeight +
-                            (0,external_highcharts_src_js_default_namespaceObject.pick)(legendOptions.margin, 10) :
+                            (legendOptions.margin ?? 10) :
                         0) -
                     (this.titleOffset ? this.titleOffset[2] : 0);
         }
@@ -4165,7 +4151,7 @@ function onChartAfterUpdate(event) {
         (this.options.navigator.enabled ||
             this.options.scrollbar.enabled)) {
         this.scroller = this.navigator = new NavigatorConstructor(this);
-        if ((0,external_highcharts_src_js_default_namespaceObject.pick)(event.redraw, true)) {
+        if (event.redraw ?? true) {
             this.redraw(event.animation); // #7067
         }
     }
@@ -4246,7 +4232,7 @@ const ChartNavigatorComposition = {
  * */
 
 
-const { isTouchDevice: NavigatorAxisComposition_isTouchDevice } = (external_highcharts_src_js_default_default());
+const { composed, isTouchDevice: NavigatorAxisComposition_isTouchDevice } = (external_highcharts_src_js_default_default());
 
 /* *
  *
@@ -4312,8 +4298,7 @@ class NavigatorAxisAdditions {
      *
      * */
     static compose(AxisClass) {
-        if (!AxisClass.keepProps.includes('navigatorAxis')) {
-            AxisClass.keepProps.push('navigatorAxis');
+        if ((0,external_highcharts_src_js_default_namespaceObject.pushUnique)(composed, 'Axis.Navigator')) {
             (0,external_highcharts_src_js_default_namespaceObject.addEvent)(AxisClass, 'init', onAxisInit);
             (0,external_highcharts_src_js_default_namespaceObject.addEvent)(AxisClass, 'setExtremes', onAxisSetExtremes);
         }
@@ -4343,7 +4328,7 @@ class NavigatorAxisAdditions {
      */
     toFixedRange(pxMin, pxMax, fixedMin, fixedMax) {
         const axis = this.axis, halfPointRange = (axis.pointRange || 0) / 2;
-        let newMin = (0,external_highcharts_src_js_default_namespaceObject.pick)(fixedMin, axis.translate(pxMin, true, !axis.horiz)), newMax = (0,external_highcharts_src_js_default_namespaceObject.pick)(fixedMax, axis.translate(pxMax, true, !axis.horiz));
+        let newMin = fixedMin ?? axis.translate(pxMin, true, !axis.horiz), newMax = fixedMax ?? axis.translate(pxMax, true, !axis.horiz);
         // Add/remove half point range to/from the extremes (#1172)
         if (!(0,external_highcharts_src_js_default_namespaceObject.defined)(fixedMin)) {
             newMin = (0,external_highcharts_src_js_default_namespaceObject.correctFloat)(newMin + halfPointRange);
@@ -5340,7 +5325,7 @@ function Symbols_arc(cx, cy, w, h, options) {
     const arc = [];
     if (options) {
         let start = options.start || 0, end = options.end || 0;
-        const rx = (0,external_highcharts_src_js_default_namespaceObject.pick)(options.r, w), ry = (0,external_highcharts_src_js_default_namespaceObject.pick)(options.r, h || w), 
+        const rx = (options.r ?? w), ry = (options.r ?? (h || w)), 
         // Subtract a small number to prevent cos and sin of start and end
         // from becoming equal on 360 arcs (#1561). See "Arc proximity"
         // tests at samples/unit-tests/svgrenderer/symbol/demo.js
@@ -5350,16 +5335,17 @@ function Symbols_arc(cx, cy, w, h, options) {
             start = Math.PI / 2;
             end = Math.PI * 2.5 - proximity;
         }
-        const innerRadius = options.innerR, open = (0,external_highcharts_src_js_default_namespaceObject.pick)(options.open, fullCircle), cosStart = fullCircle ? 0 : Math.cos(start), sinStart = fullCircle ? 1 : Math.sin(start), cosEnd = fullCircle ? 0 : Math.cos(end), sinEnd = fullCircle ? 1 : Math.sin(end), 
+        const innerRadius = options.innerR, open = (options.open ?? fullCircle), cosStart = fullCircle ? 0 : Math.cos(start), sinStart = fullCircle ? 1 : Math.sin(start), cosEnd = fullCircle ? 0 : Math.cos(end), sinEnd = fullCircle ? 1 : Math.sin(end), 
         // Proximity takes care of rounding errors around PI (#6971)
-        longArc = (0,external_highcharts_src_js_default_namespaceObject.pick)(options.longArc, end - start - Math.PI < proximity ? 0 : 1);
+        longArc = options.longArc ??
+            (end - start - Math.PI < proximity ? 0 : 1);
         let arcSegment = [
             'A', // ArcTo
             rx, // X radius
             ry, // Y radius
             0, // Slanting
             longArc, // Long or short arc
-            (0,external_highcharts_src_js_default_namespaceObject.pick)(options.clockwise, 1), // Clockwise
+            (options.clockwise ?? 1), // Clockwise
             // Use a static pixel offset for full circle (#21701)
             cx + (fullCircle ? 0.001 : rx * cosEnd),
             cy + ry * sinEnd
@@ -5423,7 +5409,7 @@ function Symbols_arc(cx, cy, w, h, options) {
  * Path
  */
 function callout(x, y, w, h, options) {
-    const arrowLength = 6, halfDistance = 6, r = Math.min((options?.r) || 0, w, h), safeDistance = r + halfDistance, anchorX = options?.anchorX, anchorY = options?.anchorY || 0;
+    const arrowLength = options?.arrowLength ?? 6, halfDistance = 6, r = Math.min((options?.r) || 0, w, h), safeDistance = r + halfDistance, anchorX = options?.anchorX, anchorY = options?.anchorY || 0;
     const path = Symbols_roundedRect(x, y, w, h, { r });
     if (!(0,external_highcharts_src_js_default_namespaceObject.isNumber)(anchorX)) {
         return path;
@@ -5950,7 +5936,7 @@ const StockUtilities = {
 
 const { defaultOptions: NavigatorComposition_defaultOptions } = (external_highcharts_src_js_default_default());
 
-const { composed } = (external_highcharts_src_js_default_default());
+const { composed: NavigatorComposition_composed } = (external_highcharts_src_js_default_default());
 
 
 
@@ -5971,7 +5957,7 @@ const { setFixedRange: NavigatorComposition_setFixedRange } = Utilities_StockUti
 /** @internal */
 function NavigatorComposition_compose(ChartClass, AxisClass, SeriesClass) {
     NavigatorAxisComposition.compose(AxisClass);
-    if ((0,external_highcharts_src_js_default_namespaceObject.pushUnique)(composed, 'Navigator')) {
+    if ((0,external_highcharts_src_js_default_namespaceObject.pushUnique)(NavigatorComposition_composed, 'Navigator')) {
         ChartClass.prototype.setFixedRange = NavigatorComposition_setFixedRange;
         (0,external_highcharts_src_js_default_namespaceObject.extend)((external_highcharts_src_js_default_SVGRenderer_default()).prototype.symbols, Navigator_NavigatorSymbols);
         (0,external_highcharts_src_js_default_namespaceObject.extend)(NavigatorComposition_defaultOptions, { navigator: Navigator_NavigatorDefaults });
@@ -6056,8 +6042,8 @@ var ScrollbarAxis;
     ScrollbarAxis.compose = compose;
     /** @internal */
     function getExtremes(axis) {
-        const axisMin = (0,external_highcharts_src_js_default_namespaceObject.pick)(axis.options?.min, axis.min);
-        const axisMax = (0,external_highcharts_src_js_default_namespaceObject.pick)(axis.options?.max, axis.max);
+        const axisMin = (axis.options?.min ?? axis.min);
+        const axisMax = (axis.options?.max ?? axis.max);
         return {
             axisMin,
             axisMax,
@@ -6122,6 +6108,9 @@ var ScrollbarAxis;
                     this.setRange(this.from, this.to);
                 }
             });
+        }
+        else if (axis.scrollbar) {
+            axis.scrollbar = axis.scrollbar.destroy();
         }
     }
     /**
@@ -6260,14 +6249,12 @@ var ScrollbarAxis;
  */
 const ScrollbarDefaults = {
     /**
-     * The height of the scrollbar. If `buttonsEnabled` is true , the height
+     * The height of the scrollbar. If `buttonsEnabled` is true, the height
      * also applies to the width of the scroll arrows so that they are always
      * squares.
      *
      * @sample stock/scrollbar/style/
      *         Non-default height
-     *
-     * @type    {number}
      */
     height: 10,
     /**
@@ -6596,7 +6583,7 @@ class Scrollbar {
     buttonToMaxClick(e) {
         const scroller = this;
         const range = ((scroller.to - scroller.from) *
-            (0,external_highcharts_src_js_default_namespaceObject.pick)(scroller.options.step, 0.2));
+            (scroller.options.step ?? 0.2));
         scroller.updatePosition(scroller.from + range, scroller.to + range);
         (0,external_highcharts_src_js_default_namespaceObject.fireEvent)(scroller, 'changed', {
             from: scroller.from,
@@ -6608,7 +6595,7 @@ class Scrollbar {
     buttonToMinClick(e) {
         const scroller = this;
         const range = (0,external_highcharts_src_js_default_namespaceObject.correctFloat)(scroller.to - scroller.from) *
-            (0,external_highcharts_src_js_default_namespaceObject.pick)(scroller.options.step, 0.2);
+            (scroller.options.step ?? 0.2);
         scroller.updatePosition((0,external_highcharts_src_js_default_namespaceObject.correctFloat)(scroller.from - range), (0,external_highcharts_src_js_default_namespaceObject.correctFloat)(scroller.to - range));
         (0,external_highcharts_src_js_default_namespaceObject.fireEvent)(scroller, 'changed', {
             from: scroller.from,
@@ -6740,10 +6727,11 @@ class Scrollbar {
         scroller.renderer = renderer;
         scroller.userOptions = options;
         scroller.options = (0,external_highcharts_src_js_default_namespaceObject.merge)(Scrollbar_ScrollbarDefaults, Scrollbar_defaultOptions.scrollbar, options);
-        scroller.options.margin = (0,external_highcharts_src_js_default_namespaceObject.pick)(scroller.options.margin, 10);
+        scroller.options.margin = (scroller.options.margin ?? 10);
         scroller.chart = chart;
         // Backward compatibility
-        scroller.size = (0,external_highcharts_src_js_default_namespaceObject.pick)(scroller.options.size, scroller.options.height);
+        scroller.size = scroller.options.size ??
+            scroller.options.height;
         // Init
         if (options.enabled) {
             scroller.render();
@@ -7033,9 +7021,9 @@ class Scrollbar {
      * @function Highcharts.Scrollbar#shouldUpdateExtremes
      */
     shouldUpdateExtremes(eventType) {
-        return ((0,external_highcharts_src_js_default_namespaceObject.pick)(this.options.liveRedraw, (external_highcharts_src_js_default_default()).svg &&
+        return ((this.options.liveRedraw ?? ((external_highcharts_src_js_default_default()).svg &&
             !(external_highcharts_src_js_default_default()).isTouchDevice &&
-            !this.chart.boosted) ||
+            !this.chart.boosted)) ||
             // Mouseup always should change extremes
             eventType === 'mouseup' ||
             eventType === 'touchend' ||
@@ -7054,7 +7042,7 @@ class Scrollbar {
             // On the bottom or the right side of the track:
             scroller.updatePosition(scroller.from - range, scroller.to - range);
         }
-        (0,external_highcharts_src_js_default_namespaceObject.fireEvent)(scroller, 'changed', {
+        ;(0,external_highcharts_src_js_default_namespaceObject.fireEvent)(scroller, 'changed', {
             from: scroller.from,
             to: scroller.to,
             trigger: 'scrollbar',
@@ -7555,18 +7543,18 @@ class Navigator {
             // it. For example hidden series, but visible navigator (#6022).
             if (rendered) {
                 pxMin = 0;
-                pxMax = (0,external_highcharts_src_js_default_namespaceObject.pick)(xAxis.width, scrollbarXAxis.width);
+                pxMax = (xAxis.width ?? scrollbarXAxis.width);
             }
             else {
                 return;
             }
         }
-        navigator.left = (0,external_highcharts_src_js_default_namespaceObject.pick)(xAxis.left, 
-        // In case of scrollbar only, without navigator
-        chart.plotLeft + scrollButtonSize +
+        navigator.left = (xAxis.left ?? chart.plotLeft + scrollButtonSize +
             (inverted ? chart.plotWidth : 0));
-        let zoomedMax = navigator.size = navigatorSize = (0,external_highcharts_src_js_default_namespaceObject.pick)(xAxis.len, (inverted ? chart.plotHeight : chart.plotWidth) -
-            2 * scrollButtonSize);
+        let zoomedMax = navigator.size = navigatorSize =
+            xAxis.len ??
+                (inverted ? chart.plotHeight : chart.plotWidth) -
+                    2 * scrollButtonSize;
         if (inverted) {
             navigatorWidth = scrollbarHeight;
         }
@@ -7574,8 +7562,8 @@ class Navigator {
             navigatorWidth = navigatorSize + 2 * scrollButtonSize;
         }
         // Get the pixel position of the handles
-        pxMin = (0,external_highcharts_src_js_default_namespaceObject.pick)(pxMin, xAxis.toPixels(min, true));
-        pxMax = (0,external_highcharts_src_js_default_namespaceObject.pick)(pxMax, xAxis.toPixels(max, true));
+        pxMin = (pxMin ?? xAxis.toPixels(min, true));
+        pxMax = (pxMax ?? xAxis.toPixels(max, true));
         // Verify (#1851, #2238)
         if (!(0,external_highcharts_src_js_default_namespaceObject.isNumber)(pxMin) || Math.abs(pxMin) === Infinity) {
             pxMin = 0;
@@ -7854,11 +7842,10 @@ class Navigator {
                 navigator.render(0, 0, chartX - dragOffset, chartX - dragOffset + range);
             }
             if (navigator.hasDragged &&
-                (0,external_highcharts_src_js_default_namespaceObject.pick)(navigator.scrollbarOptions?.liveRedraw, 
+                (navigator.scrollbarOptions?.liveRedraw ?? (
                 // By default, don't run live redraw on touch
                 // devices or if the chart is in boost.
-                !Navigator_isTouchDevice &&
-                    !this.chart.boosted)) {
+                !Navigator_isTouchDevice && !this.chart.boosted))) {
                 e.DOMType = e.type;
                 setTimeout(function () {
                     navigator.onMouseUp(e);
@@ -8047,8 +8034,10 @@ class Navigator {
                 offset: 0,
                 index: yAxisIndex,
                 isInternal: true,
-                reversed: (0,external_highcharts_src_js_default_namespaceObject.pick)((navigatorOptions.yAxis &&
-                    navigatorOptions.yAxis.reversed), (chart.yAxis[0] && chart.yAxis[0].reversed), false), // #14060
+                reversed: ((navigatorOptions.yAxis &&
+                    navigatorOptions.yAxis.reversed) ??
+                    (chart.yAxis[0] && chart.yAxis[0].reversed) ??
+                    false), // #14060
                 zoomEnabled: false
             }, chart.inverted ? {
                 width: height
@@ -8134,7 +8123,9 @@ class Navigator {
      */
     setOpposite() {
         const navigatorOptions = this.navigatorOptions, navigatorEnabled = this.navigatorEnabled, chart = this.chart;
-        this.opposite = (0,external_highcharts_src_js_default_namespaceObject.pick)(navigatorOptions.opposite, Boolean(!navigatorEnabled && chart.inverted)); // #6262
+        this.opposite =
+            navigatorOptions.opposite ??
+                Boolean(!navigatorEnabled && chart.inverted); // #6262
     }
     /**
      * Get the union data extremes of the chart - the outer data extremes of the
@@ -8148,9 +8139,8 @@ class Navigator {
         let ret;
         if (!returnFalseOnNoBaseSeries || baseAxis.dataMin !== null) {
             ret = {
-                dataMin: (0,external_highcharts_src_js_default_namespaceObject.pick)(// #4053
-                time.parse(navAxisOptions?.min), numExt('min', time.parse(baseAxisOptions.min), baseAxis.dataMin, navAxis.dataMin, navAxis.min)),
-                dataMax: (0,external_highcharts_src_js_default_namespaceObject.pick)(time.parse(navAxisOptions?.max), numExt('max', time.parse(baseAxisOptions.max), baseAxis.dataMax, navAxis.dataMax, navAxis.max))
+                dataMin: (time.parse(navAxisOptions?.min) ?? numExt('min', time.parse(baseAxisOptions.min), baseAxis.dataMin, navAxis.dataMin, navAxis.min)),
+                dataMax: (time.parse(navAxisOptions?.max) ?? numExt('max', time.parse(baseAxisOptions.max), baseAxis.dataMax, navAxis.dataMax, navAxis.max))
             };
         }
         return ret;
@@ -8265,11 +8255,9 @@ class Navigator {
                 userNavOptions.dataLabels = (0,external_highcharts_src_js_default_namespaceObject.splat)(userNavOptions.dataLabels);
                 mergedNavSeriesOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(baseOptions, navSeriesMixin, userNavOptions, baseNavigatorOptions);
                 // Once nav series type is resolved, pick correct pointRange
-                mergedNavSeriesOptions.pointRange = (0,external_highcharts_src_js_default_namespaceObject.pick)(
-                // Strictly set pointRange in options
-                userNavOptions.pointRange, baseNavigatorOptions.pointRange, 
-                // Fallback to default values, e.g. `null` for column
-                Navigator_defaultOptions.plotOptions[mergedNavSeriesOptions.type || 'line']?.pointRange);
+                mergedNavSeriesOptions.pointRange = (userNavOptions.pointRange ??
+                    baseNavigatorOptions.pointRange ??
+                    Navigator_defaultOptions.plotOptions[mergedNavSeriesOptions.type || 'line']?.pointRange);
                 // Merge data separately. Do a slice to avoid mutating the
                 // navigator options from base series (#4923).
                 const navigatorSeriesData = baseNavigatorOptions.data || userNavOptions.data, navigatorSeriesDataTable = baseNavigatorOptions.dataTable ||
@@ -8429,7 +8417,7 @@ class Navigator {
      * @function Highcharts.Navigator#modifyBaseAxisExtremes
      */
     modifyBaseAxisExtremes() {
-        const baseXAxis = this, navigator = baseXAxis.chart.navigator, baseExtremes = baseXAxis.getExtremes(), baseMin = baseExtremes.min, baseMax = baseExtremes.max, baseDataMin = baseExtremes.dataMin, baseDataMax = baseExtremes.dataMax, range = baseMax - baseMin, stickToMin = navigator?.stickToMin, stickToMax = navigator?.stickToMax, overscroll = (0,external_highcharts_src_js_default_namespaceObject.pick)(baseXAxis.ordinal?.convertOverscroll(baseXAxis.options.overscroll), 0), navigatorSeries = navigator.series && navigator.series[0], hasSetExtremes = !!baseXAxis.setExtremes, 
+        const baseXAxis = this, navigator = baseXAxis.chart.navigator, baseExtremes = baseXAxis.getExtremes(), baseMin = baseExtremes.min, baseMax = baseExtremes.max, baseDataMin = baseExtremes.dataMin, baseDataMax = baseExtremes.dataMax, range = baseMax - baseMin, stickToMin = navigator?.stickToMin, stickToMax = navigator?.stickToMax, overscroll = (baseXAxis.ordinal?.convertOverscroll(baseXAxis.options.overscroll) ?? 0), navigatorSeries = navigator.series && navigator.series[0], hasSetExtremes = !!baseXAxis.setExtremes, 
         // When the extremes have been set by range selector button, don't
         // stick to min or max. The range selector buttons will handle the
         // extremes. (#5489)
@@ -8481,8 +8469,8 @@ class Navigator {
             Math.round(navigator.zoomedMax) >= Math.round(navigator.size);
         // If the scrollbar is scrolled all the way to the right, keep right as
         // new data comes in, unless user set navigator.stickToMax to false.
-        navigator.stickToMax = (0,external_highcharts_src_js_default_namespaceObject.pick)(this.chart.options.navigator &&
-            this.chart.options.navigator.stickToMax, shouldStickToMax);
+        navigator.stickToMax = (this.chart.options.navigator &&
+            this.chart.options.navigator.stickToMax) ?? shouldStickToMax;
         navigator.stickToMin = navigator.shouldStickToMin(baseSeries, navigator);
         // Set the navigator series data to the new data of the base series
         if (navigatorSeries && !navigator.hasNavigatorData) {
@@ -8573,11 +8561,7 @@ class Navigator {
             (0,external_highcharts_src_js_default_namespaceObject.erase)(this.chart.axes, this.yAxis);
         }
         // Destroy series
-        (this.series || []).forEach((s) => {
-            if (s.destroy) {
-                s.destroy();
-            }
-        });
+        ;(0,external_highcharts_src_js_default_namespaceObject.destroyObjectProperties)(this.series || []);
         // Destroy properties
         [
             'series', 'xAxis', 'yAxis', 'shades', 'outline', 'scrollbarTrack',
@@ -8643,14 +8627,16 @@ const { getAxisRangeDescription: NavigatorComponent_getAxisRangeDescription, fir
 /**
  * The NavigatorComponent class
  *
- * @private
  * @class
  * @name Highcharts.NavigatorComponent
+ *
+ * @internal
  */
 class NavigatorComponent extends Accessibility_AccessibilityComponent {
     /**
      * Init the component
-     * @private
+     *
+     * @internal
      */
     init() {
         const chart = this.chart, component = this;
@@ -8663,13 +8649,14 @@ class NavigatorComponent extends Accessibility_AccessibilityComponent {
                     component.proxyProvider
                         .updateGroupProxyElementPositions('navigator');
                     component.updateHandleValues();
-                }, (0,external_highcharts_src_js_default_namespaceObject.animObject)((0,external_highcharts_src_js_default_namespaceObject.pick)(this.chart.renderer.globalAnimation, true)).duration);
+                }, (0,external_highcharts_src_js_default_namespaceObject.animObject)((this.chart.renderer.globalAnimation ?? true)).duration);
             }
         });
     }
     /**
      * Called on updates
-     * @private
+     *
+     * @internal
      */
     onChartUpdate() {
         const chart = this.chart, options = chart.options, navigator = options.navigator;
@@ -8709,8 +8696,9 @@ class NavigatorComponent extends Accessibility_AccessibilityComponent {
     }
     /**
      * Get navigation for a navigator handle.
-     * @private
      * @return {Highcharts.KeyboardNavigationHandler} The module object.
+     *
+     * @internal
      */
     getNavigatorHandleNavigation(handleIx) {
         const component = this, chart = this.chart, proxyEl = handleIx ? this.maxHandleProxy : this.minHandleProxy, keys = this.keyCodes;
@@ -8764,7 +8752,8 @@ class NavigatorComponent extends Accessibility_AccessibilityComponent {
     }
     /**
      * Update the value of the handles to match current navigator pos.
-     * @private
+     *
+     * @internal
      */
     updateHandleValues() {
         const navigator = this.chart.navigator;
@@ -8778,7 +8767,8 @@ class NavigatorComponent extends Accessibility_AccessibilityComponent {
     }
     /**
      * Get a navigator handle by its index
-     * @private
+     *
+     * @internal
      */
     getHandleByIx(ix) {
         const navigator = this.chart.navigator;
@@ -8787,7 +8777,8 @@ class NavigatorComponent extends Accessibility_AccessibilityComponent {
     }
     /**
      * Update navigator to match changed proxy values.
-     * @private
+     *
+     * @internal
      */
     updateNavigator(beforeAnnounce) {
         const performUpdate = (beforeAnnounce) => {
@@ -8842,6 +8833,7 @@ class NavigatorComponent extends Accessibility_AccessibilityComponent {
  *  Export Default
  *
  * */
+/** @internal */
 /* harmony default export */ const Components_NavigatorComponent = (NavigatorComponent);
 
 ;// ./code/es-modules/Accessibility/Components/SeriesComponent/SeriesDescriber.js
@@ -8866,6 +8858,8 @@ const { getAxisDescription: SeriesDescriber_getAxisDescription, getSeriesFirstPo
 
 const { format: SeriesDescriber_format, numberFormat } = (external_highcharts_src_js_default_Templating_default());
 
+const { composed: SeriesDescriber_composed } = (external_highcharts_src_js_default_default());
+
 const { reverseChildNodes: SeriesDescriber_reverseChildNodes, stripHTMLTagsFromString: SeriesDescriber_stripHTMLTags } = Utils_HTMLUtilities;
 
 /* *
@@ -8873,9 +8867,27 @@ const { reverseChildNodes: SeriesDescriber_reverseChildNodes, stripHTMLTagsFromS
  *  Functions
  *
  * */
+/** @internal */
+function SeriesDescriber_compose(PointClass) {
+    if ((0,external_highcharts_src_js_default_namespaceObject.pushUnique)(SeriesDescriber_composed, 'A11y.SD')) {
+        (0,external_highcharts_src_js_default_namespaceObject.wrap)(PointClass.prototype, 'applyOptions', pointApplyOptions);
+    }
+}
 /**
- * @private
+ * Discard the mock graphic once the point is no longer null, so that the
+ * series can draw a real marker for it, #25299.
+ *
+ * @internal
  */
+function pointApplyOptions(proceed, ...args) {
+    const point = proceed.apply(this, args);
+    if (point.hasMockGraphic && !point.isNull) {
+        point.graphic = point.graphic?.destroy();
+        delete point.hasMockGraphic;
+    }
+    return point;
+}
+/** @internal */
 function findFirstPointWithGraphic(point) {
     const sourcePointIndex = point.index;
     if (!point.series || !point.series.data || !(0,external_highcharts_src_js_default_namespaceObject.defined)(sourcePointIndex)) {
@@ -8893,7 +8905,8 @@ function findFirstPointWithGraphic(point) {
 /**
  * Whether or not we should add a mock point element in
  * order to describe a point that has no graphic.
- * @private
+ *
+ * @internal
  */
 function shouldAddMockPoint(point) {
     // Note: Sunburst series use isNull for hidden points on drilldown.
@@ -8903,9 +8916,7 @@ function shouldAddMockPoint(point) {
             .options.accessibility.point.describeNull;
     return isNull && !isSunburst && shouldDescribeNull;
 }
-/**
- * @private
- */
+/** @internal */
 function makeMockElement(point, pos) {
     const renderer = point.series.chart.renderer, mock = renderer.rect(pos.x, pos.y, 1, 1);
     mock.attr({
@@ -8917,18 +8928,16 @@ function makeMockElement(point, pos) {
     });
     return mock;
 }
-/**
- * @private
- */
+/** @internal */
 function addMockPointElement(point) {
     const series = point.series, firstPointWithGraphic = findFirstPointWithGraphic(point), firstGraphic = firstPointWithGraphic && firstPointWithGraphic.graphic, parentGroup = firstGraphic ?
         firstGraphic.parentGroup :
         series.graph || series.group, mockPos = firstPointWithGraphic ? {
-        x: (0,external_highcharts_src_js_default_namespaceObject.pick)(point.plotX, firstPointWithGraphic.plotX, 0),
-        y: (0,external_highcharts_src_js_default_namespaceObject.pick)(point.plotY, firstPointWithGraphic.plotY, 0)
+        x: (point.plotX ?? firstPointWithGraphic.plotX ?? 0),
+        y: (point.plotY ?? firstPointWithGraphic.plotY ?? 0)
     } : {
-        x: (0,external_highcharts_src_js_default_namespaceObject.pick)(point.plotX, 0),
-        y: (0,external_highcharts_src_js_default_namespaceObject.pick)(point.plotY, 0)
+        x: (point.plotX ?? 0),
+        y: (point.plotY ?? 0)
     }, mockElement = makeMockElement(point, mockPos);
     if (parentGroup && parentGroup.element) {
         point.graphic = mockElement;
@@ -8939,43 +8948,33 @@ function addMockPointElement(point) {
         return mockElement.element;
     }
 }
-/**
- * @private
- */
+/** @internal */
 function hasMorePointsThanDescriptionThreshold(series) {
     const chartA11yOptions = series.chart.options.accessibility, threshold = (chartA11yOptions.series.pointDescriptionEnabledThreshold);
     return !!(threshold !== false &&
         series.points &&
         series.points.length >= +threshold);
 }
-/**
- * @private
- */
+/** @internal */
 function shouldSetScreenReaderPropsOnPoints(series) {
     const seriesA11yOptions = series.options.accessibility || {};
     return !hasMorePointsThanDescriptionThreshold(series) &&
         !seriesA11yOptions.exposeAsGroupOnly;
 }
-/**
- * @private
- */
+/** @internal */
 function shouldSetKeyboardNavPropsOnPoints(series) {
     const chartA11yOptions = series.chart.options.accessibility, seriesNavOptions = chartA11yOptions.keyboardNavigation.seriesNavigation;
     return !!(series.points && (series.points.length <
         +seriesNavOptions.pointNavigationEnabledThreshold ||
         seriesNavOptions.pointNavigationEnabledThreshold === false));
 }
-/**
- * @private
- */
+/** @internal */
 function shouldDescribeSeriesElement(series) {
     const chart = series.chart, chartOptions = chart.options.chart, chartHas3d = chartOptions.options3d && chartOptions.options3d.enabled, hasMultipleSeries = chart.series.length > 1, describeSingleSeriesOption = chart.options.accessibility.series.describeSingleSeries, exposeAsGroupOnlyOption = (series.options.accessibility || {}).exposeAsGroupOnly, noDescribe3D = chartHas3d && hasMultipleSeries;
     return !noDescribe3D && (hasMultipleSeries || describeSingleSeriesOption ||
         exposeAsGroupOnlyOption || hasMorePointsThanDescriptionThreshold(series));
 }
-/**
- * @private
- */
+/** @internal */
 function pointNumberToString(point, value) {
     const series = point.series, chart = series.chart, a11yPointOptions = chart.options.accessibility.point || {}, seriesA11yPointOptions = series.options.accessibility &&
         series.options.accessibility.point || {}, tooltipOptions = series.tooltipOptions || {}, lang = chart.options.lang;
@@ -8987,9 +8986,7 @@ function pointNumberToString(point, value) {
     }
     return value;
 }
-/**
- * @private
- */
+/** @internal */
 function getSeriesDescriptionText(series) {
     const seriesA11yOptions = series.options.accessibility || {}, descOpt = seriesA11yOptions.description;
     return descOpt && series.chart.langFormat('accessibility.series.description', {
@@ -8997,9 +8994,7 @@ function getSeriesDescriptionText(series) {
         series: series
     }) || '';
 }
-/**
- * @private
- */
+/** @internal */
 function getSeriesAxisDescriptionText(series, axisCollection) {
     const axis = series[axisCollection];
     return series.chart.langFormat('accessibility.series.' + axisCollection + 'Description', {
@@ -9010,7 +9005,7 @@ function getSeriesAxisDescriptionText(series, axisCollection) {
 /**
  * Get accessible time description for a point on a datetime axis.
  *
- * @private
+ * @internal
  */
 function getPointA11yTimeDescription(point) {
     const series = point.series, chart = series.chart, seriesA11yOptions = series.options.accessibility &&
@@ -9025,9 +9020,7 @@ function getPointA11yTimeDescription(point) {
         return chart.time.dateFormat(dateFormat, point.x || 0, void 0);
     }
 }
-/**
- * @private
- */
+/** @internal */
 function getPointXDescription(point) {
     const timeDesc = getPointA11yTimeDescription(point), xAxis = point.series.xAxis || {}, pointCategory = xAxis.categories && (0,external_highcharts_src_js_default_namespaceObject.defined)(point.category) &&
         ('' + point.category).replace('<br/>', ' '), canUseId = (0,external_highcharts_src_js_default_namespaceObject.defined)(point.id) &&
@@ -9035,12 +9028,10 @@ function getPointXDescription(point) {
     return point.name || timeDesc || pointCategory ||
         (canUseId ? point.id : fallback);
 }
-/**
- * @private
- */
+/** @internal */
 function getPointArrayMapValueDescription(point, prefix, suffix) {
     const pre = prefix || '', suf = suffix || '', keyToValStr = function (key) {
-        const num = pointNumberToString(point, (0,external_highcharts_src_js_default_namespaceObject.pick)(point[key], point.options[key]));
+        const num = pointNumberToString(point, (point[key] ?? point.options[key]));
         return num !== void 0 ?
             key + ': ' + pre + num + suf :
             num;
@@ -9052,9 +9043,7 @@ function getPointArrayMapValueDescription(point, prefix, suffix) {
             desc;
     }, '');
 }
-/**
- * @private
- */
+/** @internal */
 function getPointValue(point) {
     const series = point.series, a11yPointOpts = series.chart.options.accessibility.point || {}, seriesA11yPointOpts = series.chart.options.accessibility &&
         series.chart.options.accessibility.point || {}, tooltipOptions = series.tooltipOptions || {}, valuePrefix = seriesA11yPointOpts.valuePrefix ||
@@ -9080,11 +9069,12 @@ function getPointValue(point) {
  * Return the description for the annotation(s) connected to a point, or
  * empty string if none.
  *
- * @private
  * @param {Highcharts.Point} point
  * The data point to get the annotation info from.
  * @return {string}
  * Annotation description
+ *
+ * @internal
  */
 function getPointAnnotationDescription(point) {
     const chart = point.series.chart;
@@ -9095,14 +9085,16 @@ function getPointAnnotationDescription(point) {
 }
 /**
  * Return string with information about point.
- * @private
+ *
+ * @internal
  */
 function getPointValueDescription(point) {
     const series = point.series, chart = series.chart, seriesA11yOptions = series.options.accessibility, seriesValueDescFormat = seriesA11yOptions && seriesA11yOptions.point &&
         seriesA11yOptions.point.valueDescriptionFormat, pointValueDescriptionFormat = seriesValueDescFormat ||
-        chart.options.accessibility.point.valueDescriptionFormat, showXDescription = (0,external_highcharts_src_js_default_namespaceObject.pick)(series.xAxis &&
+        chart.options.accessibility.point.valueDescriptionFormat, showXDescription = ((series.xAxis &&
         series.xAxis.options.accessibility &&
-        series.xAxis.options.accessibility.enabled, !chart.angular && series.type !== 'flowmap'), xDesc = showXDescription ? getPointXDescription(point) : '', context = {
+        series.xAxis.options.accessibility.enabled) ??
+        (!chart.angular && series.type !== 'flowmap')), xDesc = showXDescription ? getPointXDescription(point) : '', context = {
         point: point,
         index: (0,external_highcharts_src_js_default_namespaceObject.defined)(point.index) ? (point.index + 1) : '',
         xDescription: xDesc,
@@ -9113,7 +9105,8 @@ function getPointValueDescription(point) {
 }
 /**
  * Return string with information about point.
- * @private
+ *
+ * @internal
  */
 function defaultPointDescriptionFormatter(point) {
     const series = point.series, shouldExposeSeriesName = series.chart.series.length > 1 ||
@@ -9125,9 +9118,8 @@ function defaultPointDescriptionFormatter(point) {
 }
 /**
  * Set a11y props on a point element
- * @private
- * @param {Highcharts.Point} point
- * @param {Highcharts.HTMLDOMElement|Highcharts.SVGDOMElement} pointElement
+ *
+ * @internal
  */
 function setPointScreenReaderAttribs(point, pointElement) {
     const series = point.series, seriesPointA11yOptions = series.options.accessibility?.point || {}, a11yPointOptions = series.chart.options.accessibility.point || {}, label = SeriesDescriber_stripHTMLTags(((0,external_highcharts_src_js_default_namespaceObject.isString)(seriesPointA11yOptions.descriptionFormat) &&
@@ -9142,8 +9134,8 @@ function setPointScreenReaderAttribs(point, pointElement) {
 }
 /**
  * Add accessible info to individual point elements of a series
- * @private
- * @param {Highcharts.Series} series
+ *
+ * @internal
  */
 function describePointsInSeries(series) {
     const setScreenReaderProps = shouldSetScreenReaderPropsOnPoints(series), setKeyboardProps = shouldSetKeyboardNavPropsOnPoints(series), shouldDescribeNullPoints = series.chart.options.accessibility
@@ -9178,7 +9170,8 @@ function describePointsInSeries(series) {
 }
 /**
  * Return string with information about series.
- * @private
+ *
+ * @internal
  */
 function defaultSeriesDescriptionFormatter(series) {
     const chart = series.chart, chartTypes = chart.types || [], description = getSeriesDescriptionText(series), shouldDescribeAxis = function (coll) {
@@ -9187,8 +9180,10 @@ function defaultSeriesDescriptionFormatter(series) {
         seriesNumber,
         series,
         chart
-    }, combinationSuffix = chartTypes.length > 1 ? 'Combination' : '', summary = chart.langFormat('accessibility.series.summary.' + series.type + combinationSuffix, summaryContext) || chart.langFormat('accessibility.series.summary.default' + combinationSuffix, summaryContext), axisDescription = (shouldDescribeAxis('yAxis') ? ' ' + yAxisInfo + '.' : '') + (shouldDescribeAxis('xAxis') ? ' ' + xAxisInfo + '.' : ''), formatStr = (0,external_highcharts_src_js_default_namespaceObject.pick)(series.options.accessibility &&
-        series.options.accessibility.descriptionFormat, chart.options.accessibility.series.descriptionFormat, '');
+    }, combinationSuffix = chartTypes.length > 1 ? 'Combination' : '', summary = chart.langFormat('accessibility.series.summary.' + series.type + combinationSuffix, summaryContext) || chart.langFormat('accessibility.series.summary.default' + combinationSuffix, summaryContext), axisDescription = (shouldDescribeAxis('yAxis') ? ' ' + yAxisInfo + '.' : '') + (shouldDescribeAxis('xAxis') ? ' ' + xAxisInfo + '.' : ''), formatStr = ((series.options.accessibility &&
+        series.options.accessibility.descriptionFormat) ??
+        chart.options.accessibility.series.descriptionFormat ??
+        '');
     return SeriesDescriber_format(formatStr, {
         seriesDescription: summary,
         authorDescription: (description ? ' ' + description : ''),
@@ -9200,9 +9195,8 @@ function defaultSeriesDescriptionFormatter(series) {
 }
 /**
  * Set a11y props on a series element
- * @private
- * @param {Highcharts.Series} series
- * @param {Highcharts.HTMLDOMElement|Highcharts.SVGDOMElement} seriesElement
+ *
+ * @internal
  */
 function describeSeriesElement(series, seriesElement) {
     const seriesA11yOptions = series.options.accessibility || {}, a11yOptions = series.chart.options.accessibility, landmarkVerbosity = a11yOptions.landmarkVerbosity;
@@ -9254,11 +9248,14 @@ function describeSeries(series) {
  *  Default Export
  *
  * */
+/** @internal */
 const SeriesDescriber = {
+    compose: SeriesDescriber_compose,
     defaultPointDescriptionFormatter,
     defaultSeriesDescriptionFormatter,
     describeSeries
 };
+/** @internal */
 /* harmony default export */ const SeriesComponent_SeriesDescriber = (SeriesDescriber);
 
 ;// ./code/es-modules/Accessibility/Components/SeriesComponent/NewDataAnnouncer.js
@@ -9290,22 +9287,19 @@ const { defaultPointDescriptionFormatter: NewDataAnnouncer_defaultPointDescripti
  *  Functions
  *
  * */
-/**
- * @private
- */
+/** @internal */
 function chartHasAnnounceEnabled(chart) {
     return !!chart.options.accessibility.announceNewData.enabled;
 }
-/**
- * @private
- */
+/** @internal */
 function findPointInDataArray(point) {
     const candidates = point.series.data.filter((candidate) => (point.x === candidate.x && point.y === candidate.y));
     return candidates.length === 1 ? candidates[0] : point;
 }
 /**
  * Get array of unique series from two arrays
- * @private
+ *
+ * @internal
  */
 function getUniqueSeries(arrayA, arrayB) {
     const uniqueSeries = (arrayA || []).concat(arrayB || []).reduce((acc, cur) => {
@@ -9322,8 +9316,9 @@ function getUniqueSeries(arrayA, arrayB) {
  *
  * */
 /**
- * @private
  * @class
+ *
+ * @internal
  */
 class NewDataAnnouncer {
     /* *
@@ -9345,7 +9340,8 @@ class NewDataAnnouncer {
      * */
     /**
      * Initialize the new data announcer.
-     * @private
+     *
+     * @internal
      */
     init() {
         const chart = this.chart;
@@ -9362,7 +9358,8 @@ class NewDataAnnouncer {
     }
     /**
      * Remove traces of announcer.
-     * @private
+     *
+     * @internal
      */
     destroy() {
         this.eventProvider.removeAddedEvents();
@@ -9370,7 +9367,8 @@ class NewDataAnnouncer {
     }
     /**
      * Add event listeners for the announcer
-     * @private
+     *
+     * @internal
      */
     addEventListeners() {
         const announcer = this, chart = this.chart, e = this.eventProvider;
@@ -9386,8 +9384,8 @@ class NewDataAnnouncer {
     }
     /**
      * On new data series added, update dirty list.
-     * @private
-     * @param {Highcharts.Series} series
+     *
+     * @internal
      */
     onSeriesAdded(series) {
         if (chartHasAnnounceEnabled(this.chart)) {
@@ -9400,7 +9398,8 @@ class NewDataAnnouncer {
     }
     /**
      * Gather what we know and announce the data to user.
-     * @private
+     *
+     * @internal
      */
     announceDirtyData() {
         const chart = this.chart, announcer = this;
@@ -9424,13 +9423,14 @@ class NewDataAnnouncer {
     }
     /**
      * Announce to user that there is new data.
-     * @private
      * @param {Array<Highcharts.Series>} dirtySeries
      *          Array of series with new data.
      * @param {Highcharts.Series} [newSeries]
      *          If a single new series was added, a reference to this series.
      * @param {Highcharts.Point} [newPoint]
      *          If a single point was added, a reference to this point.
+     *
+     * @internal
      */
     queueAnnouncement(dirtySeries, newSeries, newPoint) {
         const chart = this.chart;
@@ -9468,7 +9468,6 @@ class NewDataAnnouncer {
     }
     /**
      * Get announcement message for new data.
-     * @private
      * @param {Array<Highcharts.Series>} dirtySeries
      *          Array of series with new data.
      * @param {Highcharts.Series} [newSeries]
@@ -9478,6 +9477,8 @@ class NewDataAnnouncer {
      *
      * @return {string|null}
      * The announcement message to give to user.
+     *
+     * @internal
      */
     buildAnnouncementMessage(dirtySeries, newSeries, newPoint) {
         const chart = this.chart, annOptions = chart.options.accessibility.announceNewData;
@@ -9510,6 +9511,7 @@ class NewDataAnnouncer {
  *  Class Namespace
  *
  * */
+/** @internal */
 (function (NewDataAnnouncer) {
     /* *
      *
@@ -9521,9 +9523,7 @@ class NewDataAnnouncer {
      *  Static Functions
      *
      * */
-    /**
-     * @private
-     */
+    /** @internal */
     function compose(SeriesClass) {
         if ((0,external_highcharts_src_js_default_namespaceObject.pushUnique)(NewDataAnnouncer_composed, 'A11y.NDA')) {
             (0,external_highcharts_src_js_default_namespaceObject.addEvent)(SeriesClass, 'addPoint', seriesOnAddPoint);
@@ -9533,8 +9533,8 @@ class NewDataAnnouncer {
     NewDataAnnouncer.compose = compose;
     /**
      * On new point added, update dirty list.
-     * @private
-     * @param {Highcharts.Point} point
+     *
+     * @internal
      */
     function seriesOnAddPoint(e) {
         const chart = this.chart, newDataAnnouncer = chart.accessibility?.components
@@ -9550,7 +9550,8 @@ class NewDataAnnouncer {
     }
     /**
      * On new data in the series, make sure we add it to the dirty list.
-     * @private
+     *
+     * @internal
      */
     function seriesOnUpdatedData() {
         const chart = this.chart, newDataAnnouncer = chart.accessibility?.components
@@ -9568,6 +9569,7 @@ class NewDataAnnouncer {
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const SeriesComponent_NewDataAnnouncer = (NewDataAnnouncer);
 
 ;// ./code/es-modules/Accessibility/ProxyElement.js
@@ -9606,8 +9608,9 @@ const { cloneMouseEvent: ProxyElement_cloneMouseEvent, cloneTouchEvent: ProxyEle
  * Represents a proxy element that overlays a target and relays events
  * to its target.
  *
- * @private
  * @class
+ *
+ * @internal
  */
 class ProxyElement {
     /* *
@@ -9734,7 +9737,7 @@ class ProxyElement {
      * Set visually hidden style on a proxy element
      */
     hideElementVisually(el) {
-        (0,external_highcharts_src_js_default_namespaceObject.css)(el, {
+        ;(0,external_highcharts_src_js_default_namespaceObject.css)(el, {
             borderWidth: 0,
             backgroundColor: 'transparent',
             cursor: 'pointer',
@@ -9793,6 +9796,7 @@ class ProxyElement {
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const Accessibility_ProxyElement = (ProxyElement);
 
 ;// ./code/es-modules/Accessibility/ProxyProvider.js
@@ -9831,8 +9835,9 @@ const { removeChildNodes: ProxyProvider_removeChildNodes } = Utils_HTMLUtilities
 /**
  * Keeps track of all proxy elements and proxy groups.
  *
- * @private
  * @class
+ *
+ * @internal
  */
 class ProxyProvider {
     /* *
@@ -9919,7 +9924,7 @@ class ProxyProvider {
         if (!group) {
             throw new Error('ProxyProvider.updateGroupAttrs: Invalid group key ' + groupKey);
         }
-        (0,external_highcharts_src_js_default_namespaceObject.attr)(group.groupElement, attributes);
+        ;(0,external_highcharts_src_js_default_namespaceObject.attr)(group.groupElement, attributes);
     }
     /**
      * Reorder the proxy groups.
@@ -10111,6 +10116,7 @@ class ProxyProvider {
  *  Export Default
  *
  * */
+/** @internal */
 /* harmony default export */ const Accessibility_ProxyProvider = (ProxyProvider);
 
 ;// ./code/es-modules/Accessibility/Components/RangeSelectorComponent.js
@@ -10141,7 +10147,8 @@ const { unhideChartElementFromAT: RangeSelectorComponent_unhideChartElementFromA
  * */
 /**
  * Do we want date input navigation
- * @private
+ *
+ * @internal
  */
 function shouldRunInputNavigation(chart) {
     return Boolean(chart.rangeSelector &&
@@ -10159,9 +10166,10 @@ function shouldRunInputNavigation(chart) {
 /**
  * The RangeSelectorComponent class
  *
- * @private
  * @class
  * @name Highcharts.RangeSelectorComponent
+ *
+ * @internal
  */
 class RangeSelectorComponent extends Accessibility_AccessibilityComponent {
     /* *
@@ -10171,7 +10179,8 @@ class RangeSelectorComponent extends Accessibility_AccessibilityComponent {
      * */
     /**
      * Init the component
-     * @private
+     *
+     * @internal
      */
     init() {
         const chart = this.chart;
@@ -10207,7 +10216,8 @@ class RangeSelectorComponent extends Accessibility_AccessibilityComponent {
     }
     /**
      * Hide buttons from AT when showing dropdown, and vice versa.
-     * @private
+     *
+     * @internal
      */
     updateSelectorVisibility() {
         const chart = this.chart;
@@ -10233,7 +10243,8 @@ class RangeSelectorComponent extends Accessibility_AccessibilityComponent {
     }
     /**
      * Set accessibility related attributes on dropdown element.
-     * @private
+     *
+     * @internal
      */
     setDropdownAttrs() {
         const chart = this.chart;
@@ -10247,17 +10258,19 @@ class RangeSelectorComponent extends Accessibility_AccessibilityComponent {
     }
     /**
      * Set attrs for a range button
-     * @private
+     *
+     * @internal
      */
     setRangeButtonAttrs(button) {
-        (0,external_highcharts_src_js_default_namespaceObject.attr)(button.element, {
+        ;(0,external_highcharts_src_js_default_namespaceObject.attr)(button.element, {
             tabindex: -1,
             role: 'button'
         });
     }
     /**
      * Set attrs for a date input
-     * @private
+     *
+     * @internal
      */
     setRangeInputAttrs(input, langKey) {
         const chart = this.chart;
@@ -10268,7 +10281,8 @@ class RangeSelectorComponent extends Accessibility_AccessibilityComponent {
     }
     /**
      * Handle arrow key nav
-     * @private
+     *
+     * @internal
      */
     onButtonNavKbdArrowKey(keyboardNavigationHandler, keyCode) {
         const response = keyboardNavigationHandler.response, keys = this.keyCodes, chart = this.chart, wrapAround = chart.options.accessibility
@@ -10284,7 +10298,8 @@ class RangeSelectorComponent extends Accessibility_AccessibilityComponent {
     }
     /**
      * Handle keyboard click
-     * @private
+     *
+     * @internal
      */
     onButtonNavKbdClick(keyboardNavigationHandler) {
         const response = keyboardNavigationHandler.response, chart = this.chart, wasDisabled = chart.oldRangeSelectorItemState === 3;
@@ -10296,7 +10311,8 @@ class RangeSelectorComponent extends Accessibility_AccessibilityComponent {
     /**
      * Called whenever a range selector button has been clicked, either by
      * mouse, touch, or kbd/voice/other.
-     * @private
+     *
+     * @internal
      */
     onAfterBtnClick() {
         const chart = this.chart;
@@ -10308,7 +10324,8 @@ class RangeSelectorComponent extends Accessibility_AccessibilityComponent {
     }
     /**
      * Handle move between input elements with Tab key
-     * @private
+     *
+     * @internal
      */
     onInputKbdMove(direction) {
         const chart = this.chart;
@@ -10335,7 +10352,8 @@ class RangeSelectorComponent extends Accessibility_AccessibilityComponent {
     }
     /**
      * Init date input navigation
-     * @private
+     *
+     * @internal
      */
     onInputNavInit(direction) {
         const component = this;
@@ -10373,7 +10391,8 @@ class RangeSelectorComponent extends Accessibility_AccessibilityComponent {
     }
     /**
      * Terminate date input nav
-     * @private
+     *
+     * @internal
      */
     onInputNavTerminate() {
         const rangeSel = (this.chart.rangeSelector || {});
@@ -10390,7 +10409,8 @@ class RangeSelectorComponent extends Accessibility_AccessibilityComponent {
     }
     /**
      * Init range selector dropdown nav
-     * @private
+     *
+     * @internal
      */
     initDropdownNav() {
         const chart = this.chart;
@@ -10417,8 +10437,9 @@ class RangeSelectorComponent extends Accessibility_AccessibilityComponent {
     }
     /**
      * Get navigation for the range selector buttons.
-     * @private
      * @return {Highcharts.KeyboardNavigationHandler} The module object.
+     *
+     * @internal
      */
     getRangeSelectorButtonNavigation() {
         const chart = this.chart;
@@ -10464,9 +10485,10 @@ class RangeSelectorComponent extends Accessibility_AccessibilityComponent {
     }
     /**
      * Get navigation for the range selector input boxes.
-     * @private
      * @return {Highcharts.KeyboardNavigationHandler}
      *         The module object.
+     *
+     * @internal
      */
     getRangeSelectorInputNavigation() {
         const chart = this.chart;
@@ -10515,6 +10537,7 @@ class RangeSelectorComponent extends Accessibility_AccessibilityComponent {
  *  Class Namespace
  *
  * */
+/** @internal */
 (function (RangeSelectorComponent) {
     /* *
      *
@@ -10529,8 +10552,9 @@ class RangeSelectorComponent extends Accessibility_AccessibilityComponent {
     /**
      * Highlight range selector button by index.
      *
-     * @private
      * @function Highcharts.Chart#highlightRangeSelectorButton
+     *
+     * @internal
      */
     function chartHighlightRangeSelectorButton(ix) {
         const buttons = (this.rangeSelector &&
@@ -10559,7 +10583,8 @@ class RangeSelectorComponent extends Accessibility_AccessibilityComponent {
     }
     /**
      * Build compositions
-     * @private
+     *
+     * @internal
      */
     function compose(ChartClass, RangeSelectorClass) {
         const chartProto = ChartClass.prototype;
@@ -10572,7 +10597,8 @@ class RangeSelectorComponent extends Accessibility_AccessibilityComponent {
     /**
      * Range selector does not have destroy-setup for class instance events - so
      * we set it on the class and call the component from here.
-     * @private
+     *
+     * @internal
      */
     function rangeSelectorAfterBtnClick() {
         const a11y = this.chart.accessibility;
@@ -10586,6 +10612,7 @@ class RangeSelectorComponent extends Accessibility_AccessibilityComponent {
  *  Export Default
  *
  * */
+/** @internal */
 /* harmony default export */ const Components_RangeSelectorComponent = (RangeSelectorComponent);
 
 ;// ./code/es-modules/Accessibility/Components/SeriesComponent/ForcedMarkers.js
@@ -10611,6 +10638,7 @@ const { composed: ForcedMarkers_composed } = (external_highcharts_src_js_default
  *  Composition
  *
  * */
+/** @internal */
 var ForcedMarkersComposition;
 (function (ForcedMarkersComposition) {
     /* *
@@ -10623,9 +10651,7 @@ var ForcedMarkersComposition;
      *  Functions
      *
      * */
-    /**
-     * @private
-     */
+    /** @internal */
     function compose(SeriesClass) {
         if ((0,external_highcharts_src_js_default_namespaceObject.pushUnique)(ForcedMarkers_composed, 'A11y.FM')) {
             (0,external_highcharts_src_js_default_namespaceObject.addEvent)(SeriesClass, 'afterSetOptions', seriesOnAfterSetOptions);
@@ -10635,9 +10661,7 @@ var ForcedMarkersComposition;
         }
     }
     ForcedMarkersComposition.compose = compose;
-    /**
-     * @private
-     */
+    /** @internal */
     function forceZeroOpacityMarkerOptions(options) {
         (0,external_highcharts_src_js_default_namespaceObject.merge)(true, options, {
             marker: {
@@ -10651,16 +10675,31 @@ var ForcedMarkersComposition;
         });
     }
     /**
-     * @private
+     * The normal state opacity of lowMarker on Arearange-like series is
+     * handled if zero opacity was forced on the main marker(#25279).
+     * @internal
      */
+    function restoreLowMarkerOpacity(series) {
+        const lowMarker = series.options.lowMarker;
+        if (lowMarker && lowMarker?.enabled === true &&
+            typeof lowMarker.states?.normal?.opacity !== 'number') {
+            (0,external_highcharts_src_js_default_namespaceObject.merge)(true, lowMarker, {
+                states: {
+                    normal: {
+                        opacity: series.resetA11yMarkerOptions?.states
+                            ?.normal?.opacity
+                    }
+                }
+            });
+        }
+    }
+    /** @internal */
     function getPointMarkerOpacity(pointOptions) {
         return pointOptions.marker.states &&
             pointOptions.marker.states.normal &&
             pointOptions.marker.states.normal.opacity;
     }
-    /**
-     * @private
-     */
+    /** @internal */
     function handleForcePointMarkers(series) {
         let i = series.points.length;
         while (i--) {
@@ -10682,17 +10721,13 @@ var ForcedMarkersComposition;
             }
         }
     }
-    /**
-     * @private
-     */
+    /** @internal */
     function hasIndividualPointMarkerOptions(series) {
         return !!(series._hasPointMarkers &&
             series.points &&
             series.points.length);
     }
-    /**
-     * @private
-     */
+    /** @internal */
     function isWithinDescriptionThreshold(series) {
         const a11yOptions = series.chart.options.accessibility;
         return series.points.length <
@@ -10702,7 +10737,8 @@ var ForcedMarkersComposition;
     }
     /**
      * Process marker graphics after render
-     * @private
+     *
+     * @internal
      */
     function seriesOnAfterRender() {
         const series = this;
@@ -10711,6 +10747,19 @@ var ForcedMarkersComposition;
         if (series.chart.styledMode) {
             if (series.markerGroup) {
                 series.markerGroup[series.a11yMarkersForced ? 'addClass' : 'removeClass']('highcharts-a11y-markers-hidden');
+            }
+            // Unforce lowMarker zero opacity if enabled
+            // in styled mode (#25279).
+            const lowMarker = series.options.lowMarker;
+            if (lowMarker) {
+                const lowMarkerVisible = !!series.a11yMarkersForced &&
+                    lowMarker.enabled === true;
+                series.points.forEach((point) => {
+                    const lowGraphic = point.graphics?.[0];
+                    if (lowGraphic) {
+                        lowGraphic[lowMarkerVisible ? 'addClass' : 'removeClass']('highcharts-a11y-marker-visible');
+                    }
+                });
             }
             // Do we need to handle individual points?
             if (hasIndividualPointMarkerOptions(series)) {
@@ -10728,14 +10777,16 @@ var ForcedMarkersComposition;
     }
     /**
      * Keep track of options to reset markers to if no longer forced.
-     * @private
+     *
+     * @internal
      */
     function seriesOnAfterSetOptions(e) {
         this.resetA11yMarkerOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(e.options.marker || {}, this.userOptions.marker || {});
     }
     /**
      * Keep track of forcing markers.
-     * @private
+     *
+     * @internal
      */
     function seriesOnRender() {
         const series = this, options = series.options;
@@ -10743,6 +10794,7 @@ var ForcedMarkersComposition;
             if (options.marker?.enabled === false) {
                 series.a11yMarkersForced = true;
                 forceZeroOpacityMarkerOptions(series.options);
+                restoreLowMarkerOpacity(series);
             }
             if (hasIndividualPointMarkerOptions(series)) {
                 handleForcePointMarkers(series);
@@ -10765,9 +10817,7 @@ var ForcedMarkersComposition;
             destroyPointMarkerGraphics(series);
         }
     }
-    /**
-     * @private
-     */
+    /** @internal */
     function shouldForceMarkers(series) {
         const chart = series.chart, chartA11yEnabled = chart.options.accessibility.enabled, seriesA11yEnabled = (series.options.accessibility &&
             series.options.accessibility.enabled) !== false;
@@ -10775,11 +10825,9 @@ var ForcedMarkersComposition;
             seriesA11yEnabled &&
             isWithinDescriptionThreshold(series));
     }
-    /**
-     * @private
-     */
+    /** @internal */
     function unforcePointMarkerOptions(pointOptions) {
-        (0,external_highcharts_src_js_default_namespaceObject.merge)(true, pointOptions.marker, {
+        ;(0,external_highcharts_src_js_default_namespaceObject.merge)(true, pointOptions.marker, {
             states: {
                 normal: {
                     opacity: getPointMarkerOpacity(pointOptions) || 1
@@ -10787,9 +10835,7 @@ var ForcedMarkersComposition;
             }
         });
     }
-    /**
-     * @private
-     */
+    /** @internal */
     function destroyPointMarkerGraphics(series) {
         series.points?.forEach((point) => {
             if (point.graphic) {
@@ -10799,7 +10845,8 @@ var ForcedMarkersComposition;
     }
     /**
      * Reset markers to normal
-     * @private
+     *
+     * @internal
      */
     function unforceSeriesMarkerOptions(series) {
         const resetMarkerOptions = series.resetA11yMarkerOptions;
@@ -10829,7 +10876,8 @@ var ForcedMarkersComposition;
     }
     /**
      * Reset markers if series is boosted and had forced markers (#17320).
-     * @private
+     *
+     * @internal
      */
     function seriesOnRenderCanvas() {
         if (this.boosted && this.a11yMarkersForced) {
@@ -10847,6 +10895,7 @@ var ForcedMarkersComposition;
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const ForcedMarkers = (ForcedMarkersComposition);
 
 ;// external ["../highcharts.src.js","default","Point"]
@@ -10890,12 +10939,13 @@ const { getPointFromXY: SeriesKeyboardNavigation_getPointFromXY, getSeriesFromNa
  * Get the index of a point in a series. This is needed when using e.g. data
  * grouping.
  *
- * @private
  * @function getPointIndex
  * @param {Highcharts.AccessibilityPoint} point
  * The point to find index of.
  * @return {number|undefined}
  * The index in the series.points array of the point.
+ *
+ * @internal
  */
 function getPointIndex(point) {
     const index = point.index, points = point.series.points;
@@ -10913,7 +10963,8 @@ function getPointIndex(point) {
 }
 /**
  * Determine if series navigation should be skipped
- * @private
+ *
+ * @internal
  */
 function isSkipSeries(series) {
     const a11yOptions = series.chart.options.accessibility, seriesNavOptions = a11yOptions.keyboardNavigation.seriesNavigation, seriesA11yOptions = series.options.accessibility || {}, seriesKbdNavOptions = seriesA11yOptions.keyboardNavigation;
@@ -10929,7 +10980,8 @@ function isSkipSeries(series) {
 }
 /**
  * Determine if navigation for a point should be skipped
- * @private
+ *
+ * @internal
  */
 function isSkipPoint(point) {
     const series = point.series, nullInteraction = series.options.nullInteraction, pointOptions = point.options, pointA11yOptions = pointOptions.accessibility, a11yOptions = series.chart.options.accessibility, pointA11yDisabled = pointA11yOptions?.enabled === false, 
@@ -10948,7 +11000,8 @@ function isSkipPoint(point) {
 }
 /**
  * Get the first point that is not a skip point in this series.
- * @private
+ *
+ * @internal
  */
 function getFirstValidPointInSeries(series) {
     const points = series.points || [], len = points.length;
@@ -10961,7 +11014,8 @@ function getFirstValidPointInSeries(series) {
 }
 /**
  * Get the first point that is not a skip point in this chart.
- * @private
+ *
+ * @internal
  */
 function getFirstValidPointInChart(chart) {
     const series = chart.series || [], len = series.length;
@@ -10975,9 +11029,7 @@ function getFirstValidPointInChart(chart) {
     }
     return null;
 }
-/**
- * @private
- */
+/** @internal */
 function highlightLastValidPointInChart(chart) {
     const numSeries = chart.series.length;
     let i = numSeries, res = false;
@@ -10996,7 +11048,8 @@ function highlightLastValidPointInChart(chart) {
 /**
  * After drilling down/up, we need to set focus to the first point for
  * screen readers and keyboard nav.
- * @private
+ *
+ * @internal
  */
 function updateChartFocusAfterDrilling(chart) {
     const point = getFirstValidPointInChart(chart);
@@ -11006,7 +11059,8 @@ function updateChartFocusAfterDrilling(chart) {
 }
 /**
  * Highlight the first point in chart that is not a skip point
- * @private
+ *
+ * @internal
  */
 function highlightFirstValidPointInChart(chart) {
     delete chart.highlightedPoint;
@@ -11019,9 +11073,10 @@ function highlightFirstValidPointInChart(chart) {
  *
  * */
 /**
- * @private
  * @class
  * @name Highcharts.SeriesKeyboardNavigation
+ *
+ * @internal
  */
 class SeriesKeyboardNavigation {
     /* *
@@ -11087,7 +11142,8 @@ class SeriesKeyboardNavigation {
     /**
      * After drillup we want to find the point that was drilled down to and
      * highlight it.
-     * @private
+     *
+     * @internal
      */
     onDrillupAll() {
         const last = this.lastDrilledDownPoint, chart = this.chart, series = last && SeriesKeyboardNavigation_getSeriesFromName(chart, last.seriesName);
@@ -11104,9 +11160,7 @@ class SeriesKeyboardNavigation {
             point.highlight(false); // Do not visually highlight
         }
     }
-    /**
-     * @private
-     */
+    /** @internal */
     getKeyboardNavigationHandler() {
         const keyboardNavigation = this, keys = this.keyCodes, chart = this.chart, inverted = chart.inverted;
         return new Accessibility_KeyboardNavigationHandler(chart, {
@@ -11176,11 +11230,10 @@ class SeriesKeyboardNavigation {
         });
     }
     /**
-     * @private
-     * @param {Highcharts.KeyboardNavigationHandler} handler
-     * @param {number} keyCode
      * @return {number}
      * response
+     *
+     * @internal
      */
     onKbdSideways(handler, keyCode) {
         const keys = this.keyCodes, isNext = keyCode === keys.right || keyCode === keys.down;
@@ -11188,10 +11241,11 @@ class SeriesKeyboardNavigation {
     }
     /**
      * When keyboard navigation inits.
-     * @private
      * @param {Highcharts.KeyboardNavigationHandler} handler The handler object
      * @return {number}
      * response
+     *
+     * @internal
      */
     onHandlerInit(handler) {
         const chart = this.chart, kbdNavOptions = chart.options.accessibility.keyboardNavigation;
@@ -11205,11 +11259,10 @@ class SeriesKeyboardNavigation {
         return handler.response.success;
     }
     /**
-     * @private
-     * @param {Highcharts.KeyboardNavigationHandler} handler
-     * @param {number} keyCode
      * @return {number}
      * response
+     *
+     * @internal
      */
     onKbdVertical(handler, keyCode) {
         const chart = this.chart, keys = this.keyCodes, isNext = keyCode === keys.down || keyCode === keys.right, navOptions = chart.options.accessibility.keyboardNavigation
@@ -11226,9 +11279,7 @@ class SeriesKeyboardNavigation {
         chart[highlightMethod](isNext);
         return handler.response.success;
     }
-    /**
-     * @private
-     */
+    /** @internal */
     onHandlerTerminate() {
         const chart = this.chart, kbdNavOptions = chart.options.accessibility.keyboardNavigation;
         if (chart.tooltip) {
@@ -11247,7 +11298,8 @@ class SeriesKeyboardNavigation {
     }
     /**
      * Function that attempts to highlight next/prev point. Handles wrap around.
-     * @private
+     *
+     * @internal
      */
     attemptHighlightAdjacentPoint(handler, directionIsNext) {
         const chart = this.chart, wrapAround = chart.options.accessibility.keyboardNavigation
@@ -11262,9 +11314,7 @@ class SeriesKeyboardNavigation {
         }
         return handler.response.success;
     }
-    /**
-     * @private
-     */
+    /** @internal */
     onSeriesDestroy(series) {
         const chart = this.chart, currentHighlightedPointDestroyed = chart.highlightedPoint &&
             chart.highlightedPoint.series === series;
@@ -11275,9 +11325,7 @@ class SeriesKeyboardNavigation {
             }
         }
     }
-    /**
-     * @private
-     */
+    /** @internal */
     destroy() {
         this.eventProvider.removeAddedEvents();
     }
@@ -11287,6 +11335,7 @@ class SeriesKeyboardNavigation {
  *  Class Namespace
  *
  * */
+/** @internal */
 (function (SeriesKeyboardNavigation) {
     /* *
      *
@@ -11301,7 +11350,6 @@ class SeriesKeyboardNavigation {
     /**
      * Function to highlight next/previous point in chart.
      *
-     * @private
      * @function Highcharts.Chart#highlightAdjacentPoint
      *
      * @param {boolean} next
@@ -11310,6 +11358,8 @@ class SeriesKeyboardNavigation {
      * @return {Highcharts.Point|boolean}
      * Returns highlighted point on success, false on failure (no adjacent point
      * to highlight in chosen direction).
+     *
+     * @internal
      */
     function chartHighlightAdjacentPoint(next) {
         const chart = this, series = chart.series, curPoint = chart.highlightedPoint, curPointIndex = curPoint && getPointIndex(curPoint) || 0, curPoints = curPoint && curPoint.series.points || [], lastSeries = chart.series && chart.series[chart.series.length - 1], lastPoint = lastSeries &&
@@ -11360,7 +11410,8 @@ class SeriesKeyboardNavigation {
     }
     /**
      * Highlight the closest point vertically.
-     * @private
+     *
+     * @internal
      */
     function chartHighlightAdjacentPointVertical(down) {
         const curPoint = this.highlightedPoint;
@@ -11400,7 +11451,8 @@ class SeriesKeyboardNavigation {
     /**
      * Highlight next/previous series in chart. Returns false if no adjacent
      * series in the direction, otherwise returns new highlighted point.
-     * @private
+     *
+     * @internal
      */
     function chartHighlightAdjacentSeries(down) {
         const chart = this, curPoint = chart.highlightedPoint, lastSeries = chart.series && chart.series[chart.series.length - 1], lastPoint = lastSeries && lastSeries.points &&
@@ -11443,9 +11495,7 @@ class SeriesKeyboardNavigation {
         newPoint.highlight();
         return newPoint.series.highlightNextValidPoint();
     }
-    /**
-     * @private
-     */
+    /** @internal */
     function compose(ChartClass, PointClass, SeriesClass) {
         const chartProto = ChartClass.prototype, pointProto = PointClass.prototype, seriesProto = SeriesClass.prototype;
         if (!chartProto.highlightAdjacentPoint) {
@@ -11457,7 +11507,8 @@ class SeriesKeyboardNavigation {
              * Set for which series types it makes sense to move to the closest
              * point with up/down arrows, and which series types should just
              * move to next series.
-             * @private
+             *
+             * @internal
              */
             seriesProto.keyboardMoveVertical = true;
             [
@@ -11476,7 +11527,8 @@ class SeriesKeyboardNavigation {
     /**
      * Get the point in a series that is closest (in pixel distance) to a
      * reference point. Optionally supply weight factors for x and y directions.
-     * @private
+     *
+     * @internal
      */
     function getClosestPoint(point, series, xWeight, yWeight) {
         let minDistance = Infinity, dPoint, minIx, distance, i = series.points.length;
@@ -11505,11 +11557,12 @@ class SeriesKeyboardNavigation {
     /**
      * Highlights a point (show tooltip, display hover state, focus element).
      *
-     * @private
      * @function Highcharts.Point#highlight
      *
      * @return {Highcharts.Point}
      *         This highlighted point.
+     *
+     * @internal
      */
     function pointHighlight(highlightVisually = true) {
         const chart = this.series.chart, tooltipElement = chart.tooltip?.label?.element;
@@ -11552,8 +11605,9 @@ class SeriesKeyboardNavigation {
      * successfully highlighted, otherwise false. If there is a highlighted
      * point in the series, use that as starting point.
      *
-     * @private
      * @function Highcharts.Series#highlightNextValidPoint
+     *
+     * @internal
      */
     function seriesHighlightNextValidPoint() {
         const curPoint = this.chart.highlightedPoint, start = (curPoint && curPoint.series) === this ?
@@ -11579,6 +11633,7 @@ class SeriesKeyboardNavigation {
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const SeriesComponent_SeriesKeyboardNavigation = (SeriesKeyboardNavigation);
 
 ;// ./code/es-modules/Accessibility/Components/SeriesComponent/SeriesComponent.js
@@ -11602,7 +11657,7 @@ const { hideSeriesFromAT: SeriesComponent_hideSeriesFromAT } = Utils_ChartUtilit
 
 
 
-const { describeSeries: SeriesComponent_describeSeries } = SeriesComponent_SeriesDescriber;
+const { compose: composeSeriesDescriber, describeSeries: SeriesComponent_describeSeries } = SeriesComponent_SeriesDescriber;
 
 /* *
  *
@@ -11612,9 +11667,10 @@ const { describeSeries: SeriesComponent_describeSeries } = SeriesComponent_Serie
 /**
  * The SeriesComponent class
  *
- * @private
  * @class
  * @name Highcharts.SeriesComponent
+ *
+ * @internal
  */
 class SeriesComponent extends Accessibility_AccessibilityComponent {
     /* *
@@ -11622,12 +11678,11 @@ class SeriesComponent extends Accessibility_AccessibilityComponent {
      *  Static Functions
      *
      * */
-    /**
-     * @private
-     */
+    /** @internal */
     static compose(ChartClass, PointClass, SeriesClass) {
         SeriesComponent_NewDataAnnouncer.compose(SeriesClass);
         ForcedMarkers.compose(SeriesClass);
+        composeSeriesDescriber(PointClass);
         SeriesComponent_SeriesKeyboardNavigation.compose(ChartClass, PointClass, SeriesClass);
     }
     /* *
@@ -11646,9 +11701,7 @@ class SeriesComponent extends Accessibility_AccessibilityComponent {
         this.hideTooltipFromATWhenShown();
         this.hideSeriesLabelsFromATWhenShown();
     }
-    /**
-     * @private
-     */
+    /** @internal */
     hideTooltipFromATWhenShown() {
         const component = this;
         if (this.chart.tooltip) {
@@ -11661,9 +11714,7 @@ class SeriesComponent extends Accessibility_AccessibilityComponent {
             });
         }
     }
-    /**
-     * @private
-     */
+    /** @internal */
     hideSeriesLabelsFromATWhenShown() {
         this.addEvent(this.chart, 'afterDrawSeriesLabels', function () {
             this.series.forEach(function (series) {
@@ -11693,14 +11744,16 @@ class SeriesComponent extends Accessibility_AccessibilityComponent {
     }
     /**
      * Get keyboard navigation handler for this component.
-     * @private
+     *
+     * @internal
      */
     getKeyboardNavigation() {
         return this.keyboardNavigation.getKeyboardNavigationHandler();
     }
     /**
      * Remove traces
-     * @private
+     *
+     * @internal
      */
     destroy() {
         this.newDataAnnouncer.destroy();
@@ -11712,6 +11765,7 @@ class SeriesComponent extends Accessibility_AccessibilityComponent {
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const SeriesComponent_SeriesComponent = (SeriesComponent);
 
 ;// ./code/es-modules/Accessibility/Components/ZoomComponent.js
@@ -11741,9 +11795,7 @@ const { getFakeMouseEvent: ZoomComponent_getFakeMouseEvent } = Utils_HTMLUtiliti
  *  Functions
  *
  * */
-/**
- * @private
- */
+/** @internal */
 function chartHasMapZoom(chart) {
     return !!((chart.mapView) &&
         chart.mapNavigation &&
@@ -11757,9 +11809,10 @@ function chartHasMapZoom(chart) {
 /**
  * The ZoomComponent class
  *
- * @private
  * @class
  * @name Highcharts.ZoomComponent
+ *
+ * @internal
  */
 class ZoomComponent extends Accessibility_AccessibilityComponent {
     constructor() {
@@ -11803,11 +11856,7 @@ class ZoomComponent extends Accessibility_AccessibilityComponent {
             });
         }
     }
-    /**
-     * @private
-     * @param {Highcharts.HTMLDOMElement|Highcharts.SVGDOMElement} button
-     * @param {string} labelFormatKey
-     */
+    /** @internal */
     setMapNavButtonAttrs(button, labelFormatKey) {
         const chart = this.chart, label = chart.langFormat(labelFormatKey, { chart: chart });
         (0,external_highcharts_src_js_default_namespaceObject.attr)(button, {
@@ -11843,12 +11892,7 @@ class ZoomComponent extends Accessibility_AccessibilityComponent {
             }));
         }
     }
-    /**
-     * @private
-     * @param {Highcharts.SVGElement} buttonEl
-     * @param {string} buttonProp
-     * @param {string} label
-     */
+    /** @internal */
     createZoomProxyButton(buttonEl, buttonProp, label) {
         this[buttonProp] = this.proxyProvider.addProxyElement('zoom', {
             click: buttonEl
@@ -11859,8 +11903,9 @@ class ZoomComponent extends Accessibility_AccessibilityComponent {
     }
     /**
      * Get keyboard navigation handler for map zoom.
-     * @private
      * @return {Highcharts.KeyboardNavigationHandler} The module object
+     *
+     * @internal
      */
     getMapZoomNavigation() {
         const keys = this.keyCodes, chart = this.chart, component = this;
@@ -11895,10 +11940,11 @@ class ZoomComponent extends Accessibility_AccessibilityComponent {
     }
     /**
      * Arrow key panning for maps.
-     * @private
      * @param {Highcharts.KeyboardNavigationHandler} keyboardNavigationHandler The handler context.
      * @param {number} keyCode Key pressed.
      * @return {number} Response code
+     *
+     * @internal
      */
     onMapKbdArrow(keyboardNavigationHandler, keyCode) {
         const chart = this.chart, keys = this.keyCodes, target = chart.container, isY = keyCode === keys.up || keyCode === keys.down, stepDirection = (keyCode === keys.left || keyCode === keys.up) ?
@@ -11918,10 +11964,9 @@ class ZoomComponent extends Accessibility_AccessibilityComponent {
         return keyboardNavigationHandler.response.success;
     }
     /**
-     * @private
-     * @param {Highcharts.KeyboardNavigationHandler} keyboardNavigationHandler
-     * @param {global.KeyboardEvent} event
      * @return {number} Response code
+     *
+     * @internal
      */
     onMapKbdTab(keyboardNavigationHandler, event) {
         const chart = this.chart;
@@ -11946,19 +11991,17 @@ class ZoomComponent extends Accessibility_AccessibilityComponent {
     }
     /**
      * Called on map button click.
-     * @private
      * @param {Highcharts.KeyboardNavigationHandler} keyboardNavigationHandler The handler context object
      * @return {number} Response code
+     *
+     * @internal
      */
     onMapKbdClick(keyboardNavigationHandler) {
         const el = this.chart.mapNavigation.navButtons[this.focusedMapNavButtonIx].element;
         this.fakeClickEvent(el);
         return keyboardNavigationHandler.response.success;
     }
-    /**
-     * @private
-     * @param {number} direction
-     */
+    /** @internal */
     onMapNavInit(direction) {
         const chart = this.chart, zoomIn = chart.mapNavigation.navButtons[0], zoomOut = chart.mapNavigation.navButtons[1], initialButton = direction > 0 ? zoomIn : zoomOut;
         chart.setFocusToElement(initialButton.box, initialButton.element);
@@ -11969,9 +12012,10 @@ class ZoomComponent extends Accessibility_AccessibilityComponent {
      * Get keyboard navigation handler for a simple chart button. Provide the
      * button reference for the chart, and a function to call on click.
      *
-     * @private
      * @param {string} buttonProp The property on chart referencing the button.
      * @return {Highcharts.KeyboardNavigationHandler} The module object
+     *
+     * @internal
      */
     simpleButtonNavigation(buttonProp, proxyProp, onClick) {
         const keys = this.keyCodes, component = this, chart = this.chart;
@@ -11991,7 +12035,7 @@ class ZoomComponent extends Accessibility_AccessibilityComponent {
                     [keys.space, keys.enter],
                     function () {
                         const res = onClick(this, chart);
-                        return (0,external_highcharts_src_js_default_namespaceObject.pick)(res, this.response.success);
+                        return (res ?? this.response.success);
                     }
                 ]
             ],
@@ -12029,6 +12073,7 @@ class ZoomComponent extends Accessibility_AccessibilityComponent {
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const Components_ZoomComponent = (ZoomComponent);
 
 ;// ./code/es-modules/Accessibility/HighContrastMode.js
@@ -12057,8 +12102,9 @@ const { doc: HighContrastMode_doc, isMS, win: HighContrastMode_win } = (external
  * Detect WHCM in the browser.
  *
  * @function Highcharts#isHighContrastModeActive
- * @private
  * @return {boolean} Returns true if the browser is in High Contrast mode.
+ *
+ * @internal
  */
 function isHighContrastModeActive() {
     // Test BG image for IE
@@ -12081,9 +12127,9 @@ function isHighContrastModeActive() {
  * a separate file.
  *
  * @function Highcharts#setHighContrastTheme
- * @private
  * @param {Highcharts.AccessibilityChart} chart The chart to set the theme of.
- * @return {void}
+ *
+ * @internal
  */
 function setHighContrastTheme(chart) {
     // We might want to add additional functionality here in the future for
@@ -12136,10 +12182,12 @@ function setHighContrastTheme(chart) {
  *  Default Export
  *
  * */
+/** @internal */
 const whcm = {
     isHighContrastModeActive,
     setHighContrastTheme
 };
+/** @internal */
 /* harmony default export */ const HighContrastMode = (whcm);
 
 ;// ./code/es-modules/Accessibility/HighContrastTheme.js
@@ -12157,6 +12205,7 @@ const whcm = {
  *
  * */
 
+/** @internal */
 const theme = {
     chart: {
         backgroundColor: 'window'
@@ -12356,6 +12405,7 @@ const theme = {
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const HighContrastTheme = (theme);
 
 ;// ./code/es-modules/Accessibility/Options/A11yDefaults.js
@@ -12378,83 +12428,6 @@ const theme = {
  *  API Options
  *
  * */
-/**
- * Formatter callback for the accessibility announcement.
- *
- * @callback Highcharts.AccessibilityAnnouncementFormatter
- *
- * @param {Array<Highcharts.Series>} updatedSeries
- * Array of all series that received updates. If an announcement is already
- * queued, the series that received updates for that announcement are also
- * included in this array.
- *
- * @param {Highcharts.Series} [addedSeries]
- * This is provided if {@link Highcharts.Chart#addSeries} was called, and there
- * is a new series. In that case, this argument is a reference to the new
- * series.
- *
- * @param {Highcharts.Point} [addedPoint]
- * This is provided if {@link Highcharts.Series#addPoint} was called, and there
- * is a new point. In that case, this argument is a reference to the new point.
- *
- * @return {false|string}
- * The function should return a string with the text to announce to the user.
- * Return empty string to not announce anything. Return `false` to use the
- * default announcement format.
- */
-/**
- * @interface Highcharts.PointAccessibilityOptionsObject
- */ /**
-* Provide a description of the data point, announced to screen readers.
-* @name Highcharts.PointAccessibilityOptionsObject#description
-* @type {string|undefined}
-* @requires modules/accessibility
-* @since 7.1.0
-*/ /**
-* Enable or disable exposing the point to assistive technology
-* @name Highcharts.PointAccessibilityOptionsObject#enabled
-* @type {boolean|undefined}
-* @requires modules/accessibility
-* @since 9.0.1
-*/
-/* *
- * @interface Highcharts.PointOptionsObject in parts/Point.ts
- */ /**
-* @name Highcharts.PointOptionsObject#accessibility
-* @type {Highcharts.PointAccessibilityOptionsObject|undefined}
-* @requires modules/accessibility
-* @since 7.1.0
-*/
-/**
- * @callback Highcharts.ScreenReaderClickCallbackFunction
- *
- * @param {global.MouseEvent} evt
- *        Mouse click event
- *
- * @param {Highcharts.Chart} [chart]
- *        Chart context.
- *
- * @param {global.GlobalEventHandlers} [ctx]
- *        Since v12.6.0, the global event handlers context passed as an extra
- *        argument for arrow functions.
- *
- * @return {void}
- */
-/**
- * Creates a formatted string for the screen reader module.
- *
- * @callback Highcharts.ScreenReaderFormatterCallbackFunction<T>
- *
- * @param {T} context
- *        Context to format
- *
- * @param {*} [outerContext]
- *        Since v12.6.0, the outer context passed as an extra argument for
- *        arrow functions.
- *
- * @return {string}
- *         Formatted string for the screen reader module.
- */
 const Options = {
     /**
      * Options for configuring accessibility for the chart. Requires the
@@ -13351,6 +13324,84 @@ const Options = {
         }
     }
 };
+/**
+ * Formatter callback for the accessibility announcement.
+ *
+ * @callback Highcharts.AccessibilityAnnouncementFormatter
+ *
+ * @param {Array<Highcharts.Series>} updatedSeries
+ * Array of all series that received updates. If an announcement is already
+ * queued, the series that received updates for that announcement are also
+ * included in this array.
+ *
+ * @param {Highcharts.Series} [addedSeries]
+ * This is provided if {@link Highcharts.Chart#addSeries} was called, and there
+ * is a new series. In that case, this argument is a reference to the new
+ * series.
+ *
+ * @param {Highcharts.Point} [addedPoint]
+ * This is provided if {@link Highcharts.Series#addPoint} was called, and there
+ * is a new point. In that case, this argument is a reference to the new point.
+ *
+ * @return {false|string}
+ * The function should return a string with the text to announce to the user.
+ * Return empty string to not announce anything. Return `false` to use the
+ * default announcement format.
+ */
+/**
+ * @interface Highcharts.PointAccessibilityOptionsObject
+ */ /**
+* Provide a description of the data point, announced to screen readers.
+* @name Highcharts.PointAccessibilityOptionsObject#description
+* @type {string|undefined}
+* @requires modules/accessibility
+* @since 7.1.0
+*/ /**
+* Enable or disable exposing the point to assistive technology
+* @name Highcharts.PointAccessibilityOptionsObject#enabled
+* @type {boolean|undefined}
+* @requires modules/accessibility
+* @since 9.0.1
+*/
+/* *
+ * @interface Highcharts.PointOptionsObject in parts/Point.ts
+ */ /**
+* @name Highcharts.PointOptionsObject#accessibility
+* @type {Highcharts.PointAccessibilityOptionsObject|undefined}
+* @requires modules/accessibility
+* @since 7.1.0
+*/
+/**
+ * @callback Highcharts.ScreenReaderClickCallbackFunction
+ *
+ * @param {global.MouseEvent} evt
+ *        Mouse click event
+ *
+ * @param {Highcharts.Chart} [chart]
+ *        Chart context.
+ *
+ * @param {global.GlobalEventHandlers} [ctx]
+ *        Since v12.6.0, the global event handlers context passed as an extra
+ *        argument for arrow functions.
+ *
+ * @return {void}
+ */
+/**
+ * Creates a formatted string for the screen reader module.
+ *
+ * @callback Highcharts.ScreenReaderFormatterCallbackFunction<T>
+ *
+ * @param {T} context
+ *        Context to format
+ *
+ * @param {*} [outerContext]
+ *        Since v12.6.0, the outer context passed as an extra argument for
+ *        arrow functions.
+ *
+ * @return {string}
+ *         Formatted string for the screen reader module.
+ */
+(''); // Detach doclets above
 /* harmony default export */ const A11yDefaults = (Options);
 
 ;// ./code/es-modules/Accessibility/Options/LangDefaults.js
@@ -13879,7 +13930,6 @@ const langOptions = {
 /* eslint-enable max-len */
 
 
-
 /* *
  *
  *  Functions
@@ -13888,28 +13938,25 @@ const langOptions = {
 /**
  * Set a new option on a root prop, where the option is defined as an array of
  * suboptions.
- * @private
- * @param {Record<string, *>} root
- * @param {Array<string>} optionAsArray
- * @param {*} val
- * @return {void}
+ *
+ * @internal
  */
 function traverseSetOption(root, optionAsArray, val) {
     let opt = root, prop, i = 0;
     for (; i < optionAsArray.length - 1; ++i) {
         prop = optionAsArray[i];
-        opt = opt[prop] = (0,external_highcharts_src_js_default_namespaceObject.pick)(opt[prop], {});
+        opt = opt[prop] = (opt[prop] ?? {});
     }
     opt[optionAsArray[optionAsArray.length - 1]] = val;
 }
 /**
  * If we have a clear root option node for old and new options and a mapping
  * between, we can use this generic function for the copy and warn logic.
+ *
+ * @internal
  */
 function deprecateFromOptionsMap(chart, rootOldAsArray, rootNewAsArray, mapToNewOptions) {
-    /**
-     * @private
-     */
+    /** @internal */
     function getChildProp(root, propAsArray) {
         return propAsArray.reduce(function (acc, cur) {
             return acc[cur];
@@ -13927,9 +13974,7 @@ function deprecateFromOptionsMap(chart, rootOldAsArray, rootNewAsArray, mapToNew
         }
     });
 }
-/**
- * @private
- */
+/** @internal */
 function copyDeprecatedChartOptions(chart) {
     const chartOptions = chart.options.chart, a11yOptions = chart.options.accessibility || {};
     ['description', 'typeDescription'].forEach(function (prop) {
@@ -13939,9 +13984,7 @@ function copyDeprecatedChartOptions(chart) {
         }
     });
 }
-/**
- * @private
- */
+/** @internal */
 function copyDeprecatedAxisOptions(chart) {
     chart.axes.forEach(function (axis) {
         const opts = axis.options;
@@ -13954,9 +13997,7 @@ function copyDeprecatedAxisOptions(chart) {
         }
     });
 }
-/**
- * @private
- */
+/** @internal */
 function copyDeprecatedSeriesOptions(chart) {
     // Map of deprecated series options. New options are defined as
     // arrays of paths under series.options.
@@ -14001,9 +14042,7 @@ function copyDeprecatedSeriesOptions(chart) {
         });
     });
 }
-/**
- * @private
- */
+/** @internal */
 function copyDeprecatedTopLevelAccessibilityOptions(chart) {
     deprecateFromOptionsMap(chart, ['accessibility'], ['accessibility'], {
         pointDateFormat: ['point', 'dateFormat'],
@@ -14030,18 +14069,14 @@ function copyDeprecatedTopLevelAccessibilityOptions(chart) {
         axisRangeDateFormat: ['screenReaderSection', 'axisRangeDateFormat']
     });
 }
-/**
- * @private
- */
+/** @internal */
 function copyDeprecatedKeyboardNavigationOptions(chart) {
     deprecateFromOptionsMap(chart, ['accessibility', 'keyboardNavigation'], ['accessibility', 'keyboardNavigation', 'seriesNavigation'], {
         skipNullPoints: ['skipNullPoints'],
         mode: ['mode']
     });
 }
-/**
- * @private
- */
+/** @internal */
 function copyDeprecatedLangOptions(chart) {
     deprecateFromOptionsMap(chart, ['lang', 'accessibility'], ['lang', 'accessibility'], {
         legendItem: ['legend', 'legendItem'],
@@ -14065,7 +14100,7 @@ function copyDeprecatedLangOptions(chart) {
  * Copy options that are deprecated over to new options. Logs warnings to
  * console if deprecated options are used.
  *
- * @private
+ * @internal
  */
 function copyDeprecatedOptions(chart) {
     copyDeprecatedChartOptions(chart);
@@ -14082,6 +14117,7 @@ function copyDeprecatedOptions(chart) {
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const DeprecatedOptions = (copyDeprecatedOptions);
 
 ;// ./code/es-modules/Accessibility/Accessibility.js
@@ -14132,7 +14168,6 @@ const { escapeStringForHTML: Accessibility_escapeStringForHTML, removeElement: A
 /**
  * The Accessibility class
  *
- * @private
  * @requires modules/accessibility
  *
  * @class
@@ -14140,6 +14175,8 @@ const { escapeStringForHTML: Accessibility_escapeStringForHTML, removeElement: A
  *
  * @param {Highcharts.Chart} chart
  * Chart object
+ *
+ * @internal
  */
 class Accessibility {
     /* *
@@ -14157,9 +14194,10 @@ class Accessibility {
      * */
     /**
      * Initialize the accessibility class
-     * @private
      * @param {Highcharts.Chart} chart
      *        Chart object
+     *
+     * @internal
      */
     init(chart) {
         this.chart = chart;
@@ -14177,9 +14215,7 @@ class Accessibility {
         this.initComponents();
         this.keyboardNavigation = new Accessibility_KeyboardNavigation(chart, this.components);
     }
-    /**
-     * @private
-     */
+    /** @internal */
     initComponents() {
         const chart = this.chart;
         const proxyProvider = this.proxyProvider;
@@ -14205,7 +14241,8 @@ class Accessibility {
     }
     /**
      * Get order to update components in.
-     * @private
+     *
+     * @internal
      */
     getComponentOrder() {
         if (!this.components) {
@@ -14251,7 +14288,7 @@ class Accessibility {
             a11yOptions.highContrastMode === true)) {
             HighContrastMode.setHighContrastTheme(chart);
         }
-        (0,external_highcharts_src_js_default_namespaceObject.fireEvent)(chart, 'afterA11yUpdate', {
+        ;(0,external_highcharts_src_js_default_namespaceObject.fireEvent)(chart, 'afterA11yUpdate', {
             accessibility: this
         });
     }
@@ -14289,7 +14326,8 @@ class Accessibility {
     }
     /**
      * Return a list of the types of series we have in the chart.
-     * @private
+     *
+     * @internal
      */
     getChartTypes() {
         const types = {};
@@ -14304,6 +14342,7 @@ class Accessibility {
  *  Class Namespace
  *
  * */
+/** @internal */
 (function (Accessibility) {
     /* *
      *
@@ -14315,6 +14354,7 @@ class Accessibility {
      *  Constants
      *
      * */
+    /** @internal */
     Accessibility.i18nFormat = A11yI18n.i18nFormat;
     /* *
      *
@@ -14323,7 +14363,8 @@ class Accessibility {
      * */
     /**
      * Destroy with chart.
-     * @private
+     *
+     * @internal
      */
     function chartOnDestroy() {
         if (this.accessibility) {
@@ -14332,7 +14373,8 @@ class Accessibility {
     }
     /**
      * Handle updates to the module and send render updates to components.
-     * @private
+     *
+     * @internal
      */
     function chartOnRender() {
         // Update/destroy
@@ -14386,7 +14428,8 @@ class Accessibility {
     }
     /**
      * Update with chart/series/point updates.
-     * @private
+     *
+     * @internal
      */
     function chartOnUpdate(e) {
         // Merge new options
@@ -14398,7 +14441,7 @@ class Accessibility {
                     newOptions.customComponents;
                 delete newOptions.customComponents;
             }
-            (0,external_highcharts_src_js_default_namespaceObject.merge)(true, this.options.accessibility, newOptions);
+            ;(0,external_highcharts_src_js_default_namespaceObject.merge)(true, this.options.accessibility, newOptions);
             // Recreate from scratch
             if (this.accessibility && this.accessibility.destroy) {
                 this.accessibility.destroy();
@@ -14408,9 +14451,7 @@ class Accessibility {
         // Mark dirty for update
         this.a11yDirty = true;
     }
-    /**
-     * @private
-     */
+    /** @internal */
     function chartUpdateA11yEnabled() {
         let a11y = this.accessibility;
         const accessibilityOptions = this.options.accessibility, svg = this.renderer.boxWrapper.element, title = this.title;
@@ -14449,9 +14490,7 @@ class Accessibility {
             }
         }
     }
-    /**
-     * @private
-     */
+    /** @internal */
     function compose(ChartClass, LegendClass, PointClass, SeriesClass, SVGElementClass, RangeSelectorClass) {
         // Ordered:
         Accessibility_KeyboardNavigation.compose(ChartClass);
@@ -14501,7 +14540,8 @@ class Accessibility {
     Accessibility.compose = compose;
     /**
      * Mark dirty for update.
-     * @private
+     *
+     * @internal
      */
     function pointOnUpdate() {
         if (this.series.chart.accessibility) {
@@ -14526,6 +14566,7 @@ class Accessibility {
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const Accessibility_Accessibility = (Accessibility);
 
 ;// ./code/es-modules/masters/modules/accessibility.src.js

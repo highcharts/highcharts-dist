@@ -47,6 +47,7 @@ class MapPointSeries extends ScatterSeries {
      *  Functions
      *
      * */
+    /** @internal */
     drawDataLabels() {
         super.drawDataLabels();
         this.dataLabelsGroups?.forEach((g) => {
@@ -77,6 +78,7 @@ class MapPointSeries extends ScatterSeries {
             }
         }
     }
+    /** @internal */
     translate() {
         const mapView = this.chart.mapView;
         this.generatePoints();
@@ -132,6 +134,7 @@ class MapPointSeries extends ScatterSeries {
         fireEvent(this, 'afterTranslate');
     }
 }
+/** @internal */
 MapPointSeries.defaultOptions = merge(ScatterSeries.defaultOptions, MapPointSeriesDefaults);
 /* *
  *
@@ -141,7 +144,15 @@ MapPointSeries.defaultOptions = merge(ScatterSeries.defaultOptions, MapPointSeri
 /* *
  * The mapmarker symbol
  */
-const mapmarker = (x, y, w, h, options) => {
+const mapmarker = (
+/** @internal */
+x, 
+/** @internal */
+y, 
+/** @internal */
+w, 
+/** @internal */
+h, options) => {
     const isLegendSymbol = options && options.context === 'legend';
     let anchorX, anchorY;
     if (isLegendSymbol) {

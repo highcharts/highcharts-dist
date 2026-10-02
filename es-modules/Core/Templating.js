@@ -14,7 +14,7 @@ import D from './Defaults.js';
 const { defaultOptions, defaultTime } = D;
 import G from './Globals.js';
 const { pageLang } = G;
-import { correctFloat, extend, getNestedProperty, isArray, isNumber, isObject, isString, pick, ucfirst } from '../Shared/Utilities.js';
+import { correctFloat, extend, getNestedProperty, isArray, isNumber, isObject, isString, ucfirst } from '../Shared/Utilities.js';
 /** @internal */
 const helpers = {
     // Built-in helpers
@@ -290,7 +290,7 @@ function format(str = '', ctx, owner) {
                 replacement = `"${replacement}"`;
             }
         }
-        str = str.replace(match.find, pick(replacement, ''));
+        str = str.replace(match.find, (replacement ?? ''));
     });
     return hasSub ? format(str, ctx, owner) : str;
 }

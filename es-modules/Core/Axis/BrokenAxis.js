@@ -10,8 +10,10 @@
  *
  * */
 'use strict';
+import H from '../Globals.js';
+const { composed } = H;
 import StackItem from './Stacking/StackItem.js';
-import { addEvent, find, fireEvent, isArray, isNumber, pick } from '../../Shared/Utilities.js';
+import { addEvent, find, fireEvent, isArray, isNumber, pushUnique } from '../../Shared/Utilities.js';
 /* *
  *
  *  Composition
@@ -38,8 +40,7 @@ var BrokenAxis;
      * @internal
      */
     function compose(AxisClass, SeriesClass) {
-        if (!AxisClass.keepProps.includes('brokenAxis')) {
-            AxisClass.keepProps.push('brokenAxis');
+        if (pushUnique(composed, 'Axis.Broken')) {
             addEvent(AxisClass, 'init', onAxisInit);
             addEvent(AxisClass, 'afterInit', onAxisAfterInit);
             addEvent(AxisClass, 'afterSetTickPositions', onAxisAfterSetTickPositions);
@@ -115,7 +116,7 @@ var BrokenAxis;
     /** @internal */
     function onSeriesAfterRender() {
         this.drawBreaks(this.xAxis, ['x']);
-        this.drawBreaks(this.yAxis, pick(this.pointArrayMap, ['y']));
+        this.drawBreaks(this.yAxis, (this.pointArrayMap ?? ['y']));
     }
     /** @internal */
     function seriesDrawBreaks(axis, keys) {
@@ -127,7 +128,7 @@ var BrokenAxis;
                 breaks = brokenAxis?.breakArray || [];
                 threshold = axis.isXAxis ?
                     axis.min :
-                    pick(series.options.threshold, axis.min);
+                    (series.options.threshold ?? axis.min);
                 points.forEach(function (point) {
                     y = point['stack' + key.toUpperCase()] ??
                         point[key];
@@ -257,7 +258,7 @@ var BrokenAxis;
                     });
                     // For stacked chart generate empty stack items, #6546
                     if (yAxis.stacking && this.options.stacking) {
-                        stack = yAxis.stacking.stacks[this.stackKey][xRange] = new StackItem(yAxis, yAxis.options.stackLabels, false, xRange, this.stack ?? '');
+                        stack = yAxis.stacking.stacks[this.stackKey][xRange] = new StackItem(yAxis, false, xRange, this.stack ?? '');
                         stack.total = 0;
                     }
                 }
@@ -420,7 +421,8 @@ var BrokenAxis;
                     if (Additions.isInBreak(breaks[i], val)) {
                         inbrk = true;
                         if (!keep) {
-                            keep = pick(breaks[i].showPoints, !axis.isXAxis);
+                            keep =
+                                breaks[i].showPoints ?? !axis.isXAxis;
                         }
                     }
                 }
@@ -603,7 +605,7 @@ var BrokenAxis;
                     }
                 };
             }
-            if (pick(redraw, true)) {
+            if (redraw ?? true) {
                 axis.chart.redraw();
             }
         }

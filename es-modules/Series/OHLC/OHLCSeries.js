@@ -10,6 +10,7 @@
  *
  * */
 'use strict';
+import FinancialSymbols from '../FinancialSymbols.js';
 import H from '../../Core/Globals.js';
 const { composed } = H;
 import OHLCPoint from './OHLCPoint.js';
@@ -71,6 +72,7 @@ class OHLCSeries extends HLCSeries {
      *  Static Functions
      *
      * */
+    /** @internal */
     static compose(SeriesClass, ..._args) {
         if (pushUnique(composed, 'OHLCSeries')) {
             addEvent(SeriesClass, 'afterSetOptions', onSeriesAfterSetOptions);
@@ -82,6 +84,27 @@ class OHLCSeries extends HLCSeries {
      *  Functions
      *
      * */
+    /**
+     * Pair the legend symbol, the down point, with an element for the up one.
+     * `FinancialSymbols` colors both (#24567).
+     *
+     * @internal
+     * @function Highcharts.seriesTypes.ohlc#drawLegendSymbol
+     */
+    drawLegendSymbol(legend, item) {
+        super.drawLegendSymbol(legend, item);
+        const { group, symbol } = item.legendItem || {}, upPath = FinancialSymbols.upPaths[symbol?.symbolName || ''];
+        if (symbol && upPath) {
+            const { x = 0, y = 0, width = 0, height = 0 } = symbol;
+            symbol.addClass('highcharts-point-down');
+            this.legendSymbolUp = this.chart.renderer
+                .path(upPath(x, y, width, height))
+                .addClass('highcharts-point highcharts-point-up')
+                .attr({ zIndex: 3 })
+                .add(group);
+        }
+    }
+    /** @internal */
     getPointPath(point) {
         const path = super.getPointPath(point), strokeWidth = this.borderWidth, crispX = crisp(point.plotX || 0, strokeWidth), halfWidth = Math.round(point.shapeArgs.width / 2);
         if (point.open !== null) {
@@ -90,6 +113,20 @@ class OHLCSeries extends HLCSeries {
             super.extendStem(path, strokeWidth / 2, plotOpen);
         }
         return path;
+    }
+    /**
+     * Colors of the up glyph, as `pointAttribs` gives them to an up point.
+     * `pointAttribs` needs a point, which breaks on zoned series.
+     *
+     * @internal
+     * @function Highcharts.seriesTypes.ohlc#legendSymbolAttribs
+     */
+    legendSymbolAttribs() {
+        const { legendSymbolColor, lineWidth, upColor } = this.options;
+        return {
+            stroke: upColor || legendSymbolColor || this.color,
+            'stroke-width': lineWidth
+        };
     }
     /**
      * Postprocess mapping between options and SVG attributes
@@ -105,6 +142,7 @@ class OHLCSeries extends HLCSeries {
         }
         return attribs;
     }
+    /** @internal */
     toYData(point) {
         // Return a plain array for speedy calculation
         return [point.open, point.high, point.low, point.close];
@@ -115,6 +153,7 @@ class OHLCSeries extends HLCSeries {
  *  Static Properties
  *
  * */
+/** @internal */
 OHLCSeries.defaultOptions = merge(HLCSeries.defaultOptions, OHLCSeriesDefaults);
 extend(OHLCSeries.prototype, {
     pointClass: OHLCPoint,

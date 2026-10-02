@@ -12,8 +12,7 @@
  *
  * */
 'use strict';
-import Math3D from '../../Core/Math3D.js';
-const { pointCameraDistance } = Math3D;
+import { pointCameraDistance } from '../../Core/Math3D.js';
 import Scatter3DPoint from './Scatter3DPoint.js';
 import Scatter3DSeriesDefaults from './Scatter3DSeriesDefaults.js';
 import ScatterSeries from '../Scatter/ScatterSeries.js';
@@ -37,6 +36,7 @@ class Scatter3DSeries extends ScatterSeries {
      *  Functions
      *
      * */
+    /** @internal */
     pointAttribs(point) {
         const attribs = super.pointAttribs.apply(this, arguments);
         if (this.chart.is3d() && point) {
@@ -51,6 +51,7 @@ class Scatter3DSeries extends ScatterSeries {
  *  Static Properties
  *
  * */
+/** @internal */
 Scatter3DSeries.defaultOptions = merge(ScatterSeries.defaultOptions, Scatter3DSeriesDefaults);
 extend(Scatter3DSeries.prototype, {
     axisTypes: ['xAxis', 'yAxis', 'zAxis'],

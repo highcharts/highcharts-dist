@@ -16,7 +16,7 @@ import F from '../../Core/Templating.js';
 const { format } = F;
 import H from '../../Core/Globals.js';
 const { composed } = H;
-import { addEvent, defined, extend, fireEvent, isString, merge, objectEach, pick, pushUnique } from '../../Shared/Utilities.js';
+import { addEvent, defined, extend, fireEvent, isString, merge, objectEach, pushUnique } from '../../Shared/Utilities.js';
 /* *
  *
  *  Functions
@@ -183,8 +183,9 @@ class Breadcrumbs {
      *         Formatted text.
      */
     getButtonText(breadcrumb) {
-        const breadcrumbs = this, chart = breadcrumbs.chart, breadcrumbsOptions = breadcrumbs.options, lang = chart.options.lang, textFormat = pick(breadcrumbsOptions.format, breadcrumbsOptions.showFullPath ?
-            '{level.name}' : '← {level.name}'), defaultText = lang && pick(lang.drillUpText, lang.mainBreadcrumb);
+        const breadcrumbs = this, chart = breadcrumbs.chart, breadcrumbsOptions = breadcrumbs.options, lang = chart.options.lang, textFormat = breadcrumbsOptions.format ?? (breadcrumbsOptions.showFullPath ?
+            '{level.name}' :
+            '← {level.name}'), defaultText = lang && (lang.drillUpText ?? lang.mainBreadcrumb);
         let returnText = breadcrumbsOptions.formatter &&
             breadcrumbsOptions.formatter(breadcrumb) ||
             format(textFormat, { level: breadcrumb.levelOptions }, chart) || '';
@@ -305,7 +306,7 @@ class Breadcrumbs {
             if (breadcrumbs.options.rtl) {
                 newPositions.x += positionOptions.width;
             }
-            newPositions.y = pick(newPositions.y, this.yOffset, 0);
+            newPositions.y = (newPositions.y ?? this.yOffset ?? 0);
             breadcrumbs.group.align(newPositions, true, alignTo);
         }
     }

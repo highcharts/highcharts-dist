@@ -25,42 +25,32 @@ const { format } = F;
 import H from '../../Core/Globals.js';
 const { doc } = H;
 import HU from '../Utils/HTMLUtilities.js';
-const { addClass, getElement, getHeadingTagNameForElement, stripHTMLTagsFromString, visuallyHideElement } = HU;
-import { attr, pick, replaceNested } from '../../Shared/Utilities.js';
+const { addClass, getElement, getHeadingTagNameForElement, getShadowRoot, stripHTMLTagsFromString, visuallyHideElement } = HU;
+import { attr, replaceNested } from '../../Shared/Utilities.js';
 /* *
  *
  *  Functions
  *
  * */
-/**
- * @private
- */
+/** @internal */
 function getTableSummary(chart) {
     return chart.langFormat('accessibility.table.tableSummary', { chart: chart });
 }
-/**
- * @private
- */
+/** @internal */
 function getTypeDescForMapChart(chart, formatContext) {
     return formatContext.mapTitle ?
         chart.langFormat('accessibility.chartTypes.mapTypeDescription', formatContext) :
         chart.langFormat('accessibility.chartTypes.unknownMap', formatContext);
 }
-/**
- * @private
- */
+/** @internal */
 function getTypeDescForCombinationChart(chart, formatContext) {
     return chart.langFormat('accessibility.chartTypes.combinationChart', formatContext);
 }
-/**
- * @private
- */
+/** @internal */
 function getTypeDescForEmptyChart(chart, formatContext) {
     return chart.langFormat('accessibility.chartTypes.emptyChart', formatContext);
 }
-/**
- * @private
- */
+/** @internal */
 function buildTypeDescriptionFromSeries(chart, types, context) {
     const firstType = types[0], typeExplanation = chart.langFormat('accessibility.seriesTypeDescriptions.' + firstType, context), multi = chart.series && chart.series.length < 2 ? 'Single' : 'Multiple';
     return (chart.langFormat('accessibility.chartTypes.' + firstType + multi, context) ||
@@ -71,11 +61,12 @@ function buildTypeDescriptionFromSeries(chart, types, context) {
  * familiar to most users, but in those cases we try to add an explanation
  * of the type.
  *
- * @private
  * @function Highcharts.Chart#getTypeDescription
  * @param {Highcharts.Chart} chart The associated Chart instance.
  * @param {Array<string>} types The series types in this chart.
  * @return {string} The text description of the chart type.
+ *
+ * @internal
  */
 function getTypeDescription(chart, types) {
     const firstType = types[0], firstSeries = chart.series && chart.series[0] || {}, mapTitle = chart.mapView && chart.mapView.geoMap &&
@@ -96,9 +87,7 @@ function getTypeDescription(chart, types) {
     }
     return buildTypeDescriptionFromSeries(chart, types, formatContext);
 }
-/**
- * @private
- */
+/** @internal */
 function stripEmptyHTMLTags(str) {
     // Scan alert #[71]: Loop for nested patterns
     return replaceNested(str, [/<([\w\-.:!]+)\b[^<>]*>\s*<\/\1>/g, '']);
@@ -111,9 +100,10 @@ function stripEmptyHTMLTags(str) {
 /**
  * The InfoRegionsComponent class
  *
- * @private
  * @class
  * @name Highcharts.InfoRegionsComponent
+ *
+ * @internal
  */
 class InfoRegionsComponent extends AccessibilityComponent {
     constructor() {
@@ -132,7 +122,8 @@ class InfoRegionsComponent extends AccessibilityComponent {
      * */
     /**
      * Init the component
-     * @private
+     *
+     * @internal
      */
     init() {
         const chart = this.chart;
@@ -167,9 +158,7 @@ class InfoRegionsComponent extends AccessibilityComponent {
         }
         this.announcer = new Announcer(chart, 'assertive');
     }
-    /**
-     * @private
-     */
+    /** @internal */
     initRegionsDefinitions() {
         const component = this, accessibilityOptions = this.chart.options.accessibility;
         this.screenReaderSections = {
@@ -229,9 +218,7 @@ class InfoRegionsComponent extends AccessibilityComponent {
             component.updateScreenReaderSection(regionKey);
         });
     }
-    /**
-     * @private
-     */
+    /** @internal */
     getLinkedDescriptionElement() {
         const chartOptions = this.chart.options, linkedDescOption = chartOptions.accessibility.linkedDescription;
         if (!linkedDescOption) {
@@ -240,14 +227,16 @@ class InfoRegionsComponent extends AccessibilityComponent {
         if (typeof linkedDescOption !== 'string') {
             return linkedDescOption;
         }
-        const query = format(linkedDescOption, this.chart), queryMatch = doc.querySelectorAll(query);
+        const query = format(linkedDescOption, this.chart), shadowRoot = getShadowRoot(this.chart.renderTo), shadowMatch = shadowRoot?.querySelectorAll(query), 
+        // The description may also live outside the shadow root (#22682)
+        queryMatch = shadowMatch?.length ?
+            shadowMatch :
+            doc.querySelectorAll(query);
         if (queryMatch.length === 1) {
             return queryMatch[0];
         }
     }
-    /**
-     * @private
-     */
+    /** @internal */
     setLinkedDescriptionAttrs() {
         const el = this.linkedDescriptionElement;
         if (el) {
@@ -256,9 +245,10 @@ class InfoRegionsComponent extends AccessibilityComponent {
         }
     }
     /**
-     * @private
      * @param {string} regionKey
      * The name/key of the region to update
+     *
+     * @internal
      */
     updateScreenReaderSection(regionKey) {
         const chart = this.chart;
@@ -291,9 +281,10 @@ class InfoRegionsComponent extends AccessibilityComponent {
     }
     /**
      * Apply a11y attributes to a screen reader info section
-     * @private
      * @param {Highcharts.HTMLDOMElement} sectionDiv The section element
      * @param {string} regionKey Name/key of the region we are setting attrs for
+     *
+     * @internal
      */
     setScreenReaderSectionAttribs(sectionDiv, regionKey) {
         const chart = this.chart, labelText = chart.langFormat('accessibility.screenReaderSection.' + regionKey +
@@ -310,9 +301,7 @@ class InfoRegionsComponent extends AccessibilityComponent {
                 'region' : 'group');
         }
     }
-    /**
-     * @private
-     */
+    /** @internal */
     defaultBeforeChartFormatter() {
         const chart = this.chart, format = chart.options.accessibility.screenReaderSection
             .beforeChartFormat;
@@ -342,9 +331,7 @@ class InfoRegionsComponent extends AccessibilityComponent {
         this.sonifyButtonId = sonifyButtonId;
         return stripEmptyHTMLTags(formattedString);
     }
-    /**
-     * @private
-     */
+    /** @internal */
     defaultAfterChartFormatter() {
         const chart = this.chart;
         const format = chart.options.accessibility.screenReaderSection
@@ -356,16 +343,12 @@ class InfoRegionsComponent extends AccessibilityComponent {
         const formattedString = A11yI18n.i18nFormat(format, context, chart);
         return stripEmptyHTMLTags(formattedString);
     }
-    /**
-     * @private
-     */
+    /** @internal */
     getLinkedDescription() {
         const el = this.linkedDescriptionElement, content = el && el.innerHTML || '';
         return stripHTMLTagsFromString(content, this.chart.renderer.forExport);
     }
-    /**
-     * @private
-     */
+    /** @internal */
     getLongdescText() {
         const chartOptions = this.chart.options, captionOptions = chartOptions.caption, captionText = captionOptions && captionOptions.text, linkedDescription = this.getLinkedDescription();
         return (chartOptions.accessibility.description ||
@@ -373,25 +356,19 @@ class InfoRegionsComponent extends AccessibilityComponent {
             captionText ||
             '');
     }
-    /**
-     * @private
-     */
+    /** @internal */
     getTypeDescriptionText() {
         const chart = this.chart;
         return chart.types ?
             chart.options.accessibility.typeDescription ||
                 getTypeDescription(chart, chart.types) : '';
     }
-    /**
-     * @private
-     */
+    /** @internal */
     getDataTableButtonText(buttonId) {
         const chart = this.chart, buttonText = chart.langFormat('accessibility.table.viewAsDataTableButtonText', { chart: chart, chartTitle: getChartTitle(chart) });
         return '<button id="' + buttonId + '">' + buttonText + '</button>';
     }
-    /**
-     * @private
-     */
+    /** @internal */
     getSonifyButtonText(buttonId) {
         const chart = this.chart;
         if (chart.options.sonification &&
@@ -401,28 +378,21 @@ class InfoRegionsComponent extends AccessibilityComponent {
         const buttonText = chart.langFormat('accessibility.sonification.playAsSoundButtonText', { chart: chart, chartTitle: getChartTitle(chart) });
         return '<button id="' + buttonId + '">' + buttonText + '</button>';
     }
-    /**
-     * @private
-     */
+    /** @internal */
     getSubtitleText() {
         const subtitle = (this.chart.options.subtitle);
         return stripHTMLTagsFromString(subtitle && subtitle.text || '', this.chart.renderer.forExport);
     }
-    /**
-     * @private
-     */
+    /** @internal */
     getEndOfChartMarkerText() {
-        const endMarkerId = `highcharts-end-of-chart-marker-${this.chart.index}`, endMarker = getElement(endMarkerId);
+        const endMarkerId = `highcharts-end-of-chart-marker-${this.chart.index}`, endMarker = getElement(endMarkerId, this.chart.renderTo);
         if (endMarker) {
             return endMarker.outerHTML;
         }
         const chart = this.chart, markerText = chart.langFormat('accessibility.screenReaderSection.endOfChartMarker', { chart: chart }), id = 'highcharts-end-of-chart-marker-' + chart.index;
         return '<div id="' + id + '">' + markerText + '</div>';
     }
-    /**
-     * @private
-     * @param {Highcharts.Dictionary<string>} e
-     */
+    /** @internal */
     onDataTableCreated(e) {
         const chart = this.chart;
         if (chart.options.accessibility.enabled) {
@@ -435,22 +405,17 @@ class InfoRegionsComponent extends AccessibilityComponent {
             e.tree.attributes = attributes;
         }
     }
-    /**
-     * @private
-     */
+    /** @internal */
     focusDataTable() {
         const tableDiv = this.dataTableDiv, table = tableDiv && tableDiv.getElementsByTagName('table')[0];
         if (table && table.focus) {
             table.focus();
         }
     }
-    /**
-     * @private
-     * @param {string} sonifyButtonId
-     */
+    /** @internal */
     initSonifyButton(sonifyButtonId) {
-        const el = this.sonifyButton = getElement(sonifyButtonId);
         const chart = this.chart;
+        const el = this.sonifyButton = getElement(sonifyButtonId, chart.renderTo);
         const defaultHandler = (e) => {
             if (el) {
                 el.setAttribute('aria-hidden', 'true');
@@ -482,15 +447,15 @@ class InfoRegionsComponent extends AccessibilityComponent {
     }
     /**
      * Set attribs and handlers for default viewAsDataTable button if exists.
-     * @private
-     * @param {string} tableButtonId
+     *
+     * @internal
      */
     initDataTableButton(tableButtonId) {
-        const el = this.viewDataTableButton = getElement(tableButtonId), chart = this.chart, tableId = tableButtonId.replace('hc-linkto-', '');
+        const chart = this.chart, el = this.viewDataTableButton = getElement(tableButtonId, chart.renderTo), tableId = tableButtonId.replace('hc-linkto-', '');
         if (el) {
             attr(el, {
                 tabindex: -1,
-                'aria-expanded': !!getElement(tableId)
+                'aria-expanded': !!getElement(tableId, chart.renderTo)
             });
             el.onclick = chart.options.accessibility
                 .screenReaderSection.onViewDataTableClick ||
@@ -501,14 +466,17 @@ class InfoRegionsComponent extends AccessibilityComponent {
     }
     /**
      * Return object with text description of each of the chart's axes.
-     * @private
+     *
+     * @internal
      */
     getAxesDescription() {
         const chart = this.chart, shouldDescribeColl = function (collectionKey, defaultCondition) {
             const axes = chart[collectionKey];
-            return axes.length > 1 || axes[0] &&
-                pick(axes[0].options.accessibility &&
-                    axes[0].options.accessibility.enabled, defaultCondition);
+            const axisA11yEnabled = axes[0] ?
+                (axes[0].options.accessibility &&
+                    axes[0].options.accessibility.enabled) :
+                void 0;
+            return axes.length > 1 || (axisA11yEnabled ?? defaultCondition);
         }, hasNoMap = !!chart.types &&
             chart.types.indexOf('map') < 0 &&
             chart.types.indexOf('treemap') < 0 &&
@@ -521,9 +489,7 @@ class InfoRegionsComponent extends AccessibilityComponent {
         }
         return desc;
     }
-    /**
-     * @private
-     */
+    /** @internal */
     getAxisDescriptionText(collectionKey) {
         const chart = this.chart;
         const axes = chart[collectionKey];
@@ -552,4 +518,5 @@ class InfoRegionsComponent extends AccessibilityComponent {
  *  Default Export
  *
  * */
+/** @internal */
 export default InfoRegionsComponent;

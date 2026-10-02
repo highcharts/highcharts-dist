@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.0-modified (2026-08-14)
+ * @license Highcharts JS v13.1.0 (2026-10-02)
  * @module highcharts/modules/funnel3d
  * @requires highcharts
  * @requires highcharts/highcharts-3d
@@ -20,48 +20,27 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 /******/ 
 /************************************************************************/
 /******/ /* webpack/runtime/compat get default export */
-/******/ (() => {
-/******/ 	// getDefaultExport function for compatibility with non-harmony modules
-/******/ 	__webpack_require__.n = (module) => {
-/******/ 		const getter = module && module.__esModule ?
-/******/ 			() => (module['default']) :
-/******/ 			() => (module);
-/******/ 		__webpack_require__.d(getter, { a: getter });
-/******/ 		return getter;
-/******/ 	};
-/******/ })();
+/******/ // getDefaultExport function for compatibility with non-harmony modules
+/******/ __webpack_require__.n = (module) => {
+/******/ 	const getter = module && module.__esModule ?
+/******/ 		() => (module['default']) :
+/******/ 		() => (module);
+/******/ 	__webpack_require__.d(getter, { a: getter });
+/******/ 	return getter;
+/******/ };
 /******/ 
 /******/ /* webpack/runtime/define property getters */
-/******/ (() => {
-/******/ 	// define getter/value functions for harmony exports
-/******/ 	__webpack_require__.d = (exports, definition) => {
-/******/ 		if(Array.isArray(definition)) {
-/******/ 			var i = 0;
-/******/ 			while(i < definition.length) {
-/******/ 				var key = definition[i++];
-/******/ 				var binding = definition[i++];
-/******/ 				if(!__webpack_require__.o(exports, key)) {
-/******/ 					if(binding === 0) {
-/******/ 						Object.defineProperty(exports, key, { enumerable: true, value: definition[i++] });
-/******/ 					} else {
-/******/ 						Object.defineProperty(exports, key, { enumerable: true, get: binding });
-/******/ 					}
-/******/ 				} else if(binding === 0) { i++; }
-/******/ 			}
-/******/ 		} else {
-/******/ 			for(var key in definition) {
-/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
-/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
-/******/ 				}
-/******/ 			}
+/******/ // define getter/value functions for harmony exports
+/******/ __webpack_require__.d = (exports, definition) => {
+/******/ 	for(var key in definition) {
+/******/ 		if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 			Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
 /******/ 		}
-/******/ 	};
-/******/ })();
+/******/ 	}
+/******/ };
 /******/ 
 /******/ /* webpack/runtime/hasOwnProperty shorthand */
-/******/ (() => {
-/******/ 	__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
-/******/ })();
+/******/ __webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop));
 /******/ 
 /************************************************************************/
 
@@ -71,6 +50,9 @@ var external_highcharts_src_js_default_default = /*#__PURE__*/__webpack_require_
 ;// external ["../highcharts.src.js","default","SVGRenderer"]
 const external_highcharts_src_js_default_SVGRenderer_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].SVGRenderer;
 var external_highcharts_src_js_default_SVGRenderer_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_SVGRenderer_namespaceObject);
+;// external ["../highcharts.src.js","default","Series","types","column"]
+const external_highcharts_src_js_default_Series_types_column_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].Series.types.column;
+var external_highcharts_src_js_default_Series_types_column_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_Series_types_column_namespaceObject);
 ;// external ["../highcharts.src.js","default","Color"]
 const external_highcharts_src_js_default_Color_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].Color;
 var external_highcharts_src_js_default_Color_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_Color_namespaceObject);
@@ -193,7 +175,7 @@ class SVGElement3D extends (external_highcharts_src_js_default_SVGElement_defaul
         for (const part of elem3d.parts) {
             // If different props for different parts
             if (partsProps) {
-                props = (0,external_highcharts_src_js_default_namespaceObject.pick)(partsProps[part], false);
+                props = (partsProps[part] ?? false);
             }
             // Only if something to set, but allow undefined
             if (props !== false) {
@@ -299,6 +281,7 @@ const { charts } = (external_highcharts_src_js_default_default());
  *  Class
  *
  * */
+/** @internal */
 class SVGElement3DFunnel extends SVG_SVGElement3D {
     constructor() {
         /* *
@@ -513,6 +496,7 @@ class SVGElement3DFunnel extends SVG_SVGElement3D {
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const Funnel3D_SVGElement3DFunnel = (SVGElement3DFunnel);
 
 ;// ./code/es-modules/Series/Funnel3D/Funnel3DComposition.js
@@ -533,7 +517,7 @@ class SVGElement3DFunnel extends SVG_SVGElement3D {
 
 
 
-const { charts: Funnel3DComposition_charts } = (external_highcharts_src_js_default_default());
+const { charts: Funnel3DComposition_charts, composed } = (external_highcharts_src_js_default_default());
 
 
 /* *
@@ -541,10 +525,10 @@ const { charts: Funnel3DComposition_charts } = (external_highcharts_src_js_defau
  *  Functions
  *
  * */
-/** @private */
-function compose(SVGRendererClass) {
+/** @internal */
+function composeFunnel3D(SVGRendererClass) {
     const rendererProto = SVGRendererClass.prototype;
-    if (!rendererProto.funnel3d) {
+    if ((0,external_highcharts_src_js_default_namespaceObject.pushUnique)(composed, 'Funnel3dSeries')) {
         rendererProto.Element3D.types.funnel3d = Funnel3D_SVGElement3DFunnel;
         (0,external_highcharts_src_js_default_namespaceObject.extend)(rendererProto, {
             funnel3d: rendererFunnel3d,
@@ -552,7 +536,7 @@ function compose(SVGRendererClass) {
         });
     }
 }
-/** @private */
+/** @internal */
 function rendererFunnel3d(shapeArgs) {
     const renderer = this, funnel3d = renderer.element3d('funnel3d', shapeArgs), styledMode = renderer.styledMode, 
     // Hide stroke for Firefox
@@ -584,7 +568,7 @@ function rendererFunnel3d(shapeArgs) {
 }
 /**
  * Generates paths and zIndexes.
- * @private
+ * @internal
  */
 function rendererFunnel3dPath(shapeArgs) {
     // Check getCylinderEnd for better error message if
@@ -676,15 +660,6 @@ function rendererFunnel3dPath(shapeArgs) {
     }
     return ret;
 }
-/* *
- *
- *  Default Export
- *
- * */
-const Funnel3DComposition = {
-    compose
-};
-/* harmony default export */ const Funnel3D_Funnel3DComposition = (Funnel3DComposition);
 
 ;// ./code/es-modules/Series/Funnel3D/Funnel3DSeriesDefaults.js
 /* *
@@ -719,27 +694,27 @@ const Funnel3DComposition = {
  * @optionparent plotOptions.funnel3d
  */
 const Funnel3DSeriesDefaults = {
+    animation: false,
     /** @ignore-option */
     center: ['50%', '50%'],
+    colorByPoint: true,
+    dataLabels: {
+        align: 'right',
+        crop: false,
+        inside: false,
+        overflow: 'allow'
+    },
     /**
-     * The max width of the series compared to the width of the plot area,
-     * or the pixel width if it is a number.
-     *
-     * @type    {number|string}
-     * @sample  {highcharts} highcharts/demo/funnel3d/ Funnel3d demo
-     * @product highcharts
+     * The width of the outline around the top and bottom ellipses of each
+     * funnel segment. Its color is set by `edgeColor` and defaults to the
+     * point color.
      */
-    width: '90%',
+    edgeWidth: 0,
     /**
-     * The width of the neck, the lower part of the funnel. A number defines
-     * pixel width, a percentage string defines a percentage of the plot
-     * area width.
-     *
-     * @type    {number|string}
-     * @sample  {highcharts} highcharts/demo/funnel3d/ Funnel3d demo
-     * @product highcharts
+     * By default sides fill is set to a gradient through this option being
+     * set to `true`. Set to `false` to get solid color for the sides.
      */
-    neckWidth: '30%',
+    gradientForSides: true,
     /**
      * The height of the series. If it is a number it defines
      * the pixel height, if it is a percentage string it is the percentage
@@ -747,7 +722,6 @@ const Funnel3DSeriesDefaults = {
      *
      * @type    {number|string}
      * @sample  {highcharts} highcharts/demo/funnel3d/ Funnel3d demo
-     * @product highcharts
      */
     height: '100%',
     /**
@@ -756,41 +730,39 @@ const Funnel3DSeriesDefaults = {
      * of the plot area height.
      *
      * @type    {number|string}
-     * @sample  {highcharts} highcharts/demo/funnel3d/ Funnel3d demo
-     * @product highcharts
+     * @sample  highcharts/demo/funnel3d/ Funnel3d
      */
     neckHeight: '25%',
     /**
+     * The width of the neck, the lower part of the funnel. A number defines
+     * pixel width, a percentage string defines a percentage of the plot
+     * area width.
+     *
+     * @type    {number|string}
+     * @sample  highcharts/demo/funnel3d/ Funnel3d
+     */
+    neckWidth: '30%',
+    /**
      * A reversed funnel has the widest area down. A reversed funnel with
      * no neck width and neck height is a pyramid.
-     *
-     * @product highcharts
      */
     reversed: false,
-    /**
-     * By default sides fill is set to a gradient through this option being
-     * set to `true`. Set to `false` to get solid color for the sides.
-     *
-     * @product highcharts
-     */
-    gradientForSides: true,
-    animation: false,
-    edgeWidth: 0,
-    colorByPoint: true,
     showInLegend: false,
-    dataLabels: {
-        align: 'right',
-        crop: false,
-        inside: false,
-        overflow: 'allow'
-    }
+    /**
+     * The max width of the series compared to the width of the plot area,
+     * or the pixel width if it is a number.
+     *
+     * @type    {number|string}
+     * @sample  highcharts/demo/funnel3d/ Funnel3d
+     */
+    width: '90%'
 };
 /**
  * A `funnel3d` series. If the [type](#series.funnel3d.type) option is
  * not specified, it is inherited from [chart.type](#chart.type).
  *
- * @sample {highcharts} highcharts/demo/funnel3d/
- *         Funnel3d demo
+ * @sample highcharts/demo/funnel3d/
+ *         Funnel3d
  *
  * @since     7.1.0
  * @extends   series,plotOptions.funnel3d
@@ -894,7 +866,7 @@ const { seriesTypes: { column: ColumnSeries } } = (external_highcharts_src_js_de
  * */
 class Funnel3DPoint extends ColumnSeries.prototype.pointClass {
 }
-(0,external_highcharts_src_js_default_namespaceObject.extend)(Funnel3DPoint.prototype, {
+;(0,external_highcharts_src_js_default_namespaceObject.extend)(Funnel3DPoint.prototype, {
     shapeType: 'funnel3d'
 });
 /* *
@@ -916,7 +888,6 @@ class Funnel3DPoint extends ColumnSeries.prototype.pointClass {
  *
  *
  * */
-
 
 
 const { deg2rad } = (external_highcharts_src_js_default_default());
@@ -1005,11 +976,11 @@ function perspective(points, chart, insidePlotArea, useInvertedPersp) {
     /* The useInvertedPersp argument is used for inverted charts with
      * already inverted elements, such as dataLabels or tooltip positions.
      */
-    inverted = (0,external_highcharts_src_js_default_namespaceObject.pick)(useInvertedPersp, insidePlotArea ? chart.inverted : false), origin = {
+    inverted = useInvertedPersp ?? (insidePlotArea ? chart.inverted : false), origin = {
         x: chart.plotWidth / 2,
         y: chart.plotHeight / 2,
         z: options3d.depth / 2,
-        vd: (0,external_highcharts_src_js_default_namespaceObject.pick)(options3d.depth, 1) * (0,external_highcharts_src_js_default_namespaceObject.pick)(options3d.viewDistance, 0)
+        vd: (options3d.depth ?? 1) * (options3d.viewDistance ?? 0)
     }, scale = chart.scale3d || 1, beta = deg2rad * options3d.beta * (inverted ? -1 : 1), alpha = deg2rad * options3d.alpha * (inverted ? -1 : 1), angles = {
         cosA: Math.cos(alpha),
         cosB: Math.cos(-beta),
@@ -1088,13 +1059,13 @@ function pointCameraDistance(coordinates, chart) {
     const options3d = chart.options.chart.options3d, cameraPosition = {
         x: chart.plotWidth / 2,
         y: chart.plotHeight / 2,
-        z: (0,external_highcharts_src_js_default_namespaceObject.pick)(options3d.depth, 1) * (0,external_highcharts_src_js_default_namespaceObject.pick)(options3d.viewDistance, 0) +
+        z: (options3d.depth ?? 1) * (options3d.viewDistance ?? 0) +
             options3d.depth
     }, 
     // Added support for objects with plotX or x coordinates.
-    distance = Math.sqrt(Math.pow(cameraPosition.x - (0,external_highcharts_src_js_default_namespaceObject.pick)(coordinates.plotX, coordinates.x), 2) +
-        Math.pow(cameraPosition.y - (0,external_highcharts_src_js_default_namespaceObject.pick)(coordinates.plotY, coordinates.y), 2) +
-        Math.pow(cameraPosition.z - (0,external_highcharts_src_js_default_namespaceObject.pick)(coordinates.plotZ, coordinates.z), 2));
+    distance = Math.sqrt(Math.pow(cameraPosition.x - (coordinates.plotX ?? coordinates.x), 2) +
+        Math.pow(cameraPosition.y - (coordinates.plotY ?? coordinates.y), 2) +
+        Math.pow(cameraPosition.z - (coordinates.plotZ ?? coordinates.z), 2));
     return distance;
 }
 /**
@@ -1143,21 +1114,6 @@ function shapeArea(vertexes) {
 function shapeArea3D(vertexes, chart, insidePlotArea) {
     return shapeArea(perspective(vertexes, chart, insidePlotArea));
 }
-/* *
- *
- *  Default Export
- *
- * */
-/** @internal */
-const Math3D = {
-    perspective,
-    perspective3D,
-    pointCameraDistance,
-    shapeArea,
-    shapeArea3D
-};
-/** @internal */
-/* harmony default export */ const Core_Math3D = (Math3D);
 
 ;// ./code/es-modules/Series/Funnel3D/Funnel3DSeries.js
 /* *
@@ -1179,11 +1135,11 @@ const Math3D = {
 
 
 
+
 const { noop } = (external_highcharts_src_js_default_default());
 
-const { perspective: Funnel3DSeries_perspective } = Core_Math3D;
 
-const { series: Series, seriesTypes: { column: Funnel3DSeries_ColumnSeries } } = (external_highcharts_src_js_default_SeriesRegistry_default());
+const { series: Series } = (external_highcharts_src_js_default_SeriesRegistry_default());
 
 /* *
  *
@@ -1193,7 +1149,6 @@ const { series: Series, seriesTypes: { column: Funnel3DSeries_ColumnSeries } } =
 /**
  * The funnel3d series type.
  *
- * @private
  * @class
  * @name Highcharts.seriesTypes.funnel3d
  * @augments seriesTypes.column
@@ -1201,23 +1156,22 @@ const { series: Series, seriesTypes: { column: Funnel3DSeries_ColumnSeries } } =
  * @requires modules/cylinder
  * @requires modules/funnel3d
  */
-class Funnel3DSeries extends Funnel3DSeries_ColumnSeries {
+class Funnel3DSeries extends (external_highcharts_src_js_default_Series_types_column_default()) {
     /* *
      *
      *  Functions
      *
      * */
-    /**
-     * @private
-     */
+    /** @internal */
     alignDataLabel(point, _dataLabel, options) {
-        const series = this, dlBoxRaw = point.dlBoxRaw, inverted = series.chart.inverted, below = point.plotY > (0,external_highcharts_src_js_default_namespaceObject.pick)(series.translatedThreshold, series.yAxis.len), inside = (0,external_highcharts_src_js_default_namespaceObject.pick)(options.inside, !!series.options.stacking), dlBox = {
+        const series = this, dlBoxRaw = point.dlBoxRaw, inverted = series.chart.inverted, below = point.plotY >
+            (series.translatedThreshold ?? series.yAxis.len), inside = (options.inside ?? !!series.options.stacking), dlBox = {
             x: dlBoxRaw.x,
             y: dlBoxRaw.y,
             height: 0
         };
-        options.align = (0,external_highcharts_src_js_default_namespaceObject.pick)(options.align, !inverted || inside ? 'center' : below ? 'right' : 'left');
-        options.verticalAlign = (0,external_highcharts_src_js_default_namespaceObject.pick)(options.verticalAlign, inverted || inside ? 'middle' : below ? 'top' : 'bottom');
+        options.align = options.align ?? (!inverted || inside ? 'center' : below ? 'right' : 'left');
+        options.verticalAlign = options.verticalAlign ?? (inverted || inside ? 'middle' : below ? 'top' : 'bottom');
         if (options.verticalAlign !== 'top') {
             dlBox.y += dlBoxRaw.bottom /
                 (options.verticalAlign === 'bottom' ? 1 : 2);
@@ -1244,14 +1198,14 @@ class Funnel3DSeries extends Funnel3DSeries_ColumnSeries {
             }
         }
         point.dlBox = dlBox;
-        Funnel3DSeries_ColumnSeries.prototype.alignDataLabel.apply(series, arguments);
+        super.alignDataLabel.apply(series, arguments);
     }
     /**
      * Override default axis options with series required options for axes.
-     * @private
+     * @internal
      */
     bindAxes() {
-        Series.prototype.bindAxes.apply(this, arguments);
+        super.bindAxes.apply(this, arguments);
         (0,external_highcharts_src_js_default_namespaceObject.extend)(this.xAxis.options, {
             gridLineWidth: 0,
             lineWidth: 0,
@@ -1266,9 +1220,7 @@ class Funnel3DSeries extends Funnel3DSeries_ColumnSeries {
             }
         });
     }
-    /**
-     * @private
-     */
+    /** @internal */
     translate() {
         Series.prototype.translate.apply(this, arguments);
         const series = this, chart = series.chart, options = series.options, reversed = options.reversed, ignoreHiddenPoint = options.ignoreHiddenPoint, plotWidth = chart.plotWidth, plotHeight = chart.plotHeight, center = options.center, centerX = (0,external_highcharts_src_js_default_namespaceObject.relativeLength)(center[0], plotWidth), centerY = (0,external_highcharts_src_js_default_namespaceObject.relativeLength)(center[1], plotHeight), width = (0,external_highcharts_src_js_default_namespaceObject.relativeLength)(options.width, plotWidth), height = (0,external_highcharts_src_js_default_namespaceObject.relativeLength)(options.height, plotHeight), neckWidth = (0,external_highcharts_src_js_default_namespaceObject.relativeLength)(options.neckWidth, plotWidth), neckHeight = (0,external_highcharts_src_js_default_namespaceObject.relativeLength)(options.neckHeight, plotHeight), neckY = (centerY - height / 2) + height - neckHeight, points = series.points;
@@ -1323,7 +1275,8 @@ class Funnel3DSeries extends Funnel3DSeries_ColumnSeries {
             h = y3 - y1;
             shapeArgs = {
                 // For fill setter
-                gradientForSides: (0,external_highcharts_src_js_default_namespaceObject.pick)(point.options.gradientForSides, options.gradientForSides),
+                gradientForSides: point.options.gradientForSides ??
+                    options.gradientForSides,
                 x: centerX,
                 y: y1,
                 height: h,
@@ -1376,7 +1329,7 @@ class Funnel3DSeries extends Funnel3DSeries_ColumnSeries {
                 point.plotY = (y1 + (y5 || y3)) / 2;
             }
             // Placement of tooltips and data labels in 3D
-            tooltipPos = Funnel3DSeries_perspective([{
+            tooltipPos = perspective([{
                     x: centerX,
                     y: point.plotY,
                     z: reversed ?
@@ -1403,8 +1356,10 @@ class Funnel3DSeries extends Funnel3DSeries_ColumnSeries {
  *  Static Properties
  *
  * */
-Funnel3DSeries.compose = Funnel3D_Funnel3DComposition.compose;
-Funnel3DSeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(Funnel3DSeries_ColumnSeries.defaultOptions, Funnel3D_Funnel3DSeriesDefaults);
+/** @internal */
+Funnel3DSeries.compose = composeFunnel3D;
+/** @internal */
+Funnel3DSeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)((external_highcharts_src_js_default_Series_types_column_default()).defaultOptions, Funnel3D_Funnel3DSeriesDefaults);
 (0,external_highcharts_src_js_default_namespaceObject.extend)(Funnel3DSeries.prototype, {
     pointClass: Funnel3D_Funnel3DPoint,
     translate3dShapes: noop

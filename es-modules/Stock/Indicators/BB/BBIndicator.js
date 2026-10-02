@@ -38,7 +38,6 @@ function getStandardDeviation(arr, index, isOHLC, mean) {
 /**
  * Bollinger Bands series type.
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.bb
  *
@@ -50,6 +49,7 @@ class BBIndicator extends SMAIndicator {
      *  Functions
      *
      * */
+    /** @internal */
     init() {
         SeriesRegistry.seriesTypes.sma.prototype.init.apply(this, arguments);
         // Set default color for lines:
@@ -66,6 +66,7 @@ class BBIndicator extends SMAIndicator {
             }
         }, this.options);
     }
+    /** @internal */
     getValues(series, params) {
         const period = params.period, standardDeviation = params.standardDeviation, xData = [], yData = [], xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, 
         // 0- date, 1-middle line, 2-top line, 3-bottom line
@@ -117,6 +118,7 @@ class BBIndicator extends SMAIndicator {
  * @requires     stock/indicators/indicators
  * @requires     stock/indicators/bollinger-bands
  * @optionparent plotOptions.bb
+ * @internal
  */
 BBIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
     /**
@@ -208,7 +210,6 @@ SeriesRegistry.registerSeriesType('bb', BBIndicator);
  *  Default Export
  *
  * */
-/** @internal */
 export default BBIndicator;
 /* *
  *
@@ -221,7 +222,6 @@ export default BBIndicator;
  *
  * @extends   series,plotOptions.bb
  * @since     6.0.0
- * @excluding dataParser, dataURL
  * @product   highstock
  * @requires  stock/indicators/indicators
  * @requires  stock/indicators/bollinger-bands

@@ -24,7 +24,6 @@ const { sma: SMAIndicator } = SeriesRegistry.seriesTypes;
 /**
  * The CMF series type.
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.cmf
  *
@@ -38,6 +37,7 @@ class CMFIndicator extends SMAIndicator {
          *
          * */
         super(...arguments);
+        /** @internal */
         this.nameBase = 'Chaikin Money Flow';
     }
     /* *
@@ -194,6 +194,7 @@ class CMFIndicator extends SMAIndicator {
  * @requires     stock/indicators/indicators
  * @requires     stock/indicators/cmf
  * @optionparent plotOptions.cmf
+ * @internal
  */
 CMFIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
     /**
@@ -214,7 +215,6 @@ SeriesRegistry.registerSeriesType('cmf', CMFIndicator);
  *  Default Export
  *
  * */
-/** @internal */
 export default CMFIndicator;
 /* *
  *
@@ -228,7 +228,6 @@ export default CMFIndicator;
  * @extends   series,plotOptions.cmf
  * @since     6.0.0
  * @product   highstock
- * @excluding dataParser, dataURL
  * @requires  stock/indicators/indicators
  * @requires  stock/indicators/cmf
  * @apioption series.cmf

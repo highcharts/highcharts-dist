@@ -13,7 +13,7 @@
 'use strict';
 import H from '../Core/Globals.js';
 const { composed } = H;
-import { addEvent, merge, pushUnique } from '../Shared/Utilities.js';
+import { addEvent, clamp, merge, pushUnique } from '../Shared/Utilities.js';
 /* *
  *
  *  Composition
@@ -56,7 +56,7 @@ function onSeriesAfterRender() {
         seriesOptions.id !== 'highcharts-navigator-series' &&
         series.visible) {
         const { points, xAxis, yAxis } = series, { cross, crosshair, crossLabel } = yAxis, pLength = points.length, dataLength = series.dataTable.rowCount, x = series.getColumn('x')[dataLength - 1], y = series.getColumn('y')[dataLength - 1] ??
-            series.getColumn('close')[dataLength - 1];
+            series.getColumn('close')[dataLength - 1], modifiedY = series.dataModify?.modifyValue(y) ?? y;
         if (lastPrice?.enabled) {
             yAxis.crosshair = yAxis.options.crosshair = seriesOptions.lastPrice;
             if (!series.chart.styledMode &&
@@ -75,8 +75,9 @@ function onSeriesAfterRender() {
             yAxis.drawCrosshair(void 0, ({
                 x: x,
                 y,
-                plotX: xAxis.toPixels(x, true),
-                plotY: yAxis.toPixels(y, true)
+                series,
+                plotX: clamp(xAxis.toPixels(x, true), 0, xAxis.len),
+                plotY: yAxis.toPixels(modifiedY, true)
             }));
             // Save price
             if (series.yAxis.cross) {

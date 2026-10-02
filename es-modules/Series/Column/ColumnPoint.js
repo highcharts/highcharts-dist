@@ -10,7 +10,6 @@
  *
  * */
 import Point from '../../Core/Series/Point.js';
-/** @internal */
 export class ColumnPoint extends Point {
 }
 /* *
@@ -18,5 +17,4 @@ export class ColumnPoint extends Point {
  *  Default Export
  *
  * */
-/** @internal */
 export default ColumnPoint;

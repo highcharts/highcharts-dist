@@ -23,7 +23,6 @@ import { correctFloat, extend, isArray, merge } from '../../../Shared/Utilities.
 /**
  * The Directional Movement Index (DMI) series type.
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.dmi
  *
@@ -35,6 +34,7 @@ class DMIIndicator extends SMAIndicator {
      *  Functions
      *
      * */
+    /** @internal */
     calculateDM(yVal, i, isPositiveDM) {
         const currentHigh = yVal[i][1], currentLow = yVal[i][2], previousHigh = yVal[i - 1][1], previousLow = yVal[i - 1][2];
         let DM;
@@ -48,15 +48,19 @@ class DMIIndicator extends SMAIndicator {
         }
         return correctFloat(DM);
     }
+    /** @internal */
     calculateDI(smoothedDM, tr) {
         return smoothedDM / tr * 100;
     }
+    /** @internal */
     calculateDX(plusDI, minusDI) {
         return correctFloat(Math.abs(plusDI - minusDI) / Math.abs(plusDI + minusDI) * 100);
     }
+    /** @internal */
     smoothValues(accumulatedValues, currentValue, period) {
         return correctFloat(accumulatedValues - accumulatedValues / period + currentValue);
     }
+    /** @internal */
     getTR(currentPoint, prevPoint) {
         return correctFloat(Math.max(
         // `currentHigh - currentLow`
@@ -66,6 +70,7 @@ class DMIIndicator extends SMAIndicator {
         // `currentLow - previousClose`
         !prevPoint ? 0 : Math.abs(currentPoint[2] - prevPoint[3])));
     }
+    /** @internal */
     getValues(series, params) {
         const period = params.period, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, DMI = [], xData = [], yData = [];
         if (
@@ -152,6 +157,7 @@ class DMIIndicator extends SMAIndicator {
  * @requires     stock/indicators/indicators
  * @requires     stock/indicators/dmi
  * @optionparent plotOptions.dmi
+ * @internal
  */
 DMIIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
     /**
@@ -233,7 +239,6 @@ SeriesRegistry.registerSeriesType('dmi', DMIIndicator);
  *  Default Export
  *
  * */
-/** @internal */
 export default DMIIndicator;
 /* *
  *
@@ -248,9 +253,9 @@ export default DMIIndicator;
  * @extends   series,plotOptions.dmi
  * @since 9.1.0
  * @product   highstock
- * @excluding allAreas, colorAxis,  dataParser, dataURL, joinBy, keys,
- *            navigatorOptions, pointInterval, pointIntervalUnit,
- *            pointPlacement, pointRange, pointStart, showInNavigator, stacking
+ * @excluding allAreas, colorAxis, joinBy, keys, navigatorOptions,
+ *            pointInterval, pointIntervalUnit, pointPlacement, pointRange,
+ *            pointStart, showInNavigator, stacking
  * @requires  stock/indicators/indicators
  * @requires  stock/indicators/dmi
  * @apioption series.dmi

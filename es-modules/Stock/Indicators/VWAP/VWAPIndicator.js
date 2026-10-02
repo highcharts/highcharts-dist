@@ -24,7 +24,6 @@ import { error } from '../../../Core/Utilities.js';
 /**
  * The Volume Weighted Average Price (VWAP) series type.
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.vwap
  *
@@ -36,6 +35,7 @@ class VWAPIndicator extends SMAIndicator {
      *  Functions
      *
      * */
+    /** @internal */
     getValues(series, params) {
         const indicator = this, chart = series.chart, xValues = series.xData, yValues = series.yData, period = params.period;
         let isOHLC = true, volumeSeries;
@@ -77,6 +77,7 @@ class VWAPIndicator extends SMAIndicator {
      * @return {Object}
      * Object contains computed VWAP
      **/
+    /** @internal */
     calculateVWAPValues(isOHLC, xValues, yValues, volumeSeries, period) {
         const volumeValues = volumeSeries.getColumn('y'), volumeLength = volumeValues.length, pointsLength = xValues.length, cumulativePrice = [], cumulativeVolume = [], xData = [], yData = [], VWAP = [];
         let commonLength, typicalPrice, cPrice, cVolume, i, j;
@@ -136,6 +137,7 @@ class VWAPIndicator extends SMAIndicator {
  * @requires     stock/indicators/indicators
  * @requires     stock/indicators/vwap
  * @optionparent plotOptions.vwap
+ * @internal
  */
 VWAPIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
     /**
@@ -158,7 +160,6 @@ SeriesRegistry.registerSeriesType('vwap', VWAPIndicator);
  *  Default Export
  *
  * */
-/** @internal */
 export default VWAPIndicator;
 /* *
  *
@@ -173,7 +174,6 @@ export default VWAPIndicator;
  * @extends   series,plotOptions.vwap
  * @since     6.0.0
  * @product   highstock
- * @excluding dataParser, dataURL
  * @requires  stock/indicators/indicators
  * @requires  stock/indicators/vwap
  * @apioption series.vwap

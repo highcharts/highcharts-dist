@@ -21,7 +21,7 @@ import SVGElement from './SVGElement.js';
 import SVGLabel from './SVGLabel.js';
 import Symbols from './Symbols.js';
 import TextBuilder from './TextBuilder.js';
-import { addEvent, attr, createElement, crisp, css, defined, destroyObjectProperties, extend, isArray, isNumber, isObject, isString, merge, pick, pInt, replaceNested } from '../../../Shared/Utilities.js';
+import { addEvent, attr, createElement, crisp, css, defined, destroyObjectProperties, extend, isArray, isNumber, isObject, isString, merge, pInt, replaceNested } from '../../../Shared/Utilities.js';
 import { uniqueKey } from '../../Utilities.js';
 /* *
  *
@@ -172,7 +172,7 @@ class SVGRenderer {
         this.url = this.getReferenceURL();
         // Add description
         const desc = this.createElement('desc').add();
-        desc.element.appendChild(doc.createTextNode('Created with Highcharts 13.0.0-modified'));
+        desc.element.appendChild(doc.createTextNode('Created with Highcharts 13.1.0'));
         this.defs = this.createElement('defs').add();
         this.allowHTML = allowHTML;
         this.forExport = forExport;
@@ -615,12 +615,12 @@ class SVGRenderer {
         }
         // Add the events. IE9 and IE10 need mouseover and mouseout to function
         // (#667).
-        addEvent(label.element, isMS ? 'mouseover' : 'mouseenter', function () {
+        addEvent(label.element, isMS ? 'mouseover' : 'mouseenter', () => {
             if (curState !== 3) {
                 label.setState(1);
             }
         });
-        addEvent(label.element, isMS ? 'mouseout' : 'mouseleave', function () {
+        addEvent(label.element, isMS ? 'mouseout' : 'mouseleave', () => {
             if (curState !== 3) {
                 label.setState(curState);
             }
@@ -647,19 +647,10 @@ class SVGRenderer {
         // Presentational attributes
         if (!styledMode) {
             label.css(extend({ cursor: 'default' }, normalStyle));
-            // HTML labels don't need to handle pointer events because click and
-            // mouseenter/mouseleave is bound to the underlying <g> element.
-            // Should this be reconsidered, we need more complex logic to share
-            // events between the <g> and its <div> counterpart, and avoid
-            // triggering mouseenter/mouseleave when hovering from one to the
-            // other (#17440).
-            if (useHTML) {
-                label.text.css({ pointerEvents: 'none' });
-            }
         }
         return label
             .on('touchstart', (e) => e.stopPropagation())
-            .on('click', function (e) {
+            .on('click', (e) => {
             if (curState !== 3) {
                 callback?.call(label, e);
             }
@@ -958,7 +949,7 @@ class SVGRenderer {
                         this.attr('height')
                 });
             },
-            duration: pick(animate, true) ? void 0 : 0
+            duration: (animate ?? true) ? void 0 : 0
         });
         renderer.alignElements();
     }
@@ -1116,8 +1107,8 @@ class SVGRenderer {
             // The image width is not always the same as the symbol width. The
             // image may be centered within the symbol, as is the case when
             // image shapes are used as label backgrounds, for example in flags.
-            img.imgwidth = pick(options?.width, symbolSizes[imageSrc]?.width);
-            img.imgheight = pick(options?.height, symbolSizes[imageSrc]?.height);
+            img.imgwidth = (options?.width ?? symbolSizes[imageSrc]?.width);
+            img.imgheight = (options?.height ?? symbolSizes[imageSrc]?.height);
             /**
              * Set the size and position
              */

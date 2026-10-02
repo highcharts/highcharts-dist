@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.0-modified (2026-08-14)
+ * @license Highcharts JS v13.1.0 (2026-10-02)
  * @module highcharts/modules/sankey
  * @requires highcharts
  *
@@ -14,14 +14,14 @@
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(root["_Highcharts"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]["Point"], root["_Highcharts"]["Color"], root["_Highcharts"]["SVGElement"]);
+		module.exports = factory(root["_Highcharts"]["Color"], root["_Highcharts"]["Point"], root["_Highcharts"]["SVGElement"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
 	else if(typeof define === 'function' && define.amd)
-		define("highcharts/modules/sankey", ["highcharts/highcharts"], function (amd1) {return factory(amd1,amd1["SeriesRegistry"],amd1["Point"],amd1["Color"],amd1["SVGElement"]);});
+		define("highcharts/modules/sankey", ["highcharts/highcharts"], function (amd1) {return factory(amd1["Color"],amd1["Point"],amd1["SVGElement"],amd1["SeriesRegistry"],amd1);});
 	else if(typeof exports === 'object')
-		exports["highcharts/modules/sankey"] = factory(root["_Highcharts"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]["Point"], root["_Highcharts"]["Color"], root["_Highcharts"]["SVGElement"]);
+		exports["highcharts/modules/sankey"] = factory(root["_Highcharts"]["Color"], root["_Highcharts"]["Point"], root["_Highcharts"]["SVGElement"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
 	else
-		root["Highcharts"] = factory(root["Highcharts"], root["Highcharts"]["SeriesRegistry"], root["Highcharts"]["Point"], root["Highcharts"]["Color"], root["Highcharts"]["SVGElement"]);
-})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__944__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__260__, __WEBPACK_EXTERNAL_MODULE__620__, __WEBPACK_EXTERNAL_MODULE__28__) => {
+		root["Highcharts"] = factory(root["Highcharts"]["Color"], root["Highcharts"]["Point"], root["Highcharts"]["SVGElement"], root["Highcharts"]["SeriesRegistry"], root["Highcharts"]);
+})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__620__, __WEBPACK_EXTERNAL_MODULE__260__, __WEBPACK_EXTERNAL_MODULE__28__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__944__) => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
@@ -89,48 +89,27 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__944__;
 /******/ 	
 /************************************************************************/
 /******/ 	/* webpack/runtime/compat get default export */
-/******/ 	(() => {
-/******/ 		// getDefaultExport function for compatibility with non-harmony modules
-/******/ 		__webpack_require__.n = (module) => {
-/******/ 			const getter = module && module.__esModule ?
-/******/ 				() => (module['default']) :
-/******/ 				() => (module);
-/******/ 			__webpack_require__.d(getter, { a: getter });
-/******/ 			return getter;
-/******/ 		};
-/******/ 	})();
+/******/ 	// getDefaultExport function for compatibility with non-harmony modules
+/******/ 	__webpack_require__.n = (module) => {
+/******/ 		const getter = module && module.__esModule ?
+/******/ 			() => (module['default']) :
+/******/ 			() => (module);
+/******/ 		__webpack_require__.d(getter, { a: getter });
+/******/ 		return getter;
+/******/ 	};
 /******/ 	
 /******/ 	/* webpack/runtime/define property getters */
-/******/ 	(() => {
-/******/ 		// define getter/value functions for harmony exports
-/******/ 		__webpack_require__.d = (exports, definition) => {
-/******/ 			if(Array.isArray(definition)) {
-/******/ 				var i = 0;
-/******/ 				while(i < definition.length) {
-/******/ 					var key = definition[i++];
-/******/ 					var binding = definition[i++];
-/******/ 					if(!__webpack_require__.o(exports, key)) {
-/******/ 						if(binding === 0) {
-/******/ 							Object.defineProperty(exports, key, { enumerable: true, value: definition[i++] });
-/******/ 						} else {
-/******/ 							Object.defineProperty(exports, key, { enumerable: true, get: binding });
-/******/ 						}
-/******/ 					} else if(binding === 0) { i++; }
-/******/ 				}
-/******/ 			} else {
-/******/ 				for(var key in definition) {
-/******/ 					if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
-/******/ 						Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
-/******/ 					}
-/******/ 				}
+/******/ 	// define getter/value functions for harmony exports
+/******/ 	__webpack_require__.d = (exports, definition) => {
+/******/ 		for(var key in definition) {
+/******/ 			if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 				Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
 /******/ 			}
-/******/ 		};
-/******/ 	})();
+/******/ 		}
+/******/ 	};
 /******/ 	
 /******/ 	/* webpack/runtime/hasOwnProperty shorthand */
-/******/ 	(() => {
-/******/ 		__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
-/******/ 	})();
+/******/ 	__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop));
 /******/ 	
 /************************************************************************/
 let __webpack_exports__ = {};
@@ -261,13 +240,10 @@ var NodesComposition;
         // For use in formats
         node.name = node.name || node.options.id || '';
         // Mass is used in networkgraph:
-        node.mass = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(
-        // Node:
-        node.options.mass, node.options.marker && node.options.marker.radius, 
-        // Series:
-        this.options.marker && this.options.marker.radius, 
-        // Default:
-        4);
+        node.mass = (node.options.mass ??
+            (node.options.marker && node.options.marker.radius) ??
+            (this.options.marker && this.options.marker.radius) ??
+            4);
         return node;
     }
     NodesComposition.createNode = createNode;
@@ -310,7 +286,9 @@ var NodesComposition;
                 point.fromNode = nodeLookup[point.from];
                 // Point color defaults to the fromNode's color
                 if (chart.styledMode) {
-                    point.colorIndex = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(point.options.colorIndex, nodeLookup[point.from].colorIndex);
+                    point.colorIndex =
+                        point.options.colorIndex ??
+                            nodeLookup[point.from].colorIndex;
                 }
                 else {
                     point.color =
@@ -408,7 +386,7 @@ var NodesComposition;
             else {
                 this.series.options.nodes = [nodeConfig];
             }
-            if ((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(redraw, true)) {
+            if (redraw ?? true) {
                 this.series.chart.redraw(animation);
             }
         }
@@ -475,7 +453,9 @@ class SankeyPoint extends ColumnSeries.prototype.pointClass {
     }
     /**
      * If there are incoming links, place it to the right of the
-     * highest order column that links to this one.
+     * highest order column that links to this one. Circular links are
+     * ignored, so a node reached only through a cycle still anchors to its
+     * non-circular predecessors (or column 0 when it has none).
      *
      * @private
      */
@@ -483,12 +463,15 @@ class SankeyPoint extends ColumnSeries.prototype.pointClass {
         const node = this;
         let fromColumn = -1, fromNode;
         for (let i = 0; i < node.linksTo.length; i++) {
-            const point = node.linksTo[i];
-            if (point.fromNode.column > fromColumn &&
-                point.fromNode !== node // #16080
-            ) {
+            const point = node.linksTo[i], 
+            // A link may be missing its `from` end
+            column = point.fromNode?.column;
+            if ((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.defined)(column) &&
+                column > fromColumn &&
+                point.fromNode !== node && // #16080
+                !point.isCircular) {
                 fromNode = point.fromNode;
-                fromColumn = fromNode.column;
+                fromColumn = column;
             }
         }
         return { fromNode, fromColumn };
@@ -553,6 +536,8 @@ class SankeyPoint extends ColumnSeries.prototype.pointClass {
  *         Inverted sankey diagram
  * @sample highcharts/plotoptions/sankey-outgoing
  *         Sankey diagram with outgoing links
+ * @sample highcharts/series-sankey/circular-dependencies/
+ *         Sankey diagram with circular and self-referencing links
  *
  * @extends      plotOptions.column
  * @since        6.0.0
@@ -576,7 +561,9 @@ const SankeySeriesDefaults = {
     /**
      * Higher numbers makes the links in a sankey diagram or dependency
      * wheel render more curved. A `curveFactor` of 0 makes the lines
-     * straight.
+     * straight. It also sets the turn radius of the bands wrapping around
+     * a circular layout; a self-link's loop turns on the node width
+     * instead.
      *
      * @private
      */
@@ -745,7 +732,8 @@ const SankeySeriesDefaults = {
     /**
      * Determines which side of the chart the nodes are to be aligned to. When
      * the chart is inverted, `top` aligns to the left and `bottom` to the
-     * right.
+     * right. With circular links, the nodes align within the space those
+     * links leave.
      *
      * @sample highcharts/plotoptions/sankey-nodealignment
      *         Node alignment demonstrated
@@ -878,13 +866,12 @@ const SankeySeriesDefaults = {
  *
  * @extends   series,plotOptions.sankey
  * @excluding animationLimit, boostBlending, boostThreshold, borderColor,
- *            borderWidth, crisp, cropThreshold, dataParser,
- *            dataURL, depth, dragDrop, edgeColor, edgeWidth,
- *            findNearestPointBy, getExtremesFromAll, grouping, groupPadding,
- *            groupZPadding, label, maxPointWidth, negativeColor, pointInterval,
- *            pointIntervalUnit, pointPadding, pointPlacement, pointRange,
- *            pointStart, pointWidth, shadow, softThreshold, stacking,
- *            threshold, zoneAxis, zones, dataSorting
+ *            borderWidth, crisp, cropThreshold, depth, dragDrop, edgeColor,
+ *            edgeWidth, findNearestPointBy, getExtremesFromAll, grouping,
+ *            groupPadding, groupZPadding, label, maxPointWidth, negativeColor,
+ *            pointInterval, pointIntervalUnit, pointPadding, pointPlacement,
+ *            pointRange, pointStart, pointWidth, shadow, softThreshold,
+ *            stacking, threshold, zoneAxis, zones, dataSorting
  * @product   highcharts
  * @requires  modules/sankey
  * @apioption series.sankey
@@ -1207,9 +1194,12 @@ var SankeyColumnComposition;
          */
         getTranslationFactor(series) {
             const column = this.points, nodes = column.slice(), chart = series.chart, minLinkWidth = series.options.minLinkWidth || 0;
-            let skipPoint, factor = 0, i, remainingHeight = ((chart.plotSizeY || 0) -
+            let skipPoint, factor = 0, i, remainingHeight = ((series.flowHeight || chart.plotSizeY || 0) -
                 (series.options.borderWidth || 0) -
-                (column.length - 1) * series.nodePadding);
+                (column.length - 1) * series.nodePadding -
+                (series.useCircularLayout ?
+                    column.sankeyColumn.lapSum() :
+                    0));
             // Because the minLinkWidth option doesn't obey the direct
             // translation, we need to run translation iteratively, check
             // node heights, remove those nodes affected by minLinkWidth,
@@ -1253,11 +1243,22 @@ var SankeyColumnComposition;
                     height += nodePadding;
                 }
                 const nodeHeight = Math.max(node.getSum() * factor, series.options.minLinkWidth || 0);
-                height += nodeHeight;
+                height += nodeHeight + (node.wrapLap || 0);
                 return height;
             }, 0);
-            // Node alignment option handling #19096
-            return (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.getAlignFactor)(series.options.nodeAlignment || 'center') * ((series.chart.plotSizeY || 0) - height);
+            // Node alignment option handling #19096. Circular geometry
+            // shrinks the extent aligned within. #8218
+            return (series.flowTop || 0) +
+                (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.getAlignFactor)(series.options.nodeAlignment || 'center') * ((series.flowHeight || (series.chart.plotSizeY || 0)) -
+                    height);
+        }
+        /**
+         * Flow-axis room this column's nodes reserve for self-link laps.
+         * #8218
+         * @private
+         */
+        lapSum() {
+            return this.points.reduce((sum, node) => (sum + (node.wrapLap || 0)), 0);
         }
         /**
          * Get the left position of the column in pixels
@@ -1315,7 +1316,9 @@ var SankeyColumnComposition;
                 const height = Math.max(sum * factor, series.options.minLinkWidth || 0);
                 const directionOffset = node.options[series.chart.inverted ?
                     'offsetHorizontal' :
-                    'offsetVertical'], optionOffset = node.options.offset || 0;
+                    'offsetVertical'], optionOffset = node.options.offset || 0, 
+                // A self-link laps the flow-axis start of its node. #8218
+                lap = column[i].wrapLap || 0;
                 if (sum) {
                     totalNodeOffset = height + nodePadding;
                 }
@@ -1325,14 +1328,14 @@ var SankeyColumnComposition;
                 }
                 if (column[i] === node) {
                     return {
-                        relativeTop: offset + ((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.defined)(directionOffset) ?
+                        relativeTop: offset + lap + ((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.defined)(directionOffset) ?
                             // `directionOffset` is a percent of the node
                             // height
                             (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.relativeLength)(directionOffset, height) :
                             (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.relativeLength)(optionOffset, totalNodeOffset))
                     };
                 }
-                offset += totalNodeOffset;
+                offset += totalNodeOffset + lap;
             }
         }
     }
@@ -1400,9 +1403,17 @@ function getColor(node, options) {
         }
         // Select either point color, level color or inherited color.
         if (!series.chart.styledMode) {
-            color = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(point && point.options.color, level && level.color, colorByPoint, parentColor && variateColor(parentColor), series.color);
+            color = ((point && point.options.color) ??
+                (level && level.color) ??
+                colorByPoint ??
+                (parentColor && variateColor(parentColor)) ??
+                series.color);
         }
-        colorIndex = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(point && point.options.colorIndex, level && level.colorIndex, colorIndexByPoint, parentColorIndex, options.colorIndex);
+        colorIndex = ((point && point.options.colorIndex) ??
+            (level && level.colorIndex) ??
+            colorIndexByPoint ??
+            parentColorIndex ??
+            options.colorIndex);
     }
     return {
         color: color,
@@ -1439,7 +1450,8 @@ function getLevelOptions(params) {
                 let level, levelIsConstant, options;
                 if ((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.isObject)(item) && (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.isNumber)(item.level)) {
                     options = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)({}, item);
-                    levelIsConstant = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(options.levelIsConstant, defaults.levelIsConstant);
+                    levelIsConstant =
+                        options.levelIsConstant ?? defaults.levelIsConstant;
                     // Delete redundant properties.
                     delete options.levelIsConstant;
                     delete options.level;
@@ -1471,7 +1483,7 @@ function setTreeValues(tree, options) {
     const before = options.before, idRoot = options.idRoot, mapIdToNode = options.mapIdToNode, nodeRoot = mapIdToNode[idRoot], levelIsConstant = (options.levelIsConstant !== false), points = options.points, point = points[tree.i], optionsPoint = point && point.options || {}, children = [];
     let childrenTotal = 0;
     tree.levelDynamic = tree.level - (levelIsConstant ? 0 : nodeRoot.level);
-    tree.name = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(point && point.name, '');
+    tree.name = ((point && point.name) ?? '');
     tree.visible = (idRoot === tree.id ||
         options.visible === true);
     if (typeof before === 'function') {
@@ -1492,7 +1504,7 @@ function setTreeValues(tree, options) {
         }
     });
     // Set the values
-    const value = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(optionsPoint.value, childrenTotal);
+    const value = (optionsPoint.value ?? childrenTotal);
     tree.visible = value >= 0 && (childrenTotal > 0 || tree.visible);
     tree.children = children;
     tree.childrenTotal = childrenTotal;
@@ -1518,7 +1530,7 @@ function updateRootId(series) {
         // Get the series options.
         options = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.isObject)(series.options) ? series.options : {};
         // Calculate the rootId.
-        rootId = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(series.rootNode, options.rootId, '');
+        rootId = (series.rootNode ?? options.rootId ?? '');
         // Set rootId on series.userOptions to pick it up in exporting.
         if ((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.isObject)(series.userOptions)) {
             series.userOptions.rootId = rootId;
@@ -1882,6 +1894,31 @@ composeTextPath((highcharts_SVGElement_commonjs_highcharts_SVGElement_commonjs2_
  * @augments Highcharts.Series
  */
 class SankeySeries extends SankeySeries_ColumnSeries {
+    constructor() {
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
+        super(...arguments);
+        /**
+         * Column-axis space reserved for circular geometry past the first
+         * column.
+         * @internal
+         */
+        this.firstColCircShift = 0;
+        /**
+         * Flow-axis extent the columns lay out within, shrunk by what the
+         * circular geometry claims. #8218
+         * @internal
+         */
+        this.flowHeight = 0;
+        /**
+         * Flow-axis start of that extent.
+         * @internal
+         */
+        this.flowTop = 0;
+    }
     /* *
      *
      *  Static Functions
@@ -1948,7 +1985,9 @@ class SankeySeries extends SankeySeries_ColumnSeries {
             node.level = level;
             visited.add(node);
             for (const link of node.linksFrom) {
-                if (link.toNode && !visited.has(link.toNode)) {
+                if (!link.isCircular &&
+                    link.toNode &&
+                    !visited.has(link.toNode)) {
                     series.order(link.toNode, level + 1, visited);
                 }
             }
@@ -1962,16 +2001,21 @@ class SankeySeries extends SankeySeries_ColumnSeries {
      */
     generatePoints() {
         Series_NodesComposition.generatePoints.apply(this, arguments);
+        if (this.useCircularLayout) {
+            // Runs on every Sankey translate
+            this.markCircularLinks(this.points);
+        }
         if (this.orderNodes) {
             for (const node of this.nodes) {
-                // Identify the root node(s)
-                if (node.linksTo.length === 0) {
+                // Identify the root node(s). Circular links, including
+                // self-links, do not anchor a node.
+                if (!node.linksTo.some((link) => !link.isCircular)) {
                     // Start by the root node(s) and recursively set the level
                     // on all following nodes.
                     this.order(node, 0);
                 }
             }
-            (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.stableSort)(this.nodes, (a, b) => (a.level - b.level));
+            ;(0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.stableSort)(this.nodes, (a, b) => (a.level - b.level));
         }
     }
     /**
@@ -1986,8 +2030,8 @@ class SankeySeries extends SankeySeries_ColumnSeries {
         // render all nodes within the plot area (#11917).
         if (this.nodeColumns) {
             const maxLength = this.nodeColumns.reduce((acc, col) => Math.max(acc, col.length), 0);
-            if (maxLength * nodePadding > this.chart.plotSizeY) {
-                nodePadding = this.chart.plotSizeY / maxLength;
+            if (maxLength * nodePadding > (this.chart.plotSizeY || 0)) {
+                nodePadding = (this.chart.plotSizeY || 0) / maxLength;
             }
         }
         return nodePadding;
@@ -2016,9 +2060,15 @@ class SankeySeries extends SankeySeries_ColumnSeries {
             'linkOpacity',
             'opacity'
         ].reduce((obj, key) => {
-            obj[key] = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(stateOptions[key], options[key], levelOptions[key], series.options[key]);
+            obj[key] =
+                stateOptions[key] ??
+                    options[key] ??
+                    levelOptions[key] ??
+                    series.options[key];
             return obj;
-        }, {}), color = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(stateOptions.color, options.color, values.colorByPoint ? point.color : levelOptions.color);
+        }, {}), color = stateOptions.color ??
+            options.color ??
+            (values.colorByPoint ? point.color : levelOptions.color);
         // Node attributes
         if (point.isNode) {
             return {
@@ -2034,17 +2084,61 @@ class SankeySeries extends SankeySeries_ColumnSeries {
             'fill-opacity': values.linkOpacity
         };
     }
+    /** @internal */
     drawTracker() {
         SankeySeries_ColumnSeries.prototype.drawTracker.call(this, this.points);
         SankeySeries_ColumnSeries.prototype.drawTracker.call(this, this.nodes);
     }
+    /** @internal */
     drawPoints() {
         SankeySeries_ColumnSeries.prototype.drawPoints.call(this, this.points);
         SankeySeries_ColumnSeries.prototype.drawPoints.call(this, this.nodes);
     }
+    /** @internal */
     drawDataLabels() {
         SankeySeries_ColumnSeries.prototype.drawDataLabels.call(this, this.points);
         SankeySeries_ColumnSeries.prototype.drawDataLabels.call(this, this.nodes);
+    }
+    /**
+     * Mark links that would close a directed cycle, which are then left out
+     * of the column assignment. Self-links are marked too.
+     *
+     * @param {Array<SankeyPoint>} points The points to check.
+     *
+     * @internal
+     */
+    markCircularLinks(points) {
+        const nodes = this.nodes;
+        for (const point of points) {
+            point.isCircular = false;
+        }
+        // DFS marking links that point back into the path currently walked.
+        // The back edge selected as circular follows the input data order.
+        const visited = new Set(), inStack = new Set(), visit = (node) => {
+            visited.add(node);
+            inStack.add(node);
+            for (const link of node.linksFrom) {
+                const nextNode = link.toNode;
+                if (!nextNode) {
+                    continue;
+                }
+                if (!visited.has(nextNode)) {
+                    visit(nextNode);
+                    // Still on the walked path, so the link closes a cycle.
+                    // A self-link lands here too, as its node is its own
+                    // next node.
+                }
+                else if (inStack.has(nextNode)) {
+                    link.isCircular = true;
+                }
+            }
+            inStack.delete(node);
+        };
+        for (const node of nodes) {
+            if (!visited.has(node)) {
+                visit(node);
+            }
+        }
     }
     /**
      * Run pre-translation by generating the nodeColumns.
@@ -2056,12 +2150,27 @@ class SankeySeries extends SankeySeries_ColumnSeries {
         const series = this, chart = this.chart, options = this.options, nodeColumns = this.nodeColumns, columnCount = nodeColumns.length;
         this.nodeWidth = SankeySeries_getNodeWidth(this, columnCount);
         this.nodePadding = this.getNodePadding();
+        // The whole plot, until the circular geometry below claims its
+        // share. #8218
+        this.firstColCircShift = 0;
+        this.flowTop = 0;
+        this.flowHeight = chart.plotSizeY || 0;
+        if (this.useCircularLayout) {
+            for (const node of this.nodes) {
+                node.wrapLap = 0;
+            }
+        }
         // Find out how much space is needed. Base it on the translation
         // factor of the most spacious column.
         this.translationFactor = nodeColumns.reduce((translationFactor, column) => Math.min(translationFactor, column.sankeyColumn.getTranslationFactor(series)), Infinity);
+        let lastColCircShift = 0;
+        if (this.useCircularLayout && this.wrapLanes(nodeColumns)) {
+            lastColCircShift = this.circularShifts(nodeColumns);
+        }
         this.colDistance =
-            (chart.plotSizeX - this.nodeWidth -
-                options.borderWidth) / Math.max(1, nodeColumns.length - 1);
+            ((chart.plotSizeX || 0) - this.nodeWidth -
+                (options.borderWidth || 0) -
+                this.firstColCircShift - lastColCircShift) / Math.max(1, nodeColumns.length - 1);
         // Calculate level options used in sankey and organization
         series.mapOptionsToLevel = SankeySeries_getLevelOptions({
             // NOTE: if support for allowTraversingTree is added, then from
@@ -2115,15 +2224,325 @@ class SankeySeries extends SankeySeries_ColumnSeries {
         return y;
     }
     /**
+     * Reserve the column-axis room the wrapping bands turn in. Returns the
+     * last column's share; the first column's is left on the series. #8218
+     * @internal
+     */
+    circularShifts(nodeColumns) {
+        const { chart, nodePadding, nodeWidth, options } = this, lastCol = nodeColumns.length - 1;
+        // A turn reaches `bend + linkHeight` past the face it leaves. A
+        // self-link turns from the centre line, so half a node width less.
+        // #8218
+        let firstShift = 0, lastShift = 0;
+        for (const point of this.points) {
+            const { fromNode, toNode } = point;
+            // A link missing either end is no link at all, and `fromNode ===
+            // toNode` would read two of those as a self-link. #8218
+            if (!fromNode || !toNode) {
+                continue;
+            }
+            const loops = fromNode === toNode;
+            if (!(0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.isNumber)(point.wrapLane) && !loops) {
+                continue;
+            }
+            // The `wrapLanes` cap on the scale mirrors this reach. #8218
+            const reach = nodePadding + this.wrapBend(point) +
+                this.linkHeight(point) - (loops ? nodeWidth / 2 : 0);
+            if (toNode.column === 0) {
+                firstShift = Math.max(firstShift, reach);
+            }
+            if (fromNode.column === lastCol) {
+                lastShift = Math.max(lastShift, reach);
+            }
+        }
+        // Cap the reservation rather than the scale, or a short column
+        // axis turns `colDistance` negative and inverts the order. #8218
+        const reserved = firstShift + lastShift, allowed = SankeySeries.CIRCULAR_MAX_FACTOR * Math.max(0, (chart.plotSizeX || 0) - nodeWidth -
+            (options.borderWidth || 0));
+        if (reserved > allowed) {
+            firstShift *= allowed / reserved;
+            lastShift *= allowed / reserved;
+        }
+        this.firstColCircShift = firstShift;
+        return lastShift;
+    }
+    /**
+     * Thickness of a link's band.
+     * @internal
+     */
+    linkHeight(point) {
+        return Math.max((point.weight || 0) * this.translationFactor, this.options.minLinkWidth || 0);
+    }
+    /**
+     * Radius a backward link turns on, before the band thickness. A
+     * self-link turns on the node width, which leaves its loop a hole. #8218
+     * @internal
+     */
+    wrapBend(point) {
+        return this.nodeWidth * (point.fromNode === point.toNode ?
+            1 :
+            (this.options.curveFactor || 0));
+    }
+    /**
+     * How far a self-link's loop may reach either side of its node's centre
+     * line. It bounds the loop both ways round, so a narrow axis shrinks it
+     * instead of flattening it. #8218
+     * @internal
+     */
+    selfReach(node) {
+        const { chart, nodePadding, nodeWidth } = this, centre = node.nodeX +
+            (chart.inverted ? -nodeWidth : nodeWidth) / 2;
+        return Math.min(centre, (chart.plotSizeX || 0) - centre, this.colDistance - nodeWidth / 2 - nodePadding);
+    }
+    /**
+     * Send every backward link to the top or the bottom lane stack, the
+     * shallower one winning, and order each node's band to match. A
+     * self-link laps its own node instead, claiming room inside its column.
+     * The columns then lay out within what is left of the flow axis, so no
+     * lane or lap shares space with a band. Returns whether any link needed
+     * a lane. #8218
+     * @internal
+     */
+    wrapLanes(nodeColumns) {
+        const { chart, nodePadding, nodeWidth, options, points } = this, depth = [0, 0], selfWeight = new Map(), 
+        // Columns hug the edge their alignment names, so offer the
+        // bands the other one first. #8218
+        near = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.getAlignFactor)(options.nodeAlignment || 'center') < 0.5 ?
+            1 :
+            0, 
+        // A self-link's two ends must land on the same offset, and a
+        // band packs from the top either side, so it goes first. #8218
+        laneSide = (point) => (point.fromNode === point.toNode ? -2 :
+            (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.isNumber)(point.wrapLane) ? (point.wrapUp ? -1 : 1) : 0);
+        let wraps = false, thickest;
+        for (const point of points) {
+            const { fromNode, toNode } = point;
+            point.wrapLane = void 0;
+            // Every link drawn backwards needs a lane, whether a cycle put
+            // it there or an explicit `column` did. A link missing either
+            // end gets none. #8218
+            if (!fromNode || !toNode ||
+                (toNode.column || 0) > (fromNode.column || 0)) {
+                continue;
+            }
+            wraps = true;
+            // A self-link claims room beside its own band, not a lane. Two
+            // of them on one node share that room and so draw on top of
+            // each other, which is expected. #8218
+            if (fromNode === toNode) {
+                selfWeight.set(fromNode, (selfWeight.get(fromNode) || 0) + (point.weight || 0));
+                // The lap's fixed part, which the solve below reads off the
+                // column before it knows the scale.
+                fromNode.wrapLap = 2 * nodeWidth;
+                continue;
+            }
+            const side = depth[near] <= depth[1 - near] ? near : 1 - near;
+            point.wrapUp = side === 0;
+            point.wrapLane = 0;
+            depth[side] += point.weight || 0;
+            if ((point.weight || 0) > (thickest?.weight || 0)) {
+                thickest = point;
+            }
+        }
+        if (!wraps) {
+            return false;
+        }
+        // Order each band by where its links are bound, so none has to cross
+        // the band it sits on to reach its lane. Reorders `linksFrom` and
+        // `linksTo`. #8218
+        const bySide = (a, b) => laneSide(a) - laneSide(b);
+        for (const node of this.nodes) {
+            (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.stableSort)(node.linksFrom, bySide);
+            (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.stableSort)(node.linksTo, bySide);
+        }
+        // Lanes and laps claim flow-axis space on the same scale as the node
+        // bands, so solve for the scale where all three fit: fixed parts off
+        // the extent, weighted parts off the divisor. #8218
+        const plotSizeY = chart.plotSizeY || 0, gaps = Math.max(1, nodeColumns.length - 1), span = (chart.plotSizeX || 0) - nodeWidth -
+            (options.borderWidth || 0), 
+        // Breathing room either side of a lane stack, capped so a short
+        // flow axis is not reserved away entirely. Self-links lap inside
+        // their column and need none. #8218
+        pad = (depth[0] || depth[1]) ?
+            Math.min(2 * nodePadding, SankeySeries.CIRCULAR_MAX_FACTOR * plotSizeY / 2) :
+            0, 
+        // What the heaviest turn at a plot edge reserves on the column
+        // axis, split into its fixed and its weighted part.
+        edgeFixed = thickest ? nodePadding + this.wrapBend(thickest) : 0, edgeWeight = thickest?.weight || 0;
+        this.flowTop = pad;
+        this.flowHeight = plotSizeY - 2 * pad;
+        let factor = this.translationFactor;
+        for (let i = 0; i < nodeColumns.length; i++) {
+            const column = nodeColumns[i], sum = column.sankeyColumn.sum();
+            if (!sum) {
+                continue;
+            }
+            let weight = depth[0] + depth[1];
+            if (selfWeight.size) {
+                // A node width cannot give way, so cap what the laps claim,
+                // or a wide node leaves its column no room for its own
+                // bands. The loops then give way in their holes. #8218
+                const lap = column.sankeyColumn.lapSum(), allowed = SankeySeries.CIRCULAR_MAX_FACTOR * Math.max(0, this.flowHeight - (options.borderWidth || 0) -
+                    (column.length - 1) * nodePadding), 
+                // A self-loop turns both sides of its own node, so the
+                // gap to the next column has to hold its band plus a
+                // node width, or the loop closes over its own hole and
+                // comes out a blob. The turns at the plot edges come off
+                // the same span, and an edge column pays for its own
+                // outward turn as well. #8218
+                edge = i === 0 || i === nodeColumns.length - 1, sides = edge ? 1 : 2, lanes = edge ? gaps + 1 : gaps, selfRoom = span - gaps * (nodeWidth + nodePadding) -
+                    sides * edgeFixed -
+                    (edge ? nodePadding + nodeWidth / 2 : 0);
+                if (lap > allowed) {
+                    for (const node of column) {
+                        node.wrapLap = (node.wrapLap || 0) * allowed / lap;
+                    }
+                }
+                for (const node of column) {
+                    const self = selfWeight.get(node) || 0;
+                    weight += self;
+                    if (self && selfRoom > 0) {
+                        factor = Math.min(factor, selfRoom / (self * lanes + sides * edgeWeight));
+                    }
+                }
+            }
+            factor = Math.min(factor, column.sankeyColumn.getTranslationFactor(this) * sum /
+                (sum + weight));
+        }
+        // A turn needs the band's own thickness past each face, and what it
+        // may reserve there is capped. Let the flow axis give way rather
+        // than fill up, or a band too thick to turn in turns outside. #8218
+        if (thickest) {
+            const wrapRoom = SankeySeries.CIRCULAR_MAX_FACTOR *
+                (chart.plotSizeX || 0) -
+                2 * (this.wrapBend(thickest) + nodePadding);
+            if (wrapRoom > 0) {
+                factor = Math.min(factor, wrapRoom / (thickest.weight || 1));
+            }
+        }
+        // No column carries any weight, so there is nothing to lay out and
+        // no scale to lay it out at. Leaving the extent alone keeps the
+        // reserve out of `0 * Infinity`. #8218
+        if (!isFinite(factor)) {
+            return false;
+        }
+        this.translationFactor = factor;
+        // Stack the lanes inwards from their plot edge, then hand the flow
+        // axis whatever they left. Measuring the stacks in pixels rather
+        // than in weight is what keeps `minLinkWidth` from inflating one
+        // past its share. #8218
+        const stack = [pad / 2, pad / 2];
+        for (const point of points) {
+            if ((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.isNumber)(point.wrapLane)) {
+                const side = point.wrapUp ? 0 : 1;
+                point.wrapLane = stack[side];
+                stack[side] += this.linkHeight(point);
+            }
+        }
+        this.flowTop = stack[0] + pad / 2;
+        this.flowHeight = plotSizeY - this.flowTop - stack[1] - pad / 2;
+        // Additive, so a lap the cap above shrank keeps what it was left.
+        selfWeight.forEach((weight, node) => {
+            node.wrapLap = (node.wrapLap || 0) + weight * factor;
+        });
+        return true;
+    }
+    /**
+     * Resolve a backward link's lane as its centre line and the direction it
+     * lies in, so the path and the label anchor read the same one. #8218
+     * @internal
+     */
+    wrapChannel(point, linkHeight) {
+        const half = Math.abs(linkHeight) / 2, plotSizeY = this.chart.plotSizeY || 0;
+        // A self-link laps its own node, so its lane sits beside that band,
+        // a full turn away, closing the loop as a circle whose hole tracks
+        // the node width. The lap is reserved at the flow-axis start of the
+        // column, which an inverted chart mirrors to the far side. #8218
+        if (point.fromNode === point.toNode) {
+            const { shapeArgs } = point.fromNode, top = shapeArgs?.y ?? 0, bottom = top + (shapeArgs?.height ?? 0), up = !this.chart.inverted, 
+            // The lap, or the room to the plot edge in a series that
+            // lays out no lap.
+            room = this.useCircularLayout ?
+                (point.fromNode.wrapLap || 0) :
+                (up ? top : plotSizeY - bottom), 
+            // The turn is half the travel either way round, so the
+            // column axis bounds it as much as the lap does, or the loop
+            // keeps its height as it loses its width. #8218
+            turn = Math.max(0, Math.min(half + 2 * this.nodeWidth, room - half, 2 * (this.selfReach(point.fromNode) - half)));
+            return up ?
+                { centerY: top - turn, sign: -1 } :
+                { centerY: bottom + turn, sign: 1 };
+        }
+        // An inverted chart mirrors the node faces, so the lane mirrors
+        // with them. Left on its own side it would sit across the plot
+        // from the face it serves, and the band would cross the whole flow
+        // axis to reach it. #8218
+        const lane = point.wrapLane || 0, up = this.chart.inverted ? !point.wrapUp : point.wrapUp;
+        return up ?
+            { centerY: lane + half, sign: -1 } :
+            { centerY: plotSizeY - lane - half, sign: 1 };
+    }
+    /**
+     * Build the path for a link that points backwards: a circular back-edge,
+     * or a link whose explicit `column` places the target left of the source.
+     * The band leaves both node faces, turns into its wrap lane, and runs
+     * back along it. #8218
+     * @internal
+     */
+    backwardLinkPath(point, fromY, toY, linkHeight, nodeLeft, right, nodeW) {
+        const { centerY, sign } = this.wrapChannel(point, linkHeight), colSign = this.chart.inverted ? -1 : 1, half = Math.abs(linkHeight) / 2, 
+        // A self-link has no span to cross, so both its faces sit on
+        // the node's centre line, or the loop comes out an oval a node
+        // wide. It turns on the node width, which gives it its hole.
+        loops = point.fromNode === point.toNode, bend = this.wrapBend(point), fromX = loops ? nodeLeft + nodeW / 2 : nodeLeft + nodeW, toX = loops ? nodeLeft + nodeW / 2 : right, fromC = fromY + linkHeight / 2, toC = toY + linkHeight / 2, 
+        // A turn also reaches sideways, past the face it leaves, and
+        // the columns only gave up what the shifts reserved - which a
+        // short column axis caps. Keep the reach inside the plot, or a
+        // thick band turns outside it. A self-link turns both sides of
+        // its own node, so `selfReach` bounds it. #8218
+        plotSizeX = this.chart.plotSizeX || 0, selfReach = loops ? this.selfReach(point.fromNode) : 0, reachFrom = loops ? selfReach :
+            (colSign > 0 ? plotSizeX - fromX : fromX), reachTo = loops ? selfReach :
+            (colSign > 0 ? toX : plotSizeX - toX), 
+        // The centre line leaves one face, turns into the lane, runs
+        // along it and turns back to the other face. A turn needs twice
+        // its radius of travel, so each side keeps what it can afford.
+        radius = half + bend, rFrom = Math.min(radius, Math.abs(centerY - fromC) / 2, Math.max(0, reachFrom - half)), rTo = Math.min(radius, Math.abs(centerY - toC) / 2, Math.max(0, reachTo - half)), 
+        // Both edges are that centre line offset by half the thickness,
+        // so each corner is two arcs about one centre - an even width
+        // the whole way round. #8218
+        outerFrom = rFrom + half, innerFrom = Math.max(0, rFrom - half), outerTo = rTo + half, innerTo = Math.max(0, rTo - half), fromTurn = fromC + sign * rFrom, toTurn = toC + sign * rTo, laneFrom = centerY - sign * rFrom, laneTo = centerY - sign * rTo, laneLead = centerY + sign * half, laneTail = centerY - sign * half, xFromOuter = fromX + colSign * outerFrom, xFromInner = fromX + colSign * innerFrom, xToOuter = toX - colSign * outerTo, xToInner = toX - colSign * innerTo, 
+        // Every corner turns one way going out, the other coming back.
+        out = sign * colSign > 0 ? 1 : 0, back = 1 - out;
+        return [
+            ['M', fromX, fromC - sign * half],
+            ['A', outerFrom, outerFrom, 0, 0, out, xFromOuter, fromTurn],
+            ['L', xFromOuter, laneFrom],
+            ['A', outerFrom, outerFrom, 0, 0, out, fromX, laneLead],
+            ['L', toX, laneLead],
+            ['A', outerTo, outerTo, 0, 0, out, xToOuter, laneTo],
+            ['L', xToOuter, toTurn],
+            ['A', outerTo, outerTo, 0, 0, out, toX, toC - sign * half],
+            ['L', toX, toC + sign * half],
+            ['A', innerTo, innerTo, 0, 0, back, xToInner, toTurn],
+            ['L', xToInner, laneTo],
+            ['A', innerTo, innerTo, 0, 0, back, toX, laneTail],
+            ['L', fromX, laneTail],
+            ['A', innerFrom, innerFrom, 0, 0, back, xFromInner, laneFrom],
+            ['L', xFromInner, fromTurn],
+            ['A', innerFrom, innerFrom, 0, 0, back, fromX, fromC + sign * half],
+            ['Z']
+        ];
+    }
+    /**
      * Run translation operations for one link.
      * @internal
      */
     translateLink(point, linkToY) {
-        const fromNode = point.fromNode, toNode = point.toNode, chart = this.chart, { inverted } = chart, translationFactor = this.translationFactor, options = this.options, linkColorMode = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(point.linkColorMode, options.linkColorMode), curvy = ((chart.inverted ? -this.colDistance : this.colDistance) *
-            options.curveFactor), nodeLeft = fromNode.nodeX, right = toNode.nodeX, outgoing = point.outgoing;
+        const fromNode = point.fromNode, toNode = point.toNode, chart = this.chart, { inverted } = chart, translationFactor = this.translationFactor, options = this.options, linkColorMode = (point.linkColorMode ?? options.linkColorMode), curvy = ((chart.inverted ? -this.colDistance : this.colDistance) *
+            (options.curveFactor || 0)), nodeLeft = fromNode.nodeX, right = toNode.nodeX, outgoing = point.outgoing;
         let linkHeight = Math.max((point.weight || 0) * translationFactor, this.options.minLinkWidth || 0), fromY = this.getY(point, fromNode, 'linksFrom', linkHeight), toY = linkToY || this.getY(point, toNode, 'linksTo', linkHeight), nodeW = this.nodeWidth, straight = right > nodeLeft + nodeW;
         if (chart.inverted) {
-            fromY = chart.plotSizeY - fromY;
+            fromY = (chart.plotSizeY || 0) - fromY;
             toY = (chart.plotSizeY || 0) - toY;
             nodeW = -nodeW;
             linkHeight = -linkHeight;
@@ -2136,6 +2555,8 @@ class SankeySeries extends SankeySeries_ColumnSeries {
             toY,
             toY + linkHeight
         ];
+        // Label anchor for a wrapping link, set to its lane below.
+        let wrapTop;
         // Links going from left to right
         if (straight && typeof toY === 'number') {
             point.shapeArgs = {
@@ -2163,49 +2584,32 @@ class SankeySeries extends SankeySeries_ColumnSeries {
                     ['Z']
                 ]
             };
-            // Experimental: Circular links pointing backwards. In
-            // v6.1.0 this breaks the rendering completely, so even
-            // this experimental rendering is an improvement. #8218.
-            // @todo
-            // - Make room for the link in the layout
-            // - Automatically determine if the link should go up or
-            //   down.
+            // Handle links that point backwards: circular back-edges, and links
+            // whose explicit `column` places the target left of the source. #8218.
         }
         else if (typeof toY === 'number') {
-            const bend = 20, vDist = chart.plotHeight - fromY - linkHeight, x1 = right - bend - linkHeight, x2 = right - bend, x3 = right, x4 = nodeLeft + nodeW, x5 = x4 + bend, x6 = x5 + linkHeight, fy1 = fromY, fy2 = fromY + linkHeight, fy3 = fy2 + bend, y4 = fy3 + vDist, y5 = y4 + bend, y6 = y5 + linkHeight, ty1 = toY, ty2 = ty1 + linkHeight, ty3 = ty2 + bend, cfy1 = fy2 - linkHeight * 0.7, cy2 = y5 + linkHeight * 0.7, cty1 = ty2 - linkHeight * 0.7, cx1 = x3 - linkHeight * 0.7, cx2 = x4 + linkHeight * 0.7;
             point.shapeArgs = {
-                d: [
-                    ['M', x4, fy1],
-                    ['C', cx2, fy1, x6, cfy1, x6, fy3],
-                    ['L', x6, y4],
-                    ['C', x6, cy2, cx2, y6, x4, y6],
-                    ['L', x3, y6],
-                    ['C', cx1, y6, x1, cy2, x1, y4],
-                    ['L', x1, ty3],
-                    ['C', x1, cty1, cx1, ty1, x3, ty1],
-                    ['L', x3, ty2],
-                    ['C', x2, ty2, x2, ty2, x2, ty3],
-                    ['L', x2, y4],
-                    ['C', x2, y5, x2, y5, x3, y5],
-                    ['L', x4, y5],
-                    ['C', x5, y5, x5, y5, x5, y4],
-                    ['L', x5, fy3],
-                    ['C', x5, fy2, x5, fy2, x4, fy2],
-                    ['Z']
-                ]
+                d: this.backwardLinkPath(point, fromY, toY, linkHeight, nodeLeft, right, nodeW)
             };
+            // The band runs along its lane, not between the columns. Half a
+            // `linkHeight` back lands on the edge it is measured from. #8218
+            if (this.useCircularLayout) {
+                wrapTop = this.wrapChannel(point, linkHeight).centerY -
+                    linkHeight / 2;
+            }
         }
-        // Place data labels in the middle
+        // Place data labels in the middle - on the lane for a wrapping link,
+        // otherwise mid-way along the link band.
         point.dlBox = {
             x: nodeLeft + (right - nodeLeft + nodeW) / 2,
-            y: fromY + (toY - fromY) / 2,
+            y: (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.isNumber)(wrapTop) ? wrapTop : fromY + (toY - fromY) / 2,
             height: linkHeight,
             width: 0
         };
         // And set the tooltip anchor in the middle
         point.tooltipPos = chart.inverted ? [
-            chart.plotSizeY - point.dlBox.y - linkHeight / 2,
-            chart.plotSizeX - point.dlBox.x
+            (chart.plotSizeY || 0) - point.dlBox.y - linkHeight / 2,
+            (chart.plotSizeX || 0) - point.dlBox.x
         ] : [
             point.dlBox.x,
             point.dlBox.y + linkHeight / 2
@@ -2243,12 +2647,13 @@ class SankeySeries extends SankeySeries_ColumnSeries {
      * @internal
      */
     translateNode(node, column) {
-        const translationFactor = this.translationFactor, chart = this.chart, options = this.options, { borderRadius, borderWidth = 0 } = options, sum = node.getSum(), nodeHeight = Math.max(Math.round(sum * translationFactor), this.options.minLinkWidth), nodeWidth = Math.round(this.nodeWidth), nodeOffset = column.sankeyColumn.offset(node, translationFactor), fromNodeTop = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.crisp)((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(nodeOffset.absoluteTop, (column.sankeyColumn.top(translationFactor) +
-            nodeOffset.relativeTop)), borderWidth), left = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.crisp)(this.colDistance * node.column +
+        const translationFactor = this.translationFactor, chart = this.chart, options = this.options, { borderRadius, borderWidth = 0 } = options, sum = node.getSum(), nodeHeight = Math.max(Math.round(sum * translationFactor), this.options.minLinkWidth || 0), nodeWidth = Math.round(this.nodeWidth), nodeOffset = column.sankeyColumn.offset(node, translationFactor), fromNodeTop = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.crisp)(nodeOffset?.absoluteTop ?? (column.sankeyColumn.top(translationFactor) +
+            (nodeOffset?.relativeTop || 0)), borderWidth), left = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.crisp)(this.firstColCircShift +
+            this.colDistance * (node.column || 0) +
             borderWidth / 2, borderWidth) + (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.relativeLength)(node.options[chart.inverted ?
             'offsetVertical' :
             'offsetHorizontal'] || 0, nodeWidth), nodeLeft = chart.inverted ?
-            chart.plotSizeX - left :
+            (chart.plotSizeX || 0) - left :
             left;
         node.sum = sum;
         // If node sum is 0, don't render the rect #12453
@@ -2265,7 +2670,7 @@ class SankeySeries extends SankeySeries_ColumnSeries {
                 borderRadius) || 0, width), 0, nodeHeight / 2);
             if (chart.inverted) {
                 x = nodeLeft - nodeWidth;
-                y = chart.plotSizeY - fromNodeTop - nodeHeight;
+                y = (chart.plotSizeY || 0) - fromNodeTop - nodeHeight;
                 width = node.options.height || options.height || nodeWidth;
                 height = node.options.width || options.width || nodeHeight;
             }
@@ -2284,8 +2689,8 @@ class SankeySeries extends SankeySeries_ColumnSeries {
             node.plotY = 1;
             // Set the anchor position for tooltips
             node.tooltipPos = chart.inverted ? [
-                chart.plotSizeY - y - height / 2,
-                chart.plotSizeX - x - width / 2
+                (chart.plotSizeY || 0) - y - height / 2,
+                (chart.plotSizeX || 0) - x - width / 2
             ] : [
                 x + width / 2,
                 y + height / 2
@@ -2306,12 +2711,12 @@ class SankeySeries extends SankeySeries_ColumnSeries {
         }
     }
 }
-/* *
- *
- *  Static Properties
- *
- * */
 SankeySeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(SankeySeries_ColumnSeries.defaultOptions, Sankey_SankeySeriesDefaults);
+/**
+ * Largest fraction of either plot axis circular geometry may claim.
+ * @internal
+ */
+SankeySeries.CIRCULAR_MAX_FACTOR = 0.6;
 Series_NodesComposition.compose(Sankey_SankeyPoint, SankeySeries);
 (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.extend)(SankeySeries.prototype, {
     animate: LineSeries.prototype.animate,
@@ -2325,7 +2730,8 @@ Series_NodesComposition.compose(Sankey_SankeyPoint, SankeySeries);
     noSharedTooltip: true,
     pointArrayMap: ['from', 'to', 'weight'],
     pointClass: Sankey_SankeyPoint,
-    searchPoint: (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default()).noop
+    searchPoint: (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default()).noop,
+    useCircularLayout: true
 });
 highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default().registerSeriesType('sankey', SankeySeries);
 /* *

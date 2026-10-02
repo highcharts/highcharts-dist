@@ -46,7 +46,7 @@ const BoxPlotSeriesDefaults = {
      *
      * @type    {number|string|Highcharts.BorderRadiusOptionsObject}
      * @default 0
-     * @since   next
+     * @since   13.0.1
      * @product highcharts
      */
     borderRadius: 0,
@@ -319,7 +319,7 @@ const BoxPlotSeriesDefaults = {
  * not specified, it is inherited from [chart.type](#chart.type).
  *
  * @extends   series,plotOptions.boxplot
- * @excluding dataParser, dataURL, marker, stack, stacking, states,
+ * @excluding marker, stack, stacking, states,
  *            boostThreshold, boostBlending
  * @product   highcharts
  * @requires  highcharts-more

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.0-modified (2026-08-14)
+ * @license Highcharts JS v13.1.0 (2026-10-02)
  * @module highcharts/highcharts
  *
  * (c) 2009-2026 Highsoft AS
@@ -77,7 +77,12 @@ G.SVGElement = SVGElement;
 G.SVGRenderer = SVGRenderer;
 G.Templating = Templating;
 G.Tick = Tick;
-G.Time = Time;
+G.Time = class extends Time {
+    constructor(options, lang) {
+        const defaultOptions = Defaults.getOptions();
+        super(options ?? defaultOptions.time, lang ?? defaultOptions.lang);
+    }
+};
 G.Tooltip = Tooltip;
 // Utilities
 G.addEvent = addEvent;

@@ -25,7 +25,8 @@ import { defined, find, fireEvent } from '../../Shared/Utilities.js';
 /**
  * Fire an event on an element that is either wrapped by Highcharts,
  * or a DOM element.
- * @private
+ *
+ * @internal
  */
 function fireEventOnWrappedOrUnwrappedElement(el, eventObject) {
     const type = eventObject.type;
@@ -46,16 +47,15 @@ function fireEventOnWrappedOrUnwrappedElement(el, eventObject) {
         fireEventOnWrappedOrUnwrappedElement(el.element, eventObject);
     }
 }
-/**
- * @private
- */
+/** @internal */
 function getChartTitle(chart) {
     return stripHTMLTags(chart.options.title.text ||
         chart.langFormat('accessibility.defaultChartTitle', { chart: chart }), chart.renderer.forExport);
 }
 /**
  * Return string with the axis name/title.
- * @private
+ *
+ * @internal
  */
 function getAxisDescription(axis) {
     return axis && (axis.options.accessibility?.description ||
@@ -67,11 +67,14 @@ function getAxisDescription(axis) {
 }
 /**
  * Return string with text description of the axis range.
- * @private
+ *
  * @param {Highcharts.Axis} axis
  * The axis to get range desc of.
+ *
  * @return {string}
  * A string with the range description for the axis.
+ *
+ * @internal
  */
 function getAxisRangeDescription(axis) {
     const axisOptions = axis.options || {};
@@ -94,7 +97,8 @@ function getAxisRangeDescription(axis) {
 }
 /**
  * Describe the range of a category axis.
- * @private
+ *
+ * @internal
  */
 function getCategoryAxisRangeDesc(axis) {
     const chart = axis.chart;
@@ -109,7 +113,8 @@ function getCategoryAxisRangeDesc(axis) {
 }
 /**
  * Describe the length of the time window shown on an axis.
- * @private
+ *
+ * @internal
  */
 function getAxisTimeLengthDesc(axis) {
     const chart = axis.chart, range = {}, min = axis.dataMin || axis.min || 0, max = axis.dataMax || axis.max || 0;
@@ -135,7 +140,8 @@ function getAxisTimeLengthDesc(axis) {
 }
 /**
  * Describe an axis from-to range.
- * @private
+ *
+ * @internal
  */
 function getAxisFromToDescription(axis) {
     const chart = axis.chart, options = chart.options, dateRangeFormat = (options &&
@@ -158,11 +164,14 @@ function getAxisFromToDescription(axis) {
 }
 /**
  * Get the DOM element for the first point in the series.
- * @private
+ *
  * @param {Highcharts.Series} series
  * The series to get element for.
+ *
  * @return {Highcharts.HTMLDOMElement|Highcharts.SVGDOMElement|undefined}
  * The DOM element for the point.
+ *
+ * @internal
  */
 function getSeriesFirstPointElement(series) {
     if (series.points && series.points.length) {
@@ -174,11 +183,14 @@ function getSeriesFirstPointElement(series) {
 }
 /**
  * Get the DOM element for the series that we put accessibility info on.
- * @private
+ *
  * @param {Highcharts.Series} series
  * The series to get element for.
+ *
  * @return {Highcharts.HTMLDOMElement|Highcharts.SVGDOMElement|undefined}
  * The DOM element for the series
+ *
+ * @internal
  */
 function getSeriesA11yElement(series) {
     const firstPointEl = getSeriesFirstPointElement(series);
@@ -190,7 +202,8 @@ function getSeriesA11yElement(series) {
 /**
  * Remove aria-hidden from element. Also unhides parents of the element, and
  * hides siblings that are not explicitly unhidden.
- * @private
+ *
+ * @internal
  */
 function unhideChartElementFromAT(chart, element) {
     element.setAttribute('aria-hidden', false);
@@ -211,7 +224,8 @@ function unhideChartElementFromAT(chart, element) {
 }
 /**
  * Hide series from screen readers.
- * @private
+ *
+ * @internal
  */
 function hideSeriesFromAT(series) {
     const seriesEl = getSeriesA11yElement(series);
@@ -221,7 +235,8 @@ function hideSeriesFromAT(series) {
 }
 /**
  * Get series objects by series name.
- * @private
+ *
+ * @internal
  */
 function getSeriesFromName(chart, name) {
     if (!name) {
@@ -233,7 +248,8 @@ function getSeriesFromName(chart, name) {
 }
 /**
  * Get point in a series from x/y values.
- * @private
+ *
+ * @internal
  */
 function getPointFromXY(series, x, y) {
     let i = series.length, res;
@@ -248,7 +264,8 @@ function getPointFromXY(series, x, y) {
 }
 /**
  * Get relative position of point on an x/y axis from 0 to 1.
- * @private
+ *
+ * @internal
  */
 function getRelativePointAxisPosition(axis, point) {
     if (!defined(axis.dataMin) || !defined(axis.dataMax)) {
@@ -261,7 +278,8 @@ function getRelativePointAxisPosition(axis, point) {
 }
 /**
  * Get relative position of point on an x/y axis from 0 to 1.
- * @private
+ *
+ * @internal
  */
 function scrollAxisToPoint(point) {
     const xAxis = point.series.xAxis, yAxis = point.series.yAxis, axis = (xAxis && xAxis.scrollbar ? xAxis : yAxis), scrollbar = (axis && axis.scrollbar);
@@ -282,6 +300,7 @@ function scrollAxisToPoint(point) {
  *  Default Export
  *
  * */
+/** @internal */
 const ChartUtilities = {
     fireEventOnWrappedOrUnwrappedElement,
     getChartTitle,
@@ -295,4 +314,5 @@ const ChartUtilities = {
     hideSeriesFromAT,
     scrollAxisToPoint
 };
+/** @internal */
 export default ChartUtilities;

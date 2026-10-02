@@ -116,7 +116,7 @@ const AreaRangeSeriesDefaults = {
          *         Data labels on range series
          * @sample highcharts/plotoptions/arearange-datalabels/
          *         Data labels on range series
-         * @deprecated next
+         * @deprecated 13.0.1
          */
         xLow: 0,
         /**
@@ -127,7 +127,7 @@ const AreaRangeSeriesDefaults = {
          *
          * @sample highcharts/plotoptions/arearange-datalabels/
          *         Data labels on range series
-         * @deprecated next
+         * @deprecated 13.0.1
          */
         xHigh: 0,
         /**
@@ -138,7 +138,7 @@ const AreaRangeSeriesDefaults = {
          *
          * @sample highcharts/plotoptions/arearange-datalabels/
          *         Data labels on range series
-         * @deprecated next
+         * @deprecated 13.0.1
          */
         yLow: 0,
         /**
@@ -149,7 +149,7 @@ const AreaRangeSeriesDefaults = {
          *
          * @sample highcharts/plotoptions/arearange-datalabels/
          *         Data labels on range series
-         * @deprecated next
+         * @deprecated 13.0.1
          */
         yHigh: 0
     }
@@ -184,7 +184,7 @@ const AreaRangeSeriesDefaults = {
  *
  *
  * @extends   series,plotOptions.arearange
- * @excluding dataParser, dataURL, stack, stacking
+ * @excluding stack, stacking
  * @product   highcharts highstock
  * @requires  highcharts-more
  * @apioption series.arearange

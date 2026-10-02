@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v13.0.0-modified (2026-08-14)
+ * @license Highmaps JS v13.1.0 (2026-10-02)
  * @module highcharts/modules/contour
  * @requires highcharts
  * @requires highcharts/modules/coloraxis
@@ -15,48 +15,27 @@ import "./coloraxis.src.js";
 /******/ 
 /************************************************************************/
 /******/ /* webpack/runtime/compat get default export */
-/******/ (() => {
-/******/ 	// getDefaultExport function for compatibility with non-harmony modules
-/******/ 	__webpack_require__.n = (module) => {
-/******/ 		const getter = module && module.__esModule ?
-/******/ 			() => (module['default']) :
-/******/ 			() => (module);
-/******/ 		__webpack_require__.d(getter, { a: getter });
-/******/ 		return getter;
-/******/ 	};
-/******/ })();
+/******/ // getDefaultExport function for compatibility with non-harmony modules
+/******/ __webpack_require__.n = (module) => {
+/******/ 	const getter = module && module.__esModule ?
+/******/ 		() => (module['default']) :
+/******/ 		() => (module);
+/******/ 	__webpack_require__.d(getter, { a: getter });
+/******/ 	return getter;
+/******/ };
 /******/ 
 /******/ /* webpack/runtime/define property getters */
-/******/ (() => {
-/******/ 	// define getter/value functions for harmony exports
-/******/ 	__webpack_require__.d = (exports, definition) => {
-/******/ 		if(Array.isArray(definition)) {
-/******/ 			var i = 0;
-/******/ 			while(i < definition.length) {
-/******/ 				var key = definition[i++];
-/******/ 				var binding = definition[i++];
-/******/ 				if(!__webpack_require__.o(exports, key)) {
-/******/ 					if(binding === 0) {
-/******/ 						Object.defineProperty(exports, key, { enumerable: true, value: definition[i++] });
-/******/ 					} else {
-/******/ 						Object.defineProperty(exports, key, { enumerable: true, get: binding });
-/******/ 					}
-/******/ 				} else if(binding === 0) { i++; }
-/******/ 			}
-/******/ 		} else {
-/******/ 			for(var key in definition) {
-/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
-/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
-/******/ 				}
-/******/ 			}
+/******/ // define getter/value functions for harmony exports
+/******/ __webpack_require__.d = (exports, definition) => {
+/******/ 	for(var key in definition) {
+/******/ 		if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 			Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
 /******/ 		}
-/******/ 	};
-/******/ })();
+/******/ 	}
+/******/ };
 /******/ 
 /******/ /* webpack/runtime/hasOwnProperty shorthand */
-/******/ (() => {
-/******/ 	__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
-/******/ })();
+/******/ __webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop));
 /******/ 
 /************************************************************************/
 
@@ -96,7 +75,6 @@ const { scatter: { prototype: { pointClass: ScatterPoint } } } = (external_highc
  *  Class
  *
  * */
-/** @internal */
 class ContourPoint extends ScatterPoint {
 }
 /* *
@@ -104,7 +82,6 @@ class ContourPoint extends ScatterPoint {
  *  Default Export
  *
  * */
-/** @internal */
 /* harmony default export */ const Contour_ContourPoint = (ContourPoint);
 
 ;// ./code/es-modules/Series/Contour/ContourShader.js
@@ -418,21 +395,19 @@ const ContourSeriesDefaults = {
  * @sample highcharts/demo/contour-mountain/
  *         Simple contour
  *
- * @extends      series,plotOptions.contour
- * @excluding    cropThreshold, dataParser, dataURL, dragDrop ,pointRange,
- *               stack, allowPointSelect, boostBlending, boostThreshold, color,
- *               colorIndex, connectEnds, connectNulls, crisp, dashStyle,
- *               inactiveOtherPoints, jitter, linecap, negativeColor,
- *               pointInterval, pointStart, pointIntervalUnit, lineWidth,
- *               onPoint, pointPlacement, shadow, stacking, step, threshold,
- *               zoneAxis, zones, onPoint, grouping, groupPadding,
- *               groupZPadding
+ * @extends   series,plotOptions.contour
+ * @excluding allowPointSelect, boostBlending, boostThreshold, color,
+ *            colorIndex, connectEnds, connectNulls, crisp, cropThreshold,
+ *            dashStyle, dragDrop, grouping, groupPadding, groupZPadding,
+ *            inactiveOtherPoints, jitter, linecap, lineWidth, negativeColor,
+ *            onPoint, pointInterval, pointIntervalUnit, pointPlacement,
+ *            pointRange, pointStart, shadow, stack, stacking, step, threshold,
+ *            zoneAxis, zones
  *
- *
- * @product      highcharts highmaps
- * @requires     modules/coloraxis
- * @requires     modules/contour
- * @apioption    series.contour
+ * @product   highcharts highmaps
+ * @requires  modules/coloraxis
+ * @requires  modules/contour
+ * @apioption series.contour
  */
 /**
  * An array of data points for the series. For the `contour` series
@@ -925,6 +900,7 @@ const { seriesTypes: { scatter: ScatterSeries } } = (external_highcharts_src_js_
  * */
 /** @internal */
 class ContourSeries extends ScatterSeries {
+    /** @internal */
     static compose(SVGRendererClass) {
         Series_CrossSymbol.compose(SVGRendererClass);
     }
@@ -945,6 +921,7 @@ class ContourSeries extends ScatterSeries {
      * Methods
      *
      * */
+    /** @internal */
     getContourData() {
         const points = this.points, len = points.length, points3d = new Float32Array(len * 3), points2d = new Float64Array(len * 2);
         for (let i = 0; i < len; i++) {
@@ -957,6 +934,7 @@ class ContourSeries extends ScatterSeries {
         }
         return [new Core_Delaunay(points2d).triangles, points3d];
     }
+    /** @internal */
     update(options, redraw) {
         options = (0,external_highcharts_src_js_default_namespaceObject.diffObjects)(options, this.userOptions);
         const uniformOptions = [
@@ -1018,6 +996,7 @@ class ContourSeries extends ScatterSeries {
             this.run();
         }
     }
+    /** @internal */
     async run() {
         const series = this, chart = series.chart, renderer = chart.renderer, canvas = series.canvas, gpu = navigator.gpu, context = series.context = canvas.getContext('webgpu');
         if (!gpu || !context) {
@@ -1217,6 +1196,7 @@ class ContourSeries extends ScatterSeries {
             chart.onload();
         }
     }
+    /** @internal */
     destroy() {
         // Remove the foreign object. The canvas will be removed with it.
         // For some reason, `series.update` calls `series.destroy` even if
@@ -1226,6 +1206,7 @@ class ContourSeries extends ScatterSeries {
         this.canvas?.parentElement?.remove();
         super.destroy();
     }
+    /** @internal */
     drawGraph() {
         // Do nothing
     }
@@ -1235,6 +1216,7 @@ class ContourSeries extends ScatterSeries {
      * @param {boolean} renderFrame
      * Whether to rerender the series' context after setting the uniforms.
      * Defaults to `true`.
+     * @internal
      */
     setUniforms(renderFrame = true) {
         this.setFrameExtremesUniform(false);
@@ -1253,6 +1235,7 @@ class ContourSeries extends ScatterSeries {
      * @param {boolean} renderFrame
      * Whether to rerender the series' context after setting the uniform.
      * Defaults to `true`.
+     * @internal
      */
     setContourIntervalUniform(renderFrame = true) {
         if (this.device && this.buffers?.contourIntervalUniform) {
@@ -1264,6 +1247,7 @@ class ContourSeries extends ScatterSeries {
     }
     /**
      * Set the contour offset uniform according to the series options.
+     * @internal
      */
     setContourOffsetUniform(renderFrame = true) {
         if (this.device && this.buffers?.contourOffsetUniform) {
@@ -1275,6 +1259,7 @@ class ContourSeries extends ScatterSeries {
     }
     /**
      * Set the smooth coloring uniform according to the series options.
+     * @internal
      */
     setSmoothColoringUniform(renderFrame = true) {
         if (this.device && this.buffers?.smoothColoringUniform) {
@@ -1286,6 +1271,7 @@ class ContourSeries extends ScatterSeries {
     }
     /**
      * Set the line width uniform according to the series options.
+     * @internal
      */
     setLineWidthUniform(renderFrame = true) {
         if (this.device && this.buffers?.lineWidthUniform) {
@@ -1297,6 +1283,7 @@ class ContourSeries extends ScatterSeries {
     }
     /**
      * Set the contour line color uniform according to the series options.
+     * @internal
      */
     setContourLineColorUniform(renderFrame = true) {
         if (this.device && this.buffers?.contourLineColor) {
@@ -1308,6 +1295,7 @@ class ContourSeries extends ScatterSeries {
     }
     /**
      * Set the frame extremes uniform according to the series options.
+     * @internal
      */
     setFrameExtremesUniform(renderFrame = true) {
         if (this.device && this.buffers?.extremesUniform) {
@@ -1319,6 +1307,7 @@ class ContourSeries extends ScatterSeries {
     }
     /**
      * Set the value extremes uniform according to the series data.
+     * @internal
      */
     setValueExtremesUniform(renderFrame = true) {
         if (this.device && this.buffers?.valueExtremesUniform) {
@@ -1330,6 +1319,7 @@ class ContourSeries extends ScatterSeries {
     }
     /**
      * Set the color axis stops uniforms according to the color axis options.
+     * @internal
      */
     setColorAxisStopsUniforms(renderFrame = true) {
         const stopsBuffer = this.buffers?.colorAxisStopsUniform;
@@ -1347,6 +1337,7 @@ class ContourSeries extends ScatterSeries {
     }
     /**
      * Set the is inverted uniform according to the series options.
+     * @internal
      */
     setIsInvertedUniform(renderFrame = true) {
         if (this.device && this.buffers?.isInvertedUniform) {
@@ -1463,6 +1454,7 @@ class ContourSeries extends ScatterSeries {
      * */
     /**
      * Returns the RGBA color as a fraction of the 255 range.
+     * @internal
      */
     static rgbaAsFrac(rgba) {
         return [
@@ -1477,6 +1469,7 @@ class ContourSeries extends ScatterSeries {
  * Static Properties
  *
  * */
+/** @internal */
 ContourSeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(ScatterSeries.defaultOptions, Contour_ContourSeriesDefaults);
 /* harmony default export */ const Contour_ContourSeries = (ContourSeries);
 (0,external_highcharts_src_js_default_namespaceObject.extend)(ContourSeries.prototype, {

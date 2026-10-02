@@ -16,7 +16,7 @@ import H from '../../Core/Globals.js';
 const { noop } = H;
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { heatmap: HeatmapSeries, scatter: ScatterSeries } = SeriesRegistry.seriesTypes;
-import { clamp, pick } from '../../Shared/Utilities.js';
+import { clamp } from '../../Shared/Utilities.js';
 /* *
  *
  *  Functions
@@ -150,7 +150,7 @@ const TilemapShapes = {
                     xAxis.translate(point.x - xPad, 0, 1, 0, 0)), -xAxis.len, 2 * xAxis.len), x3 = clamp(Math.round(xAxis.len -
                     xAxis.translate(point.x + xPad, 0, 1, 0, 0)), -xAxis.len, 2 * xAxis.len), y1 = clamp(Math.round(yAxis.translate(point.y - yPad, 0, 1, 0, 0)), -yAxis.len, 2 * yAxis.len), y2 = clamp(Math.round(yAxis.translate(point.y, 0, 1, 0, 0)), -yAxis.len, 2 * yAxis.len), y3 = clamp(Math.round(yAxis.translate(point.y + yPad, 0, 1, 0, 0)), -yAxis.len, 2 * yAxis.len);
                 const x2 = clamp(Math.round(xAxis.len -
-                    xAxis.translate(point.x, 0, 1, 0, 0)), -xAxis.len, 2 * xAxis.len), pointPadding = pick(point.pointPadding, seriesPointPadding), 
+                    xAxis.translate(point.x, 0, 1, 0, 0)), -xAxis.len, 2 * xAxis.len), pointPadding = (point.pointPadding ?? seriesPointPadding), 
                 // We calculate the point padding of the midpoints to
                 // preserve the angles of the shape.
                 midPointPadding = pointPadding *

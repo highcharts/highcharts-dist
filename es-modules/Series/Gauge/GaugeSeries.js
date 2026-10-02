@@ -15,7 +15,7 @@ import H from '../../Core/Globals.js';
 const { noop } = H;
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { series: Series, seriesTypes: { column: ColumnSeries } } = SeriesRegistry;
-import { clamp, defined, extend, isNumber, merge, pick, relativeLength } from '../../Shared/Utilities.js';
+import { clamp, defined, extend, isNumber, merge, relativeLength } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class
@@ -194,7 +194,7 @@ class GaugeSeries extends Series {
         Series.prototype.setData.call(this, data, false);
         this.processData();
         this.generatePoints();
-        if (pick(redraw, true)) {
+        if (redraw ?? true) {
             this.chart.redraw();
         }
     }
@@ -557,7 +557,7 @@ export default GaugeSeries;
  *
  * @extends   series,plotOptions.gauge
  * @excluding animationLimit, boostThreshold, connectEnds, connectNulls,
- *            cropThreshold, dashStyle, dataParser, dataURL, findNearestPointBy,
+ *            cropThreshold, dashStyle, findNearestPointBy,
  *            getExtremesFromAll, marker, negativeColor, pointPlacement, shadow,
  *            softThreshold, stack, stacking, states, step, threshold,
  *            turboThreshold, zoneAxis, zones, dataSorting, boostBlending

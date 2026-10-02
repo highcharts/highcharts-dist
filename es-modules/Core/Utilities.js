@@ -10,7 +10,7 @@
  *
  * */
 'use strict';
-import { attr, fireEvent, isNumber, isString, objectEach, pick } from '../Shared/Utilities.js';
+import { attr, fireEvent, isNumber, isString, objectEach } from '../Shared/Utilities.js';
 import H from './Globals.js';
 const { charts, win } = H;
 /* *
@@ -113,7 +113,8 @@ export function insertItem(item, collection) {
         !collection[i] ||
             // Handle index option, the element to insert has lower index
             (isNumber(indexOption) &&
-                indexOption < pick(collection[i].options.index, collection[i]._i)) ||
+                indexOption < (collection[i].options.index ??
+                    collection[i]._i)) ||
             // Insert the new item before other internal items
             // (navigator)
             collection[i].options.isInternal) {
@@ -199,7 +200,7 @@ export const uniqueKey = (function () {
  * State of the serial mode.
  */
 export function useSerialIds(mode) {
-    return (serialMode = pick(mode, serialMode));
+    return (serialMode = (mode ?? serialMode));
 }
 /* *
  *

@@ -38,7 +38,6 @@ function meanDeviation(arr, sma) {
 /**
  * The CCI series type.
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.cci
  *
@@ -50,6 +49,7 @@ class CCIIndicator extends SMAIndicator {
      *  Functions
      *
      * */
+    /** @internal */
     getValues(series, params) {
         const period = params.period, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, TP = [], CCI = [], xData = [], yData = [];
         let CCIPoint, p, periodTP = [], len, range = 1, smaTP, TPtemp, meanDev, i;
@@ -102,6 +102,7 @@ class CCIIndicator extends SMAIndicator {
  * @requires     stock/indicators/indicators
  * @requires     stock/indicators/cci
  * @optionparent plotOptions.cci
+ * @internal
  */
 CCIIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
     /**
@@ -117,7 +118,6 @@ SeriesRegistry.registerSeriesType('cci', CCIIndicator);
  *  Default Export
  *
  * */
-/** @internal */
 export default CCIIndicator;
 /* *
  *
@@ -130,7 +130,6 @@ export default CCIIndicator;
  *
  * @extends   series,plotOptions.cci
  * @since     6.0.0
- * @excluding dataParser, dataURL
  * @product   highstock
  * @requires  stock/indicators/indicators
  * @requires  stock/indicators/cci

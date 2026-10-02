@@ -22,14 +22,13 @@
 import DotPlotSeriesDefaults from './DotPlotSeriesDefaults.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { column: ColumnSeries } = SeriesRegistry.seriesTypes;
-import { extend, isNumber, merge, pick } from '../../Shared/Utilities.js';
+import { extend, isNumber, merge } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class
  *
  * */
 /**
- * @internal
  * @class
  * @name Highcharts.seriesTypes.dotplot
  *
@@ -41,6 +40,7 @@ class DotPlotSeries extends ColumnSeries {
      *  Functions
      *
      * */
+    /** @internal */
     drawPoints() {
         const series = this, options = series.options, renderer = series.chart.renderer, seriesMarkerOptions = options.marker, total = this.points.reduce((acc, point) => acc + Math.abs(point.y || 0), 0), totalHeight = this.points.reduce((acc, point) => acc + (point.shapeArgs?.height || 0), 0), itemPadding = options.itemPadding || 0, columnWidth = this.points[0]?.shapeArgs?.width || 0;
         let slotsPerBar = options.slotsPerBar, slotWidth = columnWidth;
@@ -59,7 +59,8 @@ class DotPlotSeries extends ColumnSeries {
         const height = (totalHeight * slotsPerBar) / total;
         for (const point of series.points) {
             const pointMarkerOptions = point.marker || {}, symbol = (pointMarkerOptions.symbol ||
-                seriesMarkerOptions.symbol), radius = pick(pointMarkerOptions.radius, seriesMarkerOptions.radius), isSquare = symbol !== 'rect', width = isSquare ? height : slotWidth, shapeArgs = point.shapeArgs || {}, startX = (shapeArgs.x || 0) + ((shapeArgs.width || 0) -
+                seriesMarkerOptions.symbol), radius = pointMarkerOptions.radius ??
+                seriesMarkerOptions.radius, isSquare = symbol !== 'rect', width = isSquare ? height : slotWidth, shapeArgs = point.shapeArgs || {}, startX = (shapeArgs.x || 0) + ((shapeArgs.width || 0) -
                 slotsPerBar * width) / 2, positiveYValue = Math.abs(point.y ?? 0), shapeY = (shapeArgs.y || 0), shapeHeight = (shapeArgs.height || 0);
             let graphics, x = startX, y = point.negative ? shapeY : shapeY + shapeHeight - height, slotColumn = 0;
             point.graphics = graphics = point.graphics || [];
@@ -126,6 +127,7 @@ class DotPlotSeries extends ColumnSeries {
  *  Static Properties
  *
  * */
+/** @internal */
 DotPlotSeries.defaultOptions = merge(ColumnSeries.defaultOptions, DotPlotSeriesDefaults);
 extend(DotPlotSeries.prototype, {
     markerAttribs: void 0
@@ -136,5 +138,4 @@ SeriesRegistry.registerSeriesType('dotplot', DotPlotSeries);
  *  Default Export
  *
  * */
-/** @internal */
 export default DotPlotSeries;

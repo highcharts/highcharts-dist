@@ -17,7 +17,7 @@ import H from '../../Core/Globals.js';
 const { noop } = H;
 import RangeDataLabel from '../RangeDataLabel.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-import { crisp, extend, merge, pick, relativeLength } from '../../Shared/Utilities.js';
+import { crisp, extend, merge, relativeLength } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class
@@ -26,7 +26,6 @@ import { crisp, extend, merge, pick, relativeLength } from '../../Shared/Utiliti
 /**
  * The boxplot series type.
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes#boxplot
  *
@@ -39,12 +38,14 @@ class BoxPlotSeries extends ColumnSeries {
      *
      * */
     // Get presentational attributes
+    /** @internal */
     pointAttribs() {
         // No attributes should be set on point.graphic which is the group. The
         // returned fill is for legend symbols.
         return { fill: this.color };
     }
     // Get an SVGPath object for both whiskers
+    /** @internal */
     getWhiskerPair(halfWidth, stemX, upperWhiskerLength, lowerWhiskerLength, point) {
         const strokeWidth = point.whiskers.strokeWidth(), getWhisker = (xLen, yPos) => {
             const halfLen = relativeLength(xLen, 2 * halfWidth) / 2, crispedYPos = crisp(yPos, strokeWidth);
@@ -67,6 +68,7 @@ class BoxPlotSeries extends ColumnSeries {
         ];
     }
     // Translate data points from raw values x and y to plotX and plotY
+    /** @internal */
     translate() {
         const series = this, yAxis = series.yAxis, pointArrayMap = series.pointArrayMap;
         super.translate.apply(series);
@@ -127,7 +129,10 @@ class BoxPlotSeries extends ColumnSeries {
                     // Stem attributes
                     stemAttr.stroke =
                         point.stemColor || options.stemColor || color;
-                    stemAttr['stroke-width'] = pick(point.stemWidth, options.stemWidth, options.lineWidth);
+                    stemAttr['stroke-width'] =
+                        point.stemWidth ??
+                            options.stemWidth ??
+                            options.lineWidth;
                     stemAttr.dashstyle = (point.stemDashStyle ||
                         options.stemDashStyle ||
                         options.dashStyle);
@@ -137,7 +142,10 @@ class BoxPlotSeries extends ColumnSeries {
                         whiskersAttr.stroke = (point.whiskerColor ||
                             options.whiskerColor ||
                             color);
-                        whiskersAttr['stroke-width'] = pick(point.whiskerWidth, options.whiskerWidth, options.lineWidth);
+                        whiskersAttr['stroke-width'] =
+                            point.whiskerWidth ??
+                                options.whiskerWidth ??
+                                options.lineWidth;
                         whiskersAttr.dashstyle = (point.whiskerDashStyle ||
                             options.whiskerDashStyle ||
                             options.dashStyle);
@@ -158,7 +166,10 @@ class BoxPlotSeries extends ColumnSeries {
                     medianAttr.stroke = (point.medianColor ||
                         options.medianColor ||
                         color);
-                    medianAttr['stroke-width'] = pick(point.medianWidth, options.medianWidth, options.lineWidth);
+                    medianAttr['stroke-width'] =
+                        point.medianWidth ??
+                            options.medianWidth ??
+                            options.lineWidth;
                     medianAttr.dashstyle = (point.medianDashStyle ||
                         options.medianDashStyle ||
                         options.dashStyle);
@@ -211,6 +222,7 @@ class BoxPlotSeries extends ColumnSeries {
         }
     }
     // Return a plain array for speedy calculation
+    /** @internal */
     toYData(point) {
         return [point.low, point.q1, point.median, point.q3, point.high];
     }
@@ -220,6 +232,7 @@ class BoxPlotSeries extends ColumnSeries {
  *  Static Properties
  *
  * */
+/** @internal */
 BoxPlotSeries.defaultOptions = merge(ColumnSeries.defaultOptions, BoxPlotSeriesDefaults);
 extend(BoxPlotSeries.prototype, {
     // Array point configs are mapped to this
@@ -235,7 +248,4 @@ SeriesRegistry.registerSeriesType('boxplot', BoxPlotSeries);
  *  Default Export
  *
  * */
-/**
- * @internal
- */
 export default BoxPlotSeries;

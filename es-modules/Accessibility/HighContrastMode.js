@@ -23,8 +23,9 @@ const { doc, isMS, win } = H;
  * Detect WHCM in the browser.
  *
  * @function Highcharts#isHighContrastModeActive
- * @private
  * @return {boolean} Returns true if the browser is in High Contrast mode.
+ *
+ * @internal
  */
 function isHighContrastModeActive() {
     // Test BG image for IE
@@ -47,9 +48,9 @@ function isHighContrastModeActive() {
  * a separate file.
  *
  * @function Highcharts#setHighContrastTheme
- * @private
  * @param {Highcharts.AccessibilityChart} chart The chart to set the theme of.
- * @return {void}
+ *
+ * @internal
  */
 function setHighContrastTheme(chart) {
     // We might want to add additional functionality here in the future for
@@ -102,8 +103,10 @@ function setHighContrastTheme(chart) {
  *  Default Export
  *
  * */
+/** @internal */
 const whcm = {
     isHighContrastModeActive,
     setHighContrastTheme
 };
+/** @internal */
 export default whcm;

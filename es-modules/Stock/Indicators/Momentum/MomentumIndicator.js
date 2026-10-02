@@ -28,7 +28,6 @@ function populateAverage(xVal, yVal, i, period, index) {
 /**
  * The Momentum series type.
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.momentum
  *
@@ -40,6 +39,7 @@ class MomentumIndicator extends SMAIndicator {
      *  Functions
      *
      * */
+    /** @internal */
     getValues(series, params) {
         const period = params.period, index = params.index, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, MM = [], xData = [], yData = [];
         let i, MMPoint;
@@ -85,6 +85,7 @@ class MomentumIndicator extends SMAIndicator {
  * @requires     stock/indicators/indicators
  * @requires     stock/indicators/momentum
  * @optionparent plotOptions.momentum
+ * @internal
  */
 MomentumIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
     params: {
@@ -100,7 +101,6 @@ SeriesRegistry.registerSeriesType('momentum', MomentumIndicator);
  *  Default Export
  *
  * */
-/** @internal */
 export default MomentumIndicator;
 /* *
  *
@@ -113,7 +113,6 @@ export default MomentumIndicator;
  *
  * @extends   series,plotOptions.momentum
  * @since     6.0.0
- * @excluding dataParser, dataURL
  * @product   highstock
  * @requires  stock/indicators/indicators
  * @requires  stock/indicators/momentum

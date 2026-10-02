@@ -19,7 +19,6 @@ import { error } from '../../../Core/Utilities.js';
 /**
  * The APO series type.
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.apo
  *
@@ -31,6 +30,7 @@ class APOIndicator extends EMAIndicator {
      *  Functions
      *
      * */
+    /** @internal */
     getValues(series, params) {
         const periods = params.periods, index = params.index, 
         // 0- date, 1- Absolute price oscillator
@@ -92,6 +92,7 @@ class APOIndicator extends EMAIndicator {
  * @requires     stock/indicators/indicators
  * @requires     stock/indicators/apo
  * @optionparent plotOptions.apo
+ * @internal
  */
 APOIndicator.defaultOptions = merge(EMAIndicator.defaultOptions, {
     /**
@@ -122,7 +123,6 @@ SeriesRegistry.registerSeriesType('apo', APOIndicator);
  *  Default Export
  *
  * */
-/** @internal */
 export default APOIndicator;
 /* *
  *
@@ -136,7 +136,7 @@ export default APOIndicator;
  * @extends   series,plotOptions.apo
  * @since     7.0.0
  * @product   highstock
- * @excluding allAreas, colorAxis, dataParser, dataURL, joinBy, keys,
+ * @excluding allAreas, colorAxis, joinBy, keys,
  *            navigatorOptions, pointInterval, pointIntervalUnit,
  *            pointPlacement, pointRange, pointStart, showInNavigator, stacking
  * @requires  stock/indicators/indicators

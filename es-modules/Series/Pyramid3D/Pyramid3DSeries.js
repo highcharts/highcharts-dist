@@ -24,7 +24,7 @@ const { funnel3d: Funnel3DSeries } = SeriesRegistry.seriesTypes;
 /**
  * The pyramid3d series type.
  *
- * @private
+ * @internal
  * @class
  * @name Highcharts.seriesTypes.pyramid3d
  * @augments seriesTypes.funnel3d
@@ -40,6 +40,7 @@ class Pyramid3DSeries extends Funnel3DSeries {
  *  Static Properties
  *
  * */
+/** @internal */
 Pyramid3DSeries.defaultOptions = merge(Funnel3DSeries.defaultOptions, Pyramid3DSeriesDefaults);
 SeriesRegistry.registerSeriesType('pyramid3d', Pyramid3DSeries);
 /* *

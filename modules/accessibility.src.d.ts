@@ -65,40 +65,6 @@ declare module "../highcharts.src" {
     }
     interface SymbolOptions {}
     /**
-     * The AccessibilityComponent base class, representing a part of the chart
-     * that has accessibility logic connected to it. This class can be inherited
-     * from to create a custom accessibility component for a chart.
-     *
-     * Components should take care to destroy added elements and unregister
-     * event handlers on destroy. This is handled automatically if using
-     * `this.addEvent` and `this.createElement`.
-     */
-    class AccessibilityComponent {
-        /**
-         * Called when accessibility is disabled or chart is destroyed.
-         */
-        destroy(): void;
-        /**
-         * Get keyboard navigation handler for this component.
-         *
-         * @return The keyboard navigation handler(s) for this component.
-         */
-        getKeyboardNavigation(): (KeyboardNavigationHandler|Array<KeyboardNavigationHandler>);
-        /**
-         * Called on component initialization.
-         */
-        init(): void;
-        /**
-         * Called on every chart render.
-         */
-        onChartRender(): void;
-        /**
-         * Called on updates to the chart, including options changes. Note that
-         * this is also called on first render of chart.
-         */
-        onChartUpdate(): void;
-    }
-    /**
      * Define a keyboard navigation handler for use with a
      * Highcharts.AccessibilityComponent instance. This functions as an
      * abstraction layer for keyboard navigation, and defines a map of keyCodes
@@ -238,11 +204,6 @@ declare module "../highcharts.src" {
      * @return Path
      */
     function circle(x: number, y: number, w: number, h: number): SVGPathArray;
-    /**
-     * If we have a clear root option node for old and new options and a mapping
-     * between, we can use this generic function for the copy and warn logic.
-     */
-    function deprecateFromOptionsMap(): void;
     /**
      * Put accessible info on series and points of a series.
      *

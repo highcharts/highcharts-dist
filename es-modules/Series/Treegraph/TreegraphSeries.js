@@ -49,7 +49,9 @@ class TreegraphSeries extends TreemapSeries {
          *
          * */
         super(...arguments);
+        /** @internal */
         this.nodeList = [];
+        /** @internal */
         this.links = [];
     }
     /* *
@@ -57,6 +59,7 @@ class TreegraphSeries extends TreemapSeries {
      *  Functions
      *
      * */
+    /** @internal */
     init() {
         super.init.apply(this, arguments);
         this.layoutAlgorithm = new TreegraphLayout();
@@ -128,6 +131,7 @@ class TreegraphSeries extends TreemapSeries {
             (plotSizeX - (maxXSize + maxXSize) / 2) / (maxX - minX), bx = maxX === minX ? plotSizeX / 2 : -ax * minX + minXSize / 2;
         return { ax, bx, ay, by };
     }
+    /** @internal */
     getLinks() {
         const series = this;
         const links = [];
@@ -158,16 +162,19 @@ class TreegraphSeries extends TreemapSeries {
         });
         return links;
     }
+    /** @internal */
     buildTree(id, index, level, list, parent) {
         const point = this.points[index];
         level = point?.level ?? level;
         return super.buildTree.call(this, id, index, level, list, parent);
     }
+    /** @internal */
     markerAttribs() {
         // The super Series.markerAttribs returns { width: NaN, height: NaN },
         // so just disable this for now.
         return {};
     }
+    /** @internal */
     setCollapsedStatus(node, visibility) {
         const point = node.point;
         if (point) {
@@ -181,6 +188,7 @@ class TreegraphSeries extends TreemapSeries {
             this.setCollapsedStatus(childNode, visibility);
         });
     }
+    /** @internal */
     drawTracker() {
         ColumnSeries.prototype.drawTracker.apply(this, arguments);
         ColumnSeries.prototype.drawTracker.call(this, this.links);
@@ -228,6 +236,7 @@ class TreegraphSeries extends TreemapSeries {
             series.setColorRecursive(series.tree);
         }
     }
+    /** @internal */
     translateLink(link) {
         const fromNode = link.fromNode, toNode = link.toNode, linkWidth = this.options.link?.lineWidth || 0, factor = this.options.link?.curveFactor ?? 0.5, hasXData = toNode.x !== toNode.node.level ||
             fromNode.x !== fromNode.node.level, type = (link.options.link?.type ??
@@ -348,6 +357,7 @@ class TreegraphSeries extends TreemapSeries {
             seriesProto.drawDataLabels.call(this, this.links);
         }
     }
+    /** @internal */
     destroy() {
         // Links must also be destroyed.
         if (this.links) {
@@ -388,6 +398,7 @@ class TreegraphSeries extends TreemapSeries {
         }
         return attribs;
     }
+    /** @internal */
     drawPoints() {
         TreemapSeries.prototype.drawPoints.apply(this, arguments);
         ColumnSeries.prototype.drawPoints.call(this, this.links);
@@ -453,6 +464,7 @@ class TreegraphSeries extends TreemapSeries {
             [nodeX + width / 2, nodeY];
     }
 }
+/** @internal */
 TreegraphSeries.defaultOptions = merge(TreemapSeries.defaultOptions, TreegraphSeriesDefaults);
 extend(TreegraphSeries.prototype, {
     forceDL: true,

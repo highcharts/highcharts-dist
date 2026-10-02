@@ -26,6 +26,7 @@ class Scatter3DPoint extends ScatterPoint {
      *  Functions
      *
      * */
+    /** @internal */
     applyOptions() {
         super.applyOptions.apply(this, arguments);
         if (!defined(this.z)) {

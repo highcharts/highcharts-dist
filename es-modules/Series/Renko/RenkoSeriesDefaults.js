@@ -76,8 +76,7 @@ const RenkoDefaults = {
  * @extends   series,plotOptions.renko
  * @product   highstock
  * @excluding boost, compare, compareStart, connectNulls, cumulative,
- * cumulativeStart, dataGrouping, dataParser, dataSorting, dataURL,
- * dragDrop, marker, step
+ * cumulativeStart, dataGrouping, dataSorting, dragDrop, marker, step
  * @requires  modules/renko
  * @apioption series.renko
  */

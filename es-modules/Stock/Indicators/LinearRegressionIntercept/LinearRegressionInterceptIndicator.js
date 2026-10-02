@@ -21,7 +21,6 @@ import { extend, merge } from '../../../Shared/Utilities.js';
 /**
  * The Linear Regression Intercept series type.
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.linearRegressionIntercept
  *
@@ -33,6 +32,7 @@ class LinearRegressionInterceptIndicator extends LinearRegressionIndicator {
      *  Functions
      *
      * */
+    /** @internal */
     getEndPointY(lineParameters) {
         return lineParameters.intercept;
     }
@@ -55,6 +55,7 @@ class LinearRegressionInterceptIndicator extends LinearRegressionIndicator {
  * @requires     stock/indicators/indicators
  * @requires     stock/indicators/regressions
  * @optionparent plotOptions.linearregressionintercept
+ * @internal
  */
 LinearRegressionInterceptIndicator.defaultOptions = merge(LinearRegressionIndicator.defaultOptions);
 extend(LinearRegressionInterceptIndicator.prototype, {
@@ -68,7 +69,6 @@ SeriesRegistry.registerSeriesType('linearRegressionIntercept', LinearRegressionI
  *  Default Export
  *
  * */
-/** @internal */
 export default LinearRegressionInterceptIndicator;
 /* *
  *
@@ -83,7 +83,6 @@ export default LinearRegressionInterceptIndicator;
  * @extends   series,plotOptions.linearregressionintercept
  * @since     7.0.0
  * @product   highstock
- * @excluding dataParser,dataURL
  * @requires  stock/indicators/indicators
  * @requires  stock/indicators/regressions
  * @apioption series.linearregressionintercept

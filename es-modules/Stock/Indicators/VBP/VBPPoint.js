@@ -19,9 +19,9 @@ const { sma: { prototype: { pointClass: SMAPoint } } } = SeriesRegistry.seriesTy
  *  Class
  *
  * */
-/** @internal */
 class VBPPoint extends SMAPoint {
     // Required for destroying negative part of volume
+    /** @internal */
     destroy() {
         // @todo: this.negativeGraphic doesn't seem to be used anywhere
         if (this.negativeGraphic) {
@@ -35,5 +35,4 @@ class VBPPoint extends SMAPoint {
  *  Default Export
  *
  * */
-/** @internal */
 export default VBPPoint;

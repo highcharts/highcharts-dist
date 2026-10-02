@@ -1,0 +1,173 @@
+name: Nightly
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_sha:
+        description: Highcharts commit to build
+        required: true
+        type: string
+      source_run_id:
+        description: Highcharts nightly workflow run
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: nightly-build
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout highcharts-dist
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: nightly
+          fetch-depth: 0
+          path: highcharts-dist
+          persist-credentials: false
+
+      - name: Checkout highcharts
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          repository: highcharts/highcharts
+          ref: ${{ inputs.source_sha }}
+          persist-credentials: false
+          path: highcharts
+
+      - name: Use Node.js
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 'lts/*'
+          cache: npm
+          cache-dependency-path: highcharts/package-lock.json
+
+      - name: Reset nightly branch to master
+        working-directory: highcharts-dist
+        run: git reset --hard origin/master
+
+      - name: Install and build
+        working-directory: highcharts
+        run: |
+          npm ci
+          npm run build -- --CI true
+          npx gulp scripts-es5
+          npx gulp dist-verify
+          npx gulp dist-release --force-yes
+
+      - name: Stage distribution changes
+        id: distribution
+        working-directory: highcharts-dist
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_RUN_ID: ${{ inputs.source_run_id }}
+        run: |
+          parent=$(git rev-parse origin/master)
+          git add --all
+
+          if git diff --cached --quiet; then
+            {
+              echo "changed=false"
+              echo "parent=${parent}"
+            } >> "${GITHUB_OUTPUT}"
+            exit 0
+          fi
+
+          branch="nightly-build-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          git config user.name "github-actions[bot]"
+          git config user.email \
+            "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b "${branch}"
+          git commit -m "Nightly build - ${SOURCE_RUN_ID}"
+          auth=$(printf 'x-access-token:%s' "${GH_TOKEN}" | base64 -w 0)
+          echo "::add-mask::${auth}"
+          git -c "http.extraheader=AUTHORIZATION: basic ${auth}" \
+            push origin "HEAD:refs/heads/${branch}"
+          {
+            echo "branch=${branch}"
+            echo "changed=true"
+            echo "tree=$(git rev-parse 'HEAD^{tree}')"
+            echo "parent=${parent}"
+          } >> "${GITHUB_OUTPUT}"
+
+      - name: Reset unchanged nightly branch
+        if: steps.distribution.outputs.changed == 'false'
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8
+        env:
+          PARENT_SHA: ${{ steps.distribution.outputs.parent }}
+        with:
+          github-token: ${{ github.token }}
+          script: |
+            const { owner, repo } = context.repo;
+            await github.rest.git.updateRef({
+              owner,
+              repo,
+              ref: 'heads/nightly',
+              sha: process.env.PARENT_SHA,
+              force: true
+            });
+
+      - name: Publish signed nightly commit
+        if: steps.distribution.outputs.changed == 'true'
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8
+        env:
+          TREE_SHA: ${{ steps.distribution.outputs.tree }}
+          PARENT_SHA: ${{ steps.distribution.outputs.parent }}
+          SOURCE_RUN_ID: ${{ inputs.source_run_id }}
+          TEMP_BRANCH: ${{ steps.distribution.outputs.branch }}
+        with:
+          github-token: ${{ github.token }}
+          script: |
+            const { owner, repo } = context.repo;
+            const parent = process.env.PARENT_SHA;
+            const tempRef = `heads/${process.env.TEMP_BRANCH}`;
+
+            try {
+              await github.rest.git.updateRef({
+                owner,
+                repo,
+                ref: 'heads/nightly',
+                sha: parent,
+                force: true
+              });
+
+              const { data: commit } = await github.rest.git.createCommit({
+                owner,
+                repo,
+                message: `Nightly build - ${process.env.SOURCE_RUN_ID}`,
+                tree: process.env.TREE_SHA,
+                parents: [parent]
+              });
+
+              if (!commit.verification?.verified) {
+                throw new Error(
+                  `GitHub did not verify the nightly commit: ${
+                    commit.verification?.reason || 'unknown reason'
+                  }`
+                );
+              }
+
+              await github.rest.git.updateRef({
+                owner,
+                repo,
+                ref: 'heads/nightly',
+                sha: commit.sha,
+                force: true
+              });
+            } finally {
+              try {
+                await github.rest.git.deleteRef({
+                  owner,
+                  repo,
+                  ref: tempRef
+                });
+              } catch (error) {
+                if (error.status !== 404) {
+                  throw error;
+                }
+              }
+            }

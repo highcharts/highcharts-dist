@@ -17,7 +17,7 @@ import R from '../../Core/Renderer/RendererUtilities.js';
 const { distribute } = R;
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { series: Series } = SeriesRegistry;
-import { arrayMax, clamp, defined, isNumber, pick, pushUnique, relativeLength } from '../../Shared/Utilities.js';
+import { arrayMax, clamp, defined, isNumber, pushUnique, relativeLength } from '../../Shared/Utilities.js';
 /* *
  *
  *  Composition
@@ -324,7 +324,7 @@ var ColumnDataLabel;
                         labelPosition.computed.x = x;
                         labelPosition.computed.y = y - topOffset;
                         // Detect overflowing data labels
-                        if (pick(dataLabelOptions.crop, true)) {
+                        if (dataLabelOptions.crop ?? true) {
                             dataLabelWidth = dataLabel.getBBox().width;
                             let sideOverflow;
                             // Overflow left

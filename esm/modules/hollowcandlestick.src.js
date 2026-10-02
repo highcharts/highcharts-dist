@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.0.0-modified (2026-08-14)
+ * @license Highstock JS v13.1.0 (2026-10-02)
  * @module highcharts/modules/hollowcandlestick
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -19,48 +19,27 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 /******/ 
 /************************************************************************/
 /******/ /* webpack/runtime/compat get default export */
-/******/ (() => {
-/******/ 	// getDefaultExport function for compatibility with non-harmony modules
-/******/ 	__webpack_require__.n = (module) => {
-/******/ 		const getter = module && module.__esModule ?
-/******/ 			() => (module['default']) :
-/******/ 			() => (module);
-/******/ 		__webpack_require__.d(getter, { a: getter });
-/******/ 		return getter;
-/******/ 	};
-/******/ })();
+/******/ // getDefaultExport function for compatibility with non-harmony modules
+/******/ __webpack_require__.n = (module) => {
+/******/ 	const getter = module && module.__esModule ?
+/******/ 		() => (module['default']) :
+/******/ 		() => (module);
+/******/ 	__webpack_require__.d(getter, { a: getter });
+/******/ 	return getter;
+/******/ };
 /******/ 
 /******/ /* webpack/runtime/define property getters */
-/******/ (() => {
-/******/ 	// define getter/value functions for harmony exports
-/******/ 	__webpack_require__.d = (exports, definition) => {
-/******/ 		if(Array.isArray(definition)) {
-/******/ 			var i = 0;
-/******/ 			while(i < definition.length) {
-/******/ 				var key = definition[i++];
-/******/ 				var binding = definition[i++];
-/******/ 				if(!__webpack_require__.o(exports, key)) {
-/******/ 					if(binding === 0) {
-/******/ 						Object.defineProperty(exports, key, { enumerable: true, value: definition[i++] });
-/******/ 					} else {
-/******/ 						Object.defineProperty(exports, key, { enumerable: true, get: binding });
-/******/ 					}
-/******/ 				} else if(binding === 0) { i++; }
-/******/ 			}
-/******/ 		} else {
-/******/ 			for(var key in definition) {
-/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
-/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
-/******/ 				}
-/******/ 			}
+/******/ // define getter/value functions for harmony exports
+/******/ __webpack_require__.d = (exports, definition) => {
+/******/ 	for(var key in definition) {
+/******/ 		if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 			Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
 /******/ 		}
-/******/ 	};
-/******/ })();
+/******/ 	}
+/******/ };
 /******/ 
 /******/ /* webpack/runtime/hasOwnProperty shorthand */
-/******/ (() => {
-/******/ 	__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
-/******/ })();
+/******/ __webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop));
 /******/ 
 /************************************************************************/
 
@@ -175,6 +154,7 @@ class HollowCandlestickSeries extends HollowCandlestickSeries_CandlestickSeries 
          *
          * */
         super(...arguments);
+        /** @internal */
         this.hollowCandlestickData = [];
     }
     /* *
@@ -274,6 +254,22 @@ class HollowCandlestickSeries extends HollowCandlestickSeries_CandlestickSeries 
         };
     }
     /**
+     * The legend's bullish candle is hollow, and colored by trend (#24567).
+     *
+     * @internal
+     * @function Highcharts.seriesTypes.hollowcandlestick#legendSymbolAttribs
+     */
+    legendSymbolAttribs() {
+        return {
+            fill: this.getPointFill({
+                isBullish: true,
+                trendDirection: 'up'
+            }),
+            stroke: this.getLineColor('up'),
+            'stroke-width': this.options.lineWidth
+        };
+    }
+    /**
      * Add color and fill attribute for each point.
      *
      * @private
@@ -289,7 +285,9 @@ class HollowCandlestickSeries extends HollowCandlestickSeries_CandlestickSeries 
     pointAttribs(point, state) {
         const attribs = super.pointAttribs.call(this, point, state);
         let stateOptions;
-        const index = point?.index, hollowcandleInfo = this.hollowCandlestickData[index || 0] || {};
+        // Without a point, as for the legend, fall back to a falling candle
+        // rather than to the first point (#24567)
+        const hollowcandleInfo = this.hollowCandlestickData[point?.index ?? -1] || {};
         attribs.fill = this.getPointFill(hollowcandleInfo) || attribs.fill;
         attribs.stroke = this.getLineColor(hollowcandleInfo.trendDirection) ||
             attribs.stroke;
@@ -416,7 +414,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *
  * @type      {*}
  * @extends   series,plotOptions.hollowcandlestick
- * @excluding dataParser, dataURL, marker
+ * @excluding marker
  * @product   highstock
  * @requires  modules/hollowcandlestick
  * @apioption series.hollowcandlestick

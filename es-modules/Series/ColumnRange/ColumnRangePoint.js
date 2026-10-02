@@ -18,13 +18,13 @@ import { extend, isNumber } from '../../Shared/Utilities.js';
  *  Class
  *
  * */
-/** @internal */
 class ColumnRangePoint extends AreaRangePoint {
     /* *
      *
      *  Functions
      *
      * */
+    /** @internal */
     isValid() {
         return isNumber(this.low);
     }
@@ -37,5 +37,4 @@ extend(ColumnRangePoint.prototype, {
  *  Default Export
  *
  * */
-/** @internal */
 export default ColumnRangePoint;

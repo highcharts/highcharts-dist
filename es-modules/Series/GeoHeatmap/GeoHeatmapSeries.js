@@ -19,7 +19,7 @@ import IU from '../InterpolationUtilities.js';
 const { colorFromPoint, getContext } = IU;
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { seriesTypes: { map: MapSeries } } = SeriesRegistry;
-import { addEvent, extend, isNumber, isObject, merge, pick } from '../../Shared/Utilities.js';
+import { addEvent, extend, isNumber, isObject, merge } from '../../Shared/Utilities.js';
 import { error } from '../../Core/Utilities.js';
 /**
  * Normalize longitude value to -180:180 range.
@@ -58,6 +58,7 @@ class GeoHeatmapSeries extends MapSeries {
          *
          * */
         super(...arguments);
+        /** @internal */
         this.isDirtyCanvas = true;
     }
     /* *
@@ -117,8 +118,8 @@ class GeoHeatmapSeries extends MapSeries {
         const series = this, chart = series.chart, mapView = chart.mapView, seriesOptions = series.options;
         if (series.getInterpolation().enabled && mapView && series.bounds) {
             const ctx = series.context || getContext(series), { canvas, colorAxis, image, chart, points } = series, [colsize, rowsize] = [
-                pick(seriesOptions.colsize, 1),
-                pick(seriesOptions.rowsize, 1)
+                (seriesOptions.colsize ?? 1),
+                (seriesOptions.rowsize ?? 1)
             ], 
             // Calculate dimensions based on series bounds
             topLeft = mapView.projectedUnitsToPixels({
@@ -239,7 +240,7 @@ class GeoHeatmapSeries extends MapSeries {
      * @private
      */
     getProjectedImageData(mapView, projectedWidth, projectedHeight, cartesianImageData, canvas, horizontalShift, verticalShift) {
-        const projectedPixelData = new Uint8ClampedArray(projectedWidth * projectedHeight * 4), lambda = pick(mapView.projection.options.rotation?.[0], 0), widthFactor = canvas.width / 360, heightFactor = -1 * canvas.height / 180;
+        const projectedPixelData = new Uint8ClampedArray(projectedWidth * projectedHeight * 4), lambda = (mapView.projection.options.rotation?.[0] ?? 0), widthFactor = canvas.width / 360, heightFactor = -1 * canvas.height / 180;
         let y = -1;
         // For each pixel on the map plane, find the map
         // coordinate and get the color value
@@ -287,6 +288,7 @@ class GeoHeatmapSeries extends MapSeries {
         }
         return projectedPixelData;
     }
+    /** @internal */
     searchPoint(e, compareX) {
         const series = this, chart = this.chart, mapView = chart.mapView;
         if (mapView &&
@@ -464,7 +466,7 @@ export default GeoHeatmapSeries;
  * specified, it is inherited from [chart.type](#chart.type).
  *
  * @extends   series,plotOptions.geoheatmap
- * @excluding allAreas, dataParser, dataURL, dragDrop, findNearestPointBy,
+ * @excluding allAreas, dragDrop, findNearestPointBy,
  *            joinBy, marker, mapData, negativeColor, onPoint, shadow,
  *            stickyTracking
  * @product   highmaps

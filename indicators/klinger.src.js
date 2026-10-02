@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Stock JS v13.0.0-modified (2026-08-14)
+ * @license Highcharts Stock JS v13.1.0 (2026-10-02)
  * @module highcharts/indicators/klinger
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -15,14 +15,14 @@
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(root["_Highcharts"], root["_Highcharts"]["SeriesRegistry"]);
+		module.exports = factory(root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
 	else if(typeof define === 'function' && define.amd)
-		define("highcharts/indicators/klinger", ["highcharts/highcharts"], function (amd1) {return factory(amd1,amd1["SeriesRegistry"]);});
+		define("highcharts/indicators/klinger", ["highcharts/highcharts"], function (amd1) {return factory(amd1["SeriesRegistry"],amd1);});
 	else if(typeof exports === 'object')
-		exports["highcharts/indicators/klinger"] = factory(root["_Highcharts"], root["_Highcharts"]["SeriesRegistry"]);
+		exports["highcharts/indicators/klinger"] = factory(root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
 	else
-		root["Highcharts"] = factory(root["Highcharts"], root["Highcharts"]["SeriesRegistry"]);
-})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__944__, __WEBPACK_EXTERNAL_MODULE__512__) => {
+		root["Highcharts"] = factory(root["Highcharts"]["SeriesRegistry"], root["Highcharts"]);
+})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__944__) => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
@@ -69,48 +69,27 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__944__;
 /******/ 	
 /************************************************************************/
 /******/ 	/* webpack/runtime/compat get default export */
-/******/ 	(() => {
-/******/ 		// getDefaultExport function for compatibility with non-harmony modules
-/******/ 		__webpack_require__.n = (module) => {
-/******/ 			const getter = module && module.__esModule ?
-/******/ 				() => (module['default']) :
-/******/ 				() => (module);
-/******/ 			__webpack_require__.d(getter, { a: getter });
-/******/ 			return getter;
-/******/ 		};
-/******/ 	})();
+/******/ 	// getDefaultExport function for compatibility with non-harmony modules
+/******/ 	__webpack_require__.n = (module) => {
+/******/ 		const getter = module && module.__esModule ?
+/******/ 			() => (module['default']) :
+/******/ 			() => (module);
+/******/ 		__webpack_require__.d(getter, { a: getter });
+/******/ 		return getter;
+/******/ 	};
 /******/ 	
 /******/ 	/* webpack/runtime/define property getters */
-/******/ 	(() => {
-/******/ 		// define getter/value functions for harmony exports
-/******/ 		__webpack_require__.d = (exports, definition) => {
-/******/ 			if(Array.isArray(definition)) {
-/******/ 				var i = 0;
-/******/ 				while(i < definition.length) {
-/******/ 					var key = definition[i++];
-/******/ 					var binding = definition[i++];
-/******/ 					if(!__webpack_require__.o(exports, key)) {
-/******/ 						if(binding === 0) {
-/******/ 							Object.defineProperty(exports, key, { enumerable: true, value: definition[i++] });
-/******/ 						} else {
-/******/ 							Object.defineProperty(exports, key, { enumerable: true, get: binding });
-/******/ 						}
-/******/ 					} else if(binding === 0) { i++; }
-/******/ 				}
-/******/ 			} else {
-/******/ 				for(var key in definition) {
-/******/ 					if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
-/******/ 						Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
-/******/ 					}
-/******/ 				}
+/******/ 	// define getter/value functions for harmony exports
+/******/ 	__webpack_require__.d = (exports, definition) => {
+/******/ 		for(var key in definition) {
+/******/ 			if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 				Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
 /******/ 			}
-/******/ 		};
-/******/ 	})();
+/******/ 		}
+/******/ 	};
 /******/ 	
 /******/ 	/* webpack/runtime/hasOwnProperty shorthand */
-/******/ 	(() => {
-/******/ 		__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
-/******/ 	})();
+/******/ 	__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop));
 /******/ 	
 /************************************************************************/
 let __webpack_exports__ = {};
@@ -433,7 +412,6 @@ const { ema: EMAIndicator, sma: SMAIndicator } = (highcharts_SeriesRegistry_comm
 /**
  * The Klinger oscillator series type.
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.klinger
  *
@@ -445,6 +423,7 @@ class KlingerIndicator extends SMAIndicator {
      *  Functions
      *
      * */
+    /** @internal */
     calculateTrend(yVal, i) {
         const isUpward = yVal[i][1] + yVal[i][2] + yVal[i][3] >
             yVal[i - 1][1] + yVal[i - 1][2] + yVal[i - 1][3];
@@ -452,6 +431,7 @@ class KlingerIndicator extends SMAIndicator {
     }
     // Checks if the series and volumeSeries are accessible, number of
     // points.x is longer than period, is series has OHLC data
+    /** @internal */
     isValidData(firstYVal) {
         const chart = this.chart, options = this.options, series = this.linkedParent, isSeriesOHLC = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.isArray)(firstYVal) &&
             firstYVal.length === 4, volumeSeries = this.volumeSeries ||
@@ -468,12 +448,15 @@ class KlingerIndicator extends SMAIndicator {
         });
         return !!(isLengthValid && isSeriesOHLC);
     }
+    /** @internal */
     getCM(previousCM, DM, trend, previousTrend, previousDM) {
         return (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.correctFloat)(DM + (trend === previousTrend ? previousCM : previousDM));
     }
+    /** @internal */
     getDM(high, low) {
         return (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.correctFloat)(high - low);
     }
+    /** @internal */
     getVolumeForce(yVal) {
         const volumeForce = [];
         let CM = 0, // Cumulative measurement
@@ -499,13 +482,16 @@ class KlingerIndicator extends SMAIndicator {
         }
         return volumeForce;
     }
+    /** @internal */
     getEMA(yVal, prevEMA, SMA, EMApercent, index, i, xVal) {
         return EMAIndicator.prototype.calculateEma(xVal || [], yVal, typeof i === 'undefined' ? 1 : i, EMApercent, prevEMA, typeof index === 'undefined' ? -1 : index, SMA);
     }
+    /** @internal */
     getSMA(period, index, values) {
         return EMAIndicator.prototype
             .accumulatePeriodPoints(period, index, values) / period;
     }
+    /** @internal */
     getValues(series, params) {
         const Klinger = [], xVal = series.xData, yVal = series.yData, xData = [], yData = [], calcSignal = [];
         let KO, i = 0, fastEMA = 0, slowEMA, previousFastEMA = void 0, previousSlowEMA = void 0, signal = null;
@@ -567,6 +553,7 @@ class KlingerIndicator extends SMAIndicator {
  * @requires     stock/indicators/indicators
  * @requires     stock/indicators/klinger
  * @optionparent plotOptions.klinger
+ * @internal
  */
 KlingerIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(SMAIndicator.defaultOptions, {
     /**
@@ -642,7 +629,6 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *  Default Export
  *
  * */
-/** @internal */
 /* harmony default export */ const Klinger_KlingerIndicator = ((/* unused pure expression or super */ null && (KlingerIndicator)));
 /* *
  *

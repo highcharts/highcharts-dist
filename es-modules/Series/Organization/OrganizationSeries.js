@@ -39,6 +39,7 @@ class OrganizationSeries extends SankeySeries {
      *  Functions
      *
      * */
+    /** @internal */
     alignDataLabel(point, dataLabel, options) {
         // Align the data label to the point graphic
         const shapeArgs = point.shapeArgs, text = dataLabel.text;
@@ -80,12 +81,14 @@ class OrganizationSeries extends SankeySeries {
         }
         super.alignDataLabel.apply(this, arguments);
     }
+    /** @internal */
     createNode(id) {
         const node = super.createNode.call(this, id);
         // All nodes in an org chart are equal width
         node.getSum = () => 1;
         return node;
     }
+    /** @internal */
     pointAttribs(point, state) {
         const series = this, attribs = SankeySeries.prototype.pointAttribs.call(series, point, state), level = point.isNode ? point.level : point.fromNode.level, levelOptions = series.mapOptionsToLevel[level || 0] || {}, options = point.options, stateOptions = levelOptions.states?.[state || 'normal'] || {}, borderRadius = (stateOptions.borderRadius ??
             options.borderRadius ??
@@ -125,6 +128,7 @@ class OrganizationSeries extends SankeySeries {
         }
         return attribs;
     }
+    /** @internal */
     translateLink(point) {
         const { chart, options } = this, fromNode = point.fromNode, toNode = point.toNode, linkWidth = options.linkLineWidth ?? options.link.lineWidth ?? 0, factor = options.link.offset ?? 0.5, type = point.options.link?.type ?? options.link.type;
         if (fromNode.shapeArgs && toNode.shapeArgs) {
@@ -208,6 +212,7 @@ class OrganizationSeries extends SankeySeries {
             };
         }
     }
+    /** @internal */
     translateNode(node, column) {
         super.translateNode(node, column);
         const chart = this.chart, options = this.options, sum = node.getSum(), translationFactor = this.translationFactor, nodeHeight = Math.max(Math.round(sum * translationFactor), options.minLinkWidth || 0), hangingRight = options.hangingSide === 'right', indent = options.hangingIndent || 0, indentLogic = options.hangingIndentTranslation, minLength = options.minNodeLength || 10, nodeWidth = Math.round(this.nodeWidth), shapeArgs = node.shapeArgs, sign = chart.inverted ? -1 : 1;
@@ -261,6 +266,7 @@ class OrganizationSeries extends SankeySeries {
             });
         }
     }
+    /** @internal */
     drawDataLabels() {
         const dlOptions = this.options.dataLabels;
         if (dlOptions.linkTextPath && dlOptions.linkTextPath.enabled) {
@@ -278,7 +284,8 @@ class OrganizationSeries extends SankeySeries {
  * */
 OrganizationSeries.defaultOptions = merge(SankeySeries.defaultOptions, OrganizationSeriesDefaults);
 extend(OrganizationSeries.prototype, {
-    pointClass: OrganizationPoint
+    pointClass: OrganizationPoint,
+    useCircularLayout: false
 });
 SeriesRegistry.registerSeriesType('organization', OrganizationSeries);
 /* *

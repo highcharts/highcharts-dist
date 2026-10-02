@@ -26,7 +26,7 @@ const { seriesTypes } = SeriesRegistry;
 import SVGElement from '../Renderer/SVG/SVGElement.js';
 import T from '../Templating.js';
 const { format } = T;
-import { addEvent, arrayMax, arrayMin, clamp, correctFloat, crisp, defined, destroyObjectProperties, diffObjects, erase, extend, fireEvent, getClosestDistance, internalClearTimeout, isArray, isNumber, isString, merge, objectEach, pick, pushUnique, removeEvent, syncTimeout } from '../../Shared/Utilities.js';
+import { addEvent, arrayMax, arrayMin, clamp, correctFloat, crisp, defined, destroyObjectProperties, diffObjects, erase, extend, fireEvent, getClosestDistance, internalClearTimeout, isArray, isNumber, isString, merge, objectEach, pushUnique, removeEvent, syncTimeout } from '../../Shared/Utilities.js';
 import { error, insertItem } from '../Utilities.js';
 /* *
  *
@@ -352,7 +352,7 @@ class Series {
         if (chartSeries.length) {
             lastSeries = chartSeries[chartSeries.length - 1];
         }
-        series._i = pick(lastSeries?._i, -1) + 1;
+        series._i = (lastSeries?._i ?? -1) + 1;
         series.opacity = series.options.opacity;
         // Insert the series and re-order all series above the insertion
         // point.
@@ -399,7 +399,7 @@ class Series {
                     // Apply if the series xAxis or yAxis option matches
                     // the number of the axis, or if undefined, use the
                     // first axis
-                    if (pick(seriesOptions[coll], 0) === axis.index ||
+                    if ((seriesOptions[coll] ?? 0) === axis.index ||
                         (typeof seriesOptions[coll] !==
                             'undefined' &&
                             seriesOptions[coll] === axisOptions.id)) {
@@ -442,8 +442,12 @@ class Series {
      * @function Highcharts.Series#hasMarkerChanged
      */
     hasMarkerChanged(options, oldOptions) {
-        const marker = options.marker, oldMarker = oldOptions.marker || {};
-        return marker && ((oldMarker.enabled && !marker.enabled) ||
+        const marker = options.marker, oldMarker = oldOptions.marker;
+        // Note that `marker` holds the full, merged object including
+        // `plotOptions`, while `oldMarker` is the user-defined series-level
+        // options only. We may need to refactor that in the future if more
+        // issues like #24057 arise.
+        return marker && oldMarker && ((oldMarker.enabled && !marker.enabled) ||
             oldMarker.symbol !== marker.symbol || // #10870, #15946
             oldMarker.height !== marker.height || // #16274
             oldMarker.width !== marker.width // #16274
@@ -462,7 +466,8 @@ class Series {
             time.parse(options.pointStart) ??
             0;
         let pointInterval;
-        this.pointInterval = pointInterval = pick(this.pointInterval, options.pointInterval, 1);
+        this.pointInterval = pointInterval =
+            this.pointInterval ?? options.pointInterval ?? 1;
         if (relativeXValue && isNumber(x)) {
             pointInterval *= x;
         }
@@ -505,7 +510,9 @@ class Series {
         let zone;
         fireEvent(this, 'setOptions', e);
         // These may be modified by the event
-        const typeOptions = e.plotOptions[this.type], userPlotOptions = (userOptions.plotOptions || {}), userPlotOptionsSeries = userPlotOptions.series || {}, defaultPlotOptionsType = (defaultOptions.plotOptions[this.type] || {}), userPlotOptionsType = userPlotOptions[this.type] || {};
+        const typeOptions = e.plotOptions[this.type] ||
+            merge(defaultOptions.plotOptions[this.type]), // #24254
+        userPlotOptions = (userOptions.plotOptions || {}), userPlotOptionsSeries = userPlotOptions.series || {}, defaultPlotOptionsType = (defaultOptions.plotOptions[this.type] || {}), userPlotOptionsType = userPlotOptions[this.type] || {};
         // Merge in multiple data label options from the plot option. (#21928)
         typeOptions.dataLabels = this.mergeArrays(defaultPlotOptionsType.dataLabels, typeOptions.dataLabels);
         // Use copy to prevent undetected changes (#9762)
@@ -534,9 +541,13 @@ class Series {
         );
         // When shared tooltip, stickyTracking is true by default,
         // unless user says otherwise.
-        this.stickyTracking = pick(seriesUserOptions.stickyTracking, userPlotOptionsType.stickyTracking, userPlotOptionsSeries.stickyTracking, (this.tooltipOptions.shared && !this.noSharedTooltip ?
-            true :
-            options.stickyTracking));
+        this.stickyTracking =
+            seriesUserOptions.stickyTracking ??
+                userPlotOptionsType.stickyTracking ??
+                userPlotOptionsSeries.stickyTracking ??
+                (this.tooltipOptions.shared && !this.noSharedTooltip ?
+                    true :
+                    options.stickyTracking);
         // Delete marker object if not allowed (#1125)
         if (typeOptions.marker === null) {
             delete options.marker;
@@ -614,7 +625,9 @@ class Series {
         if (!value) {
             // Pick up either the colorIndex option, or the series.colorIndex
             // after Series.update()
-            setting = pick(prop === 'color' ? this.options.colorIndex : void 0, this[indexName]);
+            setting = prop === 'color' ?
+                (this.options.colorIndex ?? this[indexName]) :
+                this[indexName];
             if (defined(setting)) { // After Series.update()
                 i = setting;
             }
@@ -1115,7 +1128,19 @@ class Series {
                     .optionsToObject
                     .call({ series: this }, data[i]);
                 for (const key of Object.keys(ptOptions)) {
-                    columns[key] || (columns[key] = new Array(dataLength));
+                    // Assigning these would write through to
+                    // `Object.prototype` or the `Object` constructor instead
+                    // of creating a column, and thereby affect unrelated
+                    // objects on the page
+                    if (key === '__proto__' || key === 'constructor') {
+                        continue;
+                    }
+                    // Inherited keys like `toString` are truthy without being
+                    // columns of ours, so test for an own property rather
+                    // than for a value (#25321)
+                    if (!Object.hasOwnProperty.call(columns, key)) {
+                        columns[key] = new Array(dataLength);
+                    }
                     columns[key][i] = ptOptions[key];
                 }
             }
@@ -1641,7 +1666,9 @@ class Series {
                     yValue = stackValues[1];
                     if (lowValue === stackThreshold &&
                         stackIndicator.key === stacks[xValue].base) {
-                        lowValue = pick(isNumber(threshold) ? threshold : yAxis.min);
+                        lowValue = isNumber(threshold) ?
+                            threshold :
+                            yAxis.min;
                     }
                     // #1200, #1232
                     if (yAxis.positiveValuesOnly &&
@@ -1649,7 +1676,7 @@ class Series {
                         lowValue <= 0) {
                         lowValue = void 0;
                     }
-                    point.total = point.stackTotal = pick(stackItem.total);
+                    point.total = point.stackTotal = stackItem.total ?? void 0;
                     point.percentage = defined(point.y) && stackItem.total ?
                         (point.y / stackItem.total * 100) : void 0;
                     point.stackY = yValue;
@@ -1766,7 +1793,7 @@ class Series {
         // Apply plotBorderRadius clipping
         plotClipGroup?.clip(
         // Navigator y-axis is not clippable
-        clip && this.yAxis.clippable ?
+        clip && this.yAxis?.clippable ?
             chart.plotClipInner :
             void 0);
     }
@@ -1899,7 +1926,9 @@ class Series {
                 // Only draw the point if y is defined
                 if (shouldDrawMarker) {
                     // Shortcuts
-                    const symbol = pick(pointMarkerOptions.symbol, series.symbol, 'rect');
+                    const symbol = pointMarkerOptions.symbol ??
+                        series.symbol ??
+                        'rect';
                     markerAttribs = series.markerAttribs(point, point.selected ? 'select' : '');
                     const isInside = point.isInside !== false;
                     if (!graphic &&
@@ -2067,28 +2096,27 @@ class Series {
      * @emits Highcharts.Series#event:destroy
      */
     destroy(keepEventsForUpdate) {
-        const series = this, chart = series.chart, issue134 = /AppleWebKit\/533/.test(win.navigator.userAgent), data = series.data || [];
-        let destroy, i, axis;
+        const series = this, chart = series.chart, issue134 = /AppleWebKit\/533/.test(win.navigator.userAgent);
+        let destroy, axis;
         // Add event hook
         fireEvent(series, 'destroy', { keepEventsForUpdate });
         // Remove events
         this.removeEvents(keepEventsForUpdate);
         // Erase from axes
-        (series.axisTypes || []).forEach(function (AXIS) {
-            axis = series[AXIS];
+        for (const coll of (series.axisTypes || [])) {
+            axis = series[coll];
             if (axis?.series) {
                 erase(axis.series, series);
                 axis.isDirty = axis.forceRedraw = true;
             }
-        });
+        }
         // Remove legend items
         if (series.legendItem) {
             series.chart.legend.destroyItem(series);
         }
         // Destroy all points with their elements
-        i = data.length;
-        while (i--) {
-            data[i]?.destroy?.(true);
+        for (const point of series.points || []) {
+            point?.destroy?.(true);
         }
         for (const zone of series.zones || []) {
             // Destroy SVGElement's but preserve primitive props (#20426)
@@ -2167,7 +2195,7 @@ class Series {
             // Reset
             zones.forEach((zone) => {
                 zone.lineClip = [];
-                zone.translated = clamp(axis.toPixels(pick(zone.value, axisMax), true) || 0, 0, len);
+                zone.translated = clamp(axis.toPixels((zone.value ?? axisMax), true) || 0, 0, len);
             });
             // The use of the Color Threshold assumes there are no gaps so it is
             // safe to hide the original graph and area unless it is not
@@ -2823,7 +2851,7 @@ class Series {
         const series = this, seriesOptions = series.options, { chart, data, dataTable: table, xAxis } = series, names = xAxis?.hasNames && xAxis.names, dataOptions = seriesOptions.data, xData = series.getColumn('x');
         let isInTheMiddle, i;
         // Optional redraw, defaults to true
-        redraw = pick(redraw, true);
+        redraw = (redraw ?? true);
         // Get options and push the point to xData, yData and series.options. In
         // series.generatePoints the Point instance will be created on demand
         // and pushed to the series.data array.
@@ -2934,7 +2962,7 @@ class Series {
             }
         };
         setAnimation(animation, chart);
-        redraw = pick(redraw, true);
+        redraw = (redraw ?? true);
         // Fire the event with a default handler of removing the point
         if (point) {
             point.firePointEvent('remove', null, remove);
@@ -2977,7 +3005,7 @@ class Series {
             // Redraw
             chart.isDirtyLegend = chart.isDirtyBox = true;
             chart.linkSeries(keepEvents);
-            if (pick(redraw, true)) {
+            if (redraw ?? true) {
                 chart.redraw(animation);
             }
         }
@@ -3194,7 +3222,7 @@ class Series {
             series.isDirtyData = true;
         }
         fireEvent(this, 'afterUpdate');
-        if (pick(redraw, true)) {
+        if (redraw ?? true) {
             chart.redraw(keepPoints ? void 0 : false);
         }
     }
@@ -3211,12 +3239,12 @@ class Series {
      * @internal
      */
     hasOptionChanged(optionName) {
-        const chart = this.chart, option = this.options[optionName], plotOptions = chart.options.plotOptions, oldOption = this.userOptions[optionName], plotOptionsOption = pick(plotOptions?.[this.type]?.[optionName], plotOptions?.series?.[optionName]);
+        const chart = this.chart, option = this.options[optionName], plotOptions = chart.options.plotOptions, oldOption = this.userOptions[optionName], plotOptionsOption = (plotOptions?.[this.type]?.[optionName] ?? plotOptions?.series?.[optionName]);
         // Check if `plotOptions` are defined already, #19203
         if (oldOption && !defined(plotOptionsOption)) {
             return option !== oldOption;
         }
-        return option !== pick(plotOptionsOption, option);
+        return option !== (plotOptionsOption ?? option);
     }
     /**
      * Runs on mouse over the series graphical items.
@@ -3290,7 +3318,8 @@ class Series {
         const series = this, { graph, options } = series, { inactiveOtherPoints, states: stateOptions = {} } = options, 
         // By default a quick animation to hover/inactive,
         // slower to un-hover
-        stateAnimation = pick(stateOptions[state || 'normal']?.animation, series.chart.options.chart.animation);
+        stateAnimation = stateOptions[state || 'normal']?.animation ??
+            series.chart.options.chart.animation;
         let { lineWidth, opacity } = options;
         state = state || '';
         if (series.state !== state) {

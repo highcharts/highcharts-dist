@@ -38,7 +38,7 @@ var SeriesOnPointComposition;
     /**
      * Extends the series with a small addition.
      *
-     * @private
+     * @internal
      */
     function compose(SeriesClass, ChartClass) {
         if (pushUnique(composed, 'SeriesOnPoint')) {
@@ -69,7 +69,7 @@ var SeriesOnPointComposition;
      *
      * */
     /**
-     * @private
+     * @internal
      */
     class Additions {
         /* *
@@ -78,7 +78,7 @@ var SeriesOnPointComposition;
          *
          * */
         /**
-         * @private
+         * @internal
          */
         constructor(series) {
             /**
@@ -108,7 +108,7 @@ var SeriesOnPointComposition;
         /**
          * Draw connector line that starts from the initial point's position
          * and ends in the center of the series.
-         * @private
+         * @internal
          */
         drawConnector() {
             if (!this.connector) {
@@ -125,7 +125,7 @@ var SeriesOnPointComposition;
         /**
          * Get connector line path and styles that connects series and point.
          *
-         * @private
+         * @internal
          *
          * @return {Highcharts.SVGAttributes} attribs - the path and styles.
          */
@@ -277,6 +277,7 @@ var SeriesOnPointComposition;
  *  Default Export
  *
  * */
+/** @internal */
 export default SeriesOnPointComposition;
 /* *
  *

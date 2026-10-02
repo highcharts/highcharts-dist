@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.0-modified (2026-08-14)
+ * @license Highcharts JS v13.1.0 (2026-10-02)
  * Organization chart series type
  * @module highcharts/modules/organization
  * @requires highcharts
@@ -14,14 +14,14 @@
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(root["_Highcharts"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]["SVGElement"]);
+		module.exports = factory(root["_Highcharts"]["SVGElement"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
 	else if(typeof define === 'function' && define.amd)
-		define("highcharts/modules/organization", ["highcharts/highcharts"], function (amd1) {return factory(amd1,amd1["SeriesRegistry"],amd1["SVGElement"]);});
+		define("highcharts/modules/organization", ["highcharts/highcharts"], function (amd1) {return factory(amd1["SVGElement"],amd1["SeriesRegistry"],amd1);});
 	else if(typeof exports === 'object')
-		exports["highcharts/modules/organization"] = factory(root["_Highcharts"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]["SVGElement"]);
+		exports["highcharts/modules/organization"] = factory(root["_Highcharts"]["SVGElement"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
 	else
-		root["Highcharts"] = factory(root["Highcharts"], root["Highcharts"]["SeriesRegistry"], root["Highcharts"]["SVGElement"]);
-})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__944__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__28__) => {
+		root["Highcharts"] = factory(root["Highcharts"]["SVGElement"], root["Highcharts"]["SeriesRegistry"], root["Highcharts"]);
+})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__28__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__944__) => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
@@ -75,48 +75,27 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__944__;
 /******/ 	
 /************************************************************************/
 /******/ 	/* webpack/runtime/compat get default export */
-/******/ 	(() => {
-/******/ 		// getDefaultExport function for compatibility with non-harmony modules
-/******/ 		__webpack_require__.n = (module) => {
-/******/ 			const getter = module && module.__esModule ?
-/******/ 				() => (module['default']) :
-/******/ 				() => (module);
-/******/ 			__webpack_require__.d(getter, { a: getter });
-/******/ 			return getter;
-/******/ 		};
-/******/ 	})();
+/******/ 	// getDefaultExport function for compatibility with non-harmony modules
+/******/ 	__webpack_require__.n = (module) => {
+/******/ 		const getter = module && module.__esModule ?
+/******/ 			() => (module['default']) :
+/******/ 			() => (module);
+/******/ 		__webpack_require__.d(getter, { a: getter });
+/******/ 		return getter;
+/******/ 	};
 /******/ 	
 /******/ 	/* webpack/runtime/define property getters */
-/******/ 	(() => {
-/******/ 		// define getter/value functions for harmony exports
-/******/ 		__webpack_require__.d = (exports, definition) => {
-/******/ 			if(Array.isArray(definition)) {
-/******/ 				var i = 0;
-/******/ 				while(i < definition.length) {
-/******/ 					var key = definition[i++];
-/******/ 					var binding = definition[i++];
-/******/ 					if(!__webpack_require__.o(exports, key)) {
-/******/ 						if(binding === 0) {
-/******/ 							Object.defineProperty(exports, key, { enumerable: true, value: definition[i++] });
-/******/ 						} else {
-/******/ 							Object.defineProperty(exports, key, { enumerable: true, get: binding });
-/******/ 						}
-/******/ 					} else if(binding === 0) { i++; }
-/******/ 				}
-/******/ 			} else {
-/******/ 				for(var key in definition) {
-/******/ 					if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
-/******/ 						Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
-/******/ 					}
-/******/ 				}
+/******/ 	// define getter/value functions for harmony exports
+/******/ 	__webpack_require__.d = (exports, definition) => {
+/******/ 		for(var key in definition) {
+/******/ 			if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 				Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
 /******/ 			}
-/******/ 		};
-/******/ 	})();
+/******/ 		}
+/******/ 	};
 /******/ 	
 /******/ 	/* webpack/runtime/hasOwnProperty shorthand */
-/******/ 	(() => {
-/******/ 		__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
-/******/ 	})();
+/******/ 	__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop));
 /******/ 	
 /************************************************************************/
 let __webpack_exports__ = {};
@@ -218,7 +197,8 @@ class OrganizationPoint extends SankeyPointClass {
             let i = -1, link;
             // Default all children of the hanging node
             // to have hanging layout
-            node.options.layout = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(node.options.layout, 'hanging');
+            node.options.layout =
+                node.options.layout ?? 'hanging';
             node.hangsFrom = fromNode;
             (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.find)(fromNode.linksFrom, (link, index) => {
                 const found = link.toNode === node;
@@ -448,8 +428,14 @@ const OrganizationSeriesDefaults = {
                     this.point.name + '</h4>';
             }
             if (title) {
-                html += '<p ' + styleAttr(titleStyle) + '>' +
-                    (title || '') + '</p>';
+                html += '<p ' + styleAttr(titleStyle) + '>' + title + '</p>';
+            }
+            else {
+                // Required to prevent a glitch in iOS Safari, where text would
+                // flow outside the box if the title is missing (#25043)
+                html += `<p aria-hidden="true"
+                        style="line-height:0;margin:1px;font-size:1px;opacity:0"
+                    >.</p>`;
             }
             if (description) {
                 html += '<p ' + styleAttr(descriptionStyle) + '>' +
@@ -815,7 +801,7 @@ function getCurvedPath(pathParams) {
 }
 /**
  * General function to apply corner radius to a path
- * @private
+ * @internal
  */
 function applyRadius(path, r) {
     const d = [];
@@ -868,10 +854,12 @@ function applyRadius(path, r) {
     }
     return d;
 }
+/** @internal */
 const PathUtilities = {
     applyRadius,
     getLinkPath
 };
+/** @internal */
 /* harmony default export */ const Series_PathUtilities = (PathUtilities);
 
 // EXTERNAL MODULE: external {"amd":["highcharts/highcharts","SVGElement"],"commonjs":["highcharts","SVGElement"],"commonjs2":["highcharts","SVGElement"],"root":["Highcharts","SVGElement"]}
@@ -1192,6 +1180,7 @@ class OrganizationSeries extends SankeySeries {
      *  Functions
      *
      * */
+    /** @internal */
     alignDataLabel(point, dataLabel, options) {
         // Align the data label to the point graphic
         const shapeArgs = point.shapeArgs, text = dataLabel.text;
@@ -1233,12 +1222,14 @@ class OrganizationSeries extends SankeySeries {
         }
         super.alignDataLabel.apply(this, arguments);
     }
+    /** @internal */
     createNode(id) {
         const node = super.createNode.call(this, id);
         // All nodes in an org chart are equal width
         node.getSum = () => 1;
         return node;
     }
+    /** @internal */
     pointAttribs(point, state) {
         const series = this, attribs = SankeySeries.prototype.pointAttribs.call(series, point, state), level = point.isNode ? point.level : point.fromNode.level, levelOptions = series.mapOptionsToLevel[level || 0] || {}, options = point.options, stateOptions = levelOptions.states?.[state || 'normal'] || {}, borderRadius = (stateOptions.borderRadius ??
             options.borderRadius ??
@@ -1278,6 +1269,7 @@ class OrganizationSeries extends SankeySeries {
         }
         return attribs;
     }
+    /** @internal */
     translateLink(point) {
         const { chart, options } = this, fromNode = point.fromNode, toNode = point.toNode, linkWidth = options.linkLineWidth ?? options.link.lineWidth ?? 0, factor = options.link.offset ?? 0.5, type = point.options.link?.type ?? options.link.type;
         if (fromNode.shapeArgs && toNode.shapeArgs) {
@@ -1361,6 +1353,7 @@ class OrganizationSeries extends SankeySeries {
             };
         }
     }
+    /** @internal */
     translateNode(node, column) {
         super.translateNode(node, column);
         const chart = this.chart, options = this.options, sum = node.getSum(), translationFactor = this.translationFactor, nodeHeight = Math.max(Math.round(sum * translationFactor), options.minLinkWidth || 0), hangingRight = options.hangingSide === 'right', indent = options.hangingIndent || 0, indentLogic = options.hangingIndentTranslation, minLength = options.minNodeLength || 10, nodeWidth = Math.round(this.nodeWidth), shapeArgs = node.shapeArgs, sign = chart.inverted ? -1 : 1;
@@ -1414,6 +1407,7 @@ class OrganizationSeries extends SankeySeries {
             });
         }
     }
+    /** @internal */
     drawDataLabels() {
         const dlOptions = this.options.dataLabels;
         if (dlOptions.linkTextPath && dlOptions.linkTextPath.enabled) {
@@ -1431,7 +1425,8 @@ class OrganizationSeries extends SankeySeries {
  * */
 OrganizationSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(SankeySeries.defaultOptions, Organization_OrganizationSeriesDefaults);
 (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.extend)(OrganizationSeries.prototype, {
-    pointClass: Organization_OrganizationPoint
+    pointClass: Organization_OrganizationPoint,
+    useCircularLayout: false
 });
 highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default().registerSeriesType('organization', OrganizationSeries);
 /* *

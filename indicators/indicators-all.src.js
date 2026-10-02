@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.0.0-modified (2026-08-14)
+ * @license Highstock JS v13.1.0 (2026-10-02)
  * @module highcharts/indicators/indicators-all
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -15,14 +15,14 @@
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(root["_Highcharts"], root["_Highcharts"]["Chart"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]["dataGrouping"]["approximations"], root["_Highcharts"]["Color"]);
+		module.exports = factory(root["_Highcharts"]["Chart"], root["_Highcharts"]["Color"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]["dataGrouping"]["approximations"], root["_Highcharts"]);
 	else if(typeof define === 'function' && define.amd)
-		define("highcharts/indicators/indicators-all", ["highcharts/highcharts"], function (amd1) {return factory(amd1,amd1["Chart"],amd1["SeriesRegistry"],amd1["dataGrouping"],["approximations"],amd1["Color"]);});
+		define("highcharts/indicators/indicators-all", ["highcharts/highcharts"], function (amd1) {return factory(amd1["Chart"],amd1["Color"],amd1["SeriesRegistry"],amd1["dataGrouping"],["approximations"],amd1);});
 	else if(typeof exports === 'object')
-		exports["highcharts/indicators/indicators-all"] = factory(root["_Highcharts"], root["_Highcharts"]["Chart"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]["dataGrouping"]["approximations"], root["_Highcharts"]["Color"]);
+		exports["highcharts/indicators/indicators-all"] = factory(root["_Highcharts"]["Chart"], root["_Highcharts"]["Color"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]["dataGrouping"]["approximations"], root["_Highcharts"]);
 	else
-		root["Highcharts"] = factory(root["Highcharts"], root["Highcharts"]["Chart"], root["Highcharts"]["SeriesRegistry"], root["Highcharts"]["dataGrouping"]["approximations"], root["Highcharts"]["Color"]);
-})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__944__, __WEBPACK_EXTERNAL_MODULE__960__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__956__, __WEBPACK_EXTERNAL_MODULE__620__) => {
+		root["Highcharts"] = factory(root["Highcharts"]["Chart"], root["Highcharts"]["Color"], root["Highcharts"]["SeriesRegistry"], root["Highcharts"]["dataGrouping"]["approximations"], root["Highcharts"]);
+})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__960__, __WEBPACK_EXTERNAL_MODULE__620__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__956__, __WEBPACK_EXTERNAL_MODULE__944__) => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
@@ -90,48 +90,27 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__944__;
 /******/ 	
 /************************************************************************/
 /******/ 	/* webpack/runtime/compat get default export */
-/******/ 	(() => {
-/******/ 		// getDefaultExport function for compatibility with non-harmony modules
-/******/ 		__webpack_require__.n = (module) => {
-/******/ 			const getter = module && module.__esModule ?
-/******/ 				() => (module['default']) :
-/******/ 				() => (module);
-/******/ 			__webpack_require__.d(getter, { a: getter });
-/******/ 			return getter;
-/******/ 		};
-/******/ 	})();
+/******/ 	// getDefaultExport function for compatibility with non-harmony modules
+/******/ 	__webpack_require__.n = (module) => {
+/******/ 		const getter = module && module.__esModule ?
+/******/ 			() => (module['default']) :
+/******/ 			() => (module);
+/******/ 		__webpack_require__.d(getter, { a: getter });
+/******/ 		return getter;
+/******/ 	};
 /******/ 	
 /******/ 	/* webpack/runtime/define property getters */
-/******/ 	(() => {
-/******/ 		// define getter/value functions for harmony exports
-/******/ 		__webpack_require__.d = (exports, definition) => {
-/******/ 			if(Array.isArray(definition)) {
-/******/ 				var i = 0;
-/******/ 				while(i < definition.length) {
-/******/ 					var key = definition[i++];
-/******/ 					var binding = definition[i++];
-/******/ 					if(!__webpack_require__.o(exports, key)) {
-/******/ 						if(binding === 0) {
-/******/ 							Object.defineProperty(exports, key, { enumerable: true, value: definition[i++] });
-/******/ 						} else {
-/******/ 							Object.defineProperty(exports, key, { enumerable: true, get: binding });
-/******/ 						}
-/******/ 					} else if(binding === 0) { i++; }
-/******/ 				}
-/******/ 			} else {
-/******/ 				for(var key in definition) {
-/******/ 					if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
-/******/ 						Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
-/******/ 					}
-/******/ 				}
+/******/ 	// define getter/value functions for harmony exports
+/******/ 	__webpack_require__.d = (exports, definition) => {
+/******/ 		for(var key in definition) {
+/******/ 			if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 				Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
 /******/ 			}
-/******/ 		};
-/******/ 	})();
+/******/ 		}
+/******/ 	};
 /******/ 	
 /******/ 	/* webpack/runtime/hasOwnProperty shorthand */
-/******/ 	(() => {
-/******/ 		__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
-/******/ 	})();
+/******/ 	__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop));
 /******/ 	
 /************************************************************************/
 let __webpack_exports__ = {};
@@ -178,7 +157,8 @@ var highcharts_Chart_commonjs_highcharts_Chart_commonjs2_highcharts_Chart_root_H
  * @param {boolean} asSubarray
  * If column is a typed array, return a subarray instead of a new array. It
  * is faster `O(1)`, but the entire buffer will be kept in memory until all
- * views of it are destroyed. Default is `false`.
+ * views of it are destroyed. Default is `false`. Ignored when the column
+ * grows, as that always requires a new buffer.
  *
  * @return {DataTableColumn}
  * Modified column.
@@ -189,6 +169,12 @@ function setLength(column, length, asSubarray) {
     if (Array.isArray(column)) {
         column.length = length;
         return column;
+    }
+    if (length > column.length) {
+        const Constructor = Object.getPrototypeOf(column)
+            .constructor, grown = new Constructor(length);
+        grown.set(column);
+        return grown;
     }
     return column[asSubarray ? 'subarray' : 'slice'](0, length);
 }
@@ -403,7 +389,7 @@ class DataTableCore {
             });
             this.rowCount = length;
         }
-        (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.fireEvent)(this, 'afterDeleteRows', { rowIndex, rowCount });
+        ;(0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.fireEvent)(this, 'afterDeleteRows', { rowIndex, rowCount });
         this.versionTag = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.uniqueKey)();
     }
     /**
@@ -553,14 +539,22 @@ class DataTableCore {
      * @emits #afterSetRows
      */
     setRow(row, rowIndex = this.rowCount, insert, eventDetail) {
-        var _a;
         const { columns } = this, indexRowCount = insert ? this.rowCount + 1 : rowIndex + 1, rowKeys = Object.keys(row);
         if (eventDetail?.addColumns !== false) {
             for (let i = 0, iEnd = rowKeys.length; i < iEnd; i++) {
-                columns[_a = rowKeys[i]] || (columns[_a] = new Array(this.rowCount));
+                const rowKey = rowKeys[i];
+                if (rowKey !== '__proto__' &&
+                    rowKey !== 'constructor' &&
+                    !Object.hasOwnProperty.call(columns, rowKey)) {
+                    columns[rowKey] = new Array(this.rowCount);
+                }
             }
         }
-        (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.objectEach)(columns, (column, columnId) => {
+        // Typed arrays ignore out-of-range writes, `insert` grows via `splice`
+        if (!insert && indexRowCount > this.rowCount) {
+            this.applyRowCount(indexRowCount);
+        }
+        ;(0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.objectEach)(columns, (column, columnId) => {
             if (column) {
                 if (insert) {
                     column = DataTableCore_splice(column, rowIndex, 0, true, [row[columnId]]).array;
@@ -694,7 +688,6 @@ const tableToMultiYData = (series, processed) => {
 /**
  * The SMA series type.
  *
- * @internal
  */
 class SMAIndicator extends LineSeries {
     /* *
@@ -716,7 +709,7 @@ class SMAIndicator extends LineSeries {
         if (!name) {
             (this.nameComponents || []).forEach(function (component, index) {
                 params.push(this.options.params[component] +
-                    (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(this.nameSuffixes[index], ''));
+                    (this.nameSuffixes[index] ?? ''));
             }, this);
             name = (this.nameBase || this.type.toUpperCase()) +
                 (this.nameComponents ? ' (' + params.join(', ') + ')' : '');
@@ -947,6 +940,7 @@ class SMAIndicator extends LineSeries {
  * @product      highstock
  * @requires     stock/indicators/indicators
  * @optionparent plotOptions.sma
+ * @internal
  */
 SMAIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(LineSeries.defaultOptions, {
     /**
@@ -1014,7 +1008,6 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *  Default Export
  *
  * */
-/** @internal */
 /* harmony default export */ const SMA_SMAIndicator = ((/* unused pure expression or super */ null && (SMAIndicator)));
 /* *
  *
@@ -1028,7 +1021,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @extends   series,plotOptions.sma
  * @since     6.0.0
  * @product   highstock
- * @excluding dataParser, dataURL, useOhlcData
+ * @excluding useOhlcData
  * @requires  stock/indicators/indicators
  * @apioption series.sma
  */
@@ -1055,7 +1048,6 @@ const { sma: EMAIndicator_SMAIndicator } = (highcharts_SeriesRegistry_commonjs_h
 /**
  * The EMA series type.
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.ema
  *
@@ -1067,6 +1059,7 @@ class EMAIndicator extends EMAIndicator_SMAIndicator {
      *  Functions
      *
      * */
+    /** @internal */
     accumulatePeriodPoints(period, index, yVal) {
         let sum = 0, i = 0, y = 0;
         while (i < period) {
@@ -1076,6 +1069,7 @@ class EMAIndicator extends EMAIndicator_SMAIndicator {
         }
         return sum;
     }
+    /** @internal */
     calculateEma(xVal, yVal, i, EMApercent, calEMA, index, SMA) {
         const x = xVal[i - 1], yValue = index < 0 ?
             yVal[i - 1] :
@@ -1084,6 +1078,7 @@ class EMAIndicator extends EMAIndicator_SMAIndicator {
             (calEMA * (1 - EMApercent)));
         return [x, y];
     }
+    /** @internal */
     getValues(series, params) {
         const period = params.period, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, EMApercent = 2 / (period + 1), EMA = [], xData = [], yData = [];
         let calEMA, EMAPoint, i, index = -1, sum = 0, SMA = 0;
@@ -1131,6 +1126,7 @@ class EMAIndicator extends EMAIndicator_SMAIndicator {
  * @product      highstock
  * @requires     stock/indicators/indicators
  * @optionparent plotOptions.ema
+ * @internal
  */
 EMAIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(EMAIndicator_SMAIndicator.defaultOptions, {
     params: {
@@ -1154,7 +1150,6 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *  Default Export
  *
  * */
-/** @internal */
 /* harmony default export */ const EMA_EMAIndicator = ((/* unused pure expression or super */ null && (EMAIndicator)));
 /* *
  *
@@ -1168,7 +1163,6 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @extends   series,plotOptions.ema
  * @since     6.0.0
  * @product   highstock
- * @excluding dataParser, dataURL
  * @requires  stock/indicators/indicators
  * @apioption series.ema
  */
@@ -1195,7 +1189,6 @@ const { sma: ADIndicator_SMAIndicator } = (highcharts_SeriesRegistry_commonjs_hi
 /**
  * The AD series type.
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.ad
  *
@@ -1207,6 +1200,7 @@ class ADIndicator extends ADIndicator_SMAIndicator {
      *  Static Functions
      *
      * */
+    /** @internal */
     static populateAverage(xVal, yVal, yValVolume, i, 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _period) {
@@ -1220,6 +1214,7 @@ class ADIndicator extends ADIndicator_SMAIndicator {
      *  Functions
      *
      * */
+    /** @internal */
     getValues(series, params) {
         const period = params.period, xVal = series.xData, yVal = series.yData, volumeSeriesID = params.volumeSeriesID, volumeSeries = series.chart.get(volumeSeriesID), yValVolume = volumeSeries?.getColumn('y'), yValLen = yVal ? yVal.length : 0, AD = [], xData = [], yData = [];
         let len, i, ADPoint;
@@ -1271,6 +1266,7 @@ class ADIndicator extends ADIndicator_SMAIndicator {
  * @requires     stock/indicators/indicators
  * @requires     stock/indicators/accumulation-distribution
  * @optionparent plotOptions.ad
+ * @internal
  */
 ADIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(ADIndicator_SMAIndicator.defaultOptions, {
     /**
@@ -1298,7 +1294,6 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *  Default Export
  *
  * */
-/** @internal */
 /* harmony default export */ const AD_ADIndicator = (ADIndicator);
 /* *
  *
@@ -1311,7 +1306,6 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *
  * @extends   series,plotOptions.ad
  * @since     6.0.0
- * @excluding dataParser, dataURL
  * @product   highstock
  * @requires  stock/indicators/indicators
  * @requires  stock/indicators/accumulation-distribution
@@ -1341,7 +1335,6 @@ const { column: { prototype: columnProto }, sma: AOIndicator_SMAIndicator } = (h
 /**
  * The AO series type
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.ao
  *
@@ -1353,6 +1346,7 @@ class AOIndicator extends AOIndicator_SMAIndicator {
      *  Functions
      *
      * */
+    /** @internal */
     drawGraph() {
         const indicator = this, options = indicator.options, points = indicator.points, userColor = indicator.userOptions.color, positiveColor = options.greaterBarColor, negativeColor = options.lowerBarColor, firstPoint = points[0];
         let i;
@@ -1371,6 +1365,7 @@ class AOIndicator extends AOIndicator_SMAIndicator {
             }
         }
     }
+    /** @internal */
     getValues(series) {
         const shortPeriod = 5, longPeriod = 34, xVal = series.xData || [], yVal = series.yData || [], yValLen = yVal.length, AO = [], // 0- date, 1- Awesome Oscillator
         xData = [], yData = [], high = 1, low = 2;
@@ -1436,6 +1431,7 @@ class AOIndicator extends AOIndicator_SMAIndicator {
  * @requires     stock/indicators/indicators
  * @requires     stock/indicators/ao
  * @optionparent plotOptions.ao
+ * @internal
  */
 AOIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(AOIndicator_SMAIndicator.defaultOptions, {
     params: {
@@ -1495,7 +1491,6 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *  Default Export
  *
  * */
-/** @internal */
 /* harmony default export */ const AO_AOIndicator = ((/* unused pure expression or super */ null && (AOIndicator)));
 /* *
  *
@@ -1509,7 +1504,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @extends   series,plotOptions.ao
  * @since     7.0.0
  * @product   highstock
- * @excluding allAreas, colorAxis, dataParser, dataURL, joinBy, keys,
+ * @excluding allAreas, colorAxis, joinBy, keys,
  *            navigatorOptions, pointInterval, pointIntervalUnit,
  *            pointPlacement, pointRange, pointStart, showInNavigator, stacking
  * @requires  stock/indicators/indicators
@@ -1843,7 +1838,6 @@ function getExtremeIndexInArray(arr, extreme) {
 /**
  * The Aroon series type.
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.aroon
  *
@@ -1855,6 +1849,7 @@ class AroonIndicator extends AroonIndicator_SMAIndicator {
      *  Functions
      *
      * */
+    /** @internal */
     getValues(series, params) {
         const period = params.period, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, 
         // 0- date, 1- Aroon Up, 2- Aroon Down
@@ -1866,10 +1861,10 @@ class AroonIndicator extends AroonIndicator_SMAIndicator {
         for (i = period - 1; i < yValLen; i++) {
             slicedY = yVal.slice(i - period + 1, i + 2);
             xLow = getExtremeIndexInArray(slicedY.map(function (elem) {
-                return (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(elem[low], elem);
+                return (elem[low] ?? elem);
             }), 'min');
             xHigh = getExtremeIndexInArray(slicedY.map(function (elem) {
-                return (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(elem[high], elem);
+                return (elem[high] ?? elem);
             }), 'max');
             aroonUp = (xHigh / period) * 100;
             aroonDown = (xLow / period) * 100;
@@ -1908,6 +1903,7 @@ class AroonIndicator extends AroonIndicator_SMAIndicator {
  * @requires     stock/indicators/indicators
  * @requires     stock/indicators/aroon
  * @optionparent plotOptions.aroon
+ * @internal
  */
 AroonIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(AroonIndicator_SMAIndicator.defaultOptions, {
     /**
@@ -1964,7 +1960,6 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *  Default Export
  *
  * */
-/** @internal */
 /* harmony default export */ const Aroon_AroonIndicator = ((/* unused pure expression or super */ null && (AroonIndicator)));
 /* *
  *
@@ -1978,7 +1973,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @extends   series,plotOptions.aroon
  * @since     7.0.0
  * @product   highstock
- * @excluding allAreas, colorAxis, compare, compareBase, dataParser, dataURL,
+ * @excluding allAreas, colorAxis, compare, compareBase,
  *            joinBy, keys, navigatorOptions, pointInterval, pointIntervalUnit,
  *            pointPlacement, pointRange, pointStart, showInNavigator, stacking
  * @requires  stock/indicators/indicators
@@ -2009,7 +2004,6 @@ const { aroon: AroonOscillatorIndicator_AroonIndicator } = (highcharts_SeriesReg
 /**
  * The Aroon Oscillator series type.
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.aroonoscillator
  *
@@ -2021,6 +2015,7 @@ class AroonOscillatorIndicator extends AroonOscillatorIndicator_AroonIndicator {
      *  Functions
      *
      * */
+    /** @internal */
     getValues(series, params) {
         // 0- date, 1- Aroon Oscillator
         const ARO = [], xData = [], yData = [];
@@ -2065,6 +2060,7 @@ class AroonOscillatorIndicator extends AroonOscillatorIndicator_AroonIndicator {
  * @requires     stock/indicators/aroon
  * @requires     stock/indicators/aroon-oscillator
  * @optionparent plotOptions.aroonoscillator
+ * @internal
  */
 AroonOscillatorIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(AroonOscillatorIndicator_AroonIndicator.defaultOptions, {
     tooltip: {
@@ -2084,7 +2080,6 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *  Default Export
  *
  * */
-/** @internal */
 /* harmony default export */ const AroonOscillator_AroonOscillatorIndicator = ((/* unused pure expression or super */ null && (AroonOscillatorIndicator)));
 /* *
  *
@@ -2098,8 +2093,8 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @extends   series,plotOptions.aroonoscillator
  * @since     7.0.0
  * @product   highstock
- * @excluding allAreas, aroonDown, colorAxis, compare, compareBase, dataParser,
- *            dataURL, joinBy, keys, navigatorOptions, pointInterval,
+ * @excluding allAreas, aroonDown, colorAxis, compare, compareBase,
+ *            joinBy, keys, navigatorOptions, pointInterval,
  *            pointIntervalUnit, pointPlacement, pointRange, pointStart,
  *            showInNavigator, stacking
  * @requires  stock/indicators/indicators
@@ -2151,7 +2146,6 @@ function populateAverage(points, xVal, yVal, i, period, prevATR) {
 /**
  * The ATR series type.
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.atr
  *
@@ -2163,6 +2157,7 @@ class ATRIndicator extends ATRIndicator_SMAIndicator {
      *  Functions
      *
      * */
+    /** @internal */
     getValues(series, params) {
         const period = params.period, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, xValue = xVal[0], yValue = yVal[0], points = [[xValue, yValue]], ATR = [], xData = [], yData = [];
         let point, i, prevATR = 0, range = 1, TR = 0;
@@ -2217,6 +2212,7 @@ class ATRIndicator extends ATRIndicator_SMAIndicator {
  * @requires     stock/indicators/indicators
  * @requires     stock/indicators/atr
  * @optionparent plotOptions.atr
+ * @internal
  */
 ATRIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(ATRIndicator_SMAIndicator.defaultOptions, {
     /**
@@ -2232,7 +2228,6 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *  Default Export
  *
  * */
-/** @internal */
 /* harmony default export */ const ATR_ATRIndicator = ((/* unused pure expression or super */ null && (ATRIndicator)));
 /* *
  *
@@ -2246,7 +2241,6 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @extends   series,plotOptions.atr
  * @since     6.0.0
  * @product   highstock
- * @excluding dataParser, dataURL
  * @requires  stock/indicators/indicators
  * @requires  stock/indicators/atr
  * @apioption series.atr
@@ -2294,7 +2288,6 @@ function getStandardDeviation(arr, index, isOHLC, mean) {
 /**
  * Bollinger Bands series type.
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.bb
  *
@@ -2306,6 +2299,7 @@ class BBIndicator extends BBIndicator_SMAIndicator {
      *  Functions
      *
      * */
+    /** @internal */
     init() {
         highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default().seriesTypes.sma.prototype.init.apply(this, arguments);
         // Set default color for lines:
@@ -2322,6 +2316,7 @@ class BBIndicator extends BBIndicator_SMAIndicator {
             }
         }, this.options);
     }
+    /** @internal */
     getValues(series, params) {
         const period = params.period, standardDeviation = params.standardDeviation, xData = [], yData = [], xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, 
         // 0- date, 1-middle line, 2-top line, 3-bottom line
@@ -2373,6 +2368,7 @@ class BBIndicator extends BBIndicator_SMAIndicator {
  * @requires     stock/indicators/indicators
  * @requires     stock/indicators/bollinger-bands
  * @optionparent plotOptions.bb
+ * @internal
  */
 BBIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(BBIndicator_SMAIndicator.defaultOptions, {
     /**
@@ -2464,7 +2460,6 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *  Default Export
  *
  * */
-/** @internal */
 /* harmony default export */ const BB_BBIndicator = ((/* unused pure expression or super */ null && (BBIndicator)));
 /* *
  *
@@ -2477,7 +2472,6 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *
  * @extends   series,plotOptions.bb
  * @since     6.0.0
- * @excluding dataParser, dataURL
  * @product   highstock
  * @requires  stock/indicators/indicators
  * @requires  stock/indicators/bollinger-bands
@@ -2526,7 +2520,6 @@ function meanDeviation(arr, sma) {
 /**
  * The CCI series type.
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.cci
  *
@@ -2538,6 +2531,7 @@ class CCIIndicator extends CCIIndicator_SMAIndicator {
      *  Functions
      *
      * */
+    /** @internal */
     getValues(series, params) {
         const period = params.period, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, TP = [], CCI = [], xData = [], yData = [];
         let CCIPoint, p, periodTP = [], len, range = 1, smaTP, TPtemp, meanDev, i;
@@ -2590,6 +2584,7 @@ class CCIIndicator extends CCIIndicator_SMAIndicator {
  * @requires     stock/indicators/indicators
  * @requires     stock/indicators/cci
  * @optionparent plotOptions.cci
+ * @internal
  */
 CCIIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(CCIIndicator_SMAIndicator.defaultOptions, {
     /**
@@ -2605,7 +2600,6 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *  Default Export
  *
  * */
-/** @internal */
 /* harmony default export */ const CCI_CCIIndicator = ((/* unused pure expression or super */ null && (CCIIndicator)));
 /* *
  *
@@ -2618,7 +2612,6 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *
  * @extends   series,plotOptions.cci
  * @since     6.0.0
- * @excluding dataParser, dataURL
  * @product   highstock
  * @requires  stock/indicators/indicators
  * @requires  stock/indicators/cci
@@ -2653,7 +2646,6 @@ const { sma: CMFIndicator_SMAIndicator } = (highcharts_SeriesRegistry_commonjs_h
 /**
  * The CMF series type.
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.cmf
  *
@@ -2667,6 +2659,7 @@ class CMFIndicator extends CMFIndicator_SMAIndicator {
          *
          * */
         super(...arguments);
+        /** @internal */
         this.nameBase = 'Chaikin Money Flow';
     }
     /* *
@@ -2823,6 +2816,7 @@ class CMFIndicator extends CMFIndicator_SMAIndicator {
  * @requires     stock/indicators/indicators
  * @requires     stock/indicators/cmf
  * @optionparent plotOptions.cmf
+ * @internal
  */
 CMFIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(CMFIndicator_SMAIndicator.defaultOptions, {
     /**
@@ -2843,7 +2837,6 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *  Default Export
  *
  * */
-/** @internal */
 /* harmony default export */ const CMF_CMFIndicator = ((/* unused pure expression or super */ null && (CMFIndicator)));
 /* *
  *
@@ -2857,7 +2850,6 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @extends   series,plotOptions.cmf
  * @since     6.0.0
  * @product   highstock
- * @excluding dataParser, dataURL
  * @requires  stock/indicators/indicators
  * @requires  stock/indicators/cmf
  * @apioption series.cmf
@@ -2890,7 +2882,6 @@ const { sma: DMIIndicator_SMAIndicator } = (highcharts_SeriesRegistry_commonjs_h
 /**
  * The Directional Movement Index (DMI) series type.
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.dmi
  *
@@ -2902,6 +2893,7 @@ class DMIIndicator extends DMIIndicator_SMAIndicator {
      *  Functions
      *
      * */
+    /** @internal */
     calculateDM(yVal, i, isPositiveDM) {
         const currentHigh = yVal[i][1], currentLow = yVal[i][2], previousHigh = yVal[i - 1][1], previousLow = yVal[i - 1][2];
         let DM;
@@ -2915,15 +2907,19 @@ class DMIIndicator extends DMIIndicator_SMAIndicator {
         }
         return (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.correctFloat)(DM);
     }
+    /** @internal */
     calculateDI(smoothedDM, tr) {
         return smoothedDM / tr * 100;
     }
+    /** @internal */
     calculateDX(plusDI, minusDI) {
         return (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.correctFloat)(Math.abs(plusDI - minusDI) / Math.abs(plusDI + minusDI) * 100);
     }
+    /** @internal */
     smoothValues(accumulatedValues, currentValue, period) {
         return (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.correctFloat)(accumulatedValues - accumulatedValues / period + currentValue);
     }
+    /** @internal */
     getTR(currentPoint, prevPoint) {
         return (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.correctFloat)(Math.max(
         // `currentHigh - currentLow`
@@ -2933,6 +2929,7 @@ class DMIIndicator extends DMIIndicator_SMAIndicator {
         // `currentLow - previousClose`
         !prevPoint ? 0 : Math.abs(currentPoint[2] - prevPoint[3])));
     }
+    /** @internal */
     getValues(series, params) {
         const period = params.period, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, DMI = [], xData = [], yData = [];
         if (
@@ -3019,6 +3016,7 @@ class DMIIndicator extends DMIIndicator_SMAIndicator {
  * @requires     stock/indicators/indicators
  * @requires     stock/indicators/dmi
  * @optionparent plotOptions.dmi
+ * @internal
  */
 DMIIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(DMIIndicator_SMAIndicator.defaultOptions, {
     /**
@@ -3100,7 +3098,6 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *  Default Export
  *
  * */
-/** @internal */
 /* harmony default export */ const DMI_DMIIndicator = ((/* unused pure expression or super */ null && (DMIIndicator)));
 /* *
  *
@@ -3115,9 +3112,9 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @extends   series,plotOptions.dmi
  * @since 9.1.0
  * @product   highstock
- * @excluding allAreas, colorAxis,  dataParser, dataURL, joinBy, keys,
- *            navigatorOptions, pointInterval, pointIntervalUnit,
- *            pointPlacement, pointRange, pointStart, showInNavigator, stacking
+ * @excluding allAreas, colorAxis, joinBy, keys, navigatorOptions,
+ *            pointInterval, pointIntervalUnit, pointPlacement, pointRange,
+ *            pointStart, showInNavigator, stacking
  * @requires  stock/indicators/indicators
  * @requires  stock/indicators/dmi
  * @apioption series.dmi
@@ -3145,7 +3142,7 @@ const { sma: DPOIndicator_SMAIndicator } = (highcharts_SeriesRegistry_commonjs_h
 // Utils:
 /** @internal */
 function accumulatePoints(sum, yVal, i, index, subtract) {
-    const price = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(yVal[i][index], yVal[i]);
+    const price = (yVal[i][index] ?? yVal[i]);
     if (subtract) {
         return (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.correctFloat)(sum - price);
     }
@@ -3159,7 +3156,6 @@ function accumulatePoints(sum, yVal, i, index, subtract) {
 /**
  * The DPO series type.
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.dpo
  *
@@ -3171,6 +3167,7 @@ class DPOIndicator extends DPOIndicator_SMAIndicator {
      *  Functions
      *
      * */
+    /** @internal */
     getValues(series, params) {
         const period = params.period, index = params.index, offset = Math.floor(period / 2 + 1), range = period + offset, xVal = series.xData || [], yVal = series.yData || [], yValLen = yVal.length, 
         // 0- date, 1- Detrended Price Oscillator
@@ -3190,7 +3187,8 @@ class DPOIndicator extends DPOIndicator_SMAIndicator {
             rangeIndex = j + range - 1;
             // Adding the last period point
             sum = accumulatePoints(sum, yVal, periodIndex, index);
-            price = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(yVal[rangeIndex][index], yVal[rangeIndex]);
+            price = yVal[rangeIndex][index] ??
+                yVal[rangeIndex];
             oscillator = price - sum / period;
             // Subtracting the first period point
             sum = accumulatePoints(sum, yVal, j, index, true);
@@ -3227,6 +3225,7 @@ class DPOIndicator extends DPOIndicator_SMAIndicator {
  * @requires     stock/indicators/indicators
  * @requires     stock/indicators/dpo
  * @optionparent plotOptions.dpo
+ * @internal
  */
 DPOIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(DPOIndicator_SMAIndicator.defaultOptions, {
     /**
@@ -3250,7 +3249,6 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *  Default Export
  *
  * */
-/** @internal */
 /* harmony default export */ const DPO_DPOIndicator = ((/* unused pure expression or super */ null && (DPOIndicator)));
 /* *
  *
@@ -3264,7 +3262,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @extends   series,plotOptions.dpo
  * @since     7.0.0
  * @product   highstock
- * @excluding allAreas, colorAxis, compare, compareBase, dataParser, dataURL,
+ * @excluding allAreas, colorAxis, compare, compareBase,
  *            joinBy, keys, navigatorOptions, pointInterval, pointIntervalUnit,
  *            pointPlacement, pointRange, pointStart, showInNavigator, stacking
  * @requires  stock/indicators/indicators
@@ -3296,7 +3294,6 @@ const { ema: ChaikinIndicator_EMAIndicator } = (highcharts_SeriesRegistry_common
 /**
  * The Chaikin series type.
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.chaikin
  *
@@ -3308,6 +3305,7 @@ class ChaikinIndicator extends ChaikinIndicator_EMAIndicator {
      *  Functions
      *
      * */
+    /** @internal */
     getValues(series, params) {
         const periods = params.periods, period = params.period, 
         // 0- date, 1- Chaikin Oscillator
@@ -3376,6 +3374,7 @@ class ChaikinIndicator extends ChaikinIndicator_EMAIndicator {
  * @requires     stock/indicators/indicators
  * @requires     stock/indicators/chaikin
  * @optionparent plotOptions.chaikin
+ * @internal
  */
 ChaikinIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(ChaikinIndicator_EMAIndicator.defaultOptions, {
     /**
@@ -3417,7 +3416,6 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *  Default Export
  *
  * */
-/** @internal */
 /* harmony default export */ const Chaikin_ChaikinIndicator = ((/* unused pure expression or super */ null && (ChaikinIndicator)));
 /* *
  *
@@ -3431,7 +3429,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @extends   series,plotOptions.chaikin
  * @since     7.0.0
  * @product   highstock
- * @excluding allAreas, colorAxis, dataParser, dataURL, joinBy, keys,
+ * @excluding allAreas, colorAxis, joinBy, keys,
  *            navigatorOptions, pointInterval, pointIntervalUnit,
  *            pointPlacement, pointRange, pointStart, stacking, showInNavigator
  * @requires  stock/indicators/indicators
@@ -3461,7 +3459,6 @@ const { sma: CMOIndicator_SMAIndicator } = (highcharts_SeriesRegistry_commonjs_h
 /**
  * The CMO series type.
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.cmo
  *
@@ -3473,6 +3470,7 @@ class CMOIndicator extends CMOIndicator_SMAIndicator {
      *  Functions
      *
      * */
+    /** @internal */
     getValues(series, params) {
         const period = params.period, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, CMO = [], xData = [], yData = [];
         let i, index = params.index, values;
@@ -3562,6 +3560,7 @@ class CMOIndicator extends CMOIndicator_SMAIndicator {
  * @requires     stock/indicators/indicators
  * @requires     stock/indicators/cmo
  * @optionparent plotOptions.cmo
+ * @internal
  */
 CMOIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(CMOIndicator_SMAIndicator.defaultOptions, {
     params: {
@@ -3575,7 +3574,6 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *  Default Export
  *
  * */
-/** @internal */
 /* harmony default export */ const CMO_CMOIndicator = ((/* unused pure expression or super */ null && (CMOIndicator)));
 /* *
  *
@@ -3589,7 +3587,6 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @extends   series,plotOptions.cmo
  * @since 9.1.0
  * @product   highstock
- * @excluding dataParser, dataURL
  * @requires  stock/indicators/indicators
  * @requires  stock/indicators/cmo
  * @apioption series.cmo
@@ -3617,7 +3614,6 @@ const { ema: DEMAIndicator_EMAIndicator } = (highcharts_SeriesRegistry_commonjs_
 /**
  * The DEMA series Type
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.dema
  *
@@ -3629,9 +3625,11 @@ class DEMAIndicator extends DEMAIndicator_EMAIndicator {
      *  Functions
      *
      * */
+    /** @internal */
     getEMA(yVal, prevEMA, SMA, index, i, xVal) {
         return super.calculateEma(xVal || [], yVal, typeof i === 'undefined' ? 1 : i, this.EMApercent, prevEMA, typeof index === 'undefined' ? -1 : index, SMA);
     }
+    /** @internal */
     getValues(series, params) {
         const period = params.period, EMAvalues = [], doubledPeriod = 2 * period, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, DEMA = [], xDataDema = [], yDataDema = [];
         let accumulatePeriodPoints = 0, EMA = 0, 
@@ -3715,6 +3713,7 @@ class DEMAIndicator extends DEMAIndicator_EMAIndicator {
  * @requires     stock/indicators/indicators
  * @requires     stock/indicators/dema
  * @optionparent plotOptions.dema
+ * @internal
  */
 DEMAIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(DEMAIndicator_EMAIndicator.defaultOptions);
 highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default().registerSeriesType('dema', DEMAIndicator);
@@ -3723,7 +3722,6 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *  Default Export
  *
  * */
-/** @internal */
 /* harmony default export */ const DEMA_DEMAIndicator = ((/* unused pure expression or super */ null && (DEMAIndicator)));
 /* *
  *
@@ -3737,7 +3735,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @extends   series,plotOptions.dema
  * @since     7.0.0
  * @product   highstock
- * @excluding allAreas, colorAxis, compare, compareBase, dataParser, dataURL,
+ * @excluding allAreas, colorAxis, compare, compareBase,
  *            joinBy, keys, navigatorOptions, pointInterval, pointIntervalUnit,
  *            pointPlacement, pointRange, pointStart, showInNavigator, stacking
  * @requires  stock/indicators/indicators
@@ -3767,7 +3765,6 @@ const { ema: TEMAIndicator_EMAIndicator } = (highcharts_SeriesRegistry_commonjs_
 /**
  * The TEMA series type.
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.tema
  *
@@ -3779,9 +3776,11 @@ class TEMAIndicator extends TEMAIndicator_EMAIndicator {
      *  Functions
      *
      * */
+    /** @internal */
     getEMA(yVal, prevEMA, SMA, index, i, xVal) {
         return super.calculateEma(xVal || [], yVal, typeof i === 'undefined' ? 1 : i, this.EMApercent, prevEMA, typeof index === 'undefined' ? -1 : index, SMA);
     }
+    /** @internal */
     getTemaPoint(xVal, tripledPeriod, EMAlevels, i) {
         const TEMAPoint = [
             xVal[i - 3],
@@ -3790,6 +3789,7 @@ class TEMAIndicator extends TEMAIndicator_EMAIndicator {
         ];
         return TEMAPoint;
     }
+    /** @internal */
     getValues(series, params) {
         const period = params.period, doubledPeriod = 2 * period, tripledPeriod = 3 * period, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, tema = [], xDataTema = [], yDataTema = [], 
         // EMA values array
@@ -3898,6 +3898,7 @@ class TEMAIndicator extends TEMAIndicator_EMAIndicator {
  * @requires     stock/indicators/indicators
  * @requires     stock/indicators/tema
  * @optionparent plotOptions.tema
+ * @internal
  */
 TEMAIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(TEMAIndicator_EMAIndicator.defaultOptions);
 highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default().registerSeriesType('tema', TEMAIndicator);
@@ -3906,7 +3907,6 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *  Default Export
  *
  * */
-/** @internal */
 /* harmony default export */ const TEMA_TEMAIndicator = ((/* unused pure expression or super */ null && (TEMAIndicator)));
 /* *
  *
@@ -3920,7 +3920,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @extends   series,plotOptions.tema
  * @since     7.0.0
  * @product   highstock
- * @excluding allAreas, colorAxis, compare, compareBase, dataParser, dataURL,
+ * @excluding allAreas, colorAxis, compare, compareBase,
  *            joinBy, keys, navigatorOptions, pointInterval, pointIntervalUnit,
  *            pointPlacement, pointRange, pointStart, showInNavigator, stacking
  * @requires  stock/indicators/indicators
@@ -3950,7 +3950,6 @@ const { tema: TRIXIndicator_TEMAIndicator } = (highcharts_SeriesRegistry_commonj
 /**
  * The TRIX series type.
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.trix
  *
@@ -3963,6 +3962,7 @@ class TRIXIndicator extends TRIXIndicator_TEMAIndicator {
      *
      * */
     // TRIX is calculated using TEMA so we just extend getTemaPoint method.
+    /** @internal */
     getTemaPoint(xVal, tripledPeriod, EMAlevels, i) {
         if (i > tripledPeriod) {
             return [
@@ -3997,6 +3997,7 @@ class TRIXIndicator extends TRIXIndicator_TEMAIndicator {
  * @requires     stock/indicators/tema
  * @requires     stock/indicators/trix
  * @optionparent plotOptions.trix
+ * @internal
  */
 TRIXIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(TRIXIndicator_TEMAIndicator.defaultOptions);
 highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default().registerSeriesType('trix', TRIXIndicator);
@@ -4005,7 +4006,6 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *  Default Export
  *
  * */
-/** @internal */
 /* harmony default export */ const TRIX_TRIXIndicator = ((/* unused pure expression or super */ null && (TRIXIndicator)));
 /* *
  *
@@ -4019,7 +4019,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @extends   series,plotOptions.trix
  * @since     7.0.0
  * @product   highstock
- * @excluding allAreas, colorAxis, compare, compareBase, dataParser, dataURL,
+ * @excluding allAreas, colorAxis, compare, compareBase,
  *            joinBy, keys, navigatorOptions, pointInterval, pointIntervalUnit,
  *            pointPlacement, pointRange, pointStart, showInNavigator, stacking
  * @requires  stock/indicators/indicators
@@ -4051,7 +4051,6 @@ const { ema: APOIndicator_EMAIndicator } = (highcharts_SeriesRegistry_commonjs_h
 /**
  * The APO series type.
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.apo
  *
@@ -4063,6 +4062,7 @@ class APOIndicator extends APOIndicator_EMAIndicator {
      *  Functions
      *
      * */
+    /** @internal */
     getValues(series, params) {
         const periods = params.periods, index = params.index, 
         // 0- date, 1- Absolute price oscillator
@@ -4124,6 +4124,7 @@ class APOIndicator extends APOIndicator_EMAIndicator {
  * @requires     stock/indicators/indicators
  * @requires     stock/indicators/apo
  * @optionparent plotOptions.apo
+ * @internal
  */
 APOIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(APOIndicator_EMAIndicator.defaultOptions, {
     /**
@@ -4154,7 +4155,6 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *  Default Export
  *
  * */
-/** @internal */
 /* harmony default export */ const APO_APOIndicator = ((/* unused pure expression or super */ null && (APOIndicator)));
 /* *
  *
@@ -4168,7 +4168,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @extends   series,plotOptions.apo
  * @since     7.0.0
  * @product   highstock
- * @excluding allAreas, colorAxis, dataParser, dataURL, joinBy, keys,
+ * @excluding allAreas, colorAxis, joinBy, keys,
  *            navigatorOptions, pointInterval, pointIntervalUnit,
  *            pointPlacement, pointRange, pointStart, showInNavigator, stacking
  * @requires  stock/indicators/indicators
@@ -4286,7 +4286,6 @@ function ichimokuAverages() {
 /**
  * The IKH series type.
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.ikh
  *
@@ -4308,6 +4307,7 @@ class IKHIndicator extends IKHIndicator_SMAIndicator {
         this.data = [];
         this.options = {};
         this.points = [];
+        /** @internal */
         this.graphCollection = [];
     }
     /* *
@@ -4315,6 +4315,7 @@ class IKHIndicator extends IKHIndicator_SMAIndicator {
      * Functions
      *
      * */
+    /** @internal */
     init() {
         super.init.apply(this, arguments);
         // Set default color for lines:
@@ -4353,6 +4354,7 @@ class IKHIndicator extends IKHIndicator_SMAIndicator {
             }
         }, this.options);
     }
+    /** @internal */
     toYData(point) {
         return [
             point.tenkanSen,
@@ -4362,6 +4364,7 @@ class IKHIndicator extends IKHIndicator_SMAIndicator {
             point.senkouSpanB
         ];
     }
+    /** @internal */
     translate() {
         const indicator = this;
         highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default().seriesTypes.sma.prototype.translate.apply(indicator);
@@ -4382,6 +4385,7 @@ class IKHIndicator extends IKHIndicator_SMAIndicator {
             }
         }
     }
+    /** @internal */
     drawGraph() {
         const indicator = this, mainLinePoints = indicator.points, mainLineOptions = indicator.options, mainLinePath = indicator.graph, mainColor = indicator.color, gappedExtend = {
             options: {
@@ -4449,7 +4453,7 @@ class IKHIndicator extends IKHIndicator_SMAIndicator {
             }
         }
         // Modify options and generate lines:
-        (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.objectEach)(ikhMap, (values, lineName) => {
+        ;(0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.objectEach)(ikhMap, (values, lineName) => {
             if (mainLineOptions[lineName] &&
                 lineName !== 'senkouSpan') {
                 // First line is rendered by default option
@@ -4560,6 +4564,7 @@ class IKHIndicator extends IKHIndicator_SMAIndicator {
         indicator.graph = mainLinePath;
         indicator.color = mainColor;
     }
+    /** @internal */
     getGraphPath(points) {
         const indicator = this;
         let path = [], spanA, spanAarr = [];
@@ -4585,6 +4590,7 @@ class IKHIndicator extends IKHIndicator_SMAIndicator {
         }
         return path;
     }
+    /** @internal */
     getValues(series, params) {
         const period = params.period, periodTenkan = params.periodTenkan, periodSenkouSpanB = params.periodSenkouSpanB, xVal = series.xData, yVal = series.yData, xAxis = series.xAxis, yValLen = (yVal && yVal.length) || 0, closestPointRange = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.getClosestDistance)(xAxis.series.map((s) => s.getColumn('x'))), IKH = [], xData = [];
         let date, slicedTSY, slicedKSY, slicedSSBY, pointTS, pointKS, pointSSB, i, TS, KS, CS, SSA, SSB;
@@ -4671,6 +4677,7 @@ class IKHIndicator extends IKHIndicator_SMAIndicator {
  * @requires     stock/indicators/indicators
  * @requires     stock/indicators/ichimoku-kinko-hyo
  * @optionparent plotOptions.ikh
+ * @internal
  */
 IKHIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(IKHIndicator_SMAIndicator.defaultOptions, {
     /**
@@ -4851,7 +4858,6 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *  Default Export
  *
  * */
-/** @internal */
 /* harmony default export */ const IKH_IKHIndicator = ((/* unused pure expression or super */ null && (IKHIndicator)));
 /* *
  *
@@ -4865,7 +4871,6 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @extends   series,plotOptions.ikh
  * @since     6.0.0
  * @product   highstock
- * @excluding dataParser, dataURL
  * @requires  stock/indicators/indicators
  * @requires  stock/indicators/ichimoku-kinko-hyo
  * @apioption series.ikh
@@ -4894,7 +4899,6 @@ const { sma: KeltnerChannelsIndicator_SMAIndicator } = (highcharts_SeriesRegistr
 /**
  * The Keltner Channels series type.
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.keltnerchannels
  *
@@ -4906,6 +4910,7 @@ class KeltnerChannelsIndicator extends KeltnerChannelsIndicator_SMAIndicator {
      *  Functions
      *
      * */
+    /** @internal */
     init() {
         highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default().seriesTypes.sma.prototype.init.apply(this, arguments);
         // Set default color for lines:
@@ -4922,6 +4927,7 @@ class KeltnerChannelsIndicator extends KeltnerChannelsIndicator_SMAIndicator {
             }
         }, this.options);
     }
+    /** @internal */
     getValues(series, params) {
         const period = params.period, periodATR = params.periodATR, multiplierATR = params.multiplierATR, index = params.index, yVal = series.yData, yValLen = yVal ? yVal.length : 0, 
         // Keltner Channels array structure:
@@ -4978,6 +4984,7 @@ class KeltnerChannelsIndicator extends KeltnerChannelsIndicator_SMAIndicator {
  * @requires     stock/indicators/indicators
  * @requires     stock/indicators/keltner-channels
  * @optionparent plotOptions.keltnerchannels
+ * @internal
  */
 KeltnerChannelsIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(KeltnerChannelsIndicator_SMAIndicator.defaultOptions, {
     /**
@@ -5066,7 +5073,6 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *  Default Export
  *
  * */
-/** @internal */
 /* harmony default export */ const KeltnerChannels_KeltnerChannelsIndicator = ((/* unused pure expression or super */ null && (KeltnerChannelsIndicator)));
 /* *
  *
@@ -5080,7 +5086,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @extends      series,plotOptions.keltnerchannels
  * @since        7.0.0
  * @product      highstock
- * @excluding    allAreas, colorAxis, compare, compareBase, dataParser, dataURL,
+ * @excluding    allAreas, colorAxis, compare, compareBase,
  *               joinBy, keys, navigatorOptions, pointInterval,
  *               pointIntervalUnit, pointPlacement, pointRange, pointStart,
  *               stacking, showInNavigator
@@ -5113,7 +5119,6 @@ const { ema: KlingerIndicator_EMAIndicator, sma: KlingerIndicator_SMAIndicator }
 /**
  * The Klinger oscillator series type.
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.klinger
  *
@@ -5125,6 +5130,7 @@ class KlingerIndicator extends KlingerIndicator_SMAIndicator {
      *  Functions
      *
      * */
+    /** @internal */
     calculateTrend(yVal, i) {
         const isUpward = yVal[i][1] + yVal[i][2] + yVal[i][3] >
             yVal[i - 1][1] + yVal[i - 1][2] + yVal[i - 1][3];
@@ -5132,6 +5138,7 @@ class KlingerIndicator extends KlingerIndicator_SMAIndicator {
     }
     // Checks if the series and volumeSeries are accessible, number of
     // points.x is longer than period, is series has OHLC data
+    /** @internal */
     isValidData(firstYVal) {
         const chart = this.chart, options = this.options, series = this.linkedParent, isSeriesOHLC = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.isArray)(firstYVal) &&
             firstYVal.length === 4, volumeSeries = this.volumeSeries ||
@@ -5148,12 +5155,15 @@ class KlingerIndicator extends KlingerIndicator_SMAIndicator {
         });
         return !!(isLengthValid && isSeriesOHLC);
     }
+    /** @internal */
     getCM(previousCM, DM, trend, previousTrend, previousDM) {
         return (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.correctFloat)(DM + (trend === previousTrend ? previousCM : previousDM));
     }
+    /** @internal */
     getDM(high, low) {
         return (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.correctFloat)(high - low);
     }
+    /** @internal */
     getVolumeForce(yVal) {
         const volumeForce = [];
         let CM = 0, // Cumulative measurement
@@ -5179,13 +5189,16 @@ class KlingerIndicator extends KlingerIndicator_SMAIndicator {
         }
         return volumeForce;
     }
+    /** @internal */
     getEMA(yVal, prevEMA, SMA, EMApercent, index, i, xVal) {
         return KlingerIndicator_EMAIndicator.prototype.calculateEma(xVal || [], yVal, typeof i === 'undefined' ? 1 : i, EMApercent, prevEMA, typeof index === 'undefined' ? -1 : index, SMA);
     }
+    /** @internal */
     getSMA(period, index, values) {
         return KlingerIndicator_EMAIndicator.prototype
             .accumulatePeriodPoints(period, index, values) / period;
     }
+    /** @internal */
     getValues(series, params) {
         const Klinger = [], xVal = series.xData, yVal = series.yData, xData = [], yData = [], calcSignal = [];
         let KO, i = 0, fastEMA = 0, slowEMA, previousFastEMA = void 0, previousSlowEMA = void 0, signal = null;
@@ -5247,6 +5260,7 @@ class KlingerIndicator extends KlingerIndicator_SMAIndicator {
  * @requires     stock/indicators/indicators
  * @requires     stock/indicators/klinger
  * @optionparent plotOptions.klinger
+ * @internal
  */
 KlingerIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(KlingerIndicator_SMAIndicator.defaultOptions, {
     /**
@@ -5322,7 +5336,6 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *  Default Export
  *
  * */
-/** @internal */
 /* harmony default export */ const Klinger_KlingerIndicator = ((/* unused pure expression or super */ null && (KlingerIndicator)));
 /* *
  *
@@ -5365,7 +5378,6 @@ const { sma: MACDIndicator_SMAIndicator } = (highcharts_SeriesRegistry_commonjs_
 /**
  * The MACD series type.
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.macd
  *
@@ -5377,6 +5389,7 @@ class MACDIndicator extends MACDIndicator_SMAIndicator {
      *  Functions
      *
      * */
+    /** @internal */
     init() {
         highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default().seriesTypes.sma.prototype.init.apply(this, arguments);
         const originalColor = this.color, originalColorIndex = this.colorIndex;
@@ -5416,9 +5429,11 @@ class MACDIndicator extends MACDIndicator_SMAIndicator {
         this.color = originalColor;
         this.colorIndex = originalColorIndex;
     }
+    /** @internal */
     toYData(point) {
         return [point.y, point.signal, point.MACD];
     }
+    /** @internal */
     translate() {
         const indicator = this, plotNames = ['plotSignal', 'plotMACD'];
         highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default().seriesTypes.column.prototype.translate.apply(indicator);
@@ -5431,6 +5446,7 @@ class MACDIndicator extends MACDIndicator_SMAIndicator {
             });
         });
     }
+    /** @internal */
     destroy() {
         // This.graph is null due to removing two times the same SVG element
         this.graph = null;
@@ -5438,6 +5454,7 @@ class MACDIndicator extends MACDIndicator_SMAIndicator {
         this.graphsignal = this.graphsignal && this.graphsignal.destroy();
         highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default().seriesTypes.sma.prototype.destroy.apply(this, arguments);
     }
+    /** @internal */
     drawGraph() {
         const indicator = this, mainLinePoints = indicator.points, mainLineOptions = indicator.options, histogramZones = indicator.zones, gappedExtend = {
             options: {
@@ -5478,6 +5495,7 @@ class MACDIndicator extends MACDIndicator_SMAIndicator {
         indicator.options = mainLineOptions;
         indicator.zones = histogramZones;
     }
+    /** @internal */
     applyZones() {
         // Histogram zones are handled by drawPoints method
         // Here we need to apply zones for all lines
@@ -5491,6 +5509,7 @@ class MACDIndicator extends MACDIndicator_SMAIndicator {
         }
         this.zones = histogramZones;
     }
+    /** @internal */
     getValues(series, params) {
         const indexToShift = (params.longPeriod - params.shortPeriod), // #14197
         MACD = [], xMACD = [], yMACD = [];
@@ -5587,6 +5606,7 @@ class MACDIndicator extends MACDIndicator_SMAIndicator {
  * @requires     stock/indicators/indicators
  * @requires     stock/indicators/macd
  * @optionparent plotOptions.macd
+ * @internal
  */
 MACDIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(MACDIndicator_SMAIndicator.defaultOptions, {
     params: {
@@ -5695,7 +5715,6 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *  Default Export
  *
  * */
-/** @internal */
 /* harmony default export */ const MACD_MACDIndicator = ((/* unused pure expression or super */ null && (MACDIndicator)));
 /* *
  *
@@ -5709,7 +5728,6 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @extends   series,plotOptions.macd
  * @since     6.0.0
  * @product   highstock
- * @excluding dataParser, dataURL
  * @requires  stock/indicators/indicators
  * @requires  stock/indicators/macd
  * @apioption series.macd
@@ -5767,7 +5785,6 @@ function calculateRawMoneyFlow(typicalPrice, volume) {
 /**
  * The MFI series type.
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.mfi
  *
@@ -5779,6 +5796,7 @@ class MFIIndicator extends MFIIndicator_SMAIndicator {
      *  Functions
      *
      * */
+    /** @internal */
     getValues(series, params) {
         const period = params.period, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, decimals = params.decimals, volumeSeries = series.chart.get(params.volumeSeriesID), yValVolume = volumeSeries?.getColumn('y') || [], MFI = [], xData = [], yData = [], positiveMoneyFlow = [], negativeMoneyFlow = [];
         let newTypicalPrice, oldTypicalPrice, rawMoneyFlow, negativeMoneyFlowSum, positiveMoneyFlowSum, moneyFlowRatio, MFIPoint, i, isUp = false, 
@@ -5861,6 +5879,7 @@ class MFIIndicator extends MFIIndicator_SMAIndicator {
  * @requires     stock/indicators/indicators
  * @requires     stock/indicators/mfi
  * @optionparent plotOptions.mfi
+ * @internal
  */
 MFIIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(MFIIndicator_SMAIndicator.defaultOptions, {
     /**
@@ -5889,7 +5908,6 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *  Default Export
  *
  * */
-/** @internal */
 /* harmony default export */ const MFI_MFIIndicator = ((/* unused pure expression or super */ null && (MFIIndicator)));
 /* *
  *
@@ -5902,7 +5920,6 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *
  * @extends   series,plotOptions.mfi
  * @since     6.0.0
- * @excluding dataParser, dataURL
  * @product   highstock
  * @requires  stock/indicators/indicators
  * @requires  stock/indicators/mfi
@@ -5941,7 +5958,6 @@ function MomentumIndicator_populateAverage(xVal, yVal, i, period, index) {
 /**
  * The Momentum series type.
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.momentum
  *
@@ -5953,6 +5969,7 @@ class MomentumIndicator extends MomentumIndicator_SMAIndicator {
      *  Functions
      *
      * */
+    /** @internal */
     getValues(series, params) {
         const period = params.period, index = params.index, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, MM = [], xData = [], yData = [];
         let i, MMPoint;
@@ -5998,6 +6015,7 @@ class MomentumIndicator extends MomentumIndicator_SMAIndicator {
  * @requires     stock/indicators/indicators
  * @requires     stock/indicators/momentum
  * @optionparent plotOptions.momentum
+ * @internal
  */
 MomentumIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(MomentumIndicator_SMAIndicator.defaultOptions, {
     params: {
@@ -6013,7 +6031,6 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *  Default Export
  *
  * */
-/** @internal */
 /* harmony default export */ const Momentum_MomentumIndicator = ((/* unused pure expression or super */ null && (MomentumIndicator)));
 /* *
  *
@@ -6026,7 +6043,6 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *
  * @extends   series,plotOptions.momentum
  * @since     6.0.0
- * @excluding dataParser, dataURL
  * @product   highstock
  * @requires  stock/indicators/indicators
  * @requires  stock/indicators/momentum
@@ -6055,7 +6071,6 @@ const { atr: NATRIndicator_ATRIndicator } = (highcharts_SeriesRegistry_commonjs_
 /**
  * The NATR series type.
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.natr
  *
@@ -6067,6 +6082,7 @@ class NATRIndicator extends NATRIndicator_ATRIndicator {
      *  Functions
      *
      * */
+    /** @internal */
     getValues(series, params) {
         const atrData = (super.getValues.apply(this, arguments)), atrLength = atrData.values.length, yVal = series.yData;
         let i = 0, period = params.period - 1;
@@ -6101,6 +6117,7 @@ class NATRIndicator extends NATRIndicator_ATRIndicator {
  * @requires     stock/indicators/atr
  * @requires     stock/indicators/natr
  * @optionparent plotOptions.natr
+ * @internal
  */
 NATRIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(NATRIndicator_ATRIndicator.defaultOptions, {
     tooltip: {
@@ -6113,7 +6130,6 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *  Default Export
  *
  * */
-/** @internal */
 /* harmony default export */ const NATR_NATRIndicator = ((/* unused pure expression or super */ null && (NATRIndicator)));
 /* *
  *
@@ -6127,7 +6143,6 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @extends   series,plotOptions.natr
  * @since     7.0.0
  * @product   highstock
- * @excluding dataParser, dataURL
  * @requires  stock/indicators/indicators
  * @requires  stock/indicators/atr
  * @requires  stock/indicators/natr
@@ -6157,7 +6172,6 @@ const { sma: OBVIndicator_SMAIndicator } = (highcharts_SeriesRegistry_commonjs_h
 /**
  * The OBV series type.
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.obv
  *
@@ -6169,6 +6183,7 @@ class OBVIndicator extends OBVIndicator_SMAIndicator {
      *  Functions
      *
      * */
+    /** @internal */
     getValues(series, params) {
         const volumeSeries = series.chart.get(params.volumeSeriesID), xVal = series.xData, yVal = series.yData, OBV = [], xData = [], yData = [], hasOHLC = !(0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.isNumber)(yVal[0]);
         let OBVPoint = [], i = 1, previousOBV = 0, currentOBV = 0, previousClose = 0, currentClose = 0, volume;
@@ -6240,6 +6255,7 @@ class OBVIndicator extends OBVIndicator_SMAIndicator {
  *               pointInterval, pointIntervalUnit, pointPlacement,
  *               pointRange, pointStart, showInNavigator, stacking
  * @optionparent plotOptions.obv
+ * @internal
  */
 OBVIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(OBVIndicator_SMAIndicator.defaultOptions, {
     marker: {
@@ -6271,7 +6287,6 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *  Default Export
  *
  * */
-/** @internal */
 /* harmony default export */ const OBV_OBVIndicator = ((/* unused pure expression or super */ null && (OBVIndicator)));
 /* *
  *
@@ -6285,7 +6300,6 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @extends   series,plotOptions.obv
  * @since     9.1.0
  * @product   highstock
- * @excluding dataParser, dataURL
  * @requires  stock/indicators/indicators
  * @requires  stock/indicators/obv
  * @apioption series.obv
@@ -6328,17 +6342,18 @@ function destroyExtraLabels(point, functionName) {
  *  Class
  *
  * */
-/** @internal */
 class PivotPointsPoint extends SMAPoint {
     /* *
      *
      *  Functions
      *
      * */
+    /** @internal */
     destroyElements() {
         destroyExtraLabels(this, 'destroyElements');
     }
     // This method is called when removing points, e.g. series.update()
+    /** @internal */
     destroy() {
         destroyExtraLabels(this, 'destroyElements');
     }
@@ -6348,7 +6363,6 @@ class PivotPointsPoint extends SMAPoint {
  *  Default Export
  *
  * */
-/** @internal */
 /* harmony default export */ const PivotPoints_PivotPointsPoint = (PivotPointsPoint);
 
 ;// ./code/es-modules/Stock/Indicators/PivotPoints/PivotPointsIndicator.js
@@ -6373,7 +6387,6 @@ const { sma: PivotPointsIndicator_SMAIndicator } = (highcharts_SeriesRegistry_co
 /**
  * The Pivot Points series type.
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.pivotpoints
  *
@@ -6385,9 +6398,11 @@ class PivotPointsIndicator extends PivotPointsIndicator_SMAIndicator {
      *  Functions
      *
      * */
+    /** @internal */
     toYData(point) {
         return [point.P]; // The rest should not affect extremes
     }
+    /** @internal */
     translate() {
         const indicator = this;
         super.translate.apply(indicator);
@@ -6403,6 +6418,7 @@ class PivotPointsIndicator extends PivotPointsIndicator_SMAIndicator {
         // But from the approximated last position in a given range
         indicator.plotEndPoint = indicator.xAxis.toPixels(indicator.endPoint, true);
     }
+    /** @internal */
     getGraphPath(points) {
         const indicator = this, allPivotPoints = ([[], [], [], [], [], [], [], [], []]), pointArrayMapLength = indicator.pointArrayMap.length;
         let endPoint = indicator.plotEndPoint, path = [], position, point, pointsLength = points.length, i;
@@ -6437,6 +6453,7 @@ class PivotPointsIndicator extends PivotPointsIndicator_SMAIndicator {
         return path;
     }
     // TODO: Rewrite this logic to use multiple dataLabels
+    /** @internal */
     drawDataLabels() {
         const indicator = this, pointMapping = indicator.pointArrayMap;
         let currentLabel, pointsLength, point, i;
@@ -6478,6 +6495,7 @@ class PivotPointsIndicator extends PivotPointsIndicator_SMAIndicator {
             });
         }
     }
+    /** @internal */
     getValues(series, params) {
         const period = params.period, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, placement = this[params.algorithm + 'Placement'], 
         // 0- from, 1- to, 2- R1, 3- R2, 4- pivot, 5- S1 etc.
@@ -6513,6 +6531,7 @@ class PivotPointsIndicator extends PivotPointsIndicator_SMAIndicator {
             yData: yData
         };
     }
+    /** @internal */
     getPivotAndHLC(values) {
         const close = values[values.length - 1][3];
         let high = -Infinity, low = Infinity;
@@ -6523,6 +6542,7 @@ class PivotPointsIndicator extends PivotPointsIndicator_SMAIndicator {
         const pivot = (high + low + close) / 3;
         return [pivot, high, low, close];
     }
+    /** @internal */
     standardPlacement(values) {
         const diff = values[1] - values[2], avg = [
             null,
@@ -6537,6 +6557,7 @@ class PivotPointsIndicator extends PivotPointsIndicator_SMAIndicator {
         ];
         return avg;
     }
+    /** @internal */
     camarillaPlacement(values) {
         const diff = values[1] - values[2], avg = [
             values[3] + diff * 1.5,
@@ -6551,6 +6572,7 @@ class PivotPointsIndicator extends PivotPointsIndicator_SMAIndicator {
         ];
         return avg;
     }
+    /** @internal */
     fibonacciPlacement(values) {
         const diff = values[1] - values[2], avg = [
             null,
@@ -6584,6 +6606,7 @@ class PivotPointsIndicator extends PivotPointsIndicator_SMAIndicator {
  * @requires     stock/indicators/indicators
  * @requires     stock/indicators/pivot-points
  * @optionparent plotOptions.pivotpoints
+ * @internal
  */
 PivotPointsIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(PivotPointsIndicator_SMAIndicator.defaultOptions, {
     /**
@@ -6628,7 +6651,6 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *  Default Export
  *
  * */
-/** @internal */
 /* harmony default export */ const PivotPoints_PivotPointsIndicator = ((/* unused pure expression or super */ null && (PivotPointsIndicator)));
 /* *
  *
@@ -6642,7 +6664,6 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @extends   series,plotOptions.pivotpoints
  * @since     6.0.0
  * @product   highstock
- * @excluding dataParser, dataURL
  * @requires  stock/indicators/indicators
  * @requires  stock/indicators/pivot-points
  * @apioption series.pivotpoints
@@ -6671,7 +6692,6 @@ const { ema: PPOIndicator_EMAIndicator } = (highcharts_SeriesRegistry_commonjs_h
 /**
  * The PPO series type.
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.ppo
  *
@@ -6683,6 +6703,7 @@ class PPOIndicator extends PPOIndicator_EMAIndicator {
      *  Functions
      *
      * */
+    /** @internal */
     getValues(series, params) {
         const periods = params.periods, index = params.index, 
         // 0- date, 1- Percentage Price Oscillator
@@ -6747,6 +6768,7 @@ class PPOIndicator extends PPOIndicator_EMAIndicator {
  * @requires     stock/indicators/indicators
  * @requires     stock/indicators/ppo
  * @optionparent plotOptions.ppo
+ * @internal
  */
 PPOIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(PPOIndicator_EMAIndicator.defaultOptions, {
     /**
@@ -6776,7 +6798,6 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *  Default Export
  *
  * */
-/** @internal */
 /* harmony default export */ const PPO_PPOIndicator = ((/* unused pure expression or super */ null && (PPOIndicator)));
 /* *
  *
@@ -6790,7 +6811,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @extends   series,plotOptions.ppo
  * @since        7.0.0
  * @product   highstock
- * @excluding allAreas, colorAxis, dataParser, dataURL, joinBy, keys,
+ * @excluding allAreas, colorAxis, joinBy, keys,
  *            navigatorOptions, pointInterval, pointIntervalUnit,
  *            pointPlacement, pointRange, pointStart, showInNavigator, stacking
  * @requires  stock/indicators/indicators
@@ -6874,7 +6895,6 @@ const { sma: PCIndicator_SMAIndicator } = (highcharts_SeriesRegistry_commonjs_hi
 /**
  * The Price Channel series type.
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.pc
  *
@@ -6886,6 +6906,7 @@ class PCIndicator extends PCIndicator_SMAIndicator {
      *  Functions
      *
      * */
+    /** @internal */
     getValues(series, params) {
         const period = params.period, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, 
         // 0- date, 1-top line, 2-middle line, 3-bottom line
@@ -6936,6 +6957,7 @@ class PCIndicator extends PCIndicator_SMAIndicator {
  * @requires     stock/indicators/indicators
  * @requires     stock/indicators/price-channel
  * @optionparent plotOptions.pc
+ * @internal
  */
 PCIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(PCIndicator_SMAIndicator.defaultOptions, {
     /**
@@ -7004,7 +7026,6 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *  Default Export
  *
  * */
-/** @internal */
 /* harmony default export */ const PC_PCIndicator = ((/* unused pure expression or super */ null && (PCIndicator)));
 /* *
  *
@@ -7018,7 +7039,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @extends      series,plotOptions.pc
  * @since        7.0.0
  * @product      highstock
- * @excluding    allAreas, colorAxis, compare, compareBase, dataParser, dataURL,
+ * @excluding    allAreas, colorAxis, compare, compareBase,
  *               joinBy, keys, navigatorOptions, pointInterval,
  *               pointIntervalUnit, pointPlacement, pointRange, pointStart,
  *               showInNavigator, stacking
@@ -7050,7 +7071,6 @@ const { sma: PriceEnvelopesIndicator_SMAIndicator } = (highcharts_SeriesRegistry
 /**
  * The Price Envelopes series type.
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.priceenvelopes
  *
@@ -7062,6 +7082,7 @@ class PriceEnvelopesIndicator extends PriceEnvelopesIndicator_SMAIndicator {
      *  Functions
      *
      * */
+    /** @internal */
     init() {
         super.init.apply(this, arguments);
         // Set default color for lines:
@@ -7078,6 +7099,7 @@ class PriceEnvelopesIndicator extends PriceEnvelopesIndicator_SMAIndicator {
             }
         }, this.options);
     }
+    /** @internal */
     getValues(series, params) {
         const period = params.period, topPercent = params.topBand, botPercent = params.bottomBand, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, 
         // 0- date, 1-top line, 2-middle line, 3-bottom line
@@ -7132,6 +7154,7 @@ class PriceEnvelopesIndicator extends PriceEnvelopesIndicator_SMAIndicator {
  * @requires     stock/indicators/indicators
  * @requires     stock/indicators/price-envelopes
  * @optionparent plotOptions.priceenvelopes
+ * @internal
  */
 PriceEnvelopesIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(PriceEnvelopesIndicator_SMAIndicator.defaultOptions, {
     marker: {
@@ -7213,7 +7236,6 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *  Default Export
  *
  * */
-/** @internal */
 /* harmony default export */ const PriceEnvelopes_PriceEnvelopesIndicator = ((/* unused pure expression or super */ null && (PriceEnvelopesIndicator)));
 /* *
  *
@@ -7226,7 +7248,6 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *
  * @extends   series,plotOptions.priceenvelopes
  * @since     6.0.0
- * @excluding dataParser, dataURL
  * @product   highstock
  * @requires  stock/indicators/indicators
  * @requires  stock/indicators/price-envelopes
@@ -7342,7 +7363,6 @@ function getPSAR(pdir, sDir, PSAR, pACCMulti, sLow, pLow, pHigh, sHigh, pEP) {
 /**
  * The Parabolic SAR series type.
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.psar
  *
@@ -7356,6 +7376,7 @@ class PSARIndicator extends PSARIndicator_SMAIndicator {
          *
          * */
         super(...arguments);
+        /** @internal */
         this.nameComponents = void 0;
     }
     /* *
@@ -7363,6 +7384,7 @@ class PSARIndicator extends PSARIndicator_SMAIndicator {
      *  Functions
      *
      * */
+    /** @internal */
     getValues(series, params) {
         const xVal = series.xData, yVal = series.yData, maxAccelerationFactor = params.maxAccelerationFactor, increment = params.increment, 
         // Set initial acc factor (for every new trend!)
@@ -7434,6 +7456,7 @@ class PSARIndicator extends PSARIndicator_SMAIndicator {
  * @requires     stock/indicators/indicators
  * @requires     stock/indicators/psar
  * @optionparent plotOptions.psar
+ * @internal
  */
 PSARIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(PSARIndicator_SMAIndicator.defaultOptions, {
     lineWidth: 0,
@@ -7492,7 +7515,6 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *  Default Export
  *
  * */
-/** @internal */
 /* harmony default export */ const PSAR_PSARIndicator = ((/* unused pure expression or super */ null && (PSARIndicator)));
 /* *
  *
@@ -7506,7 +7528,6 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @extends   series,plotOptions.psar
  * @since     6.0.0
  * @product   highstock
- * @excluding dataParser, dataURL
  * @requires  stock/indicators/indicators
  * @requires  stock/indicators/psar
  * @apioption series.psar
@@ -7568,7 +7589,6 @@ function ROCIndicator_populateAverage(xVal, yVal, i, period, index) {
 /**
  * The ROC series type.
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.roc
  *
@@ -7580,6 +7600,7 @@ class ROCIndicator extends ROCIndicator_SMAIndicator {
      *  Functions
      *
      * */
+    /** @internal */
     getValues(series, params) {
         const period = params.period, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, ROC = [], xData = [], yData = [];
         let i, index = -1, ROCPoint;
@@ -7633,6 +7654,7 @@ class ROCIndicator extends ROCIndicator_SMAIndicator {
  * @requires     stock/indicators/indicators
  * @requires     stock/indicators/roc
  * @optionparent plotOptions.roc
+ * @internal
  */
 ROCIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(ROCIndicator_SMAIndicator.defaultOptions, {
     params: {
@@ -7649,7 +7671,6 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *  Default Export
  *
  * */
-/** @internal */
 /* harmony default export */ const ROC_ROCIndicator = ((/* unused pure expression or super */ null && (ROCIndicator)));
 /* *
  *
@@ -7674,7 +7695,6 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @extends   series,plotOptions.roc
  * @since     6.0.0
  * @product   highstock
- * @excluding dataParser, dataURL
  * @requires  stock/indicators/indicators
  * @requires  stock/indicators/roc
  * @apioption series.roc
@@ -7712,7 +7732,6 @@ function RSIIndicator_toFixed(a, n) {
 /**
  * The RSI series type.
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.rsi
  *
@@ -7724,13 +7743,14 @@ class RSIIndicator extends RSIIndicator_SMAIndicator {
      *  Functions
      *
      * */
+    /** @internal */
     getValues(series, params) {
         const period = params.period, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, decimals = params.decimals, 
         // RSI starts calculations from the second point
         // Cause we need to calculate change between two points
         RSI = [], xData = [], yData = [];
         let gain = 0, loss = 0, index = params.index, range = 1, RSIPoint, change, avgGain, avgLoss, i, values;
-        if ((xVal.length < period)) {
+        if (xVal.length < period) {
             return;
         }
         if ((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.isNumber)(yVal[0])) {
@@ -7814,6 +7834,7 @@ class RSIIndicator extends RSIIndicator_SMAIndicator {
  * @requires     stock/indicators/indicators
  * @requires     stock/indicators/rsi
  * @optionparent plotOptions.rsi
+ * @internal
  */
 RSIIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(RSIIndicator_SMAIndicator.defaultOptions, {
     params: {
@@ -7827,7 +7848,6 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *  Default Export
  *
  * */
-/** @internal */
 /* harmony default export */ const RSI_RSIIndicator = ((/* unused pure expression or super */ null && (RSIIndicator)));
 /* *
  *
@@ -7841,7 +7861,6 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @extends   series,plotOptions.rsi
  * @since     6.0.0
  * @product   highstock
- * @excluding dataParser, dataURL
  * @requires  stock/indicators/indicators
  * @requires  stock/indicators/rsi
  * @apioption series.rsi
@@ -7871,7 +7890,6 @@ const { sma: StochasticIndicator_SMAIndicator } = (highcharts_SeriesRegistry_com
 /**
  * The Stochastic series type.
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.stochastic
  *
@@ -7883,6 +7901,7 @@ class StochasticIndicator extends StochasticIndicator_SMAIndicator {
      *  Functions
      *
      * */
+    /** @internal */
     init() {
         super.init.apply(this, arguments);
         // Set default color for lines:
@@ -7894,6 +7913,7 @@ class StochasticIndicator extends StochasticIndicator_SMAIndicator {
             }
         }, this.options);
     }
+    /** @internal */
     getValues(series, params) {
         const periodK = params.periods[0], periodD = params.periods[1], xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, 
         // 0- date, 1-%K, 2-%D
@@ -7982,6 +8002,7 @@ class StochasticIndicator extends StochasticIndicator_SMAIndicator {
  * @requires     stock/indicators/indicators
  * @requires     stock/indicators/stochastic
  * @optionparent plotOptions.stochastic
+ * @internal
  */
 StochasticIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(StochasticIndicator_SMAIndicator.defaultOptions, {
     /**
@@ -8047,7 +8068,6 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *  Default Export
  *
  * */
-/** @internal */
 /* harmony default export */ const Stochastic_StochasticIndicator = ((/* unused pure expression or super */ null && (StochasticIndicator)));
 /* *
  *
@@ -8061,9 +8081,9 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @extends   series,plotOptions.stochastic
  * @since     6.0.0
  * @product   highstock
- * @excluding allAreas, colorAxis,  dataParser, dataURL, joinBy, keys,
- *            navigatorOptions, pointInterval, pointIntervalUnit,
- *            pointPlacement, pointRange, pointStart, showInNavigator, stacking
+ * @excluding allAreas, colorAxis, joinBy, keys, navigatorOptions,
+ *            pointInterval, pointIntervalUnit, pointPlacement, pointRange,
+ *            pointStart, showInNavigator, stacking
  * @requires  stock/indicators/indicators
  * @requires  stock/indicators/stochastic
  * @apioption series.stochastic
@@ -8091,7 +8111,6 @@ const { sma: SlowStochasticIndicator_SMAIndicator, stochastic: SlowStochasticInd
 /**
  * The Slow Stochastic series type.
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.slowstochastic
  *
@@ -8103,6 +8122,7 @@ class SlowStochasticIndicator extends SlowStochasticIndicator_StochasticIndicato
      *  Functions
      *
      * */
+    /** @internal */
     getValues(series, params) {
         const periods = params.periods, fastValues = super.getValues.call(this, series, params), slowValues = {
             values: [],
@@ -8160,6 +8180,7 @@ class SlowStochasticIndicator extends SlowStochasticIndicator_StochasticIndicato
  * @requires     stock/indicators/stochastic
  * @requires     stock/indicators/slow-stochastic
  * @optionparent plotOptions.slowstochastic
+ * @internal
  */
 SlowStochasticIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(SlowStochasticIndicator_StochasticIndicator.defaultOptions, {
     params: {
@@ -8181,7 +8202,6 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *  Default Export
  *
  * */
-/** @internal */
 /* harmony default export */ const SlowStochastic_SlowStochasticIndicator = ((/* unused pure expression or super */ null && (SlowStochasticIndicator)));
 /* *
  *
@@ -8237,7 +8257,6 @@ function createPointObj(mainSeries, index) {
 /**
  * The Supertrend series type.
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.supertrend
  *
@@ -8249,6 +8268,7 @@ class SupertrendIndicator extends SupertrendIndicator_SMAIndicator {
      *  Functions
      *
      * */
+    /** @internal */
     init() {
         const indicator = this;
         super.init.apply(indicator, arguments);
@@ -8269,6 +8289,7 @@ class SupertrendIndicator extends SupertrendIndicator_SMAIndicator {
             order: 1
         });
     }
+    /** @internal */
     drawGraph() {
         const indicator = this, indicOptions = indicator.options, 
         // Series that indicator is linked to
@@ -8446,7 +8467,7 @@ class SupertrendIndicator extends SupertrendIndicator_SMAIndicator {
             }
         }
         // Generate lines:
-        (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.objectEach)(groupedPoints, function (values, lineName) {
+        ;(0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.objectEach)(groupedPoints, function (values, lineName) {
             indicator.points = values;
             indicator.options = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(supertrendLineOptions[lineName].styles, gappedExtend);
             indicator.graph = indicator['graph' + lineName + 'Line'];
@@ -8491,6 +8512,7 @@ class SupertrendIndicator extends SupertrendIndicator_SMAIndicator {
     //      Previous Supertrend == Previous FINAL LOWERBAND AND
     //      Current Close > Current FINAL LOWERBAND
     //     ) THAN Current FINAL LOWERBAND
+    /** @internal */
     getValues(series, params) {
         const period = params.period, multiplier = params.multiplier, xVal = series.xData, yVal = series.yData, 
         // 0- date, 1- Supertrend indicator
@@ -8571,6 +8593,7 @@ class SupertrendIndicator extends SupertrendIndicator_SMAIndicator {
  * @requires     stock/indicators/indicators
  * @requires     stock/indicators/supertrend
  * @optionparent plotOptions.supertrend
+ * @internal
  */
 SupertrendIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(SupertrendIndicator_SMAIndicator.defaultOptions, {
     /**
@@ -8654,7 +8677,6 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *  Default Export
  *
  * */
-/** @internal */
 /* harmony default export */ const Supertrend_SupertrendIndicator = ((/* unused pure expression or super */ null && (SupertrendIndicator)));
 /* *
  *
@@ -8668,7 +8690,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @extends   series,plotOptions.supertrend
  * @since     7.0.0
  * @product   highstock
- * @excluding allAreas, colorAxis, cropThreshold, data, dataParser, dataURL,
+ * @excluding allAreas, colorAxis, cropThreshold, data,
  *            joinBy, keys, navigatorOptions, negativeColor, pointInterval,
  *            pointIntervalUnit, pointPlacement, pointRange, pointStart,
  *            showInNavigator, stacking, threshold
@@ -8700,9 +8722,9 @@ const { sma: { prototype: { pointClass: VBPPoint_SMAPoint } } } = (highcharts_Se
  *  Class
  *
  * */
-/** @internal */
 class VBPPoint extends VBPPoint_SMAPoint {
     // Required for destroying negative part of volume
+    /** @internal */
     destroy() {
         // @todo: this.negativeGraphic doesn't seem to be used anywhere
         if (this.negativeGraphic) {
@@ -8716,7 +8738,6 @@ class VBPPoint extends VBPPoint_SMAPoint {
  *  Default Export
  *
  * */
-/** @internal */
 /* harmony default export */ const VBP_VBPPoint = (VBPPoint);
 
 ;// ./code/es-modules/Stock/Indicators/VBP/VBPIndicator.js
@@ -8784,7 +8805,6 @@ function arrayExtremesOHLC(data) {
 /**
  * The Volume By Price (VBP) series type.
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.vbp
  *
@@ -8796,6 +8816,7 @@ class VBPIndicator extends VBPIndicator_SMAIndicator {
      *  Functions
      *
      * */
+    /** @internal */
     init(chart, options) {
         const indicator = this;
         // Series.update() sends data that is not necessary as everything is
@@ -8821,6 +8842,7 @@ class VBPIndicator extends VBPIndicator_SMAIndicator {
         return indicator;
     }
     // Adds events related with removing series
+    /** @internal */
     addCustomEvents(baseSeries, volumeSeries) {
         const indicator = this, toEmptyIndicator = () => {
             indicator.chart.redraw();
@@ -8845,6 +8867,7 @@ class VBPIndicator extends VBPIndicator_SMAIndicator {
         return indicator;
     }
     // Initial animation
+    /** @internal */
     animate(init) {
         const series = this, inverted = series.chart.inverted, group = series.group, attr = {};
         if (!init && group) {
@@ -8866,6 +8889,7 @@ class VBPIndicator extends VBPIndicator_SMAIndicator {
             }));
         }
     }
+    /** @internal */
     drawPoints() {
         const indicator = this;
         if (indicator.options.volumeDivision.enabled) {
@@ -8876,6 +8900,7 @@ class VBPIndicator extends VBPIndicator_SMAIndicator {
         VBPIndicator_columnProto.drawPoints.apply(indicator, arguments);
     }
     // Function responsible for dividing volume into positive and negative
+    /** @internal */
     posNegVolume(initVol, pos) {
         const indicator = this, signOrder = pos ?
             ['positive', 'negative'] :
@@ -8917,6 +8942,7 @@ class VBPIndicator extends VBPIndicator_SMAIndicator {
                 indicator.posWidths[i];
         }
     }
+    /** @internal */
     translate() {
         const indicator = this, options = indicator.options, chart = indicator.chart, yAxis = indicator.yAxis, yAxisMin = yAxis.min, zoneLinesOptions = indicator.options.zoneLines, priceZones = (indicator.priceZones);
         let yBarOffset = 0, volumeDataArray, maxVolume, primalBarWidth, barHeight, barHeightP, oldBarHeight, barWidth, pointPadding, chartPlotTop, barX, barY;
@@ -8967,6 +8993,7 @@ class VBPIndicator extends VBPIndicator_SMAIndicator {
             }
         }
     }
+    /** @internal */
     getExtremes() {
         const prevCompare = this.options.compare, prevCumulative = this.options.cumulative;
         let ret;
@@ -8986,6 +9013,7 @@ class VBPIndicator extends VBPIndicator_SMAIndicator {
         }
         return ret;
     }
+    /** @internal */
     getValues(series, params) {
         const indicator = this, xValues = series.getColumn('x', true), yValues = series.processedYData, chart = indicator.chart, ranges = params.ranges, VBP = [], xData = [], yData = [], volumeSeries = chart.get(params.volumeSeriesID);
         // Checks if base series exists
@@ -9028,6 +9056,7 @@ class VBPIndicator extends VBPIndicator_SMAIndicator {
         };
     }
     // Specifying where each zone should start ans end
+    /** @internal */
     specifyZones(isOHLC, xValues, yValues, ranges, volumeSeries) {
         const indicator = this, rangeExtremes = (isOHLC ? arrayExtremesOHLC(yValues) : false), zoneStarts = indicator.zoneStarts = [], priceZones = [];
         let lowRange = rangeExtremes ?
@@ -9073,6 +9102,7 @@ class VBPIndicator extends VBPIndicator_SMAIndicator {
         return indicator.volumePerZone(isOHLC, priceZones, volumeSeries, xValues, yValues);
     }
     // Calculating sum of volume values for a specific zone
+    /** @internal */
     volumePerZone(isOHLC, priceZones, volumeSeries, xValues, yValues) {
         const indicator = this, volumeXData = volumeSeries.getColumn('x', true), volumeYData = volumeSeries.getColumn('y', true), lastZoneIndex = priceZones.length - 1, baseSeriesLength = yValues.length, volumeSeriesLength = volumeYData.length;
         let previousValue, startFlag, endFlag, value, i;
@@ -9139,6 +9169,7 @@ class VBPIndicator extends VBPIndicator_SMAIndicator {
         return priceZones;
     }
     // Function responsible for drawing additional lines indicating zones
+    /** @internal */
     drawZones(chart, yAxis, zonesValues, zonesStyles) {
         const indicator = this, renderer = chart.renderer, leftLinePos = 0, rightLinePos = chart.plotWidth, verticalOffset = chart.plotTop;
         let zoneLinesSVG = indicator.zoneLinesSVG, zoneLinesPath = [], verticalLinePos;
@@ -9193,6 +9224,7 @@ class VBPIndicator extends VBPIndicator_SMAIndicator {
  * @requires     stock/indicators/indicators
  * @requires     stock/indicators/volume-by-price
  * @optionparent plotOptions.vbp
+ * @internal
  */
 VBPIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(VBPIndicator_SMAIndicator.defaultOptions, {
     /**
@@ -9313,7 +9345,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @extends   series,plotOptions.vbp
  * @since     6.0.0
  * @product   highstock
- * @excluding dataParser, dataURL, compare, compareBase, compareStart
+ * @excluding compare, compareBase, compareStart
  * @requires  stock/indicators/indicators
  * @requires  stock/indicators/volume-by-price
  * @apioption series.vbp
@@ -9347,7 +9379,6 @@ const { sma: VWAPIndicator_SMAIndicator } = (highcharts_SeriesRegistry_commonjs_
 /**
  * The Volume Weighted Average Price (VWAP) series type.
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.vwap
  *
@@ -9359,6 +9390,7 @@ class VWAPIndicator extends VWAPIndicator_SMAIndicator {
      *  Functions
      *
      * */
+    /** @internal */
     getValues(series, params) {
         const indicator = this, chart = series.chart, xValues = series.xData, yValues = series.yData, period = params.period;
         let isOHLC = true, volumeSeries;
@@ -9400,6 +9432,7 @@ class VWAPIndicator extends VWAPIndicator_SMAIndicator {
      * @return {Object}
      * Object contains computed VWAP
      **/
+    /** @internal */
     calculateVWAPValues(isOHLC, xValues, yValues, volumeSeries, period) {
         const volumeValues = volumeSeries.getColumn('y'), volumeLength = volumeValues.length, pointsLength = xValues.length, cumulativePrice = [], cumulativeVolume = [], xData = [], yData = [], VWAP = [];
         let commonLength, typicalPrice, cPrice, cVolume, i, j;
@@ -9459,6 +9492,7 @@ class VWAPIndicator extends VWAPIndicator_SMAIndicator {
  * @requires     stock/indicators/indicators
  * @requires     stock/indicators/vwap
  * @optionparent plotOptions.vwap
+ * @internal
  */
 VWAPIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(VWAPIndicator_SMAIndicator.defaultOptions, {
     /**
@@ -9481,7 +9515,6 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *  Default Export
  *
  * */
-/** @internal */
 /* harmony default export */ const VWAP_VWAPIndicator = ((/* unused pure expression or super */ null && (VWAPIndicator)));
 /* *
  *
@@ -9496,7 +9529,6 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @extends   series,plotOptions.vwap
  * @since     6.0.0
  * @product   highstock
- * @excluding dataParser, dataURL
  * @requires  stock/indicators/indicators
  * @requires  stock/indicators/vwap
  * @apioption series.vwap
@@ -9525,7 +9557,6 @@ const { sma: WilliamsRIndicator_SMAIndicator } = (highcharts_SeriesRegistry_comm
 /**
  * The Williams %R series type.
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.williamsr
  *
@@ -9537,6 +9568,7 @@ class WilliamsRIndicator extends WilliamsRIndicator_SMAIndicator {
      *  Functions
      *
      * */
+    /** @internal */
     getValues(series, params) {
         const period = params.period, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, WR = [], // 0- date, 1- Williams %R
         xData = [], yData = [], close = 3, low = 2, high = 1;
@@ -9594,6 +9626,7 @@ class WilliamsRIndicator extends WilliamsRIndicator_SMAIndicator {
  * @requires     stock/indicators/indicators
  * @requires     stock/indicators/williams-r
  * @optionparent plotOptions.williamsr
+ * @internal
  */
 WilliamsRIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(WilliamsRIndicator_SMAIndicator.defaultOptions, {
     /**
@@ -9617,7 +9650,6 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *  Default Export
  *
  * */
-/** @internal */
 /* harmony default export */ const WilliamsR_WilliamsRIndicator = ((/* unused pure expression or super */ null && (WilliamsRIndicator)));
 /* *
  *
@@ -9631,7 +9663,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @extends   series,plotOptions.williamsr
  * @since     7.0.0
  * @product   highstock
- * @excluding allAreas, colorAxis, dataParser, dataURL, joinBy, keys,
+ * @excluding allAreas, colorAxis, joinBy, keys,
  *            navigatorOptions, pointInterval, pointIntervalUnit,
  *            pointPlacement, pointRange, pointStart, showInNavigator, stacking
  * @requires  stock/indicators/indicators
@@ -9692,7 +9724,6 @@ function WMAIndicator_populateAverage(points, xVal, yVal, i) {
 /**
  * The SMA series type.
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.wma
  *
@@ -9704,6 +9735,7 @@ class WMAIndicator extends WMAIndicator_SMAIndicator {
      *  Functions
      *
      * */
+    /** @internal */
     getValues(series, params) {
         const period = params.period, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, xValue = xVal[0], wma = [], xData = [], yData = [];
         let range = 1, index = -1, i, wmaPoint, yValue = yVal[0];
@@ -9759,6 +9791,7 @@ class WMAIndicator extends WMAIndicator_SMAIndicator {
  * @requires     stock/indicators/indicators
  * @requires     stock/indicators/wma
  * @optionparent plotOptions.wma
+ * @internal
  */
 WMAIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(WMAIndicator_SMAIndicator.defaultOptions, {
     params: {
@@ -9772,7 +9805,6 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *  Default Export
  *
  * */
-/** @internal */
 /* harmony default export */ const WMA_WMAIndicator = ((/* unused pure expression or super */ null && (WMAIndicator)));
 /* *
  *
@@ -9786,7 +9818,6 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @extends   series,plotOptions.wma
  * @since     6.0.0
  * @product   highstock
- * @excluding dataParser, dataURL
  * @requires  stock/indicators/indicators
  * @requires  stock/indicators/wma
  * @apioption series.wma
@@ -9817,7 +9848,6 @@ const { sma: ZigzagIndicator_SMAIndicator } = (highcharts_SeriesRegistry_commonj
 /**
  * The Zig Zag series type.
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.zigzag
  *
@@ -9829,6 +9859,7 @@ class ZigzagIndicator extends ZigzagIndicator_SMAIndicator {
      *  Functions
      *
      * */
+    /** @internal */
     getValues(series, params) {
         const lowIndex = params.lowIndex, highIndex = params.highIndex, deviation = params.deviation / 100, deviations = {
             'low': 1 + deviation,
@@ -9942,6 +9973,7 @@ class ZigzagIndicator extends ZigzagIndicator_SMAIndicator {
  * @requires     stock/indicators/indicators
  * @requires     stock/indicators/zigzag
  * @optionparent plotOptions.zigzag
+ * @internal
  */
 ZigzagIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(ZigzagIndicator_SMAIndicator.defaultOptions, {
     /**
@@ -9987,7 +10019,6 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *  Default Export
  *
  * */
-/** @internal */
 /* harmony default export */ const Zigzag_ZigzagIndicator = ((/* unused pure expression or super */ null && (ZigzagIndicator)));
 /* *
  *
@@ -10001,7 +10032,6 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @extends   series,plotOptions.zigzag
  * @since     6.0.0
  * @product   highstock
- * @excluding dataParser, dataURL
  * @requires  stock/indicators/indicators
  * @requires  stock/indicators/zigzag
  * @apioption series.zigzag
@@ -10032,7 +10062,6 @@ const { sma: LinearRegressionIndicator_SMAIndicator } = (highcharts_SeriesRegist
 /**
  * Linear regression series type.
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.linearregression
  *
@@ -10140,6 +10169,7 @@ class LinearRegressionIndicator extends LinearRegressionIndicator_SMAIndicator {
         return closestDistance;
     }
     // Required to be implemented - starting point for indicator's logic
+    /** @internal */
     getValues(baseSeries, regressionSeriesParams) {
         const xData = baseSeries.xData, yData = baseSeries.yData, period = regressionSeriesParams.period, 
         // Format required to be returned
@@ -10196,6 +10226,7 @@ class LinearRegressionIndicator extends LinearRegressionIndicator_SMAIndicator {
  * @requires     stock/indicators/indicators
  * @requires     stock/indicators/regressions
  * @optionparent plotOptions.linearregression
+ * @internal
  */
 LinearRegressionIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(LinearRegressionIndicator_SMAIndicator.defaultOptions, {
     params: {
@@ -10264,7 +10295,6 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *  Default Export
  *
  * */
-/** @internal */
 /* harmony default export */ const LinearRegression_LinearRegressionIndicator = ((/* unused pure expression or super */ null && (LinearRegressionIndicator)));
 /* *
  *
@@ -10279,7 +10309,6 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @extends   series,plotOptions.linearregression
  * @since     7.0.0
  * @product   highstock
- * @excluding dataParser,dataURL
  * @requires  stock/indicators/indicators
  * @requires  stock/indicators/regressions
  * @apioption series.linearregression
@@ -10310,7 +10339,6 @@ const { linearregression: LinearRegressionSlopesIndicator_LinearRegressionIndica
 /**
  * The Linear Regression Slope series type.
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.linearRegressionSlope
  *
@@ -10322,6 +10350,7 @@ class LinearRegressionSlopesIndicator extends LinearRegressionSlopesIndicator_Li
      *  Functions
      *
      * */
+    /** @internal */
     getEndPointY(lineParameters) {
         return lineParameters.slope;
     }
@@ -10344,6 +10373,7 @@ class LinearRegressionSlopesIndicator extends LinearRegressionSlopesIndicator_Li
  * @requires     stock/indicators/indicators
  * @requires     stock/indicators/regressions
  * @optionparent plotOptions.linearregressionslope
+ * @internal
  */
 LinearRegressionSlopesIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(LinearRegressionSlopesIndicator_LinearRegressionIndicator.defaultOptions);
 (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.extend)(LinearRegressionSlopesIndicator.prototype, {
@@ -10357,7 +10387,6 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *  Default Export
  *
  * */
-/** @internal */
 /* harmony default export */ const LinearRegressionSlopes_LinearRegressionSlopesIndicator = ((/* unused pure expression or super */ null && (LinearRegressionSlopesIndicator)));
 /* *
  *
@@ -10372,7 +10401,6 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @extends   series,plotOptions.linearregressionslope
  * @since     7.0.0
  * @product   highstock
- * @excluding dataParser,dataURL
  * @requires  stock/indicators/indicators
  * @requires  stock/indicators/regressions
  * @apioption series.linearregressionslope
@@ -10403,7 +10431,6 @@ const { linearregression: LinearRegressionInterceptIndicator_LinearRegressionInd
 /**
  * The Linear Regression Intercept series type.
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.linearRegressionIntercept
  *
@@ -10415,6 +10442,7 @@ class LinearRegressionInterceptIndicator extends LinearRegressionInterceptIndica
      *  Functions
      *
      * */
+    /** @internal */
     getEndPointY(lineParameters) {
         return lineParameters.intercept;
     }
@@ -10437,6 +10465,7 @@ class LinearRegressionInterceptIndicator extends LinearRegressionInterceptIndica
  * @requires     stock/indicators/indicators
  * @requires     stock/indicators/regressions
  * @optionparent plotOptions.linearregressionintercept
+ * @internal
  */
 LinearRegressionInterceptIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(LinearRegressionInterceptIndicator_LinearRegressionIndicator.defaultOptions);
 (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.extend)(LinearRegressionInterceptIndicator.prototype, {
@@ -10450,7 +10479,6 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *  Default Export
  *
  * */
-/** @internal */
 /* harmony default export */ const LinearRegressionIntercept_LinearRegressionInterceptIndicator = ((/* unused pure expression or super */ null && (LinearRegressionInterceptIndicator)));
 /* *
  *
@@ -10465,7 +10493,6 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @extends   series,plotOptions.linearregressionintercept
  * @since     7.0.0
  * @product   highstock
- * @excluding dataParser,dataURL
  * @requires  stock/indicators/indicators
  * @requires  stock/indicators/regressions
  * @apioption series.linearregressionintercept
@@ -10496,7 +10523,6 @@ const { linearregression: LinearRegressionAngleIndicator_LinearRegressionIndicat
 /**
  * The Linear Regression Angle series type.
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.linearRegressionAngle
  *
@@ -10518,6 +10544,7 @@ class LinearRegressionAngleIndicator extends LinearRegressionAngleIndicator_Line
     slopeToAngle(slope) {
         return Math.atan(slope) * (180 / Math.PI); // Rad to deg
     }
+    /** @internal */
     getEndPointY(lineParameters) {
         return this.slopeToAngle(lineParameters.slope);
     }
@@ -10540,6 +10567,7 @@ class LinearRegressionAngleIndicator extends LinearRegressionAngleIndicator_Line
  * @requires     stock/indicators/indicators
  * @requires     stock/indicators/regressions
  * @optionparent plotOptions.linearregressionangle
+ * @internal
  */
 LinearRegressionAngleIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(LinearRegressionAngleIndicator_LinearRegressionIndicator.defaultOptions, {
     tooltip: {
@@ -10558,7 +10586,6 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *  Default Export
  *
  * */
-/** @internal */
 /* harmony default export */ const LinearRegressionAngle_LinearRegressionAngleIndicator = ((/* unused pure expression or super */ null && (LinearRegressionAngleIndicator)));
 /**
  * A linear regression angle series. If the
@@ -10568,7 +10595,6 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @extends   series,plotOptions.linearregressionangle
  * @since     7.0.0
  * @product   highstock
- * @excluding dataParser,dataURL
  * @requires  stock/indicators/indicators
  * @requires  stock/indicators/regressions
  * @apioption series.linearregressionangle
@@ -10615,7 +10641,6 @@ function getPointLB(low, base) {
 /**
  * The ABands series type
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.abands
  *
@@ -10627,6 +10652,7 @@ class ABandsIndicator extends ABandsIndicator_SMAIndicator {
      *  Functions
      *
      * */
+    /** @internal */
     getValues(series, params) {
         const period = params.period, factor = params.factor, index = params.index, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, 
         // Upperbands
@@ -10713,6 +10739,7 @@ class ABandsIndicator extends ABandsIndicator_SMAIndicator {
  * @requires     stock/indicators/indicators
  * @requires     stock/indicators/acceleration-bands
  * @optionparent plotOptions.abands
+ * @internal
  */
 ABandsIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(ABandsIndicator_SMAIndicator.defaultOptions, {
     /**
@@ -10772,7 +10799,6 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *  Default Export
  *
  * */
-/** @internal */
 /* harmony default export */ const ABands_ABandsIndicator = ((/* unused pure expression or super */ null && (ABandsIndicator)));
 /* *
  *
@@ -10786,7 +10812,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @extends   series,plotOptions.abands
  * @since     7.0.0
  * @product   highstock
- * @excluding allAreas, colorAxis, compare, compareBase, dataParser, dataURL,
+ * @excluding allAreas, colorAxis, compare, compareBase,
  *            joinBy, keys, navigatorOptions, pointInterval,
  *            pointIntervalUnit, pointPlacement, pointRange, pointStart,
  *            stacking, showInNavigator,
@@ -10817,7 +10843,6 @@ const { sma: TrendLineIndicator_SMAIndicator } = (highcharts_SeriesRegistry_comm
 /**
  * The Trend line series type.
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.trendline
  *
@@ -10831,6 +10856,7 @@ class TrendLineIndicator extends TrendLineIndicator_SMAIndicator {
          *
          * */
         super(...arguments);
+        /** @internal */
         this.updateAllPoints = true;
     }
     /* *
@@ -10838,6 +10864,7 @@ class TrendLineIndicator extends TrendLineIndicator_SMAIndicator {
      *  Functions
      *
      * */
+    /** @internal */
     getValues(series, params) {
         const orgXVal = series.xData, yVal = series.yData, xVal = [], LR = [], xData = [], yData = [], index = params.index;
         let numerator = 0, denominator = 0, xValSum = 0, yValSum = 0, counter = 0;
@@ -10890,6 +10917,7 @@ class TrendLineIndicator extends TrendLineIndicator_SMAIndicator {
  * @requires     stock/indicators/indicators
  * @requires     stock/indicators/trendline
  * @optionparent plotOptions.trendline
+ * @internal
  */
 TrendLineIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(TrendLineIndicator_SMAIndicator.defaultOptions, {
     /**
@@ -10917,7 +10945,6 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *  Default Export
  *
  * */
-/** @internal */
 /* harmony default export */ const TrendLine_TrendLineIndicator = ((/* unused pure expression or super */ null && (TrendLineIndicator)));
 /* *
  *
@@ -10931,7 +10958,6 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @extends   series,plotOptions.trendline
  * @since     7.1.3
  * @product   highstock
- * @excluding dataParser, dataURL
  * @requires  stock/indicators/indicators
  * @requires  stock/indicators/trendline
  * @apioption series.trendline
@@ -10963,7 +10989,6 @@ const { sma: DisparityIndexIndicator_SMAIndicator } = (highcharts_SeriesRegistry
 /**
  * The Disparity Index series type.
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.disparityindex
  *
@@ -10975,6 +11000,7 @@ class DisparityIndexIndicator extends DisparityIndexIndicator_SMAIndicator {
      *  Functions
      *
      * */
+    /** @internal */
     init() {
         const args = arguments, ctx = this, // Disparity Index indicator
         params = args[1].params, // Options.params
@@ -10982,9 +11008,11 @@ class DisparityIndexIndicator extends DisparityIndexIndicator_SMAIndicator {
         ctx.averageIndicator = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes[averageType] || DisparityIndexIndicator_SMAIndicator;
         ctx.averageIndicator.prototype.init.apply(ctx, args);
     }
+    /** @internal */
     calculateDisparityIndex(curPrice, periodAverage) {
         return (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.correctFloat)(curPrice - periodAverage) / periodAverage * 100;
     }
+    /** @internal */
     getValues(series, params) {
         const index = params.index, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, disparityIndexPoint = [], xData = [], yData = [], 
         // "as any" because getValues doesn't exist on typeof Series
@@ -11036,6 +11064,7 @@ class DisparityIndexIndicator extends DisparityIndexIndicator_SMAIndicator {
  * @requires     stock/indicators/indicators
  * @requires     stock/indicators/disparity-index
  * @optionparent plotOptions.disparityindex
+ * @internal
  */
 DisparityIndexIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(DisparityIndexIndicator_SMAIndicator.defaultOptions, {
     params: {
@@ -11068,7 +11097,6 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *  Default Export
  *
  * */
-/** @internal */
 /* harmony default export */ const DisparityIndex_DisparityIndexIndicator = ((/* unused pure expression or super */ null && (DisparityIndexIndicator)));
 /* *
  *
@@ -11083,9 +11111,9 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @extends   series,plotOptions.disparityindex
  * @since 9.1.0
  * @product   highstock
- * @excluding allAreas, colorAxis,  dataParser, dataURL, joinBy, keys,
- *            navigatorOptions, pointInterval, pointIntervalUnit,
- *            pointPlacement, pointRange, pointStart, showInNavigator, stacking
+ * @excluding allAreas, colorAxis, joinBy, keys, navigatorOptions,
+ *            pointInterval, pointIntervalUnit, pointPlacement, pointRange,
+ *            pointStart, showInNavigator, stacking
  * @requires  stock/indicators/indicators
  * @requires  stock/indicators/disparity-index
  * @apioption series.disparityindex

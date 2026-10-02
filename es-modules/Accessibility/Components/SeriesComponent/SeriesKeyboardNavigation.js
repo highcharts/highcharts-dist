@@ -32,12 +32,13 @@ const { getPointFromXY, getSeriesFromName, scrollAxisToPoint } = ChartUtilities;
  * Get the index of a point in a series. This is needed when using e.g. data
  * grouping.
  *
- * @private
  * @function getPointIndex
  * @param {Highcharts.AccessibilityPoint} point
  * The point to find index of.
  * @return {number|undefined}
  * The index in the series.points array of the point.
+ *
+ * @internal
  */
 function getPointIndex(point) {
     const index = point.index, points = point.series.points;
@@ -55,7 +56,8 @@ function getPointIndex(point) {
 }
 /**
  * Determine if series navigation should be skipped
- * @private
+ *
+ * @internal
  */
 function isSkipSeries(series) {
     const a11yOptions = series.chart.options.accessibility, seriesNavOptions = a11yOptions.keyboardNavigation.seriesNavigation, seriesA11yOptions = series.options.accessibility || {}, seriesKbdNavOptions = seriesA11yOptions.keyboardNavigation;
@@ -71,7 +73,8 @@ function isSkipSeries(series) {
 }
 /**
  * Determine if navigation for a point should be skipped
- * @private
+ *
+ * @internal
  */
 function isSkipPoint(point) {
     const series = point.series, nullInteraction = series.options.nullInteraction, pointOptions = point.options, pointA11yOptions = pointOptions.accessibility, a11yOptions = series.chart.options.accessibility, pointA11yDisabled = pointA11yOptions?.enabled === false, 
@@ -90,7 +93,8 @@ function isSkipPoint(point) {
 }
 /**
  * Get the first point that is not a skip point in this series.
- * @private
+ *
+ * @internal
  */
 function getFirstValidPointInSeries(series) {
     const points = series.points || [], len = points.length;
@@ -103,7 +107,8 @@ function getFirstValidPointInSeries(series) {
 }
 /**
  * Get the first point that is not a skip point in this chart.
- * @private
+ *
+ * @internal
  */
 function getFirstValidPointInChart(chart) {
     const series = chart.series || [], len = series.length;
@@ -117,9 +122,7 @@ function getFirstValidPointInChart(chart) {
     }
     return null;
 }
-/**
- * @private
- */
+/** @internal */
 function highlightLastValidPointInChart(chart) {
     const numSeries = chart.series.length;
     let i = numSeries, res = false;
@@ -138,7 +141,8 @@ function highlightLastValidPointInChart(chart) {
 /**
  * After drilling down/up, we need to set focus to the first point for
  * screen readers and keyboard nav.
- * @private
+ *
+ * @internal
  */
 function updateChartFocusAfterDrilling(chart) {
     const point = getFirstValidPointInChart(chart);
@@ -148,7 +152,8 @@ function updateChartFocusAfterDrilling(chart) {
 }
 /**
  * Highlight the first point in chart that is not a skip point
- * @private
+ *
+ * @internal
  */
 function highlightFirstValidPointInChart(chart) {
     delete chart.highlightedPoint;
@@ -161,9 +166,10 @@ function highlightFirstValidPointInChart(chart) {
  *
  * */
 /**
- * @private
  * @class
  * @name Highcharts.SeriesKeyboardNavigation
+ *
+ * @internal
  */
 class SeriesKeyboardNavigation {
     /* *
@@ -229,7 +235,8 @@ class SeriesKeyboardNavigation {
     /**
      * After drillup we want to find the point that was drilled down to and
      * highlight it.
-     * @private
+     *
+     * @internal
      */
     onDrillupAll() {
         const last = this.lastDrilledDownPoint, chart = this.chart, series = last && getSeriesFromName(chart, last.seriesName);
@@ -246,9 +253,7 @@ class SeriesKeyboardNavigation {
             point.highlight(false); // Do not visually highlight
         }
     }
-    /**
-     * @private
-     */
+    /** @internal */
     getKeyboardNavigationHandler() {
         const keyboardNavigation = this, keys = this.keyCodes, chart = this.chart, inverted = chart.inverted;
         return new KeyboardNavigationHandler(chart, {
@@ -318,11 +323,10 @@ class SeriesKeyboardNavigation {
         });
     }
     /**
-     * @private
-     * @param {Highcharts.KeyboardNavigationHandler} handler
-     * @param {number} keyCode
      * @return {number}
      * response
+     *
+     * @internal
      */
     onKbdSideways(handler, keyCode) {
         const keys = this.keyCodes, isNext = keyCode === keys.right || keyCode === keys.down;
@@ -330,10 +334,11 @@ class SeriesKeyboardNavigation {
     }
     /**
      * When keyboard navigation inits.
-     * @private
      * @param {Highcharts.KeyboardNavigationHandler} handler The handler object
      * @return {number}
      * response
+     *
+     * @internal
      */
     onHandlerInit(handler) {
         const chart = this.chart, kbdNavOptions = chart.options.accessibility.keyboardNavigation;
@@ -347,11 +352,10 @@ class SeriesKeyboardNavigation {
         return handler.response.success;
     }
     /**
-     * @private
-     * @param {Highcharts.KeyboardNavigationHandler} handler
-     * @param {number} keyCode
      * @return {number}
      * response
+     *
+     * @internal
      */
     onKbdVertical(handler, keyCode) {
         const chart = this.chart, keys = this.keyCodes, isNext = keyCode === keys.down || keyCode === keys.right, navOptions = chart.options.accessibility.keyboardNavigation
@@ -368,9 +372,7 @@ class SeriesKeyboardNavigation {
         chart[highlightMethod](isNext);
         return handler.response.success;
     }
-    /**
-     * @private
-     */
+    /** @internal */
     onHandlerTerminate() {
         const chart = this.chart, kbdNavOptions = chart.options.accessibility.keyboardNavigation;
         if (chart.tooltip) {
@@ -389,7 +391,8 @@ class SeriesKeyboardNavigation {
     }
     /**
      * Function that attempts to highlight next/prev point. Handles wrap around.
-     * @private
+     *
+     * @internal
      */
     attemptHighlightAdjacentPoint(handler, directionIsNext) {
         const chart = this.chart, wrapAround = chart.options.accessibility.keyboardNavigation
@@ -404,9 +407,7 @@ class SeriesKeyboardNavigation {
         }
         return handler.response.success;
     }
-    /**
-     * @private
-     */
+    /** @internal */
     onSeriesDestroy(series) {
         const chart = this.chart, currentHighlightedPointDestroyed = chart.highlightedPoint &&
             chart.highlightedPoint.series === series;
@@ -417,9 +418,7 @@ class SeriesKeyboardNavigation {
             }
         }
     }
-    /**
-     * @private
-     */
+    /** @internal */
     destroy() {
         this.eventProvider.removeAddedEvents();
     }
@@ -429,6 +428,7 @@ class SeriesKeyboardNavigation {
  *  Class Namespace
  *
  * */
+/** @internal */
 (function (SeriesKeyboardNavigation) {
     /* *
      *
@@ -443,7 +443,6 @@ class SeriesKeyboardNavigation {
     /**
      * Function to highlight next/previous point in chart.
      *
-     * @private
      * @function Highcharts.Chart#highlightAdjacentPoint
      *
      * @param {boolean} next
@@ -452,6 +451,8 @@ class SeriesKeyboardNavigation {
      * @return {Highcharts.Point|boolean}
      * Returns highlighted point on success, false on failure (no adjacent point
      * to highlight in chosen direction).
+     *
+     * @internal
      */
     function chartHighlightAdjacentPoint(next) {
         const chart = this, series = chart.series, curPoint = chart.highlightedPoint, curPointIndex = curPoint && getPointIndex(curPoint) || 0, curPoints = curPoint && curPoint.series.points || [], lastSeries = chart.series && chart.series[chart.series.length - 1], lastPoint = lastSeries &&
@@ -502,7 +503,8 @@ class SeriesKeyboardNavigation {
     }
     /**
      * Highlight the closest point vertically.
-     * @private
+     *
+     * @internal
      */
     function chartHighlightAdjacentPointVertical(down) {
         const curPoint = this.highlightedPoint;
@@ -542,7 +544,8 @@ class SeriesKeyboardNavigation {
     /**
      * Highlight next/previous series in chart. Returns false if no adjacent
      * series in the direction, otherwise returns new highlighted point.
-     * @private
+     *
+     * @internal
      */
     function chartHighlightAdjacentSeries(down) {
         const chart = this, curPoint = chart.highlightedPoint, lastSeries = chart.series && chart.series[chart.series.length - 1], lastPoint = lastSeries && lastSeries.points &&
@@ -585,9 +588,7 @@ class SeriesKeyboardNavigation {
         newPoint.highlight();
         return newPoint.series.highlightNextValidPoint();
     }
-    /**
-     * @private
-     */
+    /** @internal */
     function compose(ChartClass, PointClass, SeriesClass) {
         const chartProto = ChartClass.prototype, pointProto = PointClass.prototype, seriesProto = SeriesClass.prototype;
         if (!chartProto.highlightAdjacentPoint) {
@@ -599,7 +600,8 @@ class SeriesKeyboardNavigation {
              * Set for which series types it makes sense to move to the closest
              * point with up/down arrows, and which series types should just
              * move to next series.
-             * @private
+             *
+             * @internal
              */
             seriesProto.keyboardMoveVertical = true;
             [
@@ -618,7 +620,8 @@ class SeriesKeyboardNavigation {
     /**
      * Get the point in a series that is closest (in pixel distance) to a
      * reference point. Optionally supply weight factors for x and y directions.
-     * @private
+     *
+     * @internal
      */
     function getClosestPoint(point, series, xWeight, yWeight) {
         let minDistance = Infinity, dPoint, minIx, distance, i = series.points.length;
@@ -647,11 +650,12 @@ class SeriesKeyboardNavigation {
     /**
      * Highlights a point (show tooltip, display hover state, focus element).
      *
-     * @private
      * @function Highcharts.Point#highlight
      *
      * @return {Highcharts.Point}
      *         This highlighted point.
+     *
+     * @internal
      */
     function pointHighlight(highlightVisually = true) {
         const chart = this.series.chart, tooltipElement = chart.tooltip?.label?.element;
@@ -694,8 +698,9 @@ class SeriesKeyboardNavigation {
      * successfully highlighted, otherwise false. If there is a highlighted
      * point in the series, use that as starting point.
      *
-     * @private
      * @function Highcharts.Series#highlightNextValidPoint
+     *
+     * @internal
      */
     function seriesHighlightNextValidPoint() {
         const curPoint = this.chart.highlightedPoint, start = (curPoint && curPoint.series) === this ?
@@ -721,4 +726,5 @@ class SeriesKeyboardNavigation {
  *  Default Export
  *
  * */
+/** @internal */
 export default SeriesKeyboardNavigation;

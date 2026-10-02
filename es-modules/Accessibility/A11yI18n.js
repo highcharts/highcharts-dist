@@ -14,12 +14,13 @@
 'use strict';
 import F from '../Core/Templating.js';
 const { format } = F;
-import { getNestedProperty, pick } from '../Shared/Utilities.js';
+import { getNestedProperty } from '../Shared/Utilities.js';
 /* *
  *
  *  Composition
  *
  * */
+/** @internal */
 var A11yI18nComposition;
 (function (A11yI18nComposition) {
     /* *
@@ -32,9 +33,7 @@ var A11yI18nComposition;
      *  Functions
      *
      * */
-    /**
-     * @private
-     */
+    /** @internal */
     function compose(ChartClass) {
         const chartProto = ChartClass.prototype;
         if (!chartProto.langFormat) {
@@ -48,11 +47,14 @@ var A11yI18nComposition;
      * returns the statement within brackets.  Invalid array statements return
      * an empty string.
      *
-     * @private
      * @function formatExtendedStatement
+     *
      * @param {string} statement
+     *
      * @param {Highcharts.Dictionary<*>} ctx
      * Context to apply to the format string.
+     *
+     * @internal
      */
     function formatExtendedStatement(statement, ctx) {
         const eachStart = statement.indexOf('#each('), pluralStart = statement.indexOf('#plural('), indexStart = statement.indexOf('['), indexEnd = statement.indexOf(']');
@@ -80,13 +82,13 @@ var A11yI18nComposition;
             const pluralEnd = (statement.slice(pluralStart).indexOf(')') + pluralStart), pluralStatement = statement.substring(pluralStart + 8, pluralEnd), pluralArguments = pluralStatement.split(','), num = Number(getNestedProperty(pluralArguments[0], ctx));
             switch (num) {
                 case 0:
-                    result = pick(pluralArguments[4], pluralArguments[1]);
+                    result = (pluralArguments[4] ?? pluralArguments[1]);
                     break;
                 case 1:
-                    result = pick(pluralArguments[2], pluralArguments[1]);
+                    result = (pluralArguments[2] ?? pluralArguments[1]);
                     break;
                 case 2:
-                    result = pick(pluralArguments[3], pluralArguments[1]);
+                    result = (pluralArguments[3] ?? pluralArguments[1]);
                     break;
                 default:
                     result = pluralArguments[1];
@@ -131,7 +133,6 @@ var A11yI18nComposition;
      *
      * - Result: 'This is the first index: 0. The last: 5.'
      *
-     *
      * They can also be iterated using the #each() function.  This will repeat
      * the contents of the bracket expression for each element.  Example:
      *
@@ -140,7 +141,6 @@ var A11yI18nComposition;
      * - Context: { myArray: [0, 1, 2] }
      *
      * - Result: 'List contains: 0cm 1cm 2cm '
-     *
      *
      * The #each() function optionally takes a length parameter.  If positive,
      * this parameter specifies the max number of elements to iterate through.
@@ -153,7 +153,6 @@ var A11yI18nComposition;
      *
      * - Result: 'List contains: 0, 1, 2, and 3.'
      *
-     *
      * Use the #plural() function to pick a string depending on whether or not a
      * context object is 1.  Arguments are #plural(obj, plural, singular).
      * Example:
@@ -164,7 +163,6 @@ var A11yI18nComposition;
      *
      * - Result: 'Has 5 points.'
      *
-     *
      * Optionally there are additional parameters for dual and none:
      * #plural(obj, plural, singular, dual, none).  Example:
      *
@@ -174,7 +172,6 @@ var A11yI18nComposition;
      * - Context: { numPoints: 2 }
      *
      * - Result: 'Has two points.'
-     *
      *
      * The dual or none parameters will take precedence if they are supplied.
      *
@@ -269,7 +266,6 @@ var A11yI18nComposition;
             i18nFormat(formatString, context, this) : '';
     }
     /**
-     * @private
      * @function stringTrim
      *
      * @param {string} str
@@ -277,6 +273,8 @@ var A11yI18nComposition;
      *
      * @return {string}
      * The trimmed string
+     *
+     * @internal
      */
     function stringTrim(str) {
         return str.trim && str.trim() || str.replace(/^\s+|\s+$/g, '');
@@ -287,4 +285,5 @@ var A11yI18nComposition;
  *  Default Export
  *
  * */
+/** @internal */
 export default A11yI18nComposition;

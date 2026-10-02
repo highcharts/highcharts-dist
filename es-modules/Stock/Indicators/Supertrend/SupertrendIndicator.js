@@ -32,7 +32,6 @@ function createPointObj(mainSeries, index) {
 /**
  * The Supertrend series type.
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.supertrend
  *
@@ -44,6 +43,7 @@ class SupertrendIndicator extends SMAIndicator {
      *  Functions
      *
      * */
+    /** @internal */
     init() {
         const indicator = this;
         super.init.apply(indicator, arguments);
@@ -64,6 +64,7 @@ class SupertrendIndicator extends SMAIndicator {
             order: 1
         });
     }
+    /** @internal */
     drawGraph() {
         const indicator = this, indicOptions = indicator.options, 
         // Series that indicator is linked to
@@ -286,6 +287,7 @@ class SupertrendIndicator extends SMAIndicator {
     //      Previous Supertrend == Previous FINAL LOWERBAND AND
     //      Current Close > Current FINAL LOWERBAND
     //     ) THAN Current FINAL LOWERBAND
+    /** @internal */
     getValues(series, params) {
         const period = params.period, multiplier = params.multiplier, xVal = series.xData, yVal = series.yData, 
         // 0- date, 1- Supertrend indicator
@@ -366,6 +368,7 @@ class SupertrendIndicator extends SMAIndicator {
  * @requires     stock/indicators/indicators
  * @requires     stock/indicators/supertrend
  * @optionparent plotOptions.supertrend
+ * @internal
  */
 SupertrendIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
     /**
@@ -449,7 +452,6 @@ SeriesRegistry.registerSeriesType('supertrend', SupertrendIndicator);
  *  Default Export
  *
  * */
-/** @internal */
 export default SupertrendIndicator;
 /* *
  *
@@ -463,7 +465,7 @@ export default SupertrendIndicator;
  * @extends   series,plotOptions.supertrend
  * @since     7.0.0
  * @product   highstock
- * @excluding allAreas, colorAxis, cropThreshold, data, dataParser, dataURL,
+ * @excluding allAreas, colorAxis, cropThreshold, data,
  *            joinBy, keys, navigatorOptions, negativeColor, pointInterval,
  *            pointIntervalUnit, pointPlacement, pointRange, pointStart,
  *            showInNavigator, stacking, threshold

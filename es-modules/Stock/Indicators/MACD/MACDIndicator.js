@@ -20,7 +20,6 @@ import { correctFloat, defined, extend, merge } from '../../../Shared/Utilities.
 /**
  * The MACD series type.
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.macd
  *
@@ -32,6 +31,7 @@ class MACDIndicator extends SMAIndicator {
      *  Functions
      *
      * */
+    /** @internal */
     init() {
         SeriesRegistry.seriesTypes.sma.prototype.init.apply(this, arguments);
         const originalColor = this.color, originalColorIndex = this.colorIndex;
@@ -71,9 +71,11 @@ class MACDIndicator extends SMAIndicator {
         this.color = originalColor;
         this.colorIndex = originalColorIndex;
     }
+    /** @internal */
     toYData(point) {
         return [point.y, point.signal, point.MACD];
     }
+    /** @internal */
     translate() {
         const indicator = this, plotNames = ['plotSignal', 'plotMACD'];
         H.seriesTypes.column.prototype.translate.apply(indicator);
@@ -86,6 +88,7 @@ class MACDIndicator extends SMAIndicator {
             });
         });
     }
+    /** @internal */
     destroy() {
         // This.graph is null due to removing two times the same SVG element
         this.graph = null;
@@ -93,6 +96,7 @@ class MACDIndicator extends SMAIndicator {
         this.graphsignal = this.graphsignal && this.graphsignal.destroy();
         SeriesRegistry.seriesTypes.sma.prototype.destroy.apply(this, arguments);
     }
+    /** @internal */
     drawGraph() {
         const indicator = this, mainLinePoints = indicator.points, mainLineOptions = indicator.options, histogramZones = indicator.zones, gappedExtend = {
             options: {
@@ -133,6 +137,7 @@ class MACDIndicator extends SMAIndicator {
         indicator.options = mainLineOptions;
         indicator.zones = histogramZones;
     }
+    /** @internal */
     applyZones() {
         // Histogram zones are handled by drawPoints method
         // Here we need to apply zones for all lines
@@ -146,6 +151,7 @@ class MACDIndicator extends SMAIndicator {
         }
         this.zones = histogramZones;
     }
+    /** @internal */
     getValues(series, params) {
         const indexToShift = (params.longPeriod - params.shortPeriod), // #14197
         MACD = [], xMACD = [], yMACD = [];
@@ -242,6 +248,7 @@ class MACDIndicator extends SMAIndicator {
  * @requires     stock/indicators/indicators
  * @requires     stock/indicators/macd
  * @optionparent plotOptions.macd
+ * @internal
  */
 MACDIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
     params: {
@@ -350,7 +357,6 @@ SeriesRegistry.registerSeriesType('macd', MACDIndicator);
  *  Default Export
  *
  * */
-/** @internal */
 export default MACDIndicator;
 /* *
  *
@@ -364,7 +370,6 @@ export default MACDIndicator;
  * @extends   series,plotOptions.macd
  * @since     6.0.0
  * @product   highstock
- * @excluding dataParser, dataURL
  * @requires  stock/indicators/indicators
  * @requires  stock/indicators/macd
  * @apioption series.macd

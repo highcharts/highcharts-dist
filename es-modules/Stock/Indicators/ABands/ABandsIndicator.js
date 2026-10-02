@@ -37,7 +37,6 @@ function getPointLB(low, base) {
 /**
  * The ABands series type
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.abands
  *
@@ -49,6 +48,7 @@ class ABandsIndicator extends SMAIndicator {
      *  Functions
      *
      * */
+    /** @internal */
     getValues(series, params) {
         const period = params.period, factor = params.factor, index = params.index, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, 
         // Upperbands
@@ -135,6 +135,7 @@ class ABandsIndicator extends SMAIndicator {
  * @requires     stock/indicators/indicators
  * @requires     stock/indicators/acceleration-bands
  * @optionparent plotOptions.abands
+ * @internal
  */
 ABandsIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
     /**
@@ -194,7 +195,6 @@ SeriesRegistry.registerSeriesType('abands', ABandsIndicator);
  *  Default Export
  *
  * */
-/** @internal */
 export default ABandsIndicator;
 /* *
  *
@@ -208,7 +208,7 @@ export default ABandsIndicator;
  * @extends   series,plotOptions.abands
  * @since     7.0.0
  * @product   highstock
- * @excluding allAreas, colorAxis, compare, compareBase, dataParser, dataURL,
+ * @excluding allAreas, colorAxis, compare, compareBase,
  *            joinBy, keys, navigatorOptions, pointInterval,
  *            pointIntervalUnit, pointPlacement, pointRange, pointStart,
  *            stacking, showInNavigator,

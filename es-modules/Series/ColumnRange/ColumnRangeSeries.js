@@ -16,7 +16,7 @@ import H from '../../Core/Globals.js';
 const { noop } = H;
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { seriesTypes: { arearange: AreaRangeSeries, column: ColumnSeries, column: { prototype: columnProto } } } = SeriesRegistry;
-import { addEvent, clamp, extend, isNumber, merge, pick } from '../../Shared/Utilities.js';
+import { addEvent, clamp, extend, isNumber, merge } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class
@@ -25,7 +25,6 @@ import { addEvent, clamp, extend, isNumber, merge, pick } from '../../Shared/Uti
 /**
  * The ColumnRangeSeries class
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.columnrange
  *
@@ -37,6 +36,7 @@ class ColumnRangeSeries extends AreaRangeSeries {
      *  Functions
      *
      * */
+    /** @internal */
     setOptions() {
         // #14359 Prevent side-effect from stacking.
         merge(true, arguments[0], { stacking: void 0 });
@@ -44,6 +44,7 @@ class ColumnRangeSeries extends AreaRangeSeries {
     }
     // Overrides from modules that may be loaded after this module
     // @todo move to compositions
+    /** @internal */
     translate() {
         return columnProto.translate.apply(this);
     }
@@ -59,6 +60,7 @@ class ColumnRangeSeries extends AreaRangeSeries {
     // public getColumnMetrics(): ColumnMetricsObject {
     //     return columnProto.getColumnMetrics.apply(this, arguments as any);
     // }
+    /** @internal */
     pointAttribs() {
         return columnProto.pointAttribs.apply(this, arguments);
     }
@@ -68,9 +70,11 @@ class ColumnRangeSeries extends AreaRangeSeries {
     // public animate(): void {
     //     return columnProto.animate.apply(this, arguments as any);
     // }
+    /** @internal */
     translate3dPoints() {
         return columnProto.translate3dPoints.apply(this, arguments);
     }
+    /** @internal */
     translate3dShapes() {
         return columnProto.translate3dShapes.apply(this, arguments);
     }
@@ -97,7 +101,9 @@ class ColumnRangeSeries extends AreaRangeSeries {
                 point.plotLow = safeBounds(plotY);
                 // Adjust shape
                 y = point.plotHigh;
-                height = pick(point.rectPlotY, point.plotY) - point.plotHigh;
+                height =
+                    (point.rectPlotY ?? point.plotY) -
+                        point.plotHigh;
                 // Adjust for minPointLength
                 if (Math.abs(height) < minPointLength) {
                     heightDifference = (minPointLength - height);
@@ -143,6 +149,7 @@ class ColumnRangeSeries extends AreaRangeSeries {
  *  Static Properties
  *
  * */
+/** @internal */
 ColumnRangeSeries.defaultOptions = merge(ColumnSeries.defaultOptions, AreaRangeSeries.defaultOptions, ColumnRangeSeriesDefaults);
 addEvent(ColumnRangeSeries, 'afterColumnTranslate', function () {
     ColumnRangeSeries.prototype.afterColumnTranslate.apply(this);
@@ -166,5 +173,4 @@ SeriesRegistry.registerSeriesType('columnrange', ColumnRangeSeries);
  *  Default Export
  *
  * */
-/** @internal */
 export default ColumnRangeSeries;

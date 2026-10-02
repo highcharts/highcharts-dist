@@ -72,6 +72,7 @@ class XRangeSeries extends ColumnSeries {
      *  Static Functions
      *
      * */
+    /** @internal */
     static compose(AxisClass) {
         if (pushUnique(composed, 'Series.XRange')) {
             addEvent(AxisClass, 'afterGetSeriesExtremes', onAxisAfterGetSeriesExtremes);
@@ -93,6 +94,7 @@ class XRangeSeries extends ColumnSeries {
      * Borrow the column series metrics, but with swapped axes. This gives
      * free access to features like groupPadding, grouping, pointWidth etc.
      * @private
+     * @internal
      */
     getColumnMetrics() {
         const swapAxes = () => {
@@ -157,6 +159,7 @@ class XRangeSeries extends ColumnSeries {
         }
         return pointIndex;
     }
+    /** @internal */
     alignDataLabel(point) {
         const oldPlotX = point.plotX;
         point.plotX = point.dlBox?.centerX ?? point.plotX;
@@ -410,6 +413,7 @@ class XRangeSeries extends ColumnSeries {
  *  Static Properties
  *
  * */
+/** @internal */
 XRangeSeries.defaultOptions = merge(ColumnSeries.defaultOptions, XRangeSeriesDefaults);
 extend(XRangeSeries.prototype, {
     pointClass: XRangePoint,

@@ -12,6 +12,7 @@
  *
  * */
 'use strict';
+/** @internal */
 const theme = {
     chart: {
         backgroundColor: 'window'
@@ -211,4 +212,5 @@ const theme = {
  *  Default Export
  *
  * */
+/** @internal */
 export default theme;

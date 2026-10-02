@@ -88,7 +88,7 @@ const NetworkgraphSeriesDefaults = {
              *
              * Opacity of inactive links.
              *
-             * @deprecated next
+             * @deprecated 13.0.1
              */
             linkOpacity: 0.3,
             /**

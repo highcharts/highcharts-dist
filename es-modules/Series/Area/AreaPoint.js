@@ -14,5 +14,4 @@
  *  Default Export
  *
  * */
-/** @internal */
 export default AreaPoint;

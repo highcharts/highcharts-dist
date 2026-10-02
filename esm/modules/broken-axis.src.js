@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.0-modified (2026-08-14)
+ * @license Highcharts JS v13.1.0 (2026-10-02)
  * @module highcharts/modules/broken-axis
  * @requires highcharts
  *
@@ -16,48 +16,27 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 /******/ 
 /************************************************************************/
 /******/ /* webpack/runtime/compat get default export */
-/******/ (() => {
-/******/ 	// getDefaultExport function for compatibility with non-harmony modules
-/******/ 	__webpack_require__.n = (module) => {
-/******/ 		const getter = module && module.__esModule ?
-/******/ 			() => (module['default']) :
-/******/ 			() => (module);
-/******/ 		__webpack_require__.d(getter, { a: getter });
-/******/ 		return getter;
-/******/ 	};
-/******/ })();
+/******/ // getDefaultExport function for compatibility with non-harmony modules
+/******/ __webpack_require__.n = (module) => {
+/******/ 	const getter = module && module.__esModule ?
+/******/ 		() => (module['default']) :
+/******/ 		() => (module);
+/******/ 	__webpack_require__.d(getter, { a: getter });
+/******/ 	return getter;
+/******/ };
 /******/ 
 /******/ /* webpack/runtime/define property getters */
-/******/ (() => {
-/******/ 	// define getter/value functions for harmony exports
-/******/ 	__webpack_require__.d = (exports, definition) => {
-/******/ 		if(Array.isArray(definition)) {
-/******/ 			var i = 0;
-/******/ 			while(i < definition.length) {
-/******/ 				var key = definition[i++];
-/******/ 				var binding = definition[i++];
-/******/ 				if(!__webpack_require__.o(exports, key)) {
-/******/ 					if(binding === 0) {
-/******/ 						Object.defineProperty(exports, key, { enumerable: true, value: definition[i++] });
-/******/ 					} else {
-/******/ 						Object.defineProperty(exports, key, { enumerable: true, get: binding });
-/******/ 					}
-/******/ 				} else if(binding === 0) { i++; }
-/******/ 			}
-/******/ 		} else {
-/******/ 			for(var key in definition) {
-/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
-/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
-/******/ 				}
-/******/ 			}
+/******/ // define getter/value functions for harmony exports
+/******/ __webpack_require__.d = (exports, definition) => {
+/******/ 	for(var key in definition) {
+/******/ 		if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 			Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
 /******/ 		}
-/******/ 	};
-/******/ })();
+/******/ 	}
+/******/ };
 /******/ 
 /******/ /* webpack/runtime/hasOwnProperty shorthand */
-/******/ (() => {
-/******/ 	__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
-/******/ })();
+/******/ __webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop));
 /******/ 
 /************************************************************************/
 
@@ -80,6 +59,8 @@ var external_highcharts_src_js_default_StackItem_default = /*#__PURE__*/__webpac
  *
  * */
 
+
+const { composed } = (external_highcharts_src_js_default_default());
 
 
 /* *
@@ -108,8 +89,7 @@ var BrokenAxis;
      * @internal
      */
     function compose(AxisClass, SeriesClass) {
-        if (!AxisClass.keepProps.includes('brokenAxis')) {
-            AxisClass.keepProps.push('brokenAxis');
+        if ((0,external_highcharts_src_js_default_namespaceObject.pushUnique)(composed, 'Axis.Broken')) {
             (0,external_highcharts_src_js_default_namespaceObject.addEvent)(AxisClass, 'init', onAxisInit);
             (0,external_highcharts_src_js_default_namespaceObject.addEvent)(AxisClass, 'afterInit', onAxisAfterInit);
             (0,external_highcharts_src_js_default_namespaceObject.addEvent)(AxisClass, 'afterSetTickPositions', onAxisAfterSetTickPositions);
@@ -185,7 +165,7 @@ var BrokenAxis;
     /** @internal */
     function onSeriesAfterRender() {
         this.drawBreaks(this.xAxis, ['x']);
-        this.drawBreaks(this.yAxis, (0,external_highcharts_src_js_default_namespaceObject.pick)(this.pointArrayMap, ['y']));
+        this.drawBreaks(this.yAxis, (this.pointArrayMap ?? ['y']));
     }
     /** @internal */
     function seriesDrawBreaks(axis, keys) {
@@ -197,7 +177,7 @@ var BrokenAxis;
                 breaks = brokenAxis?.breakArray || [];
                 threshold = axis.isXAxis ?
                     axis.min :
-                    (0,external_highcharts_src_js_default_namespaceObject.pick)(series.options.threshold, axis.min);
+                    (series.options.threshold ?? axis.min);
                 points.forEach(function (point) {
                     y = point['stack' + key.toUpperCase()] ??
                         point[key];
@@ -327,7 +307,7 @@ var BrokenAxis;
                     });
                     // For stacked chart generate empty stack items, #6546
                     if (yAxis.stacking && this.options.stacking) {
-                        stack = yAxis.stacking.stacks[this.stackKey][xRange] = new (external_highcharts_src_js_default_StackItem_default())(yAxis, yAxis.options.stackLabels, false, xRange, this.stack ?? '');
+                        stack = yAxis.stacking.stacks[this.stackKey][xRange] = new (external_highcharts_src_js_default_StackItem_default())(yAxis, false, xRange, this.stack ?? '');
                         stack.total = 0;
                     }
                 }
@@ -490,7 +470,8 @@ var BrokenAxis;
                     if (Additions.isInBreak(breaks[i], val)) {
                         inbrk = true;
                         if (!keep) {
-                            keep = (0,external_highcharts_src_js_default_namespaceObject.pick)(breaks[i].showPoints, !axis.isXAxis);
+                            keep =
+                                breaks[i].showPoints ?? !axis.isXAxis;
                         }
                     }
                 }
@@ -673,7 +654,7 @@ var BrokenAxis;
                     }
                 };
             }
-            if ((0,external_highcharts_src_js_default_namespaceObject.pick)(redraw, true)) {
+            if (redraw ?? true) {
                 axis.chart.redraw();
             }
         }

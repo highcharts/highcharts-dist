@@ -20,7 +20,7 @@ import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { column: ColumnSeries } = SeriesRegistry.seriesTypes;
 import WindbarbPoint from './WindbarbPoint.js';
 import WindbarbSeriesDefaults from './WindbarbSeriesDefaults.js';
-import { extend, merge, pick } from '../../Shared/Utilities.js';
+import { extend, merge } from '../../Shared/Utilities.js';
 /* *
  *
  *  Functions
@@ -68,10 +68,12 @@ class WindbarbSeries extends ColumnSeries {
      *  Functions
      *
      * */
+    /** @internal */
     init(chart, options) {
         super.init(chart, options);
     }
     // Get presentational attributes.
+    /** @internal */
     pointAttribs(point, state) {
         const options = this.options;
         let stroke = point?.color || this.color, strokeWidth = options.lineWidth;
@@ -87,6 +89,7 @@ class WindbarbSeries extends ColumnSeries {
     }
     // Create a single wind arrow. It is later rotated around the zero
     // centerpoint.
+    /** @internal */
     windArrow(point) {
         const level = point.beaufortLevel, u = this.options.vectorLength / 20;
         let knots = point.value * 1.943844, barbs, pos = -10;
@@ -135,6 +138,7 @@ class WindbarbSeries extends ColumnSeries {
         }
         return path;
     }
+    /** @internal */
     drawPoints() {
         const chart = this.chart, yAxis = this.yAxis, inverted = chart.inverted, shapeOffset = this.options.vectorLength / 2;
         for (const point of this.points) {
@@ -150,7 +154,7 @@ class WindbarbSeries extends ColumnSeries {
                         .add(this.markerGroup)
                         .addClass('highcharts-point ' +
                         'highcharts-color-' +
-                        pick(point.colorIndex, point.series.colorIndex));
+                        (point.colorIndex ?? point.series.colorIndex));
                 }
                 // Position the graphic
                 point.graphic
@@ -180,6 +184,7 @@ class WindbarbSeries extends ColumnSeries {
         }
     }
     // Fade in the arrows on initializing series.
+    /** @internal */
     animate(init) {
         if (init) {
             this.markerGroup.attr({
@@ -192,12 +197,15 @@ class WindbarbSeries extends ColumnSeries {
             }, animObject(this.options.animation));
         }
     }
+    /** @internal */
     markerAttribs() {
         return {};
     }
+    /** @internal */
     getExtremes() {
         return {};
     }
+    /** @internal */
     shouldShowTooltip(plotX, plotY, options = {}) {
         options.ignoreX = this.chart.inverted;
         options.ignoreY = !options.ignoreX;
@@ -209,6 +217,7 @@ class WindbarbSeries extends ColumnSeries {
  *  Static Properties
  *
  * */
+/** @internal */
 WindbarbSeries.defaultOptions = merge(ColumnSeries.defaultOptions, WindbarbSeriesDefaults);
 OnSeriesComposition.compose(WindbarbSeries);
 extend(WindbarbSeries.prototype, {

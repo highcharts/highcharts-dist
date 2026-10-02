@@ -19,7 +19,6 @@ import { defined, extend, isArray, merge } from '../../../Shared/Utilities.js';
 /**
  * The Pivot Points series type.
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.pivotpoints
  *
@@ -31,9 +30,11 @@ class PivotPointsIndicator extends SMAIndicator {
      *  Functions
      *
      * */
+    /** @internal */
     toYData(point) {
         return [point.P]; // The rest should not affect extremes
     }
+    /** @internal */
     translate() {
         const indicator = this;
         super.translate.apply(indicator);
@@ -49,6 +50,7 @@ class PivotPointsIndicator extends SMAIndicator {
         // But from the approximated last position in a given range
         indicator.plotEndPoint = indicator.xAxis.toPixels(indicator.endPoint, true);
     }
+    /** @internal */
     getGraphPath(points) {
         const indicator = this, allPivotPoints = ([[], [], [], [], [], [], [], [], []]), pointArrayMapLength = indicator.pointArrayMap.length;
         let endPoint = indicator.plotEndPoint, path = [], position, point, pointsLength = points.length, i;
@@ -83,6 +85,7 @@ class PivotPointsIndicator extends SMAIndicator {
         return path;
     }
     // TODO: Rewrite this logic to use multiple dataLabels
+    /** @internal */
     drawDataLabels() {
         const indicator = this, pointMapping = indicator.pointArrayMap;
         let currentLabel, pointsLength, point, i;
@@ -124,6 +127,7 @@ class PivotPointsIndicator extends SMAIndicator {
             });
         }
     }
+    /** @internal */
     getValues(series, params) {
         const period = params.period, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, placement = this[params.algorithm + 'Placement'], 
         // 0- from, 1- to, 2- R1, 3- R2, 4- pivot, 5- S1 etc.
@@ -159,6 +163,7 @@ class PivotPointsIndicator extends SMAIndicator {
             yData: yData
         };
     }
+    /** @internal */
     getPivotAndHLC(values) {
         const close = values[values.length - 1][3];
         let high = -Infinity, low = Infinity;
@@ -169,6 +174,7 @@ class PivotPointsIndicator extends SMAIndicator {
         const pivot = (high + low + close) / 3;
         return [pivot, high, low, close];
     }
+    /** @internal */
     standardPlacement(values) {
         const diff = values[1] - values[2], avg = [
             null,
@@ -183,6 +189,7 @@ class PivotPointsIndicator extends SMAIndicator {
         ];
         return avg;
     }
+    /** @internal */
     camarillaPlacement(values) {
         const diff = values[1] - values[2], avg = [
             values[3] + diff * 1.5,
@@ -197,6 +204,7 @@ class PivotPointsIndicator extends SMAIndicator {
         ];
         return avg;
     }
+    /** @internal */
     fibonacciPlacement(values) {
         const diff = values[1] - values[2], avg = [
             null,
@@ -230,6 +238,7 @@ class PivotPointsIndicator extends SMAIndicator {
  * @requires     stock/indicators/indicators
  * @requires     stock/indicators/pivot-points
  * @optionparent plotOptions.pivotpoints
+ * @internal
  */
 PivotPointsIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
     /**
@@ -274,7 +283,6 @@ SeriesRegistry.registerSeriesType('pivotpoints', PivotPointsIndicator);
  *  Default Export
  *
  * */
-/** @internal */
 export default PivotPointsIndicator;
 /* *
  *
@@ -288,7 +296,6 @@ export default PivotPointsIndicator;
  * @extends   series,plotOptions.pivotpoints
  * @since     6.0.0
  * @product   highstock
- * @excluding dataParser, dataURL
  * @requires  stock/indicators/indicators
  * @requires  stock/indicators/pivot-points
  * @apioption series.pivotpoints

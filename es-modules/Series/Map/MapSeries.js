@@ -25,7 +25,7 @@ import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { 
 // Indirect dependency to keep product size low
 column: ColumnSeries, scatter: ScatterSeries } = SeriesRegistry.seriesTypes;
-import { defined, extend, find, fireEvent, getNestedProperty, isArray, isNumber, isObject, merge, objectEach, pick, splat } from '../../Shared/Utilities.js';
+import { defined, extend, find, fireEvent, getNestedProperty, isArray, isNumber, isObject, merge, objectEach, splat } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class
@@ -80,6 +80,7 @@ class MapSeries extends ScatterSeries {
             }, animation);
         }
     }
+    /** @internal */
     clearBounds() {
         this.points.forEach((point) => {
             delete point.bounds;
@@ -181,8 +182,8 @@ class MapSeries extends ScatterSeries {
                             !isNumber(params['stroke-width']));
                         // When strokeWidth is animating
                         if (animateIn || animateOut) {
-                            const strokeWidth = pick(series.getStrokeWidth(series.options), 1 // Styled mode
-                            ), inheritedStrokeWidth = (strokeWidth /
+                            const strokeWidth = series.getStrokeWidth(series.options) ??
+                                1, inheritedStrokeWidth = (strokeWidth /
                                 (chart.mapView?.getScale() ||
                                     1));
                             // For animating from undefined, .attr() reads the
@@ -211,8 +212,7 @@ class MapSeries extends ScatterSeries {
         }
         // Apply the SVG transform
         transformGroups.forEach((transformGroup, i) => {
-            const view = i === 0 ? mapView : mapView.insets[i - 1], svgTransform = view.getSVGTransform(), strokeWidth = pick(this.getStrokeWidth(this.options), 1 // Styled mode
-            );
+            const view = i === 0 ? mapView : mapView.insets[i - 1], svgTransform = view.getSVGTransform(), strokeWidth = (this.getStrokeWidth(this.options) ?? 1);
             /*
             Animate or move to the new zoom level. In order to prevent
             flickering as the different transform components are set out of sync
@@ -313,9 +313,7 @@ class MapSeries extends ScatterSeries {
                     if (!point.bounds) {
                         let bounds = point.getProjectedBounds(projection);
                         if (bounds) {
-                            point.labelrank = pick(point.labelrank, 
-                            // Bigger shape, higher rank
-                            ((bounds.x2 - bounds.x1) *
+                            point.labelrank = (point.labelrank ?? ((bounds.x2 - bounds.x1) *
                                 (bounds.y2 - bounds.y1)));
                             const { midX, midY } = bounds;
                             if (insets && isNumber(midX) && isNumber(midY)) {
@@ -417,6 +415,7 @@ class MapSeries extends ScatterSeries {
         attr['stroke-linecap'] = attr['stroke-linejoin'] = this.options.linecap;
         return attr;
     }
+    /** @internal */
     matchPoints() {
         // #16782
         return !this.hasProcessedDataTable &&
@@ -435,6 +434,7 @@ class MapSeries extends ScatterSeries {
             this.chart.redraw(animation);
         }
     }
+    /** @internal */
     getDataColumnKeys() {
         // No x data for maps
         return this.pointArrayMap;
@@ -611,6 +611,7 @@ class MapSeries extends ScatterSeries {
         }
         fireEvent(series, 'afterTranslate');
     }
+    /** @internal */
     update(options) {
         // Calculate and set the recommended map view after every series update
         // if new mapData is set

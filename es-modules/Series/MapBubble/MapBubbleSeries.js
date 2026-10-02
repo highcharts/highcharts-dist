@@ -40,12 +40,14 @@ class MapBubbleSeries extends BubbleSeries {
         super(...arguments);
         this.clearBounds = mapProto.clearBounds;
     }
+    /** @internal */
     searchPoint(e, compareX) {
         return this.searchKDTree({
             plotX: e.chartX - this.chart.plotLeft,
             plotY: e.chartY - this.chart.plotTop
         }, compareX, e);
     }
+    /** @internal */
     translate() {
         mapPointProto.translate.call(this);
         this.getRadii();
@@ -264,7 +266,6 @@ export default MapBubbleSeries;
  * is not specified, it is inherited from [chart.type](#chart.type).
  *
  * @extends   series,plotOptions.mapbubble
- * @excluding dataParser, dataURL
  * @product   highmaps
  * @apioption series.mapbubble
  */

@@ -166,6 +166,7 @@ class VectorSeries extends ScatterSeries {
  *  Static Properties
  *
  * */
+/** @internal */
 VectorSeries.defaultOptions = merge(ScatterSeries.defaultOptions, VectorSeriesDefaults);
 extend(VectorSeries.prototype, {
     /**

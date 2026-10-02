@@ -33,8 +33,9 @@ import { attr, css } from '../Shared/Utilities.js';
 /**
  * Keeps track of all proxy elements and proxy groups.
  *
- * @private
  * @class
+ *
+ * @internal
  */
 class ProxyProvider {
     /* *
@@ -313,4 +314,5 @@ class ProxyProvider {
  *  Export Default
  *
  * */
+/** @internal */
 export default ProxyProvider;

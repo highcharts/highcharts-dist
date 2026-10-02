@@ -123,7 +123,7 @@ const areaRangeSeriesOptions = {
          *         Data labels on range series
          * @sample highcharts/plotoptions/arearange-datalabels/
          *         Data labels on range series
-         * @deprecated next
+         * @deprecated 13.0.1
          */
         xLow: 0,
         /**
@@ -134,7 +134,7 @@ const areaRangeSeriesOptions = {
          *
          * @sample highcharts/plotoptions/arearange-datalabels/
          *         Data labels on range series
-         * @deprecated next
+         * @deprecated 13.0.1
          */
         xHigh: 0,
         /**
@@ -145,7 +145,7 @@ const areaRangeSeriesOptions = {
          *
          * @sample highcharts/plotoptions/arearange-datalabels/
          *         Data labels on range series
-         * @deprecated next
+         * @deprecated 13.0.1
          */
         yLow: 0,
         /**
@@ -156,7 +156,7 @@ const areaRangeSeriesOptions = {
          *
          * @sample highcharts/plotoptions/arearange-datalabels/
          *         Data labels on range series
-         * @deprecated next
+         * @deprecated 13.0.1
          */
         yHigh: 0
     }
@@ -216,7 +216,6 @@ function getRangeDataLabelOptions(series) {
 /**
  * The AreaRange series type.
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.arearange
  *
@@ -228,6 +227,7 @@ class AreaRangeSeries extends AreaSeries {
      *  Functions
      *
      * */
+    /** @internal */
     toYData(point) {
         return [point.low, point.high];
     }
@@ -331,6 +331,7 @@ class AreaRangeSeries extends AreaSeries {
         this.areaPath.xMap = lowerPath.xMap;
         return linePath;
     }
+    /** @internal */
     drawDataLabels() {
         const series = this, dataLabelOptions = series.options.dataLabels;
         if (dataLabelOptions) {
@@ -352,6 +353,7 @@ class AreaRangeSeries extends AreaSeries {
             }
         }
     }
+    /** @internal */
     modifyMarkerSettings() {
         const series = this, originalMarkerSettings = {
             marker: series.options.marker,
@@ -366,11 +368,13 @@ class AreaRangeSeries extends AreaSeries {
         }
         return originalMarkerSettings;
     }
+    /** @internal */
     restoreMarkerSettings(originalSettings) {
         const series = this;
         series.options.marker = originalSettings.marker;
         series.symbol = originalSettings.symbol;
     }
+    /** @internal */
     drawPoints() {
         const series = this, pointLength = series.points.length;
         let i, point;
@@ -434,6 +438,7 @@ class AreaRangeSeries extends AreaSeries {
             i++;
         }
     }
+    /** @internal */
     hasMarkerChanged(options, oldOptions) {
         const lowMarker = options.lowMarker, oldMarker = oldOptions.lowMarker || {};
         return (lowMarker && (lowMarker.enabled === false ||
@@ -447,6 +452,7 @@ class AreaRangeSeries extends AreaSeries {
  *
  *  Static Properties
  *
+ * @internal
  */
 AreaRangeSeries.defaultOptions = merge(AreaSeries.defaultOptions, areaRangeSeriesOptions);
 addEvent(AreaRangeSeries, 'afterTranslate', function () {
@@ -507,5 +513,4 @@ SeriesRegistry.registerSeriesType('arearange', AreaRangeSeries);
  *  Default Export
  *
  * */
-/** @internal */
 export default AreaRangeSeries;

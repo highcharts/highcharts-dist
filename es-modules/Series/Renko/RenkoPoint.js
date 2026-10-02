@@ -18,6 +18,7 @@ const { column: { prototype: { pointClass: ColumnPoint } } } = SeriesRegistry.se
  *
  * */
 class RenkoPoint extends ColumnPoint {
+    /** @internal */
     getClassName() {
         return (super.getClassName.call(this) +
             (this.upTrend ? ' highcharts-point-up' : ' highcharts-point-down'));

@@ -324,6 +324,7 @@ class SunburstSeries extends TreemapSeries {
      *  Functions
      *
      * */
+    /** @internal */
     alignDataLabel(point, dataLabel, labelOptions) {
         if (labelOptions.textPath && labelOptions.textPath.enabled) {
             return;
@@ -369,6 +370,7 @@ class SunburstSeries extends TreemapSeries {
             group.animate(attribs, this.options.animation);
         }
     }
+    /** @internal */
     drawPoints() {
         const series = this, mapOptionsToLevel = series.mapOptionsToLevel, shapeRoot = series.shapeRoot, group = series.group, hasRendered = series.hasRendered, idRoot = series.rootNode, idPreviousRoot = series.idPreviousRoot, nodeMap = series.nodeMap, nodePreviousRoot = nodeMap[idPreviousRoot], shapePreviousRoot = nodePreviousRoot && nodePreviousRoot.shapeArgs, points = series.points, radians = series.startAndEndRadians, chart = series.chart, optionsChart = chart && chart.options && chart.options.chart || {}, animation = (isBoolean(optionsChart.animation) ?
             optionsChart.animation :
@@ -502,6 +504,7 @@ class SunburstSeries extends TreemapSeries {
             return arr;
         }, []);
     }
+    /** @internal */
     setRootNode(id, redraw, eventArguments) {
         const series = this;
         if ( // If the target node is the only one at level 1, skip it. (#18658)
@@ -555,6 +558,7 @@ class SunburstSeries extends TreemapSeries {
             }
         }
     }
+    /** @internal */
     translate() {
         const series = this, options = series.options, positions = series.center = series.getCenter(), radians = series.startAndEndRadians = getStartAndEndRadians(options.startAngle, options.endAngle), innerRadius = positions[3] / 2, outerRadius = positions[2] / 2, diffRadius = outerRadius - innerRadius, 
         // NOTE: updateRootId modifies series.
@@ -627,6 +631,7 @@ class SunburstSeries extends TreemapSeries {
  *  Static Properties
  *
  * */
+/** @internal */
 SunburstSeries.defaultOptions = merge(TreemapSeries.defaultOptions, SunburstSeriesDefaults);
 extend(SunburstSeries.prototype, {
     axisTypes: [],

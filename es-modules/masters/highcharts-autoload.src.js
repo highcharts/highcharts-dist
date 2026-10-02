@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v13.0.0-modified (2026-08-14)
+ * @license Highcharts JS v13.1.0 (2026-10-02)
  * @module highcharts/highcharts-autoload
  *
  * (c) 2009-2024 Torstein Honsi

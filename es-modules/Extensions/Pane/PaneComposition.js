@@ -3,7 +3,7 @@
  *  Imports
  *
  * */
-import { addEvent, correctFloat, defined, pick } from '../../Shared/Utilities.js';
+import { addEvent, correctFloat, defined } from '../../Shared/Utilities.js';
 /* *
  *
  *  Functions
@@ -119,7 +119,7 @@ function onPointerBeforeGetHoverData(eventArgs) {
         eventArgs.filter = function (s) {
             return (s.visible &&
                 !(!eventArgs.shared && s.directTouch) && // #3821
-                pick(s.options.enableMouseTracking, true) &&
+                (s.options.enableMouseTracking ?? true) &&
                 (!chart.hoverPane || s.xAxis.pane === chart.hoverPane));
         };
     }

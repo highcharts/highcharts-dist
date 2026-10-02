@@ -18,7 +18,6 @@ import { defined, isNumber } from '../../Shared/Utilities.js';
  *  Class
  *
  * */
-/** @internal */
 class AreaRangePoint extends AreaPoint {
     /* *
      *
@@ -66,6 +65,7 @@ class AreaRangePoint extends AreaPoint {
         // Restore previous state
         series.restoreMarkerSettings(originalSettings);
     }
+    /** @internal */
     haloPath() {
         const isPolar = this.series.chart.polar;
         let path = [];
@@ -87,6 +87,7 @@ class AreaRangePoint extends AreaPoint {
         }
         return path;
     }
+    /** @internal */
     isValid() {
         return isNumber(this.low) && isNumber(this.high);
     }
@@ -96,7 +97,6 @@ class AreaRangePoint extends AreaPoint {
  *  Default Export
  *
  * */
-/** @internal */
 export default AreaRangePoint;
 /* *
  *

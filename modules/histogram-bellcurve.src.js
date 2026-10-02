@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.0-modified (2026-08-14)
+ * @license Highcharts JS v13.1.0 (2026-10-02)
  * @module highcharts/modules/histogram-bellcurve
  * @requires highcharts
  *
@@ -12,14 +12,14 @@
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(root["_Highcharts"], root["_Highcharts"]["Series"], root["_Highcharts"]["SeriesRegistry"]);
+		module.exports = factory(root["_Highcharts"]["Series"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
 	else if(typeof define === 'function' && define.amd)
-		define("highcharts/modules/histogram-bellcurve", ["highcharts/highcharts"], function (amd1) {return factory(amd1,amd1["Series"],amd1["SeriesRegistry"]);});
+		define("highcharts/modules/histogram-bellcurve", ["highcharts/highcharts"], function (amd1) {return factory(amd1["Series"],amd1["SeriesRegistry"],amd1);});
 	else if(typeof exports === 'object')
-		exports["highcharts/modules/histogram-bellcurve"] = factory(root["_Highcharts"], root["_Highcharts"]["Series"], root["_Highcharts"]["SeriesRegistry"]);
+		exports["highcharts/modules/histogram-bellcurve"] = factory(root["_Highcharts"]["Series"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
 	else
-		root["Highcharts"] = factory(root["Highcharts"], root["Highcharts"]["Series"], root["Highcharts"]["SeriesRegistry"]);
-})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__944__, __WEBPACK_EXTERNAL_MODULE__820__, __WEBPACK_EXTERNAL_MODULE__512__) => {
+		root["Highcharts"] = factory(root["Highcharts"]["Series"], root["Highcharts"]["SeriesRegistry"], root["Highcharts"]);
+})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__820__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__944__) => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
@@ -73,48 +73,27 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__944__;
 /******/ 	
 /************************************************************************/
 /******/ 	/* webpack/runtime/compat get default export */
-/******/ 	(() => {
-/******/ 		// getDefaultExport function for compatibility with non-harmony modules
-/******/ 		__webpack_require__.n = (module) => {
-/******/ 			const getter = module && module.__esModule ?
-/******/ 				() => (module['default']) :
-/******/ 				() => (module);
-/******/ 			__webpack_require__.d(getter, { a: getter });
-/******/ 			return getter;
-/******/ 		};
-/******/ 	})();
+/******/ 	// getDefaultExport function for compatibility with non-harmony modules
+/******/ 	__webpack_require__.n = (module) => {
+/******/ 		const getter = module && module.__esModule ?
+/******/ 			() => (module['default']) :
+/******/ 			() => (module);
+/******/ 		__webpack_require__.d(getter, { a: getter });
+/******/ 		return getter;
+/******/ 	};
 /******/ 	
 /******/ 	/* webpack/runtime/define property getters */
-/******/ 	(() => {
-/******/ 		// define getter/value functions for harmony exports
-/******/ 		__webpack_require__.d = (exports, definition) => {
-/******/ 			if(Array.isArray(definition)) {
-/******/ 				var i = 0;
-/******/ 				while(i < definition.length) {
-/******/ 					var key = definition[i++];
-/******/ 					var binding = definition[i++];
-/******/ 					if(!__webpack_require__.o(exports, key)) {
-/******/ 						if(binding === 0) {
-/******/ 							Object.defineProperty(exports, key, { enumerable: true, value: definition[i++] });
-/******/ 						} else {
-/******/ 							Object.defineProperty(exports, key, { enumerable: true, get: binding });
-/******/ 						}
-/******/ 					} else if(binding === 0) { i++; }
-/******/ 				}
-/******/ 			} else {
-/******/ 				for(var key in definition) {
-/******/ 					if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
-/******/ 						Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
-/******/ 					}
-/******/ 				}
+/******/ 	// define getter/value functions for harmony exports
+/******/ 	__webpack_require__.d = (exports, definition) => {
+/******/ 		for(var key in definition) {
+/******/ 			if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 				Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
 /******/ 			}
-/******/ 		};
-/******/ 	})();
+/******/ 		}
+/******/ 	};
 /******/ 	
 /******/ 	/* webpack/runtime/hasOwnProperty shorthand */
-/******/ 	(() => {
-/******/ 		__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
-/******/ 	})();
+/******/ 	__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop));
 /******/ 	
 /************************************************************************/
 let __webpack_exports__ = {};
@@ -332,7 +311,7 @@ const HistogramSeriesDefaults = {
  * specified, it is inherited from [chart.type](#chart.type).
  *
  * @extends   series,plotOptions.histogram
- * @excluding data, dataParser, dataURL, boostThreshold, boostBlending
+ * @excluding data, boostThreshold, boostBlending
  * @product   highcharts
  * @since     6.0.0
  * @requires  modules/histogram-bellcurve
@@ -393,7 +372,7 @@ const binsNumberFormulas = {
 };
 /**
  * Returns a function for mapping number to the closed (right opened) bins
- * @private
+ * @internal
  * @param {Array<number>} bins
  * Width of the bins
  */
@@ -413,7 +392,6 @@ function fitToBinLeftClosed(bins) {
  * */
 /**
  * Histogram class
- * @private
  * @class
  * @name Highcharts.seriesTypes.histogram
  * @augments Highcharts.Series
@@ -424,6 +402,9 @@ class HistogramSeries extends ColumnSeries {
      *  Functions
      *
      * */
+    /**
+     * @internal
+     */
     binsNumber(data) {
         const binsNumberOption = this.options.binsNumber;
         const binsNumber = binsNumberFormulas[binsNumberOption] ||
@@ -434,6 +415,9 @@ class HistogramSeries extends ColumnSeries {
                 binsNumberOption :
                 binsNumberFormulas['square-root'](data)));
     }
+    /**
+     * @internal
+     */
     setData(data, redraw = true, animation, updatePoints) {
         let alteredData = [];
         if (typeof data !== 'undefined' && data.length > 0) {
@@ -445,6 +429,9 @@ class HistogramSeries extends ColumnSeries {
         }
         super.setData.call(this, alteredData, redraw, animation, updatePoints);
     }
+    /**
+     * @internal
+     */
     derivedData(baseData, binsNumber, binWidth) {
         const series = this, max = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.correctFloat)((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.arrayMax)(baseData)), 
         // Float correction needed, because first frequency value is not
@@ -494,6 +481,9 @@ class HistogramSeries extends ColumnSeries {
         data[data.length - 1].x2 = max;
         return data;
     }
+    /**
+     * @internal
+     */
     setDerivedData() {
         const yData = this.baseSeries?.getColumn('y');
         if (!yData?.length) {
@@ -508,6 +498,7 @@ class HistogramSeries extends ColumnSeries {
  *  Static Properties
  *
  * */
+/** @internal */
 HistogramSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(ColumnSeries.defaultOptions, Histogram_HistogramSeriesDefaults);
 Series_DerivedComposition.compose(HistogramSeries);
 highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default().registerSeriesType('histogram', HistogramSeries);
@@ -607,7 +598,7 @@ const BellcurveSeriesDefaults = {
  * @extends   series,plotOptions.bellcurve
  * @since     6.0.0
  * @product   highcharts
- * @excluding dataParser, dataURL, data, boostThreshold, boostBlending
+ * @excluding data, boostThreshold, boostBlending
  * @requires  modules/histogram-bellcurve
  * @apioption series.bellcurve
  */
@@ -673,7 +664,6 @@ const { areaspline: AreaSplineSeries } = (highcharts_SeriesRegistry_commonjs_hig
 /**
  * Bell curve class
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.bellcurve
  *
@@ -714,6 +704,7 @@ class BellcurveSeries extends AreaSplineSeries {
      *  Functions
      *
      * */
+    /** @internal */
     setData(data, redraw = true, animation, updatePoints) {
         let alteredData = [];
         if (typeof data !== 'undefined' && data.length > 0) {
@@ -733,6 +724,7 @@ class BellcurveSeries extends AreaSplineSeries {
         }
         super.setData.call(this, alteredData, redraw, animation, updatePoints);
     }
+    /** @internal */
     derivedData(mean, standardDeviation) {
         const options = this.options, intervals = options.intervals, pointsInInterval = options.pointsInInterval, stop = intervals * pointsInInterval * 2 + 1, increment = standardDeviation / pointsInInterval, data = [];
         let x = mean - intervals * standardDeviation;
@@ -742,16 +734,19 @@ class BellcurveSeries extends AreaSplineSeries {
         }
         return data;
     }
+    /** @internal */
     setDerivedData() {
         const series = this;
         if (series.baseSeries?.getColumn('y').length) {
             series.setData(series.baseSeries?.getColumn('y'), false, void 0, false);
         }
     }
+    /** @internal */
     setMean(data) {
         const mean = BellcurveSeries.mean(data || []);
         this.mean = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.isNumber)(mean) ? (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.correctFloat)(mean) : void 0;
     }
+    /** @internal */
     setStandardDeviation(data) {
         const sd = BellcurveSeries.standardDeviation(data || [], this.mean);
         this.standardDeviation = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.isNumber)(sd) ? (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.correctFloat)(sd) : void 0;
@@ -762,6 +757,7 @@ class BellcurveSeries extends AreaSplineSeries {
  *  Static Properties
  *
  * */
+/** @internal */
 BellcurveSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(AreaSplineSeries.defaultOptions, Bellcurve_BellcurveSeriesDefaults);
 Series_DerivedComposition.compose(BellcurveSeries);
 highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default().registerSeriesType('bellcurve', BellcurveSeries);
@@ -770,7 +766,6 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *  Default Export
  *
  * */
-/** @internal */
 /* harmony default export */ const Bellcurve_BellcurveSeries = ((/* unused pure expression or super */ null && (BellcurveSeries)));
 
 ;// ./code/es-modules/masters/modules/histogram-bellcurve.src.js

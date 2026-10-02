@@ -251,6 +251,7 @@ class VennSeries extends ScatterSeries {
      *  Functions
      *
      * */
+    /** @internal */
     animate(init) {
         if (!init) {
             const series = this, animOptions = animObject(series.options.animation);
@@ -313,6 +314,7 @@ class VennSeries extends ScatterSeries {
             });
         }
     }
+    /** @internal */
     init() {
         ScatterSeries.prototype.init.apply(this, arguments);
         // Venn's opacity is a different option from other series
@@ -343,6 +345,7 @@ class VennSeries extends ScatterSeries {
             'dashstyle': options.borderDashStyle
         };
     }
+    /** @internal */
     translate() {
         const chart = this.chart;
         this.dataTable.modified = this.dataTable;
@@ -426,6 +429,7 @@ class VennSeries extends ScatterSeries {
  *
  * */
 VennSeries.splitter = 'highcharts-split';
+/** @internal */
 VennSeries.defaultOptions = merge(ScatterSeries.defaultOptions, VennSeriesDefaults);
 extend(VennSeries.prototype, {
     axisTypes: [],
@@ -436,7 +440,9 @@ extend(VennSeries.prototype, {
     utils: VennUtils
 });
 // Modify final series options.
-addEvent(VennSeries, 'afterSetOptions', function (e) {
+addEvent(VennSeries, 'afterSetOptions', function (
+/** @internal */
+e) {
     const options = e.options, states = options.states || {};
     if (this.is('venn')) {
         // Explicitly disable all halo options.

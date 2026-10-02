@@ -18,7 +18,6 @@ import { error } from '../../../Core/Utilities.js';
 /**
  * The AD series type.
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.ad
  *
@@ -30,6 +29,7 @@ class ADIndicator extends SMAIndicator {
      *  Static Functions
      *
      * */
+    /** @internal */
     static populateAverage(xVal, yVal, yValVolume, i, 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _period) {
@@ -43,6 +43,7 @@ class ADIndicator extends SMAIndicator {
      *  Functions
      *
      * */
+    /** @internal */
     getValues(series, params) {
         const period = params.period, xVal = series.xData, yVal = series.yData, volumeSeriesID = params.volumeSeriesID, volumeSeries = series.chart.get(volumeSeriesID), yValVolume = volumeSeries?.getColumn('y'), yValLen = yVal ? yVal.length : 0, AD = [], xData = [], yData = [];
         let len, i, ADPoint;
@@ -94,6 +95,7 @@ class ADIndicator extends SMAIndicator {
  * @requires     stock/indicators/indicators
  * @requires     stock/indicators/accumulation-distribution
  * @optionparent plotOptions.ad
+ * @internal
  */
 ADIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
     /**
@@ -121,7 +123,6 @@ SeriesRegistry.registerSeriesType('ad', ADIndicator);
  *  Default Export
  *
  * */
-/** @internal */
 export default ADIndicator;
 /* *
  *
@@ -134,7 +135,6 @@ export default ADIndicator;
  *
  * @extends   series,plotOptions.ad
  * @since     6.0.0
- * @excluding dataParser, dataURL
  * @product   highstock
  * @requires  stock/indicators/indicators
  * @requires  stock/indicators/accumulation-distribution

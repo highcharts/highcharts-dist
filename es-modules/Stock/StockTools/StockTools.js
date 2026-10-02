@@ -18,7 +18,7 @@ import StockToolsBindings from './StockToolsBindings.js';
 import StockToolsDefaults from './StockToolsDefaults.js';
 import STU from './StockToolsUtilities.js';
 const { isNotNavigatorYAxis, isPriceIndicatorEnabled } = STU;
-import { correctFloat, defined, isNumber, pick } from '../../Shared/Utilities.js';
+import { correctFloat, defined, isNumber } from '../../Shared/Utilities.js';
 /* *
  *
  *  Functions
@@ -144,7 +144,7 @@ function navigationGetYAxisResizers(yAxes) {
                 enabled: true,
                 controlledAxis: {
                     next: [
-                        pick(nextYAxis.options.id, nextYAxis.index)
+                        (nextYAxis.options.id ?? nextYAxis.index)
                     ]
                 }
             };

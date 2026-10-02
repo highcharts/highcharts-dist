@@ -23,7 +23,10 @@ const { removeElement } = HU;
  *
  * */
 /**
- * @private
+ * Class that can keep track of elements added to DOM and clean them up on
+ * destroy.
+ *
+ * @internal
  */
 class DOMElementProvider {
     /* *
@@ -37,7 +40,8 @@ class DOMElementProvider {
     /**
      * Create an element and keep track of it for later removal.
      * Same args as document.createElement
-     * @private
+     *
+     * @internal
      */
     createElement() {
         const el = doc.createElement.apply(doc, arguments);
@@ -46,7 +50,8 @@ class DOMElementProvider {
     }
     /**
      * Destroy created element, removing it from the DOM.
-     * @private
+     *
+     * @internal
      */
     removeElement(element) {
         removeElement(element);
@@ -54,7 +59,8 @@ class DOMElementProvider {
     }
     /**
      * Destroy all created elements, removing them from the DOM.
-     * @private
+     *
+     * @internal
      */
     destroyCreatedElements() {
         this.elements.forEach(function (element) {
@@ -68,4 +74,5 @@ class DOMElementProvider {
  *  Default Export
  *
  * */
+/** @internal */
 export default DOMElementProvider;

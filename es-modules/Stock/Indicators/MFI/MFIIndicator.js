@@ -48,7 +48,6 @@ function calculateRawMoneyFlow(typicalPrice, volume) {
 /**
  * The MFI series type.
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.mfi
  *
@@ -60,6 +59,7 @@ class MFIIndicator extends SMAIndicator {
      *  Functions
      *
      * */
+    /** @internal */
     getValues(series, params) {
         const period = params.period, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, decimals = params.decimals, volumeSeries = series.chart.get(params.volumeSeriesID), yValVolume = volumeSeries?.getColumn('y') || [], MFI = [], xData = [], yData = [], positiveMoneyFlow = [], negativeMoneyFlow = [];
         let newTypicalPrice, oldTypicalPrice, rawMoneyFlow, negativeMoneyFlowSum, positiveMoneyFlowSum, moneyFlowRatio, MFIPoint, i, isUp = false, 
@@ -142,6 +142,7 @@ class MFIIndicator extends SMAIndicator {
  * @requires     stock/indicators/indicators
  * @requires     stock/indicators/mfi
  * @optionparent plotOptions.mfi
+ * @internal
  */
 MFIIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
     /**
@@ -170,7 +171,6 @@ SeriesRegistry.registerSeriesType('mfi', MFIIndicator);
  *  Default Export
  *
  * */
-/** @internal */
 export default MFIIndicator;
 /* *
  *
@@ -183,7 +183,6 @@ export default MFIIndicator;
  *
  * @extends   series,plotOptions.mfi
  * @since     6.0.0
- * @excluding dataParser, dataURL
  * @product   highstock
  * @requires  stock/indicators/indicators
  * @requires  stock/indicators/mfi

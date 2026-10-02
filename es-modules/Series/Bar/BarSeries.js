@@ -21,7 +21,6 @@ import { extend, merge } from '../../Shared/Utilities.js';
 /**
  * Bar series type.
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.bar
  *
@@ -44,6 +43,7 @@ class BarSeries extends ColumnSeries {
  * @extends      plotOptions.column
  * @product      highcharts
  * @optionparent plotOptions.bar
+ * @internal
  */
 BarSeries.defaultOptions = merge(ColumnSeries.defaultOptions, {
 // Nothing here yet
@@ -57,7 +57,6 @@ SeriesRegistry.registerSeriesType('bar', BarSeries);
  *  Default Export
  *
  * */
-/** @internal */
 export default BarSeries;
 /* *
  *
@@ -69,7 +68,7 @@ export default BarSeries;
  * it is inherited from [chart.type](#chart.type).
  *
  * @extends   series,plotOptions.bar
- * @excluding connectNulls, dashStyle, dataParser, dataURL, gapSize, gapUnit,
+ * @excluding connectNulls, dashStyle, gapSize, gapUnit,
  *            linecap, lineWidth, marker, connectEnds, step
  * @product   highcharts
  * @apioption series.bar

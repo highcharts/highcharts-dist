@@ -26,22 +26,19 @@ const { defaultPointDescriptionFormatter, defaultSeriesDescriptionFormatter } = 
  *  Functions
  *
  * */
-/**
- * @private
- */
+/** @internal */
 function chartHasAnnounceEnabled(chart) {
     return !!chart.options.accessibility.announceNewData.enabled;
 }
-/**
- * @private
- */
+/** @internal */
 function findPointInDataArray(point) {
     const candidates = point.series.data.filter((candidate) => (point.x === candidate.x && point.y === candidate.y));
     return candidates.length === 1 ? candidates[0] : point;
 }
 /**
  * Get array of unique series from two arrays
- * @private
+ *
+ * @internal
  */
 function getUniqueSeries(arrayA, arrayB) {
     const uniqueSeries = (arrayA || []).concat(arrayB || []).reduce((acc, cur) => {
@@ -58,8 +55,9 @@ function getUniqueSeries(arrayA, arrayB) {
  *
  * */
 /**
- * @private
  * @class
+ *
+ * @internal
  */
 class NewDataAnnouncer {
     /* *
@@ -81,7 +79,8 @@ class NewDataAnnouncer {
      * */
     /**
      * Initialize the new data announcer.
-     * @private
+     *
+     * @internal
      */
     init() {
         const chart = this.chart;
@@ -98,7 +97,8 @@ class NewDataAnnouncer {
     }
     /**
      * Remove traces of announcer.
-     * @private
+     *
+     * @internal
      */
     destroy() {
         this.eventProvider.removeAddedEvents();
@@ -106,7 +106,8 @@ class NewDataAnnouncer {
     }
     /**
      * Add event listeners for the announcer
-     * @private
+     *
+     * @internal
      */
     addEventListeners() {
         const announcer = this, chart = this.chart, e = this.eventProvider;
@@ -122,8 +123,8 @@ class NewDataAnnouncer {
     }
     /**
      * On new data series added, update dirty list.
-     * @private
-     * @param {Highcharts.Series} series
+     *
+     * @internal
      */
     onSeriesAdded(series) {
         if (chartHasAnnounceEnabled(this.chart)) {
@@ -136,7 +137,8 @@ class NewDataAnnouncer {
     }
     /**
      * Gather what we know and announce the data to user.
-     * @private
+     *
+     * @internal
      */
     announceDirtyData() {
         const chart = this.chart, announcer = this;
@@ -160,13 +162,14 @@ class NewDataAnnouncer {
     }
     /**
      * Announce to user that there is new data.
-     * @private
      * @param {Array<Highcharts.Series>} dirtySeries
      *          Array of series with new data.
      * @param {Highcharts.Series} [newSeries]
      *          If a single new series was added, a reference to this series.
      * @param {Highcharts.Point} [newPoint]
      *          If a single point was added, a reference to this point.
+     *
+     * @internal
      */
     queueAnnouncement(dirtySeries, newSeries, newPoint) {
         const chart = this.chart;
@@ -204,7 +207,6 @@ class NewDataAnnouncer {
     }
     /**
      * Get announcement message for new data.
-     * @private
      * @param {Array<Highcharts.Series>} dirtySeries
      *          Array of series with new data.
      * @param {Highcharts.Series} [newSeries]
@@ -214,6 +216,8 @@ class NewDataAnnouncer {
      *
      * @return {string|null}
      * The announcement message to give to user.
+     *
+     * @internal
      */
     buildAnnouncementMessage(dirtySeries, newSeries, newPoint) {
         const chart = this.chart, annOptions = chart.options.accessibility.announceNewData;
@@ -246,6 +250,7 @@ class NewDataAnnouncer {
  *  Class Namespace
  *
  * */
+/** @internal */
 (function (NewDataAnnouncer) {
     /* *
      *
@@ -257,9 +262,7 @@ class NewDataAnnouncer {
      *  Static Functions
      *
      * */
-    /**
-     * @private
-     */
+    /** @internal */
     function compose(SeriesClass) {
         if (pushUnique(composed, 'A11y.NDA')) {
             addEvent(SeriesClass, 'addPoint', seriesOnAddPoint);
@@ -269,8 +272,8 @@ class NewDataAnnouncer {
     NewDataAnnouncer.compose = compose;
     /**
      * On new point added, update dirty list.
-     * @private
-     * @param {Highcharts.Point} point
+     *
+     * @internal
      */
     function seriesOnAddPoint(e) {
         const chart = this.chart, newDataAnnouncer = chart.accessibility?.components
@@ -286,7 +289,8 @@ class NewDataAnnouncer {
     }
     /**
      * On new data in the series, make sure we add it to the dirty list.
-     * @private
+     *
+     * @internal
      */
     function seriesOnUpdatedData() {
         const chart = this.chart, newDataAnnouncer = chart.accessibility?.components
@@ -304,4 +308,5 @@ class NewDataAnnouncer {
  *  Default Export
  *
  * */
+/** @internal */
 export default NewDataAnnouncer;

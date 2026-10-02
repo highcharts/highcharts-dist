@@ -21,13 +21,13 @@ const { seriesTypes: { sankey: { prototype: { pointClass: SankeyPoint } } } } = 
  *  Class
  *
  * */
-/** @internal */
 class ArcDiagramPoint extends SankeyPoint {
     /* *
      *
      *  Functions
      *
      * */
+    /** @internal */
     isValid() {
         // No null points here
         return true;
@@ -41,5 +41,4 @@ extend(ArcDiagramPoint.prototype, {
  *  Default Export
  *
  * */
-/** @internal */
 export default ArcDiagramPoint;

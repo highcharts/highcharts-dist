@@ -52,7 +52,6 @@ function populateAverage(xVal, yVal, i, period, index) {
 /**
  * The ROC series type.
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.roc
  *
@@ -64,6 +63,7 @@ class ROCIndicator extends SMAIndicator {
      *  Functions
      *
      * */
+    /** @internal */
     getValues(series, params) {
         const period = params.period, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, ROC = [], xData = [], yData = [];
         let i, index = -1, ROCPoint;
@@ -117,6 +117,7 @@ class ROCIndicator extends SMAIndicator {
  * @requires     stock/indicators/indicators
  * @requires     stock/indicators/roc
  * @optionparent plotOptions.roc
+ * @internal
  */
 ROCIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
     params: {
@@ -133,7 +134,6 @@ SeriesRegistry.registerSeriesType('roc', ROCIndicator);
  *  Default Export
  *
  * */
-/** @internal */
 export default ROCIndicator;
 /* *
  *
@@ -158,7 +158,6 @@ export default ROCIndicator;
  * @extends   series,plotOptions.roc
  * @since     6.0.0
  * @product   highstock
- * @excluding dataParser, dataURL
  * @requires  stock/indicators/indicators
  * @requires  stock/indicators/roc
  * @apioption series.roc

@@ -20,7 +20,6 @@ import { extend, merge } from '../../../Shared/Utilities.js';
 /**
  * The Price Channel series type.
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.pc
  *
@@ -32,6 +31,7 @@ class PCIndicator extends SMAIndicator {
      *  Functions
      *
      * */
+    /** @internal */
     getValues(series, params) {
         const period = params.period, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, 
         // 0- date, 1-top line, 2-middle line, 3-bottom line
@@ -82,6 +82,7 @@ class PCIndicator extends SMAIndicator {
  * @requires     stock/indicators/indicators
  * @requires     stock/indicators/price-channel
  * @optionparent plotOptions.pc
+ * @internal
  */
 PCIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
     /**
@@ -150,7 +151,6 @@ SeriesRegistry.registerSeriesType('pc', PCIndicator);
  *  Default Export
  *
  * */
-/** @internal */
 export default PCIndicator;
 /* *
  *
@@ -164,7 +164,7 @@ export default PCIndicator;
  * @extends      series,plotOptions.pc
  * @since        7.0.0
  * @product      highstock
- * @excluding    allAreas, colorAxis, compare, compareBase, dataParser, dataURL,
+ * @excluding    allAreas, colorAxis, compare, compareBase,
  *               joinBy, keys, navigatorOptions, pointInterval,
  *               pointIntervalUnit, pointPlacement, pointRange, pointStart,
  *               showInNavigator, stacking

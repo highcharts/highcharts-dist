@@ -22,7 +22,7 @@ import Color from '../Core/Color/Color.js';
 const { parse: color } = Color;
 import H from '../Core/Globals.js';
 const { doc, noop } = H;
-import { addEvent, fireEvent, internalClearTimeout, isNumber, merge, pick, wrap } from '../Shared/Utilities.js';
+import { addEvent, fireEvent, internalClearTimeout, isNumber, merge, wrap } from '../Shared/Utilities.js';
 /* *
  *
  *  Namespace
@@ -244,7 +244,7 @@ var BoostCanvas;
             series.pointArrayMap.join(',') === 'low,high'), isStacked = !!options.stacking, cropStart = series.cropStart || 0, loadingOptions = chart.options.loading, requireSorting = series.requireSorting, connectNulls = options.connectNulls, useRaw = !xData, sdata = (isStacked ?
             series.data :
             (xData || rawData)), fillColor = (series.fillOpacity ?
-            Color.parse(series.color).setOpacity(pick(options.fillOpacity, 0.75)).get() :
+            Color.parse(series.color).setOpacity((options.fillOpacity ?? 0.75)).get() :
             series.color), compareX = options.findNearestPointBy === 'x', boost = this.boost || {}, cvsDrawPoint = series.cvsDrawPoint, cvsLineTo = options.lineWidth ? series.cvsLineTo : void 0, cvsMarker = (r && r <= 1 ?
             series.cvsMarkerSquare :
             series.cvsMarkerCircle);

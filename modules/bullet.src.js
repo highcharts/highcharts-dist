@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.0-modified (2026-08-14)
+ * @license Highcharts JS v13.1.0 (2026-10-02)
  * @module highcharts/modules/bullet
  * @requires highcharts
  *
@@ -14,14 +14,14 @@
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(root["_Highcharts"], root["_Highcharts"]["Series"]["types"]["column"], root["_Highcharts"]["SeriesRegistry"]);
+		module.exports = factory(root["_Highcharts"]["Series"]["types"]["column"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
 	else if(typeof define === 'function' && define.amd)
-		define("highcharts/modules/bullet", ["highcharts/highcharts"], function (amd1) {return factory(amd1,amd1["Series"],["types"],["column"],amd1["SeriesRegistry"]);});
+		define("highcharts/modules/bullet", ["highcharts/highcharts"], function (amd1) {return factory(amd1["Series"],["types"],["column"],amd1["SeriesRegistry"],amd1);});
 	else if(typeof exports === 'object')
-		exports["highcharts/modules/bullet"] = factory(root["_Highcharts"], root["_Highcharts"]["Series"]["types"]["column"], root["_Highcharts"]["SeriesRegistry"]);
+		exports["highcharts/modules/bullet"] = factory(root["_Highcharts"]["Series"]["types"]["column"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
 	else
-		root["Highcharts"] = factory(root["Highcharts"], root["Highcharts"]["Series"]["types"]["column"], root["Highcharts"]["SeriesRegistry"]);
-})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__944__, __WEBPACK_EXTERNAL_MODULE__448__, __WEBPACK_EXTERNAL_MODULE__512__) => {
+		root["Highcharts"] = factory(root["Highcharts"]["Series"]["types"]["column"], root["Highcharts"]["SeriesRegistry"], root["Highcharts"]);
+})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__448__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__944__) => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
@@ -75,48 +75,27 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__944__;
 /******/ 	
 /************************************************************************/
 /******/ 	/* webpack/runtime/compat get default export */
-/******/ 	(() => {
-/******/ 		// getDefaultExport function for compatibility with non-harmony modules
-/******/ 		__webpack_require__.n = (module) => {
-/******/ 			const getter = module && module.__esModule ?
-/******/ 				() => (module['default']) :
-/******/ 				() => (module);
-/******/ 			__webpack_require__.d(getter, { a: getter });
-/******/ 			return getter;
-/******/ 		};
-/******/ 	})();
+/******/ 	// getDefaultExport function for compatibility with non-harmony modules
+/******/ 	__webpack_require__.n = (module) => {
+/******/ 		const getter = module && module.__esModule ?
+/******/ 			() => (module['default']) :
+/******/ 			() => (module);
+/******/ 		__webpack_require__.d(getter, { a: getter });
+/******/ 		return getter;
+/******/ 	};
 /******/ 	
 /******/ 	/* webpack/runtime/define property getters */
-/******/ 	(() => {
-/******/ 		// define getter/value functions for harmony exports
-/******/ 		__webpack_require__.d = (exports, definition) => {
-/******/ 			if(Array.isArray(definition)) {
-/******/ 				var i = 0;
-/******/ 				while(i < definition.length) {
-/******/ 					var key = definition[i++];
-/******/ 					var binding = definition[i++];
-/******/ 					if(!__webpack_require__.o(exports, key)) {
-/******/ 						if(binding === 0) {
-/******/ 							Object.defineProperty(exports, key, { enumerable: true, value: definition[i++] });
-/******/ 						} else {
-/******/ 							Object.defineProperty(exports, key, { enumerable: true, get: binding });
-/******/ 						}
-/******/ 					} else if(binding === 0) { i++; }
-/******/ 				}
-/******/ 			} else {
-/******/ 				for(var key in definition) {
-/******/ 					if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
-/******/ 						Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
-/******/ 					}
-/******/ 				}
+/******/ 	// define getter/value functions for harmony exports
+/******/ 	__webpack_require__.d = (exports, definition) => {
+/******/ 		for(var key in definition) {
+/******/ 			if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 				Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
 /******/ 			}
-/******/ 		};
-/******/ 	})();
+/******/ 		}
+/******/ 	};
 /******/ 	
 /******/ 	/* webpack/runtime/hasOwnProperty shorthand */
-/******/ 	(() => {
-/******/ 		__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
-/******/ 	})();
+/******/ 	__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop));
 /******/ 	
 /************************************************************************/
 let __webpack_exports__ = {};
@@ -151,7 +130,6 @@ var highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commo
  *  Class
  *
  * */
-/** @internal */
 class BulletPoint extends (highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_default()).prototype.pointClass {
     /* *
      *
@@ -176,7 +154,6 @@ class BulletPoint extends (highcharts_Series_types_column_commonjs_highcharts_Se
  *  Default Export
  *
  * */
-/** @internal */
 /* harmony default export */ const Bullet_BulletPoint = (BulletPoint);
 
 ;// ./code/es-modules/Series/Bullet/BulletSeriesDefaults.js
@@ -278,7 +255,7 @@ const BulletSeriesDefaults = {
  * @extends   series,plotOptions.bullet
  * @since     6.0.0
  * @product   highcharts
- * @excluding dataParser, dataURL, marker, boostThreshold,
+ * @excluding marker, boostThreshold,
  *            boostBlending
  * @requires  modules/bullet
  * @apioption series.bullet
@@ -392,7 +369,6 @@ var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highc
 /**
  * The bullet series type.
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.bullet
  *
@@ -464,13 +440,20 @@ class BulletSeries extends (highcharts_Series_types_column_commonjs_highcharts_S
                 // Presentational
                 if (!chart.styledMode) {
                     targetGraphic.attr({
-                        fill: (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(targetOptions.color, pointOptions.color, (series.zones.length && (point.getZone.call({
-                            series: series,
-                            x: point.x,
-                            y: targetVal,
-                            options: {}
-                        })?.color || series.color)) || void 0, point.color, series.color),
-                        stroke: (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(targetOptions.borderColor, point.borderColor, series.options.borderColor),
+                        fill: (targetOptions.color ??
+                            pointOptions.color ??
+                            ((series.zones.length &&
+                                (point.getZone?.call({
+                                    series: series,
+                                    x: point.x,
+                                    y: targetVal,
+                                    options: {}
+                                })?.color || series.color)) || void 0) ??
+                            point.color ??
+                            series.color),
+                        stroke: targetOptions.borderColor ??
+                            point.borderColor ??
+                            series.options.borderColor,
                         'stroke-width': targetOptions.borderWidth,
                         r: targetOptions.borderRadius
                     });
@@ -493,16 +476,17 @@ class BulletSeries extends (highcharts_Series_types_column_commonjs_highcharts_S
      *
      * @ignore
      * @function Highcharts.Series#getExtremes
+     * @internal
      */
     getExtremes(yData) {
         const dataExtremes = super.getExtremes.call(this, yData), targetData = this.targetData;
         if (targetData && targetData.length) {
             const targetExtremes = super.getExtremes.call(this, targetData);
             if ((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.isNumber)(targetExtremes.dataMin)) {
-                dataExtremes.dataMin = Math.min((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(dataExtremes.dataMin, Infinity), targetExtremes.dataMin);
+                dataExtremes.dataMin = Math.min((dataExtremes.dataMin ?? Infinity), targetExtremes.dataMin);
             }
             if ((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.isNumber)(targetExtremes.dataMax)) {
-                dataExtremes.dataMax = Math.max((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(dataExtremes.dataMax, -Infinity), targetExtremes.dataMax);
+                dataExtremes.dataMax = Math.max((dataExtremes.dataMax ?? -Infinity), targetExtremes.dataMax);
             }
         }
         return dataExtremes;
@@ -513,6 +497,7 @@ class BulletSeries extends (highcharts_Series_types_column_commonjs_highcharts_S
  *  Static Properties
  *
  * */
+/** @internal */
 BulletSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)((highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_default()).defaultOptions, Bullet_BulletSeriesDefaults);
 (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.extend)(BulletSeries.prototype, {
     parallelArrays: ['x', 'y', 'target'],
@@ -525,7 +510,6 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *  Default Export
  *
  * */
-/** @internal */
 /* harmony default export */ const Bullet_BulletSeries = ((/* unused pure expression or super */ null && (BulletSeries)));
 
 ;// ./code/es-modules/masters/modules/bullet.src.js

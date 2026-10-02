@@ -435,8 +435,8 @@ class ChartAdditions {
             // (#19725)
             if (!chart.hasCartesianSeries) {
                 chart.axes.forEach((axis) => {
-                    axis.destroy(true);
-                    axis.init(chart, merge(axis.userOptions, axis.options));
+                    axis.visible = false;
+                    axis.redraw();
                 });
             }
             chart.redraw(drilldownOptions?.animation);
@@ -556,8 +556,13 @@ class ChartAdditions {
                 // Reset the zoom level of the upper series
                 if (newSeries?.xAxis) {
                     oldExtremes = level.oldExtremes;
-                    newSeries.xAxis.setExtremes(oldExtremes.xMin, oldExtremes.xMax, false);
-                    newSeries.yAxis.setExtremes(oldExtremes.yMin, oldExtremes.yMax, false);
+                    const { xAxis, yAxis } = newSeries;
+                    xAxis.setExtremes(oldExtremes.xMin, oldExtremes.xMax, false);
+                    yAxis.setExtremes(oldExtremes.yMin, oldExtremes.yMax, false);
+                    // Reset visibility after `applyDrilldown` may have set it
+                    // to false
+                    xAxis.visible = xAxis.options.visible;
+                    yAxis.visible = yAxis.options.visible;
                 }
                 // We have a resetZoomButton tucked away for this level. Attach
                 // it to the chart and show it.

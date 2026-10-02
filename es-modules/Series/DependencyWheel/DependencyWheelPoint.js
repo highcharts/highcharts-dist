@@ -20,7 +20,6 @@ import { pInt, wrap } from '../../Shared/Utilities.js';
  *  Class
  *
  * */
-/** @internal */
 class DependencyWheelPoint extends SankeyPoint {
     /* *
      *
@@ -79,6 +78,7 @@ class DependencyWheelPoint extends SankeyPoint {
             .add(renderer.defs);
         return point.dataLabelPath;
     }
+    /** @internal */
     isValid() {
         // No null points here
         return true;
@@ -89,5 +89,4 @@ class DependencyWheelPoint extends SankeyPoint {
  *  Default Export
  *
  * */
-/** @internal */
 export default DependencyWheelPoint;

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.0-modified (2026-08-14)
+ * @license Highcharts JS v13.1.0 (2026-10-02)
  * @module highcharts/modules/pattern-fill
  * @requires highcharts
  *
@@ -61,48 +61,27 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__944__;
 /******/ 	
 /************************************************************************/
 /******/ 	/* webpack/runtime/compat get default export */
-/******/ 	(() => {
-/******/ 		// getDefaultExport function for compatibility with non-harmony modules
-/******/ 		__webpack_require__.n = (module) => {
-/******/ 			const getter = module && module.__esModule ?
-/******/ 				() => (module['default']) :
-/******/ 				() => (module);
-/******/ 			__webpack_require__.d(getter, { a: getter });
-/******/ 			return getter;
-/******/ 		};
-/******/ 	})();
+/******/ 	// getDefaultExport function for compatibility with non-harmony modules
+/******/ 	__webpack_require__.n = (module) => {
+/******/ 		const getter = module && module.__esModule ?
+/******/ 			() => (module['default']) :
+/******/ 			() => (module);
+/******/ 		__webpack_require__.d(getter, { a: getter });
+/******/ 		return getter;
+/******/ 	};
 /******/ 	
 /******/ 	/* webpack/runtime/define property getters */
-/******/ 	(() => {
-/******/ 		// define getter/value functions for harmony exports
-/******/ 		__webpack_require__.d = (exports, definition) => {
-/******/ 			if(Array.isArray(definition)) {
-/******/ 				var i = 0;
-/******/ 				while(i < definition.length) {
-/******/ 					var key = definition[i++];
-/******/ 					var binding = definition[i++];
-/******/ 					if(!__webpack_require__.o(exports, key)) {
-/******/ 						if(binding === 0) {
-/******/ 							Object.defineProperty(exports, key, { enumerable: true, value: definition[i++] });
-/******/ 						} else {
-/******/ 							Object.defineProperty(exports, key, { enumerable: true, get: binding });
-/******/ 						}
-/******/ 					} else if(binding === 0) { i++; }
-/******/ 				}
-/******/ 			} else {
-/******/ 				for(var key in definition) {
-/******/ 					if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
-/******/ 						Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
-/******/ 					}
-/******/ 				}
+/******/ 	// define getter/value functions for harmony exports
+/******/ 	__webpack_require__.d = (exports, definition) => {
+/******/ 		for(var key in definition) {
+/******/ 			if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 				Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
 /******/ 			}
-/******/ 		};
-/******/ 	})();
+/******/ 		}
+/******/ 	};
 /******/ 	
 /******/ 	/* webpack/runtime/hasOwnProperty shorthand */
-/******/ 	(() => {
-/******/ 		__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
-/******/ 	})();
+/******/ 	__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop));
 /******/ 	
 /************************************************************************/
 let __webpack_exports__ = {};
@@ -402,7 +381,9 @@ function onRendererComplexColor(args) {
         }
         // Add it. This function does nothing if an element with this ID
         // already exists.
-        this.addPattern(pattern, !this.forExport && (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(pattern.animation, this.globalAnimation, { duration: 100 }));
+        this.addPattern(pattern, !this.forExport && (pattern.animation ??
+            this.globalAnimation ??
+            { duration: 100 }));
         value = `url(${this.url}#${pattern.id + (this.forExport ? '-export' : '')})`;
     }
     else {
@@ -566,7 +547,7 @@ function pointCalculatePatternDimensions(pattern) {
  * @requires modules/pattern-fill
  */
 function rendererAddPattern(options, animation) {
-    const animate = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(animation, true), animationOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.animObject)(animate), color = options.color ||
+    const animate = (animation ?? true), animationOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.animObject)(animate), color = options.color ||
         'var(--highcharts-neutral-color-80)', defaultSize = 32, height = options.height ||
         (typeof options._height === 'number' ? options._height : 0) ||
         defaultSize, width = options.width ||
@@ -634,7 +615,7 @@ function rendererAddPattern(options, animation) {
         };
         if (!this.styledMode) {
             attribs.stroke = path.stroke || color;
-            attribs['stroke-width'] = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(path.strokeWidth, 2);
+            attribs['stroke-width'] = (path.strokeWidth ?? 2);
             attribs.fill = path.fill || 'none';
         }
         if (path.transform) {
@@ -649,7 +630,7 @@ function rendererAddPattern(options, animation) {
             this.image(options.image, 0, 0, width, height, function () {
                 // Onload
                 this.animate({
-                    opacity: (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pick)(options.opacity, 1)
+                    opacity: (options.opacity ?? 1)
                 }, animationOptions);
                 (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.removeEvent)(this.element, 'load');
             }).attr({ opacity: 0 }).add(pattern);

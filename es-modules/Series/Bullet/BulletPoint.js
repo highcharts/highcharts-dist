@@ -16,7 +16,6 @@ import ColumnSeries from '../Column/ColumnSeries.js';
  *  Class
  *
  * */
-/** @internal */
 class BulletPoint extends ColumnSeries.prototype.pointClass {
     /* *
      *
@@ -41,5 +40,4 @@ class BulletPoint extends ColumnSeries.prototype.pointClass {
  *  Default Export
  *
  * */
-/** @internal */
 export default BulletPoint;

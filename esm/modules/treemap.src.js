@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.0.0-modified (2026-08-14)
+ * @license Highcharts JS v13.1.0 (2026-10-02)
  * @module highcharts/modules/treemap
  * @requires highcharts
  *
@@ -16,48 +16,27 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 /******/ 
 /************************************************************************/
 /******/ /* webpack/runtime/compat get default export */
-/******/ (() => {
-/******/ 	// getDefaultExport function for compatibility with non-harmony modules
-/******/ 	__webpack_require__.n = (module) => {
-/******/ 		const getter = module && module.__esModule ?
-/******/ 			() => (module['default']) :
-/******/ 			() => (module);
-/******/ 		__webpack_require__.d(getter, { a: getter });
-/******/ 		return getter;
-/******/ 	};
-/******/ })();
+/******/ // getDefaultExport function for compatibility with non-harmony modules
+/******/ __webpack_require__.n = (module) => {
+/******/ 	const getter = module && module.__esModule ?
+/******/ 		() => (module['default']) :
+/******/ 		() => (module);
+/******/ 	__webpack_require__.d(getter, { a: getter });
+/******/ 	return getter;
+/******/ };
 /******/ 
 /******/ /* webpack/runtime/define property getters */
-/******/ (() => {
-/******/ 	// define getter/value functions for harmony exports
-/******/ 	__webpack_require__.d = (exports, definition) => {
-/******/ 		if(Array.isArray(definition)) {
-/******/ 			var i = 0;
-/******/ 			while(i < definition.length) {
-/******/ 				var key = definition[i++];
-/******/ 				var binding = definition[i++];
-/******/ 				if(!__webpack_require__.o(exports, key)) {
-/******/ 					if(binding === 0) {
-/******/ 						Object.defineProperty(exports, key, { enumerable: true, value: definition[i++] });
-/******/ 					} else {
-/******/ 						Object.defineProperty(exports, key, { enumerable: true, get: binding });
-/******/ 					}
-/******/ 				} else if(binding === 0) { i++; }
-/******/ 			}
-/******/ 		} else {
-/******/ 			for(var key in definition) {
-/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
-/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
-/******/ 				}
-/******/ 			}
+/******/ // define getter/value functions for harmony exports
+/******/ __webpack_require__.d = (exports, definition) => {
+/******/ 	for(var key in definition) {
+/******/ 		if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 			Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
 /******/ 		}
-/******/ 	};
-/******/ })();
+/******/ 	}
+/******/ };
 /******/ 
 /******/ /* webpack/runtime/hasOwnProperty shorthand */
-/******/ (() => {
-/******/ 	__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
-/******/ })();
+/******/ __webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop));
 /******/ 
 /************************************************************************/
 
@@ -525,8 +504,9 @@ class Breadcrumbs {
      *         Formatted text.
      */
     getButtonText(breadcrumb) {
-        const breadcrumbs = this, chart = breadcrumbs.chart, breadcrumbsOptions = breadcrumbs.options, lang = chart.options.lang, textFormat = (0,external_highcharts_src_js_default_namespaceObject.pick)(breadcrumbsOptions.format, breadcrumbsOptions.showFullPath ?
-            '{level.name}' : '← {level.name}'), defaultText = lang && (0,external_highcharts_src_js_default_namespaceObject.pick)(lang.drillUpText, lang.mainBreadcrumb);
+        const breadcrumbs = this, chart = breadcrumbs.chart, breadcrumbsOptions = breadcrumbs.options, lang = chart.options.lang, textFormat = breadcrumbsOptions.format ?? (breadcrumbsOptions.showFullPath ?
+            '{level.name}' :
+            '← {level.name}'), defaultText = lang && (lang.drillUpText ?? lang.mainBreadcrumb);
         let returnText = breadcrumbsOptions.formatter &&
             breadcrumbsOptions.formatter(breadcrumb) ||
             format(textFormat, { level: breadcrumb.levelOptions }, chart) || '';
@@ -647,7 +627,7 @@ class Breadcrumbs {
             if (breadcrumbs.options.rtl) {
                 newPositions.x += positionOptions.width;
             }
-            newPositions.y = (0,external_highcharts_src_js_default_namespaceObject.pick)(newPositions.y, this.yOffset, 0);
+            newPositions.y = (newPositions.y ?? this.yOffset ?? 0);
             breadcrumbs.group.align(newPositions, true, alignTo);
         }
     }
@@ -689,7 +669,7 @@ class Breadcrumbs {
                 else {
                     e.newLevel = breadcrumb.level;
                 }
-                (0,external_highcharts_src_js_default_namespaceObject.fireEvent)(breadcrumbs, 'up', e);
+                ;(0,external_highcharts_src_js_default_namespaceObject.fireEvent)(breadcrumbs, 'up', e);
             }
         }, buttonTheme)
             .addClass('highcharts-breadcrumbs-button')
@@ -722,7 +702,7 @@ class Breadcrumbs {
         return separator;
     }
     update(options) {
-        (0,external_highcharts_src_js_default_namespaceObject.merge)(true, this.options, options);
+        ;(0,external_highcharts_src_js_default_namespaceObject.merge)(true, this.options, options);
         this.destroy();
         this.isDirty = true;
     }
@@ -793,7 +773,7 @@ class Breadcrumbs {
      * @function Highcharts.Breadcrumbs#resetElementListState
      */
     resetElementListState() {
-        (0,external_highcharts_src_js_default_namespaceObject.objectEach)(this.elementList, (element) => {
+        ;(0,external_highcharts_src_js_default_namespaceObject.objectEach)(this.elementList, (element) => {
             element.updated = false;
         });
     }
@@ -1354,7 +1334,9 @@ class TreemapPoint extends ScatterPoint {
          *
          * */
         super(...arguments);
+        /** @internal */
         this.groupedPointsAmount = 0;
+        /** @internal */
         this.shapeType = 'rect';
     }
     /* *
@@ -1362,9 +1344,11 @@ class TreemapPoint extends ScatterPoint {
      *  Functions
      *
      * */
+    /** @internal */
     draw(params) {
         Series_DrawPointUtilities.draw(this, params);
     }
+    /** @internal */
     getClassName() {
         const series = this.series, options = series.options;
         let className = super.getClassName();
@@ -1376,7 +1360,7 @@ class TreemapPoint extends ScatterPoint {
         else if (!this.node.isGroup &&
             !this.node.isLeaf &&
             !series.nodeMap[series.rootNode].isGroup &&
-            !(0,external_highcharts_src_js_default_namespaceObject.pick)(options.interactByLeaf, !options.allowTraversingTree)) {
+            !(options.interactByLeaf ?? !options.allowTraversingTree)) {
             className += ' highcharts-internal-node-interactive';
         }
         else if (!this.node.isGroup &&
@@ -1396,6 +1380,7 @@ class TreemapPoint extends ScatterPoint {
     isValid() {
         return Boolean(this.id || (0,external_highcharts_src_js_default_namespaceObject.isNumber)(this.value));
     }
+    /** @internal */
     setState(state) {
         super.setState.apply(this, arguments);
         // Graphic does not exist when point is not visible.
@@ -1405,11 +1390,12 @@ class TreemapPoint extends ScatterPoint {
             });
         }
     }
+    /** @internal */
     shouldDraw() {
         return (0,external_highcharts_src_js_default_namespaceObject.isNumber)(this.plotY) && this.y !== null;
     }
 }
-(0,external_highcharts_src_js_default_namespaceObject.extend)(TreemapPoint.prototype, {
+;(0,external_highcharts_src_js_default_namespaceObject.extend)(TreemapPoint.prototype, {
     setVisible: PiePoint.prototype.setVisible
 });
 /* *
@@ -2071,7 +2057,7 @@ const TreemapSeriesDefaults = {
  * not specified, it is inherited from [chart.type](#chart.type).
  *
  * @extends   series,plotOptions.treemap
- * @excluding dataParser, dataURL, stack, dataSorting
+ * @excluding stack, dataSorting
  * @product   highcharts
  * @requires  modules/treemap
  * @apioption series.treemap
@@ -2259,9 +2245,17 @@ function getColor(node, options) {
         }
         // Select either point color, level color or inherited color.
         if (!series.chart.styledMode) {
-            color = (0,external_highcharts_src_js_default_namespaceObject.pick)(point && point.options.color, level && level.color, colorByPoint, parentColor && variateColor(parentColor), series.color);
+            color = ((point && point.options.color) ??
+                (level && level.color) ??
+                colorByPoint ??
+                (parentColor && variateColor(parentColor)) ??
+                series.color);
         }
-        colorIndex = (0,external_highcharts_src_js_default_namespaceObject.pick)(point && point.options.colorIndex, level && level.colorIndex, colorIndexByPoint, parentColorIndex, options.colorIndex);
+        colorIndex = ((point && point.options.colorIndex) ??
+            (level && level.colorIndex) ??
+            colorIndexByPoint ??
+            parentColorIndex ??
+            options.colorIndex);
     }
     return {
         color: color,
@@ -2298,7 +2292,8 @@ function getLevelOptions(params) {
                 let level, levelIsConstant, options;
                 if ((0,external_highcharts_src_js_default_namespaceObject.isObject)(item) && (0,external_highcharts_src_js_default_namespaceObject.isNumber)(item.level)) {
                     options = (0,external_highcharts_src_js_default_namespaceObject.merge)({}, item);
-                    levelIsConstant = (0,external_highcharts_src_js_default_namespaceObject.pick)(options.levelIsConstant, defaults.levelIsConstant);
+                    levelIsConstant =
+                        options.levelIsConstant ?? defaults.levelIsConstant;
                     // Delete redundant properties.
                     delete options.levelIsConstant;
                     delete options.level;
@@ -2330,7 +2325,7 @@ function setTreeValues(tree, options) {
     const before = options.before, idRoot = options.idRoot, mapIdToNode = options.mapIdToNode, nodeRoot = mapIdToNode[idRoot], levelIsConstant = (options.levelIsConstant !== false), points = options.points, point = points[tree.i], optionsPoint = point && point.options || {}, children = [];
     let childrenTotal = 0;
     tree.levelDynamic = tree.level - (levelIsConstant ? 0 : nodeRoot.level);
-    tree.name = (0,external_highcharts_src_js_default_namespaceObject.pick)(point && point.name, '');
+    tree.name = ((point && point.name) ?? '');
     tree.visible = (idRoot === tree.id ||
         options.visible === true);
     if (typeof before === 'function') {
@@ -2351,7 +2346,7 @@ function setTreeValues(tree, options) {
         }
     });
     // Set the values
-    const value = (0,external_highcharts_src_js_default_namespaceObject.pick)(optionsPoint.value, childrenTotal);
+    const value = (optionsPoint.value ?? childrenTotal);
     tree.visible = value >= 0 && (childrenTotal > 0 || tree.visible);
     tree.children = children;
     tree.childrenTotal = childrenTotal;
@@ -2377,7 +2372,7 @@ function updateRootId(series) {
         // Get the series options.
         options = (0,external_highcharts_src_js_default_namespaceObject.isObject)(series.options) ? series.options : {};
         // Calculate the rootId.
-        rootId = (0,external_highcharts_src_js_default_namespaceObject.pick)(series.rootNode, options.rootId, '');
+        rootId = (series.rootNode ?? options.rootId ?? '');
         // Set rootId on series.userOptions to pick it up in exporting.
         if ((0,external_highcharts_src_js_default_namespaceObject.isObject)(series.userOptions)) {
             series.userOptions.rootId = rootId;
@@ -2490,7 +2485,7 @@ function onSeriesAfterBindAxes() {
                 treeAxisDefaults.max = axisMax;
                 treeAxisDefaults.tickPositions = [];
             }
-            (0,external_highcharts_src_js_default_namespaceObject.merge)(true, xAxis.options, treeAxisDefaults, xAxis.userOptions);
+            ;(0,external_highcharts_src_js_default_namespaceObject.merge)(true, xAxis.options, treeAxisDefaults, xAxis.userOptions);
             (0,external_highcharts_src_js_default_namespaceObject.merge)(true, yAxis.options, treeAxisDefaults, yAxis.userOptions);
             // Set the properties on the axis object
             xAxis.visible = xAxis.options.visible;
@@ -2536,6 +2531,7 @@ class TreemapSeries extends ScatterSeries {
      *  Static Functions
      *
      * */
+    /** @internal */
     static compose(SeriesClass) {
         if ((0,external_highcharts_src_js_default_namespaceObject.pushUnique)(TreemapSeries_composed, 'TreemapSeries')) {
             (0,external_highcharts_src_js_default_namespaceObject.addEvent)(SeriesClass, 'afterBindAxes', onSeriesAfterBindAxes);
@@ -2546,6 +2542,7 @@ class TreemapSeries extends ScatterSeries {
      *  Function
      *
      * */
+    /** @internal */
     algorithmCalcPoints(directionChange, last, group, childrenArea) {
         const plot = group.plot, end = group.elArr.length - 1;
         let pX, pY, pW, pH, gW = group.lW, gH = group.lH, keep, i = 0;
@@ -2603,6 +2600,7 @@ class TreemapSeries extends ScatterSeries {
             group.addElement(keep);
         }
     }
+    /** @internal */
     algorithmFill(directionChange, parent, children) {
         const childrenArea = [];
         let pTot, direction = parent.direction, x = parent.x, y = parent.y, width = parent.width, height = parent.height, pX, pY, pW, pH;
@@ -2637,6 +2635,7 @@ class TreemapSeries extends ScatterSeries {
         }
         return childrenArea;
     }
+    /** @internal */
     algorithmLowAspectRatio(directionChange, parent, children) {
         const series = this, childrenArea = [], plot = {
             x: parent.x,
@@ -2677,6 +2676,7 @@ class TreemapSeries extends ScatterSeries {
             point.dataLabel.attr({ zIndex: (point.node.zIndex || 0) + 1 });
         }
     }
+    /** @internal */
     applyTreeGrouping() {
         const series = this, parentList = series.parentList || {}, { cluster } = series.options, minimumClusterSize = cluster?.minimumClusterSize || 5;
         if (cluster?.enabled) {
@@ -2767,9 +2767,9 @@ class TreemapSeries extends ScatterSeries {
      * The rectangular area of the parent.
      */
     calculateChildrenAreas(parent, area) {
-        const series = this, options = series.options, mapOptionsToLevel = series.mapOptionsToLevel, level = mapOptionsToLevel[parent.level + 1], algorithm = (0,external_highcharts_src_js_default_namespaceObject.pick)((level?.layoutAlgorithm &&
+        const series = this, options = series.options, mapOptionsToLevel = series.mapOptionsToLevel, level = mapOptionsToLevel[parent.level + 1], algorithm = ((level?.layoutAlgorithm &&
             series[level?.layoutAlgorithm] &&
-            level.layoutAlgorithm), options.layoutAlgorithm), alternate = options.alternateStartingDirection, 
+            level.layoutAlgorithm) ?? options.layoutAlgorithm), alternate = options.alternateStartingDirection, 
         // Collect all children which should be included
         children = parent.children.filter((n) => parent.isGroup || !n.ignore), groupPadding = level?.groupPadding ?? options.groupPadding ?? 0, rootNode = series.nodeMap[series.rootNode];
         if (!algorithm) {
@@ -3028,7 +3028,7 @@ class TreemapSeries extends ScatterSeries {
                 if (borderRadius) {
                     attribs.r = borderRadius;
                 }
-                (0,external_highcharts_src_js_default_namespaceObject.merge)(true, // Extend object
+                ;(0,external_highcharts_src_js_default_namespaceObject.merge)(true, // Extend object
                 // Which object to extend
                 shouldAnimate ? animatableAttribs : attribs, 
                 // Add shapeArgs to animate/attr if graphic exists
@@ -3117,15 +3117,17 @@ class TreemapSeries extends ScatterSeries {
      * @private
      */
     drillToNode(id, redraw) {
-        (0,external_highcharts_src_js_default_namespaceObject.error)(32, false, void 0, { 'treemap.drillToNode': 'use treemap.setRootNode' });
+        ;(0,external_highcharts_src_js_default_namespaceObject.error)(32, false, void 0, { 'treemap.drillToNode': 'use treemap.setRootNode' });
         this.setRootNode(id, redraw);
     }
+    /** @internal */
     drillUp() {
         const series = this, node = series.nodeMap[series.rootNode];
         if (node && (0,external_highcharts_src_js_default_namespaceObject.isString)(node.parent)) {
             series.setRootNode(node.parent, true, { trigger: 'traverseUpButton' });
         }
     }
+    /** @internal */
     getExtremes() {
         // Get the extremes from the value data
         const { dataMin, dataMax } = super.getExtremes(this.colorValueData);
@@ -3151,7 +3153,7 @@ class TreemapSeries extends ScatterSeries {
      */
     getListOfParents(data, existingIds) {
         const arr = (0,external_highcharts_src_js_default_namespaceObject.isArray)(data) ? data : [], ids = (0,external_highcharts_src_js_default_namespaceObject.isArray)(existingIds) ? existingIds : [], listOfParents = arr.reduce(function (prev, curr, i) {
-            const parent = (0,external_highcharts_src_js_default_namespaceObject.pick)(curr.parent, '');
+            const parent = (curr.parent ?? '');
             if (typeof prev[parent] === 'undefined') {
                 prev[parent] = [];
             }
@@ -3185,6 +3187,7 @@ class TreemapSeries extends ScatterSeries {
         series.nodeList = [];
         return series.buildTree('', -1, 0, series.parentList || {});
     }
+    /** @internal */
     buildTree(id, index, level, list, parent) {
         const series = this, children = [], point = series.points[index];
         let height = 0, child;
@@ -3221,6 +3224,7 @@ class TreemapSeries extends ScatterSeries {
     hasData() {
         return !!this.dataTable.rowCount;
     }
+    /** @internal */
     init(chart, options) {
         const series = this, breadcrumbsOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(options.drillUpButton, options.breadcrumbs), setOptionsEvent = (0,external_highcharts_src_js_default_namespaceObject.addEvent)(series, 'setOptions', (event) => {
             const options = event.userOptions;
@@ -3304,13 +3308,16 @@ class TreemapSeries extends ScatterSeries {
             series.mapOptionsToLevel :
             {}), level = point?.node && mapOptionsToLevel[point.node.level] || {}, options = this.options, stateOptions = state && options.states && options.states[state] || {}, className = point?.node && point.getClassName() || '', 
         // Set attributes by precedence. Point trumps level trumps series.
-        // Stroke width uses pick because it can be 0.
+        // Stroke width uses nullish coalescing because it can be 0.
         attr = {
             'stroke': (point && point.borderColor) ||
                 level.borderColor ||
                 stateOptions.borderColor ||
                 options.borderColor,
-            'stroke-width': (0,external_highcharts_src_js_default_namespaceObject.pick)(point && point.borderWidth, level.borderWidth, stateOptions.borderWidth, options.borderWidth),
+            'stroke-width': ((point && point.borderWidth) ??
+                level.borderWidth ??
+                stateOptions.borderWidth ??
+                options.borderWidth),
             'dashstyle': point?.borderDashStyle ||
                 level.borderDashStyle ||
                 stateOptions.borderDashStyle ||
@@ -3366,6 +3373,7 @@ class TreemapSeries extends ScatterSeries {
             }
         }
     }
+    /** @internal */
     setPointValues() {
         const series = this;
         const { points, xAxis, yAxis } = series;
@@ -3451,7 +3459,7 @@ class TreemapSeries extends ScatterSeries {
         const series = this, eventArgs = (0,external_highcharts_src_js_default_namespaceObject.extend)({
             newRootId: id,
             previousRootId: series.rootNode,
-            redraw: (0,external_highcharts_src_js_default_namespaceObject.pick)(redraw, true),
+            redraw: (redraw ?? true),
             series: series
         }, eventArguments);
         /**
@@ -3492,6 +3500,7 @@ class TreemapSeries extends ScatterSeries {
         super.setState(state, false);
         this.options.inactiveOtherPoints = false;
     }
+    /** @internal */
     setTreeValues(tree) {
         const series = this, options = series.options, idRoot = series.rootNode, mapIdToNode = series.nodeMap, nodeRoot = mapIdToNode[idRoot], levelIsConstant = (typeof options.levelIsConstant === 'boolean' ?
             options.levelIsConstant :
@@ -3506,9 +3515,9 @@ class TreemapSeries extends ScatterSeries {
             }
         }
         // Sort the children
-        (0,external_highcharts_src_js_default_namespaceObject.stableSort)(children, (a, b) => ((a.sortIndex || 0) - (b.sortIndex || 0)));
+        ;(0,external_highcharts_src_js_default_namespaceObject.stableSort)(children, (a, b) => ((a.sortIndex || 0) - (b.sortIndex || 0)));
         // Set the values
-        let val = (0,external_highcharts_src_js_default_namespaceObject.pick)(point?.simulatedValue, point?.options.value, childrenTotal);
+        let val = point?.simulatedValue ?? point?.options.value ?? childrenTotal;
         if (point) {
             point.value = val;
         }
@@ -3518,34 +3527,39 @@ class TreemapSeries extends ScatterSeries {
         if (tree.parentNode?.point?.isGroup && series.rootNode !== tree.parent) {
             tree.visible = false;
         }
-        (0,external_highcharts_src_js_default_namespaceObject.extend)(tree, {
+        ;(0,external_highcharts_src_js_default_namespaceObject.extend)(tree, {
             children: children,
             childrenTotal: childrenTotal,
             // Ignore this node if point is not visible
-            ignore: !((0,external_highcharts_src_js_default_namespaceObject.pick)(point?.visible, true) && (val > 0)),
+            ignore: !((point?.visible ?? true) && (val > 0)),
             isLeaf: tree.visible && !(series.type === 'treegraph' ?
                 children.length > 0 :
                 childrenTotal),
             isGroup: point?.isGroup,
             levelDynamic: (tree.level - (levelIsConstant ? 0 : nodeRoot.level)),
-            name: (0,external_highcharts_src_js_default_namespaceObject.pick)(point?.name, ''),
-            sortIndex: (0,external_highcharts_src_js_default_namespaceObject.pick)(point?.sortIndex, -val),
+            name: (point?.name ?? ''),
+            sortIndex: (point?.sortIndex ?? -val),
             val: val
         });
         return tree;
     }
+    /** @internal */
     sliceAndDice(parent, children) {
         return this.algorithmFill(true, parent, children);
     }
+    /** @internal */
     squarified(parent, children) {
         return this.algorithmLowAspectRatio(true, parent, children);
     }
+    /** @internal */
     strip(parent, children) {
         return this.algorithmLowAspectRatio(false, parent, children);
     }
+    /** @internal */
     stripes(parent, children) {
         return this.algorithmFill(false, parent, children);
     }
+    /** @internal */
     translate(tree) {
         const series = this, options = series.options, applyGrouping = !tree;
         let // NOTE: updateRootId modifies series.
@@ -3642,6 +3656,7 @@ class TreemapSeries extends ScatterSeries {
         }
     }
 }
+/** @internal */
 TreemapSeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(ScatterSeries.defaultOptions, Treemap_TreemapSeriesDefaults);
 (0,external_highcharts_src_js_default_namespaceObject.extend)(TreemapSeries.prototype, {
     buildKDTree: noop,

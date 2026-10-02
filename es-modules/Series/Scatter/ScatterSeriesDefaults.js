@@ -121,7 +121,7 @@ const ScatterSeriesDefaults = {
  * not specified, it is inherited from [chart.type](#chart.type).
  *
  * @extends   series,plotOptions.scatter
- * @excluding cropThreshold, dataParser, dataURL, useOhlcData
+ * @excluding cropThreshold, useOhlcData
  * @product   highcharts highstock
  * @apioption series.scatter
  */

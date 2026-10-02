@@ -14,7 +14,7 @@
 import DPU from '../DrawPointUtilities.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 const { pie: { prototype: { pointClass: PiePoint } }, scatter: { prototype: { pointClass: ScatterPoint } } } = SeriesRegistry.seriesTypes;
-import { extend, isNumber, pick } from '../../Shared/Utilities.js';
+import { extend, isNumber } from '../../Shared/Utilities.js';
 /* *
  *
  *  Class
@@ -28,7 +28,9 @@ class TreemapPoint extends ScatterPoint {
          *
          * */
         super(...arguments);
+        /** @internal */
         this.groupedPointsAmount = 0;
+        /** @internal */
         this.shapeType = 'rect';
     }
     /* *
@@ -36,9 +38,11 @@ class TreemapPoint extends ScatterPoint {
      *  Functions
      *
      * */
+    /** @internal */
     draw(params) {
         DPU.draw(this, params);
     }
+    /** @internal */
     getClassName() {
         const series = this.series, options = series.options;
         let className = super.getClassName();
@@ -50,7 +54,7 @@ class TreemapPoint extends ScatterPoint {
         else if (!this.node.isGroup &&
             !this.node.isLeaf &&
             !series.nodeMap[series.rootNode].isGroup &&
-            !pick(options.interactByLeaf, !options.allowTraversingTree)) {
+            !(options.interactByLeaf ?? !options.allowTraversingTree)) {
             className += ' highcharts-internal-node-interactive';
         }
         else if (!this.node.isGroup &&
@@ -70,6 +74,7 @@ class TreemapPoint extends ScatterPoint {
     isValid() {
         return Boolean(this.id || isNumber(this.value));
     }
+    /** @internal */
     setState(state) {
         super.setState.apply(this, arguments);
         // Graphic does not exist when point is not visible.
@@ -79,6 +84,7 @@ class TreemapPoint extends ScatterPoint {
             });
         }
     }
+    /** @internal */
     shouldDraw() {
         return isNumber(this.plotY) && this.y !== null;
     }

@@ -69,6 +69,7 @@ class WordcloudSeries extends ColumnSeries {
         const weight = isNumber(relativeWeight) ? relativeWeight : 0, max = isNumber(maxFontSize) ? maxFontSize : 1, min = isNumber(minFontSize) ? minFontSize : 1;
         return Math.floor(Math.max(min, weight * max));
     }
+    /** @internal */
     drawPoints() {
         if (this.zooming ||
             (this.defaultScale &&
@@ -209,6 +210,7 @@ class WordcloudSeries extends ColumnSeries {
             scaleY: series.defaultScale
         });
     }
+    /** @internal */
     hasData() {
         const series = this;
         return (isObject(series) &&
@@ -216,6 +218,7 @@ class WordcloudSeries extends ColumnSeries {
             isArray(series.points) &&
             series.points.length > 0);
     }
+    /** @internal */
     getPlotBox(name) {
         const series = this, { chart, group, zooming } = this, { plotSizeX = 0, plotSizeY = 0, inverted } = chart, 
         // Swap axes for inverted (#2339)
@@ -304,6 +307,7 @@ class WordcloudSeries extends ColumnSeries {
  *  Static properties
  *
  * */
+/** @internal */
 WordcloudSeries.defaultOptions = merge(ColumnSeries.defaultOptions, WordcloudSeriesDefaults);
 extend(WordcloudSeries.prototype, {
     animate: noop,

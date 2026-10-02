@@ -14,7 +14,7 @@ import { animate, animObject, stop } from '../../Animation/AnimationUtilities.js
 import Color from '../../Color/Color.js';
 import H from '../../Globals.js';
 const { deg2rad, doc, svg, SVG_NS, win, isFirefox } = H;
-import { addEvent, attr, createElement, crisp, css, defined, erase, extend, fireEvent, getAlignFactor, isArray, isFunction, isNumber, isObject, isString, merge, objectEach, pInt, pick, pushUnique, replaceNested, syncTimeout } from '../../../Shared/Utilities.js';
+import { addEvent, attr, createElement, crisp, css, defined, erase, extend, fireEvent, getAlignFactor, isArray, isFunction, isNumber, isObject, isString, merge, objectEach, pInt, pushUnique, replaceNested, syncTimeout } from '../../../Shared/Utilities.js';
 import { uniqueKey } from '../../Utilities.js';
 /* *
  *
@@ -70,8 +70,11 @@ class SVGElement {
      * Property value.
      */
     _defaultGetter(key) {
-        let ret = pick(this[key + 'Value'], // Align getter
-        this[key], this.element ? this.element.getAttribute(key) : null, 0);
+        let ret = (this[key + 'Value'] ??
+            this[key] ??
+            (this.element ? this.element.getAttribute(key) : null) ??
+            this.box?.[key] ?? // For labels, when animating border radius
+            0);
         if (/^-?[\d\.]+$/.test(ret)) { // Is numerical
             ret = parseFloat(ret);
         }
@@ -234,7 +237,7 @@ class SVGElement {
             }
             alignTo = void 0; // Do not use the box
         }
-        const alignToBox = pick(alignTo, renderer[alignToKey], renderer), 
+        const alignToBox = alignTo ?? renderer[alignToKey] ?? renderer, 
         // Default: left align
         x = (alignToBox.x || 0) + (alignOptions.x || 0) +
             ((alignToBox.width || 0) - (alignOptions.width || 0)) *
@@ -294,7 +297,7 @@ class SVGElement {
      * Returns the SVGElement for chaining.
      */
     animate(params, options, complete) {
-        const animOptions = animObject(pick(options, this.renderer.globalAnimation, true)), deferTime = animOptions.defer;
+        const animOptions = animObject((options ?? this.renderer.globalAnimation ?? true)), deferTime = animOptions.defer;
         // When the page is hidden save resources in the background by not
         // running animation at all (#9749).
         if (doc.hidden) {
@@ -766,15 +769,9 @@ class SVGElement {
      * @param {string} value
      */
     dashstyleSetter(value) {
-        let i, strokeWidth = this['stroke-width'];
-        // If "inherit", like maps in IE, assume 1 (#4981). With HC5 and the new
-        // strokeWidth function, we should be able to use that instead.
-        if (strokeWidth === 'inherit') {
-            strokeWidth = 1;
-        }
         if (value) {
-            value = value.toLowerCase();
-            const v = value
+            this.element.setAttribute('stroke-dasharray', value
+                .toLowerCase()
                 .replace('shortdashdotdot', '3,1,1,1,1,1,')
                 .replace('shortdashdot', '3,1,1,1')
                 .replace('shortdot', '1,1,')
@@ -782,14 +779,12 @@ class SVGElement {
                 .replace('longdash', '8,3,')
                 .replace(/dot/g, '1,3,')
                 .replace('dash', '4,3,')
-                .replace(/,$/, '')
-                .split(','); // Ending comma
-            i = v.length;
-            while (i--) {
-                v[i] = '' + (pInt(v[i]) * pick(strokeWidth, NaN));
-            }
-            value = v.join(',').replace(/NaN/g, 'none'); // #3226
-            this.element.setAttribute('stroke-dasharray', value);
+                .replace(/,$/, '') // Ending comma
+                .split(',')
+                // Scale to stroke width
+                .map((num) => +num * (this['stroke-width'] ?? NaN))
+                .join(',')
+                .replace(/NaN/g, 'none'));
         }
     }
     /**
@@ -926,7 +921,7 @@ class SVGElement {
      *         The bounding box with `x`, `y`, `width` and `height` properties.
      */
     getBBox(reload, rot) {
-        const wrapper = this, { element, renderer, styles, textStr } = wrapper, { cache, cacheKeys } = renderer, isSVG = element.namespaceURI === wrapper.SVG_NS, rotation = pick(rot, wrapper.rotation, 0), fontSize = renderer.styledMode ? (element &&
+        const wrapper = this, { element, renderer, styles, textStr } = wrapper, { cache, cacheKeys } = renderer, isSVG = element.namespaceURI === wrapper.SVG_NS, rotation = (rot ?? wrapper.rotation ?? 0), fontSize = renderer.styledMode ? (element &&
             SVGElement.prototype.getStyle.call(element, 'font-size')) : (styles.fontSize), cacheKey = this.getBBoxCacheKey([
             renderer.rootFontSize,
             this.textWidth, // #7874, also useHTML
@@ -1452,7 +1447,7 @@ class SVGElement {
     symbolAttr(hash) {
         const wrapper = this;
         SVGElement.symbolCustomAttribs.forEach(function (key) {
-            wrapper[key] = pick(hash[key], wrapper[key]);
+            wrapper[key] = (hash[key] ?? wrapper[key]);
         });
         wrapper.attr({
             d: wrapper.renderer.symbols[wrapper.symbolName](wrapper.x, wrapper.y, wrapper.width, wrapper.height, wrapper)
@@ -1492,7 +1487,7 @@ class SVGElement {
         }
         // Replace text content and escape markup
         titleNode.textContent = replaceNested(// Scan #[73]
-        pick(value, ''), // #3276, #3895
+        (value ?? ''), // #3276, #3895
         [/<[^>]*>/g, '']).replace(/&lt;/g, '<').replace(/&gt;/g, '>');
     }
     /**

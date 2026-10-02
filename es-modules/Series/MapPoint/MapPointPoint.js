@@ -24,6 +24,7 @@ class MapPointPoint extends ScatterSeries.prototype.pointClass {
      *  Functions
      *
      * */
+    /** @internal */
     isValid() {
         return Boolean(this.options.geometry ||
             (isNumber(this.x) && isNumber(this.y)) ||

@@ -19,7 +19,6 @@ import { extend, isArray, merge } from '../../../Shared/Utilities.js';
 /**
  * The Williams %R series type.
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.williamsr
  *
@@ -31,6 +30,7 @@ class WilliamsRIndicator extends SMAIndicator {
      *  Functions
      *
      * */
+    /** @internal */
     getValues(series, params) {
         const period = params.period, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, WR = [], // 0- date, 1- Williams %R
         xData = [], yData = [], close = 3, low = 2, high = 1;
@@ -88,6 +88,7 @@ class WilliamsRIndicator extends SMAIndicator {
  * @requires     stock/indicators/indicators
  * @requires     stock/indicators/williams-r
  * @optionparent plotOptions.williamsr
+ * @internal
  */
 WilliamsRIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
     /**
@@ -111,7 +112,6 @@ SeriesRegistry.registerSeriesType('williamsr', WilliamsRIndicator);
  *  Default Export
  *
  * */
-/** @internal */
 export default WilliamsRIndicator;
 /* *
  *
@@ -125,7 +125,7 @@ export default WilliamsRIndicator;
  * @extends   series,plotOptions.williamsr
  * @since     7.0.0
  * @product   highstock
- * @excluding allAreas, colorAxis, dataParser, dataURL, joinBy, keys,
+ * @excluding allAreas, colorAxis, joinBy, keys,
  *            navigatorOptions, pointInterval, pointIntervalUnit,
  *            pointPlacement, pointRange, pointStart, showInNavigator, stacking
  * @requires  stock/indicators/indicators

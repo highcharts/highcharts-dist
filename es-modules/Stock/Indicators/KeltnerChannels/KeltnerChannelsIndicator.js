@@ -19,7 +19,6 @@ import { correctFloat, extend, merge } from '../../../Shared/Utilities.js';
 /**
  * The Keltner Channels series type.
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.keltnerchannels
  *
@@ -31,6 +30,7 @@ class KeltnerChannelsIndicator extends SMAIndicator {
      *  Functions
      *
      * */
+    /** @internal */
     init() {
         SeriesRegistry.seriesTypes.sma.prototype.init.apply(this, arguments);
         // Set default color for lines:
@@ -47,6 +47,7 @@ class KeltnerChannelsIndicator extends SMAIndicator {
             }
         }, this.options);
     }
+    /** @internal */
     getValues(series, params) {
         const period = params.period, periodATR = params.periodATR, multiplierATR = params.multiplierATR, index = params.index, yVal = series.yData, yValLen = yVal ? yVal.length : 0, 
         // Keltner Channels array structure:
@@ -103,6 +104,7 @@ class KeltnerChannelsIndicator extends SMAIndicator {
  * @requires     stock/indicators/indicators
  * @requires     stock/indicators/keltner-channels
  * @optionparent plotOptions.keltnerchannels
+ * @internal
  */
 KeltnerChannelsIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
     /**
@@ -191,7 +193,6 @@ SeriesRegistry.registerSeriesType('keltnerchannels', KeltnerChannelsIndicator);
  *  Default Export
  *
  * */
-/** @internal */
 export default KeltnerChannelsIndicator;
 /* *
  *
@@ -205,7 +206,7 @@ export default KeltnerChannelsIndicator;
  * @extends      series,plotOptions.keltnerchannels
  * @since        7.0.0
  * @product      highstock
- * @excluding    allAreas, colorAxis, compare, compareBase, dataParser, dataURL,
+ * @excluding    allAreas, colorAxis, compare, compareBase,
  *               joinBy, keys, navigatorOptions, pointInterval,
  *               pointIntervalUnit, pointPlacement, pointRange, pointStart,
  *               stacking, showInNavigator

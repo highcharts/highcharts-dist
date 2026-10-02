@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.0.0-modified (2026-08-14)
+ * @license Highstock JS v13.1.0 (2026-10-02)
  * @module highcharts/indicators/volume-by-price
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -15,14 +15,14 @@
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(root["_Highcharts"], root["_Highcharts"]["SeriesRegistry"]);
+		module.exports = factory(root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
 	else if(typeof define === 'function' && define.amd)
-		define("highcharts/indicators/volume-by-price", ["highcharts/highcharts"], function (amd1) {return factory(amd1,amd1["SeriesRegistry"]);});
+		define("highcharts/indicators/volume-by-price", ["highcharts/highcharts"], function (amd1) {return factory(amd1["SeriesRegistry"],amd1);});
 	else if(typeof exports === 'object')
-		exports["highcharts/indicators/volume-by-price"] = factory(root["_Highcharts"], root["_Highcharts"]["SeriesRegistry"]);
+		exports["highcharts/indicators/volume-by-price"] = factory(root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
 	else
-		root["Highcharts"] = factory(root["Highcharts"], root["Highcharts"]["SeriesRegistry"]);
-})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__944__, __WEBPACK_EXTERNAL_MODULE__512__) => {
+		root["Highcharts"] = factory(root["Highcharts"]["SeriesRegistry"], root["Highcharts"]);
+})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__944__) => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
@@ -69,48 +69,27 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__944__;
 /******/ 	
 /************************************************************************/
 /******/ 	/* webpack/runtime/compat get default export */
-/******/ 	(() => {
-/******/ 		// getDefaultExport function for compatibility with non-harmony modules
-/******/ 		__webpack_require__.n = (module) => {
-/******/ 			const getter = module && module.__esModule ?
-/******/ 				() => (module['default']) :
-/******/ 				() => (module);
-/******/ 			__webpack_require__.d(getter, { a: getter });
-/******/ 			return getter;
-/******/ 		};
-/******/ 	})();
+/******/ 	// getDefaultExport function for compatibility with non-harmony modules
+/******/ 	__webpack_require__.n = (module) => {
+/******/ 		const getter = module && module.__esModule ?
+/******/ 			() => (module['default']) :
+/******/ 			() => (module);
+/******/ 		__webpack_require__.d(getter, { a: getter });
+/******/ 		return getter;
+/******/ 	};
 /******/ 	
 /******/ 	/* webpack/runtime/define property getters */
-/******/ 	(() => {
-/******/ 		// define getter/value functions for harmony exports
-/******/ 		__webpack_require__.d = (exports, definition) => {
-/******/ 			if(Array.isArray(definition)) {
-/******/ 				var i = 0;
-/******/ 				while(i < definition.length) {
-/******/ 					var key = definition[i++];
-/******/ 					var binding = definition[i++];
-/******/ 					if(!__webpack_require__.o(exports, key)) {
-/******/ 						if(binding === 0) {
-/******/ 							Object.defineProperty(exports, key, { enumerable: true, value: definition[i++] });
-/******/ 						} else {
-/******/ 							Object.defineProperty(exports, key, { enumerable: true, get: binding });
-/******/ 						}
-/******/ 					} else if(binding === 0) { i++; }
-/******/ 				}
-/******/ 			} else {
-/******/ 				for(var key in definition) {
-/******/ 					if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
-/******/ 						Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
-/******/ 					}
-/******/ 				}
+/******/ 	// define getter/value functions for harmony exports
+/******/ 	__webpack_require__.d = (exports, definition) => {
+/******/ 		for(var key in definition) {
+/******/ 			if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 				Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
 /******/ 			}
-/******/ 		};
-/******/ 	})();
+/******/ 		}
+/******/ 	};
 /******/ 	
 /******/ 	/* webpack/runtime/hasOwnProperty shorthand */
-/******/ 	(() => {
-/******/ 		__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
-/******/ 	})();
+/******/ 	__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop));
 /******/ 	
 /************************************************************************/
 let __webpack_exports__ = {};
@@ -148,9 +127,9 @@ const { sma: { prototype: { pointClass: SMAPoint } } } = (highcharts_SeriesRegis
  *  Class
  *
  * */
-/** @internal */
 class VBPPoint extends SMAPoint {
     // Required for destroying negative part of volume
+    /** @internal */
     destroy() {
         // @todo: this.negativeGraphic doesn't seem to be used anywhere
         if (this.negativeGraphic) {
@@ -164,7 +143,6 @@ class VBPPoint extends SMAPoint {
  *  Default Export
  *
  * */
-/** @internal */
 /* harmony default export */ const VBP_VBPPoint = (VBPPoint);
 
 ;// ./code/es-modules/Stock/Indicators/VBP/VBPIndicator.js
@@ -232,7 +210,6 @@ function arrayExtremesOHLC(data) {
 /**
  * The Volume By Price (VBP) series type.
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.vbp
  *
@@ -244,6 +221,7 @@ class VBPIndicator extends SMAIndicator {
      *  Functions
      *
      * */
+    /** @internal */
     init(chart, options) {
         const indicator = this;
         // Series.update() sends data that is not necessary as everything is
@@ -269,6 +247,7 @@ class VBPIndicator extends SMAIndicator {
         return indicator;
     }
     // Adds events related with removing series
+    /** @internal */
     addCustomEvents(baseSeries, volumeSeries) {
         const indicator = this, toEmptyIndicator = () => {
             indicator.chart.redraw();
@@ -293,6 +272,7 @@ class VBPIndicator extends SMAIndicator {
         return indicator;
     }
     // Initial animation
+    /** @internal */
     animate(init) {
         const series = this, inverted = series.chart.inverted, group = series.group, attr = {};
         if (!init && group) {
@@ -314,6 +294,7 @@ class VBPIndicator extends SMAIndicator {
             }));
         }
     }
+    /** @internal */
     drawPoints() {
         const indicator = this;
         if (indicator.options.volumeDivision.enabled) {
@@ -324,6 +305,7 @@ class VBPIndicator extends SMAIndicator {
         columnProto.drawPoints.apply(indicator, arguments);
     }
     // Function responsible for dividing volume into positive and negative
+    /** @internal */
     posNegVolume(initVol, pos) {
         const indicator = this, signOrder = pos ?
             ['positive', 'negative'] :
@@ -365,6 +347,7 @@ class VBPIndicator extends SMAIndicator {
                 indicator.posWidths[i];
         }
     }
+    /** @internal */
     translate() {
         const indicator = this, options = indicator.options, chart = indicator.chart, yAxis = indicator.yAxis, yAxisMin = yAxis.min, zoneLinesOptions = indicator.options.zoneLines, priceZones = (indicator.priceZones);
         let yBarOffset = 0, volumeDataArray, maxVolume, primalBarWidth, barHeight, barHeightP, oldBarHeight, barWidth, pointPadding, chartPlotTop, barX, barY;
@@ -415,6 +398,7 @@ class VBPIndicator extends SMAIndicator {
             }
         }
     }
+    /** @internal */
     getExtremes() {
         const prevCompare = this.options.compare, prevCumulative = this.options.cumulative;
         let ret;
@@ -434,6 +418,7 @@ class VBPIndicator extends SMAIndicator {
         }
         return ret;
     }
+    /** @internal */
     getValues(series, params) {
         const indicator = this, xValues = series.getColumn('x', true), yValues = series.processedYData, chart = indicator.chart, ranges = params.ranges, VBP = [], xData = [], yData = [], volumeSeries = chart.get(params.volumeSeriesID);
         // Checks if base series exists
@@ -476,6 +461,7 @@ class VBPIndicator extends SMAIndicator {
         };
     }
     // Specifying where each zone should start ans end
+    /** @internal */
     specifyZones(isOHLC, xValues, yValues, ranges, volumeSeries) {
         const indicator = this, rangeExtremes = (isOHLC ? arrayExtremesOHLC(yValues) : false), zoneStarts = indicator.zoneStarts = [], priceZones = [];
         let lowRange = rangeExtremes ?
@@ -521,6 +507,7 @@ class VBPIndicator extends SMAIndicator {
         return indicator.volumePerZone(isOHLC, priceZones, volumeSeries, xValues, yValues);
     }
     // Calculating sum of volume values for a specific zone
+    /** @internal */
     volumePerZone(isOHLC, priceZones, volumeSeries, xValues, yValues) {
         const indicator = this, volumeXData = volumeSeries.getColumn('x', true), volumeYData = volumeSeries.getColumn('y', true), lastZoneIndex = priceZones.length - 1, baseSeriesLength = yValues.length, volumeSeriesLength = volumeYData.length;
         let previousValue, startFlag, endFlag, value, i;
@@ -587,6 +574,7 @@ class VBPIndicator extends SMAIndicator {
         return priceZones;
     }
     // Function responsible for drawing additional lines indicating zones
+    /** @internal */
     drawZones(chart, yAxis, zonesValues, zonesStyles) {
         const indicator = this, renderer = chart.renderer, leftLinePos = 0, rightLinePos = chart.plotWidth, verticalOffset = chart.plotTop;
         let zoneLinesSVG = indicator.zoneLinesSVG, zoneLinesPath = [], verticalLinePos;
@@ -641,6 +629,7 @@ class VBPIndicator extends SMAIndicator {
  * @requires     stock/indicators/indicators
  * @requires     stock/indicators/volume-by-price
  * @optionparent plotOptions.vbp
+ * @internal
  */
 VBPIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(SMAIndicator.defaultOptions, {
     /**
@@ -761,7 +750,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @extends   series,plotOptions.vbp
  * @since     6.0.0
  * @product   highstock
- * @excluding dataParser, dataURL, compare, compareBase, compareStart
+ * @excluding compare, compareBase, compareStart
  * @requires  stock/indicators/indicators
  * @requires  stock/indicators/volume-by-price
  * @apioption series.vbp

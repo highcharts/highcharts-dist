@@ -30,6 +30,7 @@ class MapBubblePoint extends BubblePoint {
      *  Functions
      *
      * */
+    /** @internal */
     isValid() {
         return typeof this.z === 'number';
     }
