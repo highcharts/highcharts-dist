@@ -23,9 +23,12 @@
  *         Flags on a line series
  *
  * @extends      plotOptions.column
- * @excluding    animation, borderColor, borderWidth,
- *               colorByPoint, cropThreshold, dataGrouping, pointPadding,
- *               pointWidth, turboThreshold
+ * @excluding    animation, boostBlending, boostThreshold, borderColor,
+ *               borderWidth, colorByPoint, cropThreshold, dataGrouping, depth,
+ *               edgeColor, edgeWidth, groupZPadding, lowMarker,
+ *               nullInteraction, onPoint, pointPadding, pointWidth,
+ *               startFromThreshold, threshold, trackByArea, turboThreshold,
+ *               zoomEnabled
  * @product      highstock
  * @optionparent plotOptions.flags
  */
@@ -128,10 +131,8 @@ const FlagsSeriesDefaults = {
     tooltip: {
         pointFormat: '{point.text}'
     },
-    /**
-     * @type {number|null}
-     */
-    threshold: null,
+    /** @ignore-option */
+    threshold: null, // Don't stretch the Y axis like column does
     /**
      * The text to display on each flag. This can be defined on series
      * level, or individually for each point. Defaults to `"A"`.
@@ -250,12 +251,20 @@ const FlagsSeriesDefaults = {
  * specified, it is inherited from [chart.type](#chart.type).
  *
  * @extends   series,plotOptions.flags
- * @excluding animation, borderColor, borderRadius, borderWidth, colorByPoint,
- *            connectNulls, cropThreshold, dashStyle, dataGrouping, gapSize,
- *            gapUnit, linecap, lineWidth, marker, pointPadding, pointWidth,
- *            step, turboThreshold, useOhlcData
+ * @excluding animation, boostBlending, boostThreshold, borderColor,
+ *            borderWidth, colorByPoint, connectNulls, cropThreshold,
+ *            dashStyle, dataGrouping, depth, edgeColor, edgeWidth, gapSize,
+ *            gapUnit, groupZPadding, linecap, lowMarker, marker,
+ *            nullInteraction, onPoint, pointPadding, pointWidth,
+ *            startFromThreshold, step, threshold, trackByArea,
+ *            turboThreshold, useOhlcData, zoomEnabled
  * @product   highstock
  * @apioption series.flags
+ */
+/**
+ * @excluding changeDecimals, valueDecimals, valuePrefix, valueSuffix
+ * @product   highstock
+ * @apioption series.flags.tooltip
  */
 /**
  * An array of data points for the series. For the `flags` series type,

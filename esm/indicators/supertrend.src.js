@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.1.0 (2026-10-02)
+ * @license Highstock JS v13.1.1-modified (2026-10-15)
  * @module highcharts/indicators/supertrend
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -417,8 +417,8 @@ class SupertrendIndicator extends SMAIndicator {
  *               keys, navigatorOptions, pointInterval, pointIntervalUnit,
  *               pointPlacement, pointRange, pointStart, showInNavigator,
  *               stacking, threshold
- * @requires     stock/indicators/indicators
- * @requires     stock/indicators/supertrend
+ * @requires     indicators/indicators
+ * @requires     indicators/supertrend
  * @optionparent plotOptions.supertrend
  * @internal
  */
@@ -521,8 +521,8 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *            joinBy, keys, navigatorOptions, negativeColor, pointInterval,
  *            pointIntervalUnit, pointPlacement, pointRange, pointStart,
  *            showInNavigator, stacking, threshold
- * @requires  stock/indicators/indicators
- * @requires  stock/indicators/supertrend
+ * @requires  indicators/indicators
+ * @requires  indicators/supertrend
  * @apioption series.supertrend
  */
 ''; // To include the above in the js output

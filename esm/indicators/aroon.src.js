@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.1.0 (2026-10-02)
+ * @license Highstock JS v13.1.1-modified (2026-10-15)
  * @module highcharts/indicators/aroon
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -436,8 +436,8 @@ class AroonIndicator extends SMAIndicator {
  *               navigatorOptions, pointInterval, pointIntervalUnit,
  *               pointPlacement, pointRange, pointStart, showInNavigator,
  *               stacking
- * @requires     stock/indicators/indicators
- * @requires     stock/indicators/aroon
+ * @requires     indicators/indicators
+ * @requires     indicators/aroon
  * @optionparent plotOptions.aroon
  * @internal
  */
@@ -512,8 +512,8 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  * @excluding allAreas, colorAxis, compare, compareBase,
  *            joinBy, keys, navigatorOptions, pointInterval, pointIntervalUnit,
  *            pointPlacement, pointRange, pointStart, showInNavigator, stacking
- * @requires  stock/indicators/indicators
- * @requires  stock/indicators/aroon
+ * @requires  indicators/indicators
+ * @requires  indicators/aroon
  * @apioption series.aroon
  */
 ''; // To avoid removal of the above jsdoc

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.1.0 (2026-10-02)
+ * @license Highstock JS v13.1.1-modified (2026-10-15)
  * @module highcharts/indicators/indicators-all
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -326,13 +326,19 @@ const { setLength: DataTableCore_setLength, splice: DataTableCore_splice } = Dat
 class DataTableCore {
     constructor(options = {}) {
         this.isDataTable = true;
-        this.autoId = !options.id;
+        // Reject IDs that would pollute the prototype of ID-keyed maps.
+        const id = this.isPollutingKey(options.id) ? void 0 : options.id;
+        this.autoId = !id;
         this.columns = {};
-        this.id = (options.id || (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.uniqueKey)());
+        this.id = (id || (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.uniqueKey)());
         this.rowCount = 0;
         this.versionTag = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.uniqueKey)();
         let rowCount = 0;
         (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.objectEach)(options.columns || {}, (column, columnId) => {
+            if (columnId === '__proto__' ||
+                columnId === 'constructor') {
+                return;
+            }
             this.columns[columnId] = column.slice();
             rowCount = Math.max(rowCount, column.length);
         });
@@ -343,6 +349,17 @@ class DataTableCore {
      *  Functions
      *
      * */
+    /**
+     * Checks whether a key would pollute the prototype if used to index a
+     * plain object (e.g. as a column ID or table ID).
+     *
+     * @private
+     * @param {string|undefined} key The key to check.
+     * @return {boolean} True if the key is unsafe to use.
+     */
+    isPollutingKey(key) {
+        return key === '__proto__' || key === 'constructor';
+    }
     /**
      * Applies a row count to the table by setting the `rowCount` property and
      * adjusting the length of all columns.
@@ -501,6 +518,10 @@ class DataTableCore {
     setColumns(columns, rowIndex, eventDetail) {
         let rowCount = this.rowCount;
         (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.objectEach)(columns, (column, columnId) => {
+            if (columnId === '__proto__' ||
+                columnId === 'constructor') {
+                return;
+            }
             this.columns[columnId] = column.slice();
             rowCount = column.length;
         });
@@ -543,8 +564,7 @@ class DataTableCore {
         if (eventDetail?.addColumns !== false) {
             for (let i = 0, iEnd = rowKeys.length; i < iEnd; i++) {
                 const rowKey = rowKeys[i];
-                if (rowKey !== '__proto__' &&
-                    rowKey !== 'constructor' &&
+                if (!this.isPollutingKey(rowKey) &&
                     !Object.hasOwnProperty.call(columns, rowKey)) {
                     columns[rowKey] = new Array(this.rowCount);
                 }
@@ -938,7 +958,7 @@ class SMAIndicator extends LineSeries {
  *               pointPlacement, pointRange, pointStart, showInNavigator,
  *               stacking, useOhlcData
  * @product      highstock
- * @requires     stock/indicators/indicators
+ * @requires     indicators/indicators
  * @optionparent plotOptions.sma
  * @internal
  */
@@ -1022,7 +1042,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @since     6.0.0
  * @product   highstock
  * @excluding useOhlcData
- * @requires  stock/indicators/indicators
+ * @requires  indicators/indicators
  * @apioption series.sma
  */
 (''); // Adds doclet above to the transpiled file
@@ -1124,7 +1144,7 @@ class EMAIndicator extends EMAIndicator_SMAIndicator {
  * @extends      plotOptions.sma
  * @since        6.0.0
  * @product      highstock
- * @requires     stock/indicators/indicators
+ * @requires     indicators/indicators
  * @optionparent plotOptions.ema
  * @internal
  */
@@ -1163,7 +1183,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @extends   series,plotOptions.ema
  * @since     6.0.0
  * @product   highstock
- * @requires  stock/indicators/indicators
+ * @requires  indicators/indicators
  * @apioption series.ema
  */
 ''; // Adds doclet above to the transpiled file
@@ -1263,8 +1283,8 @@ class ADIndicator extends ADIndicator_SMAIndicator {
  * @extends      plotOptions.sma
  * @since        6.0.0
  * @product      highstock
- * @requires     stock/indicators/indicators
- * @requires     stock/indicators/accumulation-distribution
+ * @requires     indicators/indicators
+ * @requires     indicators/accumulation-distribution
  * @optionparent plotOptions.ad
  * @internal
  */
@@ -1307,8 +1327,8 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @extends   series,plotOptions.ad
  * @since     6.0.0
  * @product   highstock
- * @requires  stock/indicators/indicators
- * @requires  stock/indicators/accumulation-distribution
+ * @requires  indicators/indicators
+ * @requires  indicators/accumulation-distribution
  * @apioption series.ad
  */
 ''; // Add doclet above to transpiled file
@@ -1428,8 +1448,8 @@ class AOIndicator extends AOIndicator_SMAIndicator {
  * @excluding    allAreas, colorAxis, joinBy, keys, navigatorOptions,
  *               params, pointInterval, pointIntervalUnit, pointPlacement,
  *               pointRange, pointStart, showInNavigator, stacking
- * @requires     stock/indicators/indicators
- * @requires     stock/indicators/ao
+ * @requires     indicators/indicators
+ * @requires     indicators/ao
  * @optionparent plotOptions.ao
  * @internal
  */
@@ -1507,8 +1527,8 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @excluding allAreas, colorAxis, joinBy, keys,
  *            navigatorOptions, pointInterval, pointIntervalUnit,
  *            pointPlacement, pointRange, pointStart, showInNavigator, stacking
- * @requires  stock/indicators/indicators
- * @requires  stock/indicators/ao
+ * @requires  indicators/indicators
+ * @requires  indicators/ao
  * @apioption series.ao
  */
 ''; // For including the above in the doclets
@@ -1900,8 +1920,8 @@ class AroonIndicator extends AroonIndicator_SMAIndicator {
  *               navigatorOptions, pointInterval, pointIntervalUnit,
  *               pointPlacement, pointRange, pointStart, showInNavigator,
  *               stacking
- * @requires     stock/indicators/indicators
- * @requires     stock/indicators/aroon
+ * @requires     indicators/indicators
+ * @requires     indicators/aroon
  * @optionparent plotOptions.aroon
  * @internal
  */
@@ -1976,8 +1996,8 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @excluding allAreas, colorAxis, compare, compareBase,
  *            joinBy, keys, navigatorOptions, pointInterval, pointIntervalUnit,
  *            pointPlacement, pointRange, pointStart, showInNavigator, stacking
- * @requires  stock/indicators/indicators
- * @requires  stock/indicators/aroon
+ * @requires  indicators/indicators
+ * @requires  indicators/aroon
  * @apioption series.aroon
  */
 ''; // To avoid removal of the above jsdoc
@@ -2056,9 +2076,9 @@ class AroonOscillatorIndicator extends AroonOscillatorIndicator_AroonIndicator {
  *               joinBy, keys, navigatorOptions, pointInterval,
  *               pointIntervalUnit, pointPlacement, pointRange, pointStart,
  *               showInNavigator, stacking
- * @requires     stock/indicators/indicators
- * @requires     stock/indicators/aroon
- * @requires     stock/indicators/aroon-oscillator
+ * @requires     indicators/indicators
+ * @requires     indicators/aroon
+ * @requires     indicators/aroon-oscillator
  * @optionparent plotOptions.aroonoscillator
  * @internal
  */
@@ -2097,9 +2117,9 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *            joinBy, keys, navigatorOptions, pointInterval,
  *            pointIntervalUnit, pointPlacement, pointRange, pointStart,
  *            showInNavigator, stacking
- * @requires  stock/indicators/indicators
- * @requires  stock/indicators/aroon
- * @requires  stock/indicators/aroon-oscillator
+ * @requires  indicators/indicators
+ * @requires  indicators/aroon
+ * @requires  indicators/aroon-oscillator
  * @apioption series.aroonoscillator
  */
 ''; // Adds doclet above to the transpiled file
@@ -2209,8 +2229,8 @@ class ATRIndicator extends ATRIndicator_SMAIndicator {
  * @extends      plotOptions.sma
  * @since        6.0.0
  * @product      highstock
- * @requires     stock/indicators/indicators
- * @requires     stock/indicators/atr
+ * @requires     indicators/indicators
+ * @requires     indicators/atr
  * @optionparent plotOptions.atr
  * @internal
  */
@@ -2241,8 +2261,8 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @extends   series,plotOptions.atr
  * @since     6.0.0
  * @product   highstock
- * @requires  stock/indicators/indicators
- * @requires  stock/indicators/atr
+ * @requires  indicators/indicators
+ * @requires  indicators/atr
  * @apioption series.atr
  */
 ''; // To include the above in the js output
@@ -2365,8 +2385,8 @@ class BBIndicator extends BBIndicator_SMAIndicator {
  * @extends      plotOptions.sma
  * @since        6.0.0
  * @product      highstock
- * @requires     stock/indicators/indicators
- * @requires     stock/indicators/bollinger-bands
+ * @requires     indicators/indicators
+ * @requires     indicators/bollinger-bands
  * @optionparent plotOptions.bb
  * @internal
  */
@@ -2473,8 +2493,8 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @extends   series,plotOptions.bb
  * @since     6.0.0
  * @product   highstock
- * @requires  stock/indicators/indicators
- * @requires  stock/indicators/bollinger-bands
+ * @requires  indicators/indicators
+ * @requires  indicators/bollinger-bands
  * @apioption series.bb
  */
 ''; // To include the above in the js output
@@ -2581,8 +2601,8 @@ class CCIIndicator extends CCIIndicator_SMAIndicator {
  * @extends      plotOptions.sma
  * @since        6.0.0
  * @product      highstock
- * @requires     stock/indicators/indicators
- * @requires     stock/indicators/cci
+ * @requires     indicators/indicators
+ * @requires     indicators/cci
  * @optionparent plotOptions.cci
  * @internal
  */
@@ -2613,8 +2633,8 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @extends   series,plotOptions.cci
  * @since     6.0.0
  * @product   highstock
- * @requires  stock/indicators/indicators
- * @requires  stock/indicators/cci
+ * @requires  indicators/indicators
+ * @requires  indicators/cci
  * @apioption series.cci
  */
 ''; // To include the above in the js output
@@ -2813,8 +2833,8 @@ class CMFIndicator extends CMFIndicator_SMAIndicator {
  * @since        6.0.0
  * @excluding    animationLimit
  * @product      highstock
- * @requires     stock/indicators/indicators
- * @requires     stock/indicators/cmf
+ * @requires     indicators/indicators
+ * @requires     indicators/cmf
  * @optionparent plotOptions.cmf
  * @internal
  */
@@ -2850,8 +2870,8 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @extends   series,plotOptions.cmf
  * @since     6.0.0
  * @product   highstock
- * @requires  stock/indicators/indicators
- * @requires  stock/indicators/cmf
+ * @requires  indicators/indicators
+ * @requires  indicators/cmf
  * @apioption series.cmf
  */
 ''; // Adds doclet above to the transpiled file
@@ -3013,8 +3033,8 @@ class DMIIndicator extends DMIIndicator_SMAIndicator {
  * @excluding    allAreas, colorAxis, joinBy, keys, navigatorOptions,
  *               pointInterval, pointIntervalUnit, pointPlacement,
  *               pointRange, pointStart, showInNavigator, stacking
- * @requires     stock/indicators/indicators
- * @requires     stock/indicators/dmi
+ * @requires     indicators/indicators
+ * @requires     indicators/dmi
  * @optionparent plotOptions.dmi
  * @internal
  */
@@ -3115,8 +3135,8 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @excluding allAreas, colorAxis, joinBy, keys, navigatorOptions,
  *            pointInterval, pointIntervalUnit, pointPlacement, pointRange,
  *            pointStart, showInNavigator, stacking
- * @requires  stock/indicators/indicators
- * @requires  stock/indicators/dmi
+ * @requires  indicators/indicators
+ * @requires  indicators/dmi
  * @apioption series.dmi
  */
 ''; // To include the above in the js output
@@ -3222,8 +3242,8 @@ class DPOIndicator extends DPOIndicator_SMAIndicator {
  *               navigatorOptions, pointInterval, pointIntervalUnit,
  *               pointPlacement, pointRange, pointStart, showInNavigator,
  *               stacking
- * @requires     stock/indicators/indicators
- * @requires     stock/indicators/dpo
+ * @requires     indicators/indicators
+ * @requires     indicators/dpo
  * @optionparent plotOptions.dpo
  * @internal
  */
@@ -3265,8 +3285,8 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @excluding allAreas, colorAxis, compare, compareBase,
  *            joinBy, keys, navigatorOptions, pointInterval, pointIntervalUnit,
  *            pointPlacement, pointRange, pointStart, showInNavigator, stacking
- * @requires  stock/indicators/indicators
- * @requires  stock/indicators/dpo
+ * @requires  indicators/indicators
+ * @requires  indicators/dpo
  * @apioption series.dpo
  */
 ''; // To include the above in the js output'
@@ -3371,8 +3391,8 @@ class ChaikinIndicator extends ChaikinIndicator_EMAIndicator {
  * @excluding    allAreas, colorAxis, joinBy, keys, navigatorOptions,
  *               pointInterval, pointIntervalUnit, pointPlacement,
  *               pointRange, pointStart, showInNavigator, stacking
- * @requires     stock/indicators/indicators
- * @requires     stock/indicators/chaikin
+ * @requires     indicators/indicators
+ * @requires     indicators/chaikin
  * @optionparent plotOptions.chaikin
  * @internal
  */
@@ -3432,8 +3452,8 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @excluding allAreas, colorAxis, joinBy, keys,
  *            navigatorOptions, pointInterval, pointIntervalUnit,
  *            pointPlacement, pointRange, pointStart, stacking, showInNavigator
- * @requires  stock/indicators/indicators
- * @requires  stock/indicators/chaikin
+ * @requires  indicators/indicators
+ * @requires  indicators/chaikin
  * @apioption series.chaikin
  */
 ''; // To include the above in the js output
@@ -3557,8 +3577,8 @@ class CMOIndicator extends CMOIndicator_SMAIndicator {
  * @extends      plotOptions.sma
  * @since 9.1.0
  * @product      highstock
- * @requires     stock/indicators/indicators
- * @requires     stock/indicators/cmo
+ * @requires     indicators/indicators
+ * @requires     indicators/cmo
  * @optionparent plotOptions.cmo
  * @internal
  */
@@ -3587,8 +3607,8 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @extends   series,plotOptions.cmo
  * @since 9.1.0
  * @product   highstock
- * @requires  stock/indicators/indicators
- * @requires  stock/indicators/cmo
+ * @requires  indicators/indicators
+ * @requires  indicators/cmo
  * @apioption series.cmo
  */
 (''); // To include the above in the js output
@@ -3710,8 +3730,8 @@ class DEMAIndicator extends DEMAIndicator_EMAIndicator {
  *               navigatorOptions, pointInterval, pointIntervalUnit,
  *               pointPlacement, pointRange, pointStart, showInNavigator,
  *               stacking
- * @requires     stock/indicators/indicators
- * @requires     stock/indicators/dema
+ * @requires     indicators/indicators
+ * @requires     indicators/dema
  * @optionparent plotOptions.dema
  * @internal
  */
@@ -3738,8 +3758,8 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @excluding allAreas, colorAxis, compare, compareBase,
  *            joinBy, keys, navigatorOptions, pointInterval, pointIntervalUnit,
  *            pointPlacement, pointRange, pointStart, showInNavigator, stacking
- * @requires  stock/indicators/indicators
- * @requires  stock/indicators/dema
+ * @requires  indicators/indicators
+ * @requires  indicators/dema
  * @apioption series.dema
  */
 ''; // Adds doclet above to the transpiled file
@@ -3895,8 +3915,8 @@ class TEMAIndicator extends TEMAIndicator_EMAIndicator {
  *               navigatorOptions, pointInterval, pointIntervalUnit,
  *               pointPlacement, pointRange, pointStart, showInNavigator,
  *               stacking
- * @requires     stock/indicators/indicators
- * @requires     stock/indicators/tema
+ * @requires     indicators/indicators
+ * @requires     indicators/tema
  * @optionparent plotOptions.tema
  * @internal
  */
@@ -3923,8 +3943,8 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @excluding allAreas, colorAxis, compare, compareBase,
  *            joinBy, keys, navigatorOptions, pointInterval, pointIntervalUnit,
  *            pointPlacement, pointRange, pointStart, showInNavigator, stacking
- * @requires  stock/indicators/indicators
- * @requires  stock/indicators/tema
+ * @requires  indicators/indicators
+ * @requires  indicators/tema
  * @apioption series.tema
  */
 ''; // To include the above in the js output
@@ -3993,9 +4013,9 @@ class TRIXIndicator extends TRIXIndicator_TEMAIndicator {
  *               navigatorOptions, pointInterval, pointIntervalUnit,
  *               pointPlacement, pointRange, pointStart, showInNavigator,
  *               stacking
- * @requires     stock/indicators/indicators
- * @requires     stock/indicators/tema
- * @requires     stock/indicators/trix
+ * @requires     indicators/indicators
+ * @requires     indicators/tema
+ * @requires     indicators/trix
  * @optionparent plotOptions.trix
  * @internal
  */
@@ -4022,9 +4042,9 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @excluding allAreas, colorAxis, compare, compareBase,
  *            joinBy, keys, navigatorOptions, pointInterval, pointIntervalUnit,
  *            pointPlacement, pointRange, pointStart, showInNavigator, stacking
- * @requires  stock/indicators/indicators
- * @requires  stock/indicators/tema
- * @requires  stock/indicators/trix
+ * @requires  indicators/indicators
+ * @requires  indicators/tema
+ * @requires  indicators/trix
  * @apioption series.trix
  */
 ''; // To include the above in the js output
@@ -4121,8 +4141,8 @@ class APOIndicator extends APOIndicator_EMAIndicator {
  * @excluding    allAreas, colorAxis, joinBy, keys, navigatorOptions,
  *               pointInterval, pointIntervalUnit, pointPlacement,
  *               pointRange, pointStart, showInNavigator, stacking
- * @requires     stock/indicators/indicators
- * @requires     stock/indicators/apo
+ * @requires     indicators/indicators
+ * @requires     indicators/apo
  * @optionparent plotOptions.apo
  * @internal
  */
@@ -4171,8 +4191,8 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @excluding allAreas, colorAxis, joinBy, keys,
  *            navigatorOptions, pointInterval, pointIntervalUnit,
  *            pointPlacement, pointRange, pointStart, showInNavigator, stacking
- * @requires  stock/indicators/indicators
- * @requires  stock/indicators/apo
+ * @requires  indicators/indicators
+ * @requires  indicators/apo
  * @apioption series.apo
  */
 ''; // To include the above in the js output
@@ -4674,8 +4694,8 @@ class IKHIndicator extends IKHIndicator_SMAIndicator {
  *               pointPlacement, pointRange, pointStart, showInNavigator,
  *               stacking
  * @product      highstock
- * @requires     stock/indicators/indicators
- * @requires     stock/indicators/ichimoku-kinko-hyo
+ * @requires     indicators/indicators
+ * @requires     indicators/ichimoku-kinko-hyo
  * @optionparent plotOptions.ikh
  * @internal
  */
@@ -4871,8 +4891,8 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @extends   series,plotOptions.ikh
  * @since     6.0.0
  * @product   highstock
- * @requires  stock/indicators/indicators
- * @requires  stock/indicators/ichimoku-kinko-hyo
+ * @requires  indicators/indicators
+ * @requires  indicators/ichimoku-kinko-hyo
  * @apioption series.ikh
  */
 (''); // Add doclet above to transpiled file
@@ -4981,8 +5001,8 @@ class KeltnerChannelsIndicator extends KeltnerChannelsIndicator_SMAIndicator {
  *               navigatorOptions, pointInterval, pointIntervalUnit,
  *               pointPlacement, pointRange, pointStart,showInNavigator,
  *               stacking
- * @requires     stock/indicators/indicators
- * @requires     stock/indicators/keltner-channels
+ * @requires     indicators/indicators
+ * @requires     indicators/keltner-channels
  * @optionparent plotOptions.keltnerchannels
  * @internal
  */
@@ -5090,8 +5110,8 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *               joinBy, keys, navigatorOptions, pointInterval,
  *               pointIntervalUnit, pointPlacement, pointRange, pointStart,
  *               stacking, showInNavigator
- * @requires     stock/indicators/indicators
- * @requires     stock/indicators/keltner-channels
+ * @requires     indicators/indicators
+ * @requires     indicators/keltner-channels
  * @apioption    series.keltnerchannels
  */
 ''; // To include the above in the js output
@@ -5257,8 +5277,8 @@ class KlingerIndicator extends KlingerIndicator_SMAIndicator {
  * @extends      plotOptions.sma
  * @since 9.1.0
  * @product      highstock
- * @requires     stock/indicators/indicators
- * @requires     stock/indicators/klinger
+ * @requires     indicators/indicators
+ * @requires     indicators/klinger
  * @optionparent plotOptions.klinger
  * @internal
  */
@@ -5349,8 +5369,8 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @extends   series,plotOptions.klinger
  * @since 9.1.0
  * @product   highstock
- * @requires  stock/indicators/indicators
- * @requires  stock/indicators/klinger
+ * @requires  indicators/indicators
+ * @requires  indicators/klinger
  * @apioption series.klinger
  */
 ''; // To include the above in the js output
@@ -5603,8 +5623,8 @@ class MACDIndicator extends MACDIndicator_SMAIndicator {
  * @extends      plotOptions.sma
  * @since        6.0.0
  * @product      highstock
- * @requires     stock/indicators/indicators
- * @requires     stock/indicators/macd
+ * @requires     indicators/indicators
+ * @requires     indicators/macd
  * @optionparent plotOptions.macd
  * @internal
  */
@@ -5728,8 +5748,8 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @extends   series,plotOptions.macd
  * @since     6.0.0
  * @product   highstock
- * @requires  stock/indicators/indicators
- * @requires  stock/indicators/macd
+ * @requires  indicators/indicators
+ * @requires  indicators/macd
  * @apioption series.macd
  */
 ''; // To include the above in the js output
@@ -5876,8 +5896,8 @@ class MFIIndicator extends MFIIndicator_SMAIndicator {
  * @extends      plotOptions.sma
  * @since        6.0.0
  * @product      highstock
- * @requires     stock/indicators/indicators
- * @requires     stock/indicators/mfi
+ * @requires     indicators/indicators
+ * @requires     indicators/mfi
  * @optionparent plotOptions.mfi
  * @internal
  */
@@ -5921,8 +5941,8 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @extends   series,plotOptions.mfi
  * @since     6.0.0
  * @product   highstock
- * @requires  stock/indicators/indicators
- * @requires  stock/indicators/mfi
+ * @requires  indicators/indicators
+ * @requires  indicators/mfi
  * @apioption series.mfi
  */
 ''; // To include the above in the js output
@@ -6012,8 +6032,8 @@ class MomentumIndicator extends MomentumIndicator_SMAIndicator {
  * @extends      plotOptions.sma
  * @since        6.0.0
  * @product      highstock
- * @requires     stock/indicators/indicators
- * @requires     stock/indicators/momentum
+ * @requires     indicators/indicators
+ * @requires     indicators/momentum
  * @optionparent plotOptions.momentum
  * @internal
  */
@@ -6044,8 +6064,8 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @extends   series,plotOptions.momentum
  * @since     6.0.0
  * @product   highstock
- * @requires  stock/indicators/indicators
- * @requires  stock/indicators/momentum
+ * @requires  indicators/indicators
+ * @requires  indicators/momentum
  * @apioption series.momentum
  */
 ''; // To include the above in the js output
@@ -6113,9 +6133,9 @@ class NATRIndicator extends NATRIndicator_ATRIndicator {
  * @extends      plotOptions.atr
  * @since        7.0.0
  * @product      highstock
- * @requires     stock/indicators/indicators
- * @requires     stock/indicators/atr
- * @requires     stock/indicators/natr
+ * @requires     indicators/indicators
+ * @requires     indicators/atr
+ * @requires     indicators/natr
  * @optionparent plotOptions.natr
  * @internal
  */
@@ -6143,9 +6163,9 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @extends   series,plotOptions.natr
  * @since     7.0.0
  * @product   highstock
- * @requires  stock/indicators/indicators
- * @requires  stock/indicators/atr
- * @requires  stock/indicators/natr
+ * @requires  indicators/indicators
+ * @requires  indicators/atr
+ * @requires  indicators/natr
  * @apioption series.natr
  */
 ''; // To include the above in the js output
@@ -6249,8 +6269,8 @@ class OBVIndicator extends OBVIndicator_SMAIndicator {
  * @extends      plotOptions.sma
  * @since        9.1.0
  * @product      highstock
- * @requires     stock/indicators/indicators
- * @requires     stock/indicators/obv
+ * @requires     indicators/indicators
+ * @requires     indicators/obv
  * @excluding    allAreas, colorAxis, joinBy, keys, navigatorOptions,
  *               pointInterval, pointIntervalUnit, pointPlacement,
  *               pointRange, pointStart, showInNavigator, stacking
@@ -6300,8 +6320,8 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @extends   series,plotOptions.obv
  * @since     9.1.0
  * @product   highstock
- * @requires  stock/indicators/indicators
- * @requires  stock/indicators/obv
+ * @requires  indicators/indicators
+ * @requires  indicators/obv
  * @apioption series.obv
  */
 ''; // To include the above in the js output
@@ -6603,8 +6623,8 @@ class PivotPointsIndicator extends PivotPointsIndicator_SMAIndicator {
  * @extends      plotOptions.sma
  * @since        6.0.0
  * @product      highstock
- * @requires     stock/indicators/indicators
- * @requires     stock/indicators/pivot-points
+ * @requires     indicators/indicators
+ * @requires     indicators/pivot-points
  * @optionparent plotOptions.pivotpoints
  * @internal
  */
@@ -6664,8 +6684,8 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @extends   series,plotOptions.pivotpoints
  * @since     6.0.0
  * @product   highstock
- * @requires  stock/indicators/indicators
- * @requires  stock/indicators/pivot-points
+ * @requires  indicators/indicators
+ * @requires  indicators/pivot-points
  * @apioption series.pivotpoints
  */
 ''; // To include the above in the js output'
@@ -6765,8 +6785,8 @@ class PPOIndicator extends PPOIndicator_EMAIndicator {
  * @excluding    allAreas, colorAxis, joinBy, keys, navigatorOptions,
  *               pointInterval, pointIntervalUnit, pointPlacement,
  *               pointRange, pointStart, showInNavigator, stacking
- * @requires     stock/indicators/indicators
- * @requires     stock/indicators/ppo
+ * @requires     indicators/indicators
+ * @requires     indicators/ppo
  * @optionparent plotOptions.ppo
  * @internal
  */
@@ -6814,8 +6834,8 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @excluding allAreas, colorAxis, joinBy, keys,
  *            navigatorOptions, pointInterval, pointIntervalUnit,
  *            pointPlacement, pointRange, pointStart, showInNavigator, stacking
- * @requires  stock/indicators/indicators
- * @requires  stock/indicators/ppo
+ * @requires  indicators/indicators
+ * @requires  indicators/ppo
  * @apioption series.ppo
  */
 ''; // To include the above in the js output
@@ -6954,8 +6974,8 @@ class PCIndicator extends PCIndicator_SMAIndicator {
  *               navigatorOptions, pointInterval, pointIntervalUnit,
  *               pointPlacement, pointRange, pointStart, showInNavigator,
  *               stacking
- * @requires     stock/indicators/indicators
- * @requires     stock/indicators/price-channel
+ * @requires     indicators/indicators
+ * @requires     indicators/price-channel
  * @optionparent plotOptions.pc
  * @internal
  */
@@ -7043,8 +7063,8 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *               joinBy, keys, navigatorOptions, pointInterval,
  *               pointIntervalUnit, pointPlacement, pointRange, pointStart,
  *               showInNavigator, stacking
- * @requires     stock/indicators/indicators
- * @requires     stock/indicators/price-channel
+ * @requires     indicators/indicators
+ * @requires     indicators/price-channel
  * @apioption    series.pc
  */
 ''; // To include the above in the js output
@@ -7151,8 +7171,8 @@ class PriceEnvelopesIndicator extends PriceEnvelopesIndicator_SMAIndicator {
  * @extends      plotOptions.sma
  * @since        6.0.0
  * @product      highstock
- * @requires     stock/indicators/indicators
- * @requires     stock/indicators/price-envelopes
+ * @requires     indicators/indicators
+ * @requires     indicators/price-envelopes
  * @optionparent plotOptions.priceenvelopes
  * @internal
  */
@@ -7249,8 +7269,8 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @extends   series,plotOptions.priceenvelopes
  * @since     6.0.0
  * @product   highstock
- * @requires  stock/indicators/indicators
- * @requires  stock/indicators/price-envelopes
+ * @requires  indicators/indicators
+ * @requires  indicators/price-envelopes
  * @apioption series.priceenvelopes
  */
 ''; // To include the above in the js output
@@ -7453,8 +7473,8 @@ class PSARIndicator extends PSARIndicator_SMAIndicator {
  * @extends      plotOptions.sma
  * @since        6.0.0
  * @product      highstock
- * @requires     stock/indicators/indicators
- * @requires     stock/indicators/psar
+ * @requires     indicators/indicators
+ * @requires     indicators/psar
  * @optionparent plotOptions.psar
  * @internal
  */
@@ -7528,8 +7548,8 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @extends   series,plotOptions.psar
  * @since     6.0.0
  * @product   highstock
- * @requires  stock/indicators/indicators
- * @requires  stock/indicators/psar
+ * @requires  indicators/indicators
+ * @requires  indicators/psar
  * @apioption series.psar
  */
 ''; // To include the above in the js output
@@ -7651,8 +7671,8 @@ class ROCIndicator extends ROCIndicator_SMAIndicator {
  * @extends      plotOptions.sma
  * @since        6.0.0
  * @product      highstock
- * @requires     stock/indicators/indicators
- * @requires     stock/indicators/roc
+ * @requires     indicators/indicators
+ * @requires     indicators/roc
  * @optionparent plotOptions.roc
  * @internal
  */
@@ -7695,8 +7715,8 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @extends   series,plotOptions.roc
  * @since     6.0.0
  * @product   highstock
- * @requires  stock/indicators/indicators
- * @requires  stock/indicators/roc
+ * @requires  indicators/indicators
+ * @requires  indicators/roc
  * @apioption series.roc
  */
 ''; // To include the above in the js output
@@ -7831,8 +7851,8 @@ class RSIIndicator extends RSIIndicator_SMAIndicator {
  * @extends      plotOptions.sma
  * @since        6.0.0
  * @product      highstock
- * @requires     stock/indicators/indicators
- * @requires     stock/indicators/rsi
+ * @requires     indicators/indicators
+ * @requires     indicators/rsi
  * @optionparent plotOptions.rsi
  * @internal
  */
@@ -7861,8 +7881,8 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @extends   series,plotOptions.rsi
  * @since     6.0.0
  * @product   highstock
- * @requires  stock/indicators/indicators
- * @requires  stock/indicators/rsi
+ * @requires  indicators/indicators
+ * @requires  indicators/rsi
  * @apioption series.rsi
  */
 ''; // To include the above in the js output
@@ -7999,8 +8019,8 @@ class StochasticIndicator extends StochasticIndicator_SMAIndicator {
  * @excluding    allAreas, colorAxis, joinBy, keys, navigatorOptions,
  *               pointInterval, pointIntervalUnit, pointPlacement,
  *               pointRange, pointStart, showInNavigator, stacking
- * @requires     stock/indicators/indicators
- * @requires     stock/indicators/stochastic
+ * @requires     indicators/indicators
+ * @requires     indicators/stochastic
  * @optionparent plotOptions.stochastic
  * @internal
  */
@@ -8084,8 +8104,8 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @excluding allAreas, colorAxis, joinBy, keys, navigatorOptions,
  *            pointInterval, pointIntervalUnit, pointPlacement, pointRange,
  *            pointStart, showInNavigator, stacking
- * @requires  stock/indicators/indicators
- * @requires  stock/indicators/stochastic
+ * @requires  indicators/indicators
+ * @requires  indicators/stochastic
  * @apioption series.stochastic
  */
 ''; // To include the above in the js output
@@ -8176,9 +8196,9 @@ class SlowStochasticIndicator extends SlowStochasticIndicator_StochasticIndicato
  * @extends      plotOptions.stochastic
  * @since        8.0.0
  * @product      highstock
- * @requires     stock/indicators/indicators
- * @requires     stock/indicators/stochastic
- * @requires     stock/indicators/slow-stochastic
+ * @requires     indicators/indicators
+ * @requires     indicators/stochastic
+ * @requires     indicators/slow-stochastic
  * @optionparent plotOptions.slowstochastic
  * @internal
  */
@@ -8215,9 +8235,9 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @extends   series,plotOptions.slowstochastic
  * @since     8.0.0
  * @product   highstock
- * @requires  stock/indicators/indicators
- * @requires  stock/indicators/stochastic
- * @requires  stock/indicators/slow-stochastic
+ * @requires  indicators/indicators
+ * @requires  indicators/stochastic
+ * @requires  indicators/slow-stochastic
  * @apioption series.slowstochastic
  */
 ''; // To include the above in the js output
@@ -8590,8 +8610,8 @@ class SupertrendIndicator extends SupertrendIndicator_SMAIndicator {
  *               keys, navigatorOptions, pointInterval, pointIntervalUnit,
  *               pointPlacement, pointRange, pointStart, showInNavigator,
  *               stacking, threshold
- * @requires     stock/indicators/indicators
- * @requires     stock/indicators/supertrend
+ * @requires     indicators/indicators
+ * @requires     indicators/supertrend
  * @optionparent plotOptions.supertrend
  * @internal
  */
@@ -8694,8 +8714,8 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *            joinBy, keys, navigatorOptions, negativeColor, pointInterval,
  *            pointIntervalUnit, pointPlacement, pointRange, pointStart,
  *            showInNavigator, stacking, threshold
- * @requires  stock/indicators/indicators
- * @requires  stock/indicators/supertrend
+ * @requires  indicators/indicators
+ * @requires  indicators/supertrend
  * @apioption series.supertrend
  */
 ''; // To include the above in the js output
@@ -9221,8 +9241,8 @@ class VBPIndicator extends VBPIndicator_SMAIndicator {
  * @extends      plotOptions.sma
  * @since        6.0.0
  * @product      highstock
- * @requires     stock/indicators/indicators
- * @requires     stock/indicators/volume-by-price
+ * @requires     indicators/indicators
+ * @requires     indicators/volume-by-price
  * @optionparent plotOptions.vbp
  * @internal
  */
@@ -9346,8 +9366,8 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @since     6.0.0
  * @product   highstock
  * @excluding compare, compareBase, compareStart
- * @requires  stock/indicators/indicators
- * @requires  stock/indicators/volume-by-price
+ * @requires  indicators/indicators
+ * @requires  indicators/volume-by-price
  * @apioption series.vbp
  */
 ''; // To include the above in the js output
@@ -9489,8 +9509,8 @@ class VWAPIndicator extends VWAPIndicator_SMAIndicator {
  * @extends      plotOptions.sma
  * @since        6.0.0
  * @product      highstock
- * @requires     stock/indicators/indicators
- * @requires     stock/indicators/vwap
+ * @requires     indicators/indicators
+ * @requires     indicators/vwap
  * @optionparent plotOptions.vwap
  * @internal
  */
@@ -9529,8 +9549,8 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @extends   series,plotOptions.vwap
  * @since     6.0.0
  * @product   highstock
- * @requires  stock/indicators/indicators
- * @requires  stock/indicators/vwap
+ * @requires  indicators/indicators
+ * @requires  indicators/vwap
  * @apioption series.vwap
  */
 ''; // To include the above in the js output
@@ -9623,8 +9643,8 @@ class WilliamsRIndicator extends WilliamsRIndicator_SMAIndicator {
  * @excluding    allAreas, colorAxis, joinBy, keys, navigatorOptions,
  *               pointInterval, pointIntervalUnit, pointPlacement,
  *               pointRange, pointStart, showInNavigator, stacking
- * @requires     stock/indicators/indicators
- * @requires     stock/indicators/williams-r
+ * @requires     indicators/indicators
+ * @requires     indicators/williams-r
  * @optionparent plotOptions.williamsr
  * @internal
  */
@@ -9666,8 +9686,8 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @excluding allAreas, colorAxis, joinBy, keys,
  *            navigatorOptions, pointInterval, pointIntervalUnit,
  *            pointPlacement, pointRange, pointStart, showInNavigator, stacking
- * @requires  stock/indicators/indicators
- * @requires  stock/indicators/williams-r
+ * @requires  indicators/indicators
+ * @requires  indicators/williams-r
  * @apioption series.williamsr
  */
 ''; // Adds doclets above to the transpiled file
@@ -9788,8 +9808,8 @@ class WMAIndicator extends WMAIndicator_SMAIndicator {
  * @extends      plotOptions.sma
  * @since        6.0.0
  * @product      highstock
- * @requires     stock/indicators/indicators
- * @requires     stock/indicators/wma
+ * @requires     indicators/indicators
+ * @requires     indicators/wma
  * @optionparent plotOptions.wma
  * @internal
  */
@@ -9818,8 +9838,8 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @extends   series,plotOptions.wma
  * @since     6.0.0
  * @product   highstock
- * @requires  stock/indicators/indicators
- * @requires  stock/indicators/wma
+ * @requires  indicators/indicators
+ * @requires  indicators/wma
  * @apioption series.wma
  */
 ''; // Adds doclet above to the transpiled file
@@ -9970,8 +9990,8 @@ class ZigzagIndicator extends ZigzagIndicator_SMAIndicator {
  * @extends      plotOptions.sma
  * @since        6.0.0
  * @product      highstock
- * @requires     stock/indicators/indicators
- * @requires     stock/indicators/zigzag
+ * @requires     indicators/indicators
+ * @requires     indicators/zigzag
  * @optionparent plotOptions.zigzag
  * @internal
  */
@@ -10032,8 +10052,8 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @extends   series,plotOptions.zigzag
  * @since     6.0.0
  * @product   highstock
- * @requires  stock/indicators/indicators
- * @requires  stock/indicators/zigzag
+ * @requires  indicators/indicators
+ * @requires  indicators/zigzag
  * @apioption series.zigzag
  */
 ''; // Adds doclets above to transpiled file
@@ -10223,8 +10243,8 @@ class LinearRegressionIndicator extends LinearRegressionIndicator_SMAIndicator {
  * @extends      plotOptions.sma
  * @since        7.0.0
  * @product      highstock
- * @requires     stock/indicators/indicators
- * @requires     stock/indicators/regressions
+ * @requires     indicators/indicators
+ * @requires     indicators/regressions
  * @optionparent plotOptions.linearregression
  * @internal
  */
@@ -10309,8 +10329,8 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @extends   series,plotOptions.linearregression
  * @since     7.0.0
  * @product   highstock
- * @requires  stock/indicators/indicators
- * @requires  stock/indicators/regressions
+ * @requires  indicators/indicators
+ * @requires  indicators/regressions
  * @apioption series.linearregression
  */
 ''; // To include the above in the js output
@@ -10370,8 +10390,8 @@ class LinearRegressionSlopesIndicator extends LinearRegressionSlopesIndicator_Li
  * @extends      plotOptions.linearregression
  * @since        7.0.0
  * @product      highstock
- * @requires     stock/indicators/indicators
- * @requires     stock/indicators/regressions
+ * @requires     indicators/indicators
+ * @requires     indicators/regressions
  * @optionparent plotOptions.linearregressionslope
  * @internal
  */
@@ -10401,8 +10421,8 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @extends   series,plotOptions.linearregressionslope
  * @since     7.0.0
  * @product   highstock
- * @requires  stock/indicators/indicators
- * @requires  stock/indicators/regressions
+ * @requires  indicators/indicators
+ * @requires  indicators/regressions
  * @apioption series.linearregressionslope
  */
 ''; // To include the above in the js output
@@ -10462,8 +10482,8 @@ class LinearRegressionInterceptIndicator extends LinearRegressionInterceptIndica
  * @extends      plotOptions.linearregression
  * @since        7.0.0
  * @product      highstock
- * @requires     stock/indicators/indicators
- * @requires     stock/indicators/regressions
+ * @requires     indicators/indicators
+ * @requires     indicators/regressions
  * @optionparent plotOptions.linearregressionintercept
  * @internal
  */
@@ -10493,8 +10513,8 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @extends   series,plotOptions.linearregressionintercept
  * @since     7.0.0
  * @product   highstock
- * @requires  stock/indicators/indicators
- * @requires  stock/indicators/regressions
+ * @requires  indicators/indicators
+ * @requires  indicators/regressions
  * @apioption series.linearregressionintercept
  */
 ''; // To include the above in the js output
@@ -10564,8 +10584,8 @@ class LinearRegressionAngleIndicator extends LinearRegressionAngleIndicator_Line
  * @extends      plotOptions.linearregression
  * @since        7.0.0
  * @product      highstock
- * @requires     stock/indicators/indicators
- * @requires     stock/indicators/regressions
+ * @requires     indicators/indicators
+ * @requires     indicators/regressions
  * @optionparent plotOptions.linearregressionangle
  * @internal
  */
@@ -10595,8 +10615,8 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @extends   series,plotOptions.linearregressionangle
  * @since     7.0.0
  * @product   highstock
- * @requires  stock/indicators/indicators
- * @requires  stock/indicators/regressions
+ * @requires  indicators/indicators
+ * @requires  indicators/regressions
  * @apioption series.linearregressionangle
  */
 ''; // To include the above in the js output
@@ -10736,8 +10756,8 @@ class ABandsIndicator extends ABandsIndicator_SMAIndicator {
  *               navigatorOptions, pointInterval, pointIntervalUnit,
  *               pointPlacement, pointRange, pointStart, showInNavigator,
  *               stacking,
- * @requires     stock/indicators/indicators
- * @requires     stock/indicators/acceleration-bands
+ * @requires     indicators/indicators
+ * @requires     indicators/acceleration-bands
  * @optionparent plotOptions.abands
  * @internal
  */
@@ -10816,8 +10836,8 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *            joinBy, keys, navigatorOptions, pointInterval,
  *            pointIntervalUnit, pointPlacement, pointRange, pointStart,
  *            stacking, showInNavigator,
- * @requires  stock/indicators/indicators
- * @requires  stock/indicators/acceleration-bands
+ * @requires  indicators/indicators
+ * @requires  indicators/acceleration-bands
  * @apioption series.abands
  */
 ''; // To include the above in jsdoc
@@ -10914,8 +10934,8 @@ class TrendLineIndicator extends TrendLineIndicator_SMAIndicator {
  * @extends      plotOptions.sma
  * @since        7.1.3
  * @product      highstock
- * @requires     stock/indicators/indicators
- * @requires     stock/indicators/trendline
+ * @requires     indicators/indicators
+ * @requires     indicators/trendline
  * @optionparent plotOptions.trendline
  * @internal
  */
@@ -10958,8 +10978,8 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @extends   series,plotOptions.trendline
  * @since     7.1.3
  * @product   highstock
- * @requires  stock/indicators/indicators
- * @requires  stock/indicators/trendline
+ * @requires  indicators/indicators
+ * @requires  indicators/trendline
  * @apioption series.trendline
  */
 ''; // To include the above in the js output
@@ -11061,8 +11081,8 @@ class DisparityIndexIndicator extends DisparityIndexIndicator_SMAIndicator {
  * @excluding    allAreas, colorAxis, joinBy, keys, navigatorOptions,
  *               pointInterval, pointIntervalUnit, pointPlacement,
  *               pointRange, pointStart, showInNavigator, stacking
- * @requires     stock/indicators/indicators
- * @requires     stock/indicators/disparity-index
+ * @requires     indicators/indicators
+ * @requires     indicators/disparity-index
  * @optionparent plotOptions.disparityindex
  * @internal
  */
@@ -11114,8 +11134,8 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @excluding allAreas, colorAxis, joinBy, keys, navigatorOptions,
  *            pointInterval, pointIntervalUnit, pointPlacement, pointRange,
  *            pointStart, showInNavigator, stacking
- * @requires  stock/indicators/indicators
- * @requires  stock/indicators/disparity-index
+ * @requires  indicators/indicators
+ * @requires  indicators/disparity-index
  * @apioption series.disparityindex
  */
 ''; // To include the above in the js output

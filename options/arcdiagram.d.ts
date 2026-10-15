@@ -1023,8 +1023,11 @@ declare module "../highcharts" {
          * only a few settings, see the complete options set below. If the total
          * number of data points exceeds the series' turboThreshold, this option
          * is not available. (see online documentation for example)
+         *
+         *  When you provide the data as tuples, the keys option has to be set
+         * as well. (see online documentation for example)
          */
-        data?: Array<Highcharts.SeriesSankeyPointOptionsObject>;
+        data?: (Array<Array<(string|number)>>|Array<Highcharts.SeriesSankeyPointOptionsObject>);
         /**
          * (Highcharts) The radius of the link arc. If not set, series renders a
          * semi-circle between the nodes, except when overflowing the edge of

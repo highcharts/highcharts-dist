@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.0 (2026-10-02)
+ * @license Highcharts JS v13.1.1-modified (2026-10-15)
  * @module highcharts/highcharts-more
  * @requires highcharts
  *
@@ -1748,6 +1748,12 @@ AreaRangeSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_hig
     if (this.pointArrayMap.join(',') === 'low,high') {
         this.points.forEach((point) => {
             const high = point.high, plotY = point.plotY;
+            // Rank both labels of the point by how tall the range is.
+            // `pointValKey` is `low` for this series, so the generic value
+            // based rank would order the labels by their lower bound rather
+            // than by size. Set here rather than in `drawDataLabels` so that
+            // column ranges and their subtypes get it too (#23585).
+            point.labelrank = point.options.labelrank ?? Math.abs((high || 0) - (point.low || 0));
             if (point.isNull) {
                 point.plotY = void 0;
             }
@@ -4451,6 +4457,10 @@ class BubbleSeries extends ScatterSeries {
                     width: 2 * radius,
                     height: 2 * radius
                 });
+                // Rank data labels by the bubble size. The point's `y` is a
+                // position, and the radius accounts for `sizeBy`,
+                // `zThreshold` and the size limits (#23585).
+                point.labelrank = point.options.labelrank ?? radius;
             }
             if ((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.isNumber)(radius) && radius >= minPxSize / 2) {
                 // Alignment box for the data label
@@ -5877,7 +5887,7 @@ class GaugePoint extends Point {
      * */
     /**
      * Don't do any hover colors or anything
-     * @private
+     * @internal
      */
     setState(state) {
         this.state = state;
@@ -5890,7 +5900,7 @@ class GaugePoint extends Point {
  * */
 /* harmony default export */ const Gauge_GaugePoint = (GaugePoint);
 
-;// ./code/es-modules/Series/Gauge/GaugeSeries.js
+;// ./code/es-modules/Series/Gauge/GaugeSeriesDefaults.js
 /* *
  *
  *  (c) 2010-2026 Highsoft AS
@@ -5903,206 +5913,9 @@ class GaugePoint extends Point {
  *
  * */
 
-
-
-const { noop: GaugeSeries_noop } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
-
-const { series: GaugeSeries_Series, seriesTypes: { column: GaugeSeries_ColumnSeries } } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default());
-
 /* *
  *
- *  Class
- *
- * */
-/**
- *
- * The `gauge` series type
- *
- * @private
- * @class
- * @name Highcharts.seriesTypes.map
- *
- * @augments Highcharts.Series
- */
-class GaugeSeries extends GaugeSeries_Series {
-    /* *
-     *
-     *  Functions
-     *
-     * */
-    /**
-     * Calculate paths etc
-     * @private
-     */
-    translate() {
-        const series = this, yAxis = series.yAxis, options = series.options, center = yAxis.center;
-        series.generatePoints();
-        series.points.forEach((point) => {
-            if (!(0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.isNumber)(point.y)) {
-                return;
-            }
-            const dialOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(options.dial, point.dial), radius = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.relativeLength)(dialOptions.radius, center[2] / 2), baseLength = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.relativeLength)(dialOptions.baseLength, radius), rearLength = Math.min((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.relativeLength)(dialOptions.rearLength, radius), radius), baseWidth = Math.min((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.relativeLength)(dialOptions.baseWidth, radius), radius), topWidth = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.relativeLength)(dialOptions.topWidth, radius), borderRadius = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.relativeLength)(dialOptions.borderRadius, radius), 
-            // Border radius at the base
-            bRBase = Math.min(borderRadius, baseWidth / 2), 
-            // Border radius at the top
-            bRTop = Math.min(borderRadius, topWidth / 2), wrap = options.wrap ?? (yAxis.endAngleRad - yAxis.startAngleRad > 2 * Math.PI - 0.01);
-            let overshoot = options.overshoot, rotation = yAxis.startAngleRad + yAxis.translate(point.y, void 0, void 0, void 0, true);
-            // Handle the wrap and overshoot options
-            if ((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.isNumber)(overshoot) || !wrap) {
-                overshoot = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.isNumber)(overshoot) ?
-                    (overshoot / 180 * Math.PI) : 0;
-                rotation = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.clamp)(rotation, yAxis.startAngleRad - overshoot, yAxis.endAngleRad + overshoot);
-            }
-            // Positions for the tooltip
-            point.tooltipPos = [
-                center[0] + Math.cos(rotation) * radius,
-                center[1] + Math.sin(rotation) * radius
-            ];
-            rotation = rotation * 180 / Math.PI;
-            point.shapeType = 'path';
-            const d = dialOptions.path || [
-                ['M', bRBase - rearLength, -baseWidth / 2],
-                ['L', baseLength, -baseWidth / 2],
-                ['L', radius - bRTop, -topWidth / 2],
-                // Top-right arc
-                ['A', bRTop, bRTop, 0, 0, 1, radius, -topWidth / 2 + bRTop],
-                ['L', radius, topWidth / 2 - bRTop],
-                // Bottom-right arc
-                ['A', bRTop, bRTop, 0, 0, 1, radius - bRTop, topWidth / 2],
-                ['L', baseLength, baseWidth / 2],
-                ['L', bRBase - rearLength, baseWidth / 2],
-                // Bottom-left arc
-                [
-                    'A', bRBase, bRBase, 0, 0, 1,
-                    -rearLength, baseWidth / 2 - bRBase
-                ],
-                ['L', -rearLength, bRBase - baseWidth / 2],
-                // Top-left arc
-                [
-                    'A', bRBase, bRBase, 0, 0, 1,
-                    bRBase - rearLength, -baseWidth / 2
-                ],
-                ['Z']
-            ];
-            point.shapeArgs = {
-                d,
-                translateX: center[0],
-                translateY: center[1],
-                rotation: rotation
-            };
-            // Positions for data label
-            point.plotX = center[0];
-            point.plotY = center[1];
-            if ((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.defined)(point.y) && yAxis.max - yAxis.min) {
-                point.percentage =
-                    (point.y - yAxis.min) / (yAxis.max - yAxis.min) * 100;
-            }
-        });
-    }
-    /**
-     * Draw the points where each point is one needle
-     * @private
-     */
-    drawPoints() {
-        const series = this, chart = series.chart, center = series.yAxis.center, pivot = series.pivot, options = series.options, pivotOptions = options.pivot, renderer = chart.renderer, pivotRadius = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.relativeLength)(pivotOptions?.radius || 0, center[2] / 2);
-        series.points.forEach((point) => {
-            if ((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.isNumber)(point.y)) {
-                const graphic = point.graphic, shapeArgs = point.shapeArgs, d = shapeArgs.d, dialOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(options.dial, point.dial); // #1233
-                if (graphic) {
-                    graphic.animate(shapeArgs);
-                    shapeArgs.d = d; // Animate alters it
-                }
-                else {
-                    point.graphic =
-                        renderer[point.shapeType](shapeArgs)
-                            .addClass('highcharts-dial')
-                            .add(series.group);
-                }
-                // Presentational attributes
-                if (!chart.styledMode && point.graphic) {
-                    point.graphic[graphic ? 'animate' : 'attr']({
-                        stroke: dialOptions.borderColor,
-                        'stroke-width': dialOptions.borderWidth,
-                        fill: dialOptions.backgroundColor
-                    });
-                }
-            }
-        });
-        // Add or move the pivot
-        if (pivot) {
-            pivot.animate({
-                translateX: center[0],
-                translateY: center[1],
-                r: pivotRadius
-            });
-        }
-        else if (pivotOptions) {
-            series.pivot =
-                renderer
-                    .circle(0, 0, pivotRadius)
-                    .attr({
-                    zIndex: 2
-                })
-                    .addClass('highcharts-pivot')
-                    .translate(center[0], center[1])
-                    .add(series.group);
-            // Presentational attributes
-            if (!chart.styledMode) {
-                series.pivot.attr({
-                    fill: pivotOptions.backgroundColor,
-                    stroke: pivotOptions.borderColor,
-                    'stroke-width': pivotOptions.borderWidth
-                });
-            }
-        }
-    }
-    /**
-     * Animate the arrow up from startAngle
-     * @private
-     */
-    animate(init) {
-        const series = this;
-        if (!init) {
-            series.points.forEach((point) => {
-                const graphic = point.graphic;
-                if (graphic) {
-                    // Start value
-                    graphic.attr({
-                        rotation: series.yAxis.startAngleRad * 180 / Math.PI
-                    });
-                    // Animate
-                    graphic.animate({
-                        rotation: point.shapeArgs.rotation
-                    }, series.options.animation);
-                }
-            });
-        }
-    }
-    /**
-     * Extend the basic setData method by running processData and generatePoints
-     * immediately, in order to access the points from the legend.
-     * @private
-     */
-    setData(data, redraw) {
-        GaugeSeries_Series.prototype.setData.call(this, data, false);
-        this.processData();
-        this.generatePoints();
-        if (redraw ?? true) {
-            this.chart.redraw();
-        }
-    }
-    /**
-     * Define hasData function for non-cartesian series.
-     * Returns true if the series has points at all.
-     * @private
-     */
-    hasData() {
-        return !!this.points.length; // != 0
-    }
-}
-/* *
- *
- *  Static properties
+ *  API Options
  *
  * */
 /**
@@ -6123,7 +5936,7 @@ class GaugeSeries extends GaugeSeries_Series {
  * @requires     highcharts-more
  * @optionparent plotOptions.gauge
  */
-GaugeSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(GaugeSeries_Series.defaultOptions, {
+const GaugeSeriesDefaults = {
     clip: false,
     color: 'var(--highcharts-neutral-color-20)',
     /**
@@ -6417,8 +6230,286 @@ GaugeSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcha
      * @product highcharts
      */
     showInLegend: false
-    // Prototype members
-});
+};
+/**
+ * A `gauge` series. If the [type](#series.gauge.type) option is not
+ * specified, it is inherited from [chart.type](#chart.type).
+ *
+ * @extends   series,plotOptions.gauge
+ * @excluding animationLimit, boostThreshold, connectEnds, connectNulls,
+ *            cropThreshold, dashStyle, dataParser, dataURL, findNearestPointBy,
+ *            getExtremesFromAll, marker, negativeColor, pointPlacement, shadow,
+ *            softThreshold, stack, stacking, states, step, threshold,
+ *            turboThreshold, zoneAxis, zones, dataSorting, boostBlending
+ * @product   highcharts
+ * @requires  highcharts-more
+ * @apioption series.gauge
+ */
+/**
+ * An array of data points for the series. For the `gauge` series type,
+ * points can be given in the following ways:
+ *
+ * 1. An array of numerical values. In this case, the numerical values will be
+ *    interpreted as `y` options. Example:
+ *    ```js
+ *    data: [0, 5, 3, 5]
+ *    ```
+ *
+ * 2. An array of objects with named values. The following snippet shows only a
+ *    few settings, see the complete options set below. If the total number of
+ *    data points exceeds the series'
+ *    [turboThreshold](#series.gauge.turboThreshold), this option is not
+ *    available.
+ *    ```js
+ *    data: [{
+ *        y: 6,
+ *        name: "Point2",
+ *        color: "#00FF00"
+ *    }, {
+ *        y: 8,
+ *        name: "Point1",
+ *       color: "#FF00FF"
+ *    }]
+ *    ```
+ *
+ * The typical gauge only contains a single data value.
+ *
+ * @sample {highcharts} highcharts/chart/reflow-true/
+ *         Numerical values
+ * @sample {highcharts} highcharts/series/data-array-of-objects/
+ *         Config objects
+ *
+ * @basic
+ * @type      {Array<number|null|*>}
+ * @extends   series.line.data
+ * @excluding drilldown, marker, x
+ * @product   highcharts
+ * @apioption series.gauge.data
+ */
+''; // Adds the doclets above in the transpiled file
+/* *
+ *
+ *  Default Export
+ *
+ * */
+/* harmony default export */ const Gauge_GaugeSeriesDefaults = (GaugeSeriesDefaults);
+
+;// ./code/es-modules/Series/Gauge/GaugeSeries.js
+/* *
+ *
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Hønsi
+ *
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
+ *
+ *
+ * */
+
+
+
+
+const { noop: GaugeSeries_noop } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
+
+const { series: GaugeSeries_Series, seriesTypes: { column: GaugeSeries_ColumnSeries } } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default());
+
+/* *
+ *
+ *  Class
+ *
+ * */
+/**
+ *
+ * The `gauge` series type
+ *
+ * @class
+ * @name Highcharts.seriesTypes.gauge
+ *
+ * @augments Highcharts.Series
+ */
+class GaugeSeries extends GaugeSeries_Series {
+    /* *
+     *
+     *  Functions
+     *
+     * */
+    /**
+     * Calculate paths etc
+     * @internal
+     */
+    translate() {
+        const series = this, yAxis = series.yAxis, options = series.options, center = yAxis.center;
+        series.generatePoints();
+        series.points.forEach((point) => {
+            if (!(0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.isNumber)(point.y)) {
+                return;
+            }
+            const dialOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(options.dial, point.dial), radius = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.relativeLength)(dialOptions.radius, center[2] / 2), baseLength = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.relativeLength)(dialOptions.baseLength, radius), rearLength = Math.min((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.relativeLength)(dialOptions.rearLength, radius), radius), baseWidth = Math.min((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.relativeLength)(dialOptions.baseWidth, radius), radius), topWidth = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.relativeLength)(dialOptions.topWidth, radius), borderRadius = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.relativeLength)(dialOptions.borderRadius, radius), 
+            // Border radius at the base
+            bRBase = Math.min(borderRadius, baseWidth / 2), 
+            // Border radius at the top
+            bRTop = Math.min(borderRadius, topWidth / 2), wrap = options.wrap ?? (yAxis.endAngleRad - yAxis.startAngleRad > 2 * Math.PI - 0.01);
+            let overshoot = options.overshoot, rotation = yAxis.startAngleRad + yAxis.translate(point.y, void 0, void 0, void 0, true);
+            // Handle the wrap and overshoot options
+            if ((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.isNumber)(overshoot) || !wrap) {
+                overshoot = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.isNumber)(overshoot) ?
+                    (overshoot / 180 * Math.PI) : 0;
+                rotation = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.clamp)(rotation, yAxis.startAngleRad - overshoot, yAxis.endAngleRad + overshoot);
+            }
+            // Positions for the tooltip
+            point.tooltipPos = [
+                center[0] + Math.cos(rotation) * radius,
+                center[1] + Math.sin(rotation) * radius
+            ];
+            rotation = rotation * 180 / Math.PI;
+            point.shapeType = 'path';
+            const d = dialOptions.path || [
+                ['M', bRBase - rearLength, -baseWidth / 2],
+                ['L', baseLength, -baseWidth / 2],
+                ['L', radius - bRTop, -topWidth / 2],
+                // Top-right arc
+                ['A', bRTop, bRTop, 0, 0, 1, radius, -topWidth / 2 + bRTop],
+                ['L', radius, topWidth / 2 - bRTop],
+                // Bottom-right arc
+                ['A', bRTop, bRTop, 0, 0, 1, radius - bRTop, topWidth / 2],
+                ['L', baseLength, baseWidth / 2],
+                ['L', bRBase - rearLength, baseWidth / 2],
+                // Bottom-left arc
+                [
+                    'A', bRBase, bRBase, 0, 0, 1,
+                    -rearLength, baseWidth / 2 - bRBase
+                ],
+                ['L', -rearLength, bRBase - baseWidth / 2],
+                // Top-left arc
+                [
+                    'A', bRBase, bRBase, 0, 0, 1,
+                    bRBase - rearLength, -baseWidth / 2
+                ],
+                ['Z']
+            ];
+            point.shapeArgs = {
+                d,
+                translateX: center[0],
+                translateY: center[1],
+                rotation: rotation
+            };
+            // Positions for data label
+            point.plotX = center[0];
+            point.plotY = center[1];
+            if ((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.defined)(point.y) && yAxis.max - yAxis.min) {
+                point.percentage =
+                    (point.y - yAxis.min) / (yAxis.max - yAxis.min) * 100;
+            }
+        });
+    }
+    /**
+     * Draw the points where each point is one needle
+     * @internal
+     */
+    drawPoints() {
+        const series = this, chart = series.chart, center = series.yAxis.center, pivot = series.pivot, options = series.options, pivotOptions = options.pivot, renderer = chart.renderer, pivotRadius = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.relativeLength)(pivotOptions?.radius || 0, center[2] / 2);
+        series.points.forEach((point) => {
+            if ((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.isNumber)(point.y)) {
+                const graphic = point.graphic, shapeArgs = point.shapeArgs, d = shapeArgs.d, dialOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(options.dial, point.dial); // #1233
+                if (graphic) {
+                    graphic.animate(shapeArgs);
+                    shapeArgs.d = d; // Animate alters it
+                }
+                else {
+                    point.graphic =
+                        renderer[point.shapeType](shapeArgs)
+                            .addClass('highcharts-dial')
+                            .add(series.group);
+                }
+                // Presentational attributes
+                if (!chart.styledMode && point.graphic) {
+                    point.graphic[graphic ? 'animate' : 'attr']({
+                        stroke: dialOptions.borderColor,
+                        'stroke-width': dialOptions.borderWidth,
+                        fill: dialOptions.backgroundColor
+                    });
+                }
+            }
+        });
+        // Add or move the pivot
+        if (pivot) {
+            pivot.animate({
+                translateX: center[0],
+                translateY: center[1],
+                r: pivotRadius
+            });
+        }
+        else if (pivotOptions) {
+            series.pivot =
+                renderer
+                    .circle(0, 0, pivotRadius)
+                    .attr({
+                    zIndex: 2
+                })
+                    .addClass('highcharts-pivot')
+                    .translate(center[0], center[1])
+                    .add(series.group);
+            // Presentational attributes
+            if (!chart.styledMode) {
+                series.pivot.attr({
+                    fill: pivotOptions.backgroundColor,
+                    stroke: pivotOptions.borderColor,
+                    'stroke-width': pivotOptions.borderWidth
+                });
+            }
+        }
+    }
+    /**
+     * Animate the arrow up from startAngle
+     * @internal
+     */
+    animate(init) {
+        const series = this;
+        if (!init) {
+            series.points.forEach((point) => {
+                const graphic = point.graphic;
+                if (graphic) {
+                    // Start value
+                    graphic.attr({
+                        rotation: series.yAxis.startAngleRad * 180 / Math.PI
+                    });
+                    // Animate
+                    graphic.animate({
+                        rotation: point.shapeArgs.rotation
+                    }, series.options.animation);
+                }
+            });
+        }
+    }
+    /**
+     * Extend the basic setData method by running processData and generatePoints
+     * immediately, in order to access the points from the legend.
+     * @internal
+     */
+    setData(data, redraw) {
+        GaugeSeries_Series.prototype.setData.call(this, data, false);
+        this.processData();
+        this.generatePoints();
+        if (redraw ?? true) {
+            this.chart.redraw();
+        }
+    }
+    /**
+     * Define hasData function for non-cartesian series.
+     * Returns true if the series has points at all.
+     * @internal
+     */
+    hasData() {
+        return !!this.points.length; // != 0
+    }
+}
+/* *
+ *
+ *  Static properties
+ *
+ * */
+GaugeSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(GaugeSeries_Series.defaultOptions, Gauge_GaugeSeriesDefaults);
 (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.extend)(GaugeSeries.prototype, {
     // `chart.angular` will be set to true when a gauge series is present, and
     // this will be used on the axes
@@ -6712,7 +6803,7 @@ const layouts = {};
  *
  * */
 /**
- * @private
+ * @internal
  */
 function GraphLayoutComposition_compose(ChartClass) {
     if ((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pushUnique)(GraphLayoutComposition_composed, 'GraphLayout')) {
@@ -6724,7 +6815,7 @@ function GraphLayoutComposition_compose(ChartClass) {
 }
 /**
  * Re-enable simulation after print.
- * @private
+ * @internal
  */
 function onChartAfterPrint() {
     if (this.graphLayoutsLookup) {
@@ -6737,7 +6828,7 @@ function onChartAfterPrint() {
 }
 /**
  * Disable simulation before print if enabled.
- * @private
+ * @internal
  */
 function onChartBeforePrint() {
     if (this.graphLayoutsLookup) {
@@ -6749,7 +6840,7 @@ function onChartBeforePrint() {
 }
 /**
  * Clear previous layouts.
- * @private
+ * @internal
  */
 function onChartPredraw() {
     if (this.graphLayoutsLookup) {
@@ -6759,7 +6850,7 @@ function onChartPredraw() {
     }
 }
 /**
- * @private
+ * @internal
  */
 function onChartRender() {
     let systemsStable, afterRender = false;
@@ -6781,8 +6872,9 @@ function onChartRender() {
             afterRender = true;
         }
     };
-    // Don't animate layout when series is dragged
-    if (this.graphLayoutsLookup && !this.pointer?.hasDragged) {
+    // Don't restart layout when chart is panned
+    if (this.graphLayoutsLookup && (!this.pointer?.hasDragged ||
+        this.graphLayoutsLookup.some((layout) => layout.nodes.some((node) => !!node.inDragMode)))) {
         (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.setAnimation)(false, this);
         // Start simulation
         this.graphLayoutsLookup.forEach((layout) => layout.start());
@@ -6807,6 +6899,7 @@ function onChartRender() {
  *  Default Export
  *
  * */
+/** @internal */
 const GraphLayoutComposition = {
     compose: GraphLayoutComposition_compose,
     integrations,
@@ -7158,6 +7251,15 @@ const PackedBubbleSeriesDefaults = {
             maxSpeed: 50,
             initialPositionRadius: 100,
             seriesInteraction: true,
+            /**
+             * The distance between two parent nodes, when the algorithm
+             * starts to treat them as overlapping. Defaults to the
+             * [layoutAlgorithm.bubblePadding](#plotOptions.packedbubble.layoutAlgorithm.bubblePadding)
+             * value.
+             *
+             * @type      {number}
+             * @apioption plotOptions.packedbubble.layoutAlgorithm.parentNodeOptions.bubblePadding
+             */
             /**
              * Styling options for parentNodes markers. Similar to
              * line.marker options.

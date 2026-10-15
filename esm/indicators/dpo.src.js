@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.1.0 (2026-10-02)
+ * @license Highstock JS v13.1.1-modified (2026-10-15)
  * @module highcharts/indicators/dpo
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -150,8 +150,8 @@ class DPOIndicator extends SMAIndicator {
  *               navigatorOptions, pointInterval, pointIntervalUnit,
  *               pointPlacement, pointRange, pointStart, showInNavigator,
  *               stacking
- * @requires     stock/indicators/indicators
- * @requires     stock/indicators/dpo
+ * @requires     indicators/indicators
+ * @requires     indicators/dpo
  * @optionparent plotOptions.dpo
  * @internal
  */
@@ -193,8 +193,8 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  * @excluding allAreas, colorAxis, compare, compareBase,
  *            joinBy, keys, navigatorOptions, pointInterval, pointIntervalUnit,
  *            pointPlacement, pointRange, pointStart, showInNavigator, stacking
- * @requires  stock/indicators/indicators
- * @requires  stock/indicators/dpo
+ * @requires  indicators/indicators
+ * @requires  indicators/dpo
  * @apioption series.dpo
  */
 ''; // To include the above in the js output'

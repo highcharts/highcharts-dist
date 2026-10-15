@@ -462,6 +462,12 @@ addEvent(AreaRangeSeries, 'afterTranslate', function () {
     if (this.pointArrayMap.join(',') === 'low,high') {
         this.points.forEach((point) => {
             const high = point.high, plotY = point.plotY;
+            // Rank both labels of the point by how tall the range is.
+            // `pointValKey` is `low` for this series, so the generic value
+            // based rank would order the labels by their lower bound rather
+            // than by size. Set here rather than in `drawDataLabels` so that
+            // column ranges and their subtypes get it too (#23585).
+            point.labelrank = point.options.labelrank ?? Math.abs((high || 0) - (point.low || 0));
             if (point.isNull) {
                 point.plotY = void 0;
             }

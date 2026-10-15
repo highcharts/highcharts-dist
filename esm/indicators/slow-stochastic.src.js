@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.1.0 (2026-10-02)
+ * @license Highstock JS v13.1.1-modified (2026-10-15)
  * @module highcharts/indicators/indicators
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -135,9 +135,9 @@ class SlowStochasticIndicator extends StochasticIndicator {
  * @extends      plotOptions.stochastic
  * @since        8.0.0
  * @product      highstock
- * @requires     stock/indicators/indicators
- * @requires     stock/indicators/stochastic
- * @requires     stock/indicators/slow-stochastic
+ * @requires     indicators/indicators
+ * @requires     indicators/stochastic
+ * @requires     indicators/slow-stochastic
  * @optionparent plotOptions.slowstochastic
  * @internal
  */
@@ -174,9 +174,9 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  * @extends   series,plotOptions.slowstochastic
  * @since     8.0.0
  * @product   highstock
- * @requires  stock/indicators/indicators
- * @requires  stock/indicators/stochastic
- * @requires  stock/indicators/slow-stochastic
+ * @requires  indicators/indicators
+ * @requires  indicators/stochastic
+ * @requires  indicators/slow-stochastic
  * @apioption series.slowstochastic
  */
 ''; // To include the above in the js output

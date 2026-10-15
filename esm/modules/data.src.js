@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.0 (2026-10-02)
+ * @license Highcharts JS v13.1.1-modified (2026-10-15)
  * @module highcharts/modules/data
  * @requires highcharts
  *
@@ -468,13 +468,19 @@ const { setLength: DataTableCore_setLength, splice: DataTableCore_splice } = Dat
 class DataTableCore {
     constructor(options = {}) {
         this.isDataTable = true;
-        this.autoId = !options.id;
+        // Reject IDs that would pollute the prototype of ID-keyed maps.
+        const id = this.isPollutingKey(options.id) ? void 0 : options.id;
+        this.autoId = !id;
         this.columns = {};
-        this.id = (options.id || (0,external_highcharts_src_js_default_namespaceObject.uniqueKey)());
+        this.id = (id || (0,external_highcharts_src_js_default_namespaceObject.uniqueKey)());
         this.rowCount = 0;
         this.versionTag = (0,external_highcharts_src_js_default_namespaceObject.uniqueKey)();
         let rowCount = 0;
         (0,external_highcharts_src_js_default_namespaceObject.objectEach)(options.columns || {}, (column, columnId) => {
+            if (columnId === '__proto__' ||
+                columnId === 'constructor') {
+                return;
+            }
             this.columns[columnId] = column.slice();
             rowCount = Math.max(rowCount, column.length);
         });
@@ -485,6 +491,17 @@ class DataTableCore {
      *  Functions
      *
      * */
+    /**
+     * Checks whether a key would pollute the prototype if used to index a
+     * plain object (e.g. as a column ID or table ID).
+     *
+     * @private
+     * @param {string|undefined} key The key to check.
+     * @return {boolean} True if the key is unsafe to use.
+     */
+    isPollutingKey(key) {
+        return key === '__proto__' || key === 'constructor';
+    }
     /**
      * Applies a row count to the table by setting the `rowCount` property and
      * adjusting the length of all columns.
@@ -643,6 +660,10 @@ class DataTableCore {
     setColumns(columns, rowIndex, eventDetail) {
         let rowCount = this.rowCount;
         (0,external_highcharts_src_js_default_namespaceObject.objectEach)(columns, (column, columnId) => {
+            if (columnId === '__proto__' ||
+                columnId === 'constructor') {
+                return;
+            }
             this.columns[columnId] = column.slice();
             rowCount = column.length;
         });
@@ -685,8 +706,7 @@ class DataTableCore {
         if (eventDetail?.addColumns !== false) {
             for (let i = 0, iEnd = rowKeys.length; i < iEnd; i++) {
                 const rowKey = rowKeys[i];
-                if (rowKey !== '__proto__' &&
-                    rowKey !== 'constructor' &&
+                if (!this.isPollutingKey(rowKey) &&
                     !Object.hasOwnProperty.call(columns, rowKey)) {
                     columns[rowKey] = new Array(this.rowCount);
                 }
@@ -1035,9 +1055,7 @@ class Data {
         this.decimalRegex = (decimalPoint &&
             new RegExp('^(-?[0-9]+)' + decimalPoint + '([0-9]+)$'));
         // Always stop old polling when we have new options
-        if (this.liveDataTimeout !== void 0) {
-            (0,external_highcharts_src_js_default_namespaceObject.internalClearTimeout)(this.liveDataTimeout);
-        }
+        this.stopPolling();
         // This is a two-dimensional array holding the raw, trimmed string
         // values with the same organization as the columns array. It makes it
         // possible for example to revert from interpreted timestamps to
@@ -1602,7 +1620,7 @@ class Data {
                             if (!columns[colNo - startColumn]) {
                                 columns[colNo - startColumn] = [];
                             }
-                            columns[colNo - startColumn][rowNo - startRow] = item.innerHTML;
+                            columns[colNo - startColumn][rowNo - startRow] = item.textContent;
                             // Loop over all previous indices and make sure
                             // they are nulls, not undefined.
                             while (rowNo - startRow >= i &&
@@ -1663,7 +1681,7 @@ class Data {
                     return false;
                 }
                 if (initialFetch) {
-                    (0,external_highcharts_src_js_default_namespaceObject.internalClearTimeout)(data.liveDataTimeout);
+                    data.stopPolling();
                     chart.liveDataURL = url;
                 }
                 /**
@@ -1674,7 +1692,12 @@ class Data {
                 function poll() {
                     // Poll
                     if (pollingEnabled && chart.liveDataURL === url) {
-                        // We need to stop doing this if the URL has changed
+                        // We need to stop doing this if the URL has changed.
+                        // Updating the chart above re-enters `Data#init`,
+                        // which may have started a poller of its own. Drop it
+                        // so that a single pending timeout is left to keep
+                        // track of, and to clear on destroy (#25115).
+                        data.stopPolling();
                         data.liveDataTimeout =
                             setTimeout(performFetch, updateIntervalMs);
                     }
@@ -1683,6 +1706,12 @@ class Data {
                     url: url,
                     dataType: tp || 'json',
                     success: function (res) {
+                        if (data.destroyed) {
+                            // The chart was destroyed while the request was
+                            // in flight, so there is nothing left to update
+                            // (#25115)
+                            return;
+                        }
                         if (chart?.series) {
                             done(res);
                         }
@@ -1725,6 +1754,19 @@ class Data {
         }
         performFetch(true);
         return hasURLOption(options);
+    }
+    /**
+     * Stop polling for live data, clearing the pending timeout if there is
+     * one.
+     *
+     * @function Highcharts.Data#stopPolling
+     * @internal
+     */
+    stopPolling() {
+        if (this.liveDataTimeout !== void 0) {
+            (0,external_highcharts_src_js_default_namespaceObject.internalClearTimeout)(this.liveDataTimeout);
+            this.liveDataTimeout = void 0;
+        }
     }
     /**
      * Parse a Google spreadsheet.
@@ -1773,6 +1815,11 @@ class Data {
                 url,
                 dataType: 'json',
                 success: function (json) {
+                    if (data.destroyed) {
+                        // The chart was destroyed while the request was in
+                        // flight, so there is nothing left to update (#25115)
+                        return;
+                    }
                     fn(json);
                     if (options.enablePolling) {
                         data.liveDataTimeout = setTimeout(function () {
@@ -2316,6 +2363,15 @@ class Data {
             }
         }), userOptions, chart);
         e.preventDefault();
+    }
+});
+// Stop live data polling when the chart goes away, so that no request is
+// fired and no response is handled after teardown (#25115).
+(0,external_highcharts_src_js_default_namespaceObject.addEvent)((external_highcharts_src_js_default_Chart_default()), 'destroy', function () {
+    const data = this.data;
+    if (data) {
+        data.destroyed = true;
+        data.stopPolling();
     }
 });
 /**

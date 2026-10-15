@@ -139,8 +139,8 @@ class MFIIndicator extends SMAIndicator {
  * @extends      plotOptions.sma
  * @since        6.0.0
  * @product      highstock
- * @requires     stock/indicators/indicators
- * @requires     stock/indicators/mfi
+ * @requires     indicators/indicators
+ * @requires     indicators/mfi
  * @optionparent plotOptions.mfi
  * @internal
  */
@@ -184,8 +184,8 @@ export default MFIIndicator;
  * @extends   series,plotOptions.mfi
  * @since     6.0.0
  * @product   highstock
- * @requires  stock/indicators/indicators
- * @requires  stock/indicators/mfi
+ * @requires  indicators/indicators
+ * @requires  indicators/mfi
  * @apioption series.mfi
  */
 ''; // To include the above in the js output

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.1.0 (2026-10-02)
+ * @license Highstock JS v13.1.1-modified (2026-10-15)
  * @module highcharts/modules/pointandfigure
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -303,13 +303,19 @@ const { setLength: DataTableCore_setLength, splice: DataTableCore_splice } = Dat
 class DataTableCore {
     constructor(options = {}) {
         this.isDataTable = true;
-        this.autoId = !options.id;
+        // Reject IDs that would pollute the prototype of ID-keyed maps.
+        const id = this.isPollutingKey(options.id) ? void 0 : options.id;
+        this.autoId = !id;
         this.columns = {};
-        this.id = (options.id || (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.uniqueKey)());
+        this.id = (id || (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.uniqueKey)());
         this.rowCount = 0;
         this.versionTag = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.uniqueKey)();
         let rowCount = 0;
         (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.objectEach)(options.columns || {}, (column, columnId) => {
+            if (columnId === '__proto__' ||
+                columnId === 'constructor') {
+                return;
+            }
             this.columns[columnId] = column.slice();
             rowCount = Math.max(rowCount, column.length);
         });
@@ -320,6 +326,17 @@ class DataTableCore {
      *  Functions
      *
      * */
+    /**
+     * Checks whether a key would pollute the prototype if used to index a
+     * plain object (e.g. as a column ID or table ID).
+     *
+     * @private
+     * @param {string|undefined} key The key to check.
+     * @return {boolean} True if the key is unsafe to use.
+     */
+    isPollutingKey(key) {
+        return key === '__proto__' || key === 'constructor';
+    }
     /**
      * Applies a row count to the table by setting the `rowCount` property and
      * adjusting the length of all columns.
@@ -478,6 +495,10 @@ class DataTableCore {
     setColumns(columns, rowIndex, eventDetail) {
         let rowCount = this.rowCount;
         (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.objectEach)(columns, (column, columnId) => {
+            if (columnId === '__proto__' ||
+                columnId === 'constructor') {
+                return;
+            }
             this.columns[columnId] = column.slice();
             rowCount = column.length;
         });
@@ -520,8 +541,7 @@ class DataTableCore {
         if (eventDetail?.addColumns !== false) {
             for (let i = 0, iEnd = rowKeys.length; i < iEnd; i++) {
                 const rowKey = rowKeys[i];
-                if (rowKey !== '__proto__' &&
-                    rowKey !== 'constructor' &&
+                if (!this.isPollutingKey(rowKey) &&
                     !Object.hasOwnProperty.call(columns, rowKey)) {
                     columns[rowKey] = new Array(this.rowCount);
                 }

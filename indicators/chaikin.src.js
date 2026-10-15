@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.1.0 (2026-10-02)
+ * @license Highstock JS v13.1.1-modified (2026-10-15)
  * @module highcharts/indicators/chaikin
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -200,8 +200,8 @@ class ADIndicator extends SMAIndicator {
  * @extends      plotOptions.sma
  * @since        6.0.0
  * @product      highstock
- * @requires     stock/indicators/indicators
- * @requires     stock/indicators/accumulation-distribution
+ * @requires     indicators/indicators
+ * @requires     indicators/accumulation-distribution
  * @optionparent plotOptions.ad
  * @internal
  */
@@ -244,8 +244,8 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @extends   series,plotOptions.ad
  * @since     6.0.0
  * @product   highstock
- * @requires  stock/indicators/indicators
- * @requires  stock/indicators/accumulation-distribution
+ * @requires  indicators/indicators
+ * @requires  indicators/accumulation-distribution
  * @apioption series.ad
  */
 ''; // Add doclet above to transpiled file
@@ -350,8 +350,8 @@ class ChaikinIndicator extends EMAIndicator {
  * @excluding    allAreas, colorAxis, joinBy, keys, navigatorOptions,
  *               pointInterval, pointIntervalUnit, pointPlacement,
  *               pointRange, pointStart, showInNavigator, stacking
- * @requires     stock/indicators/indicators
- * @requires     stock/indicators/chaikin
+ * @requires     indicators/indicators
+ * @requires     indicators/chaikin
  * @optionparent plotOptions.chaikin
  * @internal
  */
@@ -411,8 +411,8 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @excluding allAreas, colorAxis, joinBy, keys,
  *            navigatorOptions, pointInterval, pointIntervalUnit,
  *            pointPlacement, pointRange, pointStart, stacking, showInNavigator
- * @requires  stock/indicators/indicators
- * @requires  stock/indicators/chaikin
+ * @requires  indicators/indicators
+ * @requires  indicators/chaikin
  * @apioption series.chaikin
  */
 ''; // To include the above in the js output

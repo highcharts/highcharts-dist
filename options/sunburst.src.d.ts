@@ -178,7 +178,7 @@ declare module "../highcharts.src" {
          * `.highcharts-breadcrumbs-buttons .highcharts-button` rule with its
          * different states.
          */
-        style?: Highcharts.SVGAttributes;
+        style?: Highcharts.CSSObject;
         /**
          * (Highcharts) Whether to use HTML to render the breadcrumbs items
          * texts.

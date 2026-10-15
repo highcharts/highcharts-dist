@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.1.0 (2026-10-02)
+ * @license Highstock JS v13.1.1-modified (2026-10-15)
  * @module highcharts/indicators/acceleration-bands
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -468,8 +468,8 @@ class ABandsIndicator extends SMAIndicator {
  *               navigatorOptions, pointInterval, pointIntervalUnit,
  *               pointPlacement, pointRange, pointStart, showInNavigator,
  *               stacking,
- * @requires     stock/indicators/indicators
- * @requires     stock/indicators/acceleration-bands
+ * @requires     indicators/indicators
+ * @requires     indicators/acceleration-bands
  * @optionparent plotOptions.abands
  * @internal
  */
@@ -548,8 +548,8 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *            joinBy, keys, navigatorOptions, pointInterval,
  *            pointIntervalUnit, pointPlacement, pointRange, pointStart,
  *            stacking, showInNavigator,
- * @requires  stock/indicators/indicators
- * @requires  stock/indicators/acceleration-bands
+ * @requires  indicators/indicators
+ * @requires  indicators/acceleration-bands
  * @apioption series.abands
  */
 ''; // To include the above in jsdoc

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.1.0 (2026-10-02)
+ * @license Highstock JS v13.1.1-modified (2026-10-15)
  * @module highcharts/indicators/aroon-oscillator
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -407,9 +407,9 @@ class AroonOscillatorIndicator extends AroonIndicator {
  *               joinBy, keys, navigatorOptions, pointInterval,
  *               pointIntervalUnit, pointPlacement, pointRange, pointStart,
  *               showInNavigator, stacking
- * @requires     stock/indicators/indicators
- * @requires     stock/indicators/aroon
- * @requires     stock/indicators/aroon-oscillator
+ * @requires     indicators/indicators
+ * @requires     indicators/aroon
+ * @requires     indicators/aroon-oscillator
  * @optionparent plotOptions.aroonoscillator
  * @internal
  */
@@ -448,9 +448,9 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *            joinBy, keys, navigatorOptions, pointInterval,
  *            pointIntervalUnit, pointPlacement, pointRange, pointStart,
  *            showInNavigator, stacking
- * @requires  stock/indicators/indicators
- * @requires  stock/indicators/aroon
- * @requires  stock/indicators/aroon-oscillator
+ * @requires  indicators/indicators
+ * @requires  indicators/aroon
+ * @requires  indicators/aroon-oscillator
  * @apioption series.aroonoscillator
  */
 ''; // Adds doclet above to the transpiled file

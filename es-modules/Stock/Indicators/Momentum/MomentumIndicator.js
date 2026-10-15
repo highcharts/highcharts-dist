@@ -82,8 +82,8 @@ class MomentumIndicator extends SMAIndicator {
  * @extends      plotOptions.sma
  * @since        6.0.0
  * @product      highstock
- * @requires     stock/indicators/indicators
- * @requires     stock/indicators/momentum
+ * @requires     indicators/indicators
+ * @requires     indicators/momentum
  * @optionparent plotOptions.momentum
  * @internal
  */
@@ -114,8 +114,8 @@ export default MomentumIndicator;
  * @extends   series,plotOptions.momentum
  * @since     6.0.0
  * @product   highstock
- * @requires  stock/indicators/indicators
- * @requires  stock/indicators/momentum
+ * @requires  indicators/indicators
+ * @requires  indicators/momentum
  * @apioption series.momentum
  */
 ''; // To include the above in the js output

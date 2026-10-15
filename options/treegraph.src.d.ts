@@ -267,6 +267,18 @@ declare module "../highcharts.src" {
         textOverflow?: string;
     }
     /**
+     * (Highcharts) Animation when hovering over the marker.
+     */
+    interface PlotTreegraphLevelsMarkerStatesHoverAnimationOptions {
+        duration?: number;
+    }
+    /**
+     * (Highcharts) Animation when hovering over the marker.
+     */
+    interface PlotTreegraphLevelsMarkerStatesSelectAnimationOptions {
+        duration?: number;
+    }
+    /**
      * (Highcharts) Set options on specific levels. Takes precedence over series
      * options, but not point options.
      */
@@ -292,6 +304,11 @@ declare module "../highcharts.src" {
          * level.
          */
         color?: Highcharts.ColorType;
+        /**
+         * (Highcharts) Determines whether the chart should receive one color
+         * per point based on this level.
+         */
+        colorByPoint?: boolean;
         /**
          * (Highcharts) A configuration object to define how the color of a
          * child varies from the parent's color. The variation is distributed
@@ -334,6 +351,10 @@ declare module "../highcharts.src" {
          * name for this level.
          */
         levelIsConstant?: boolean;
+        /**
+         * (Highcharts) Set marker options for nodes at the level.
+         */
+        marker?: Highcharts.PointMarkerOptionsObject;
     }
     interface PlotTreegraphLinkOptions {
         /**

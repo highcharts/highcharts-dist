@@ -97,8 +97,8 @@ class ChaikinIndicator extends EMAIndicator {
  * @excluding    allAreas, colorAxis, joinBy, keys, navigatorOptions,
  *               pointInterval, pointIntervalUnit, pointPlacement,
  *               pointRange, pointStart, showInNavigator, stacking
- * @requires     stock/indicators/indicators
- * @requires     stock/indicators/chaikin
+ * @requires     indicators/indicators
+ * @requires     indicators/chaikin
  * @optionparent plotOptions.chaikin
  * @internal
  */
@@ -158,8 +158,8 @@ export default ChaikinIndicator;
  * @excluding allAreas, colorAxis, joinBy, keys,
  *            navigatorOptions, pointInterval, pointIntervalUnit,
  *            pointPlacement, pointRange, pointStart, stacking, showInNavigator
- * @requires  stock/indicators/indicators
- * @requires  stock/indicators/chaikin
+ * @requires  indicators/indicators
+ * @requires  indicators/chaikin
  * @apioption series.chaikin
  */
 ''; // To include the above in the js output

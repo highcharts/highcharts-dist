@@ -643,8 +643,14 @@ class DataTable extends DataTableCore {
      * Returns `true` if successful, `false` if the column was not found.
      */
     changeColumnId(columnId, newColumnId) {
+        if (columnId === '__proto__' ||
+            columnId === 'constructor' ||
+            newColumnId === '__proto__' ||
+            newColumnId === 'constructor') {
+            return false;
+        }
         const table = this, columns = table.columns;
-        if (columns[columnId]) {
+        if (Object.hasOwnProperty.call(columns, columnId)) {
             if (columnId !== newColumnId) {
                 columns[newColumnId] = columns[columnId];
                 delete columns[columnId];
@@ -678,8 +684,14 @@ class DataTable extends DataTableCore {
      * @emits #afterSetCell
      */
     setCell(columnId, rowIndex, cellValue, eventDetail) {
+        if (columnId === '__proto__' ||
+            columnId === 'constructor') {
+            return;
+        }
         const table = this, columns = table.columns, modifier = table.modifier;
-        let column = columns[columnId];
+        let column = Object.hasOwnProperty.call(columns, columnId) ?
+            columns[columnId] :
+            void 0;
         if (column && column[rowIndex] === cellValue) {
             return;
         }
@@ -754,6 +766,10 @@ class DataTable extends DataTableCore {
             }
             for (let i = 0, iEnd = columnIds.length, column, tableColumn, columnId, ArrayConstructor; i < iEnd; ++i) {
                 columnId = columnIds[i];
+                if (columnId === '__proto__' ||
+                    columnId === 'constructor') {
+                    continue;
+                }
                 column = columns[columnId];
                 tableColumn = tableColumns[columnId];
                 ArrayConstructor = Object.getPrototypeOf((tableColumn && typeAsOriginal) ? tableColumn : column).constructor;

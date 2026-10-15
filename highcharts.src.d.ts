@@ -416,6 +416,17 @@ export type DataLabelsFormatterCallbackFunction = (this: Point, options: DataLab
  */
 export type DataLabelsOverflowValue = ("allow"|"justify");
 /**
+ * Options for `dataMapping`. The data mapping options allow you to define how
+ * data from a data table should be mapped to series points. The object keys
+ * refer to the point property that should be mapped, and the values refer to
+ * the `dataTable` and `column` that should be used for the mapping.
+ *
+ * Values can be either a string pointing directly to a column in the first data
+ * table, or an object with `dataTable` and `column` properties to specify the
+ * mapping in more detail.
+ */
+export type DataMappingOptionsObject = Record<string, (string|DataMappingItemObject)>;
+/**
  * Callback function to parse string representations of dates into JavaScript
  * timestamps (milliseconds since 1.1.1970).
  *
@@ -7506,7 +7517,7 @@ export interface ChartParallelAxesOptions {
      * coordinates titles. For example, to style categories, use
      * xAxis.labels.style.
      */
-    title?: ChartParallelAxesTitleOptions;
+    title?: (ChartParallelAxesTitleOptions|null);
     /**
      * (Highcharts) Parallel coordinates only. Format that will be used for
      * point.y and available in tooltip.pointFormat as `{point.formattedValue}`.
@@ -7596,8 +7607,7 @@ export interface ChartParallelAxesTitleOptions {
      */
     align?: AxisTitleAlignValue;
     /**
-     * (Highcharts) Deprecated. Set the `text` to `undefined` to disable the
-     * title.
+     * (Highcharts) Deprecated. Set the `text` to `null` to disable the title.
      *
      * @deprecated 3.0.0
      */
@@ -7677,8 +7687,8 @@ export interface ChartParallelAxesTitleOptions {
      * (Highcharts, Highstock, Gantt) The actual text of the axis title.
      * Horizontal texts can contain HTML, but rotated texts are painted using
      * vector techniques and must be clean text. The Y axis title is disabled by
-     * setting the `text` option to `undefined`. The default value is overridden
-     * by the `lang.yAxisTitle` language option.
+     * setting the `text` option to `null`. The default value is overridden by
+     * the `lang.yAxisTitle` language option.
      */
     text?: string;
     /**
@@ -9834,16 +9844,23 @@ export interface DataLabelsTextPathOptionsObject {
     enabled?: boolean;
 }
 /**
- * Options for `dataMapping`. The data mapping options allow you to define how
- * data from a data table should be mapped to series points. The object keys
- * refer to the point property that should be mapped, and the values refer to
- * the `dataTable` and `column` that should be used for the mapping.
- *
- * Values can be either a string pointing directly to a column in the first data
- * table, or an object with `dataTable` and `column` properties to specify the
- * mapping in more detail.
+ * The data table and column to read a point property from in dataMapping.
  */
-export interface DataMappingOptionsObject {}
+export interface DataMappingItemObject {
+    /**
+     * The column from which to read the value for this data point property.
+     * This can be either a column id (string) or a column index (number) in the
+     * data table. Defaults to the column with the same id as the point
+     * property.
+     */
+    column?: (number|string);
+    /**
+     * The data table from which to read the value for this data point property.
+     * This can be either a data table id (string) or a data table index
+     * (number). Defaults to the first data table.
+     */
+    dataTable?: (number|string);
+}
 /**
  * (Highcharts, Highstock, Highmaps, Gantt) The Data module provides a
  * simplified interface for adding data to a chart from sources like CVS, HTML
@@ -10417,7 +10434,7 @@ export interface DrilldownBreadcrumbsOptions {
      * `.highcharts-breadcrumbs-buttons .highcharts-button` rule with its
      * different states.
      */
-    style?: SVGAttributes;
+    style?: CSSObject;
     /**
      * (Highcharts, Highmaps) Whether to use HTML to render the breadcrumbs
      * items texts.
@@ -11808,23 +11825,19 @@ export interface GradientColorStopObject {
     color?: Color;
 }
 /**
- * (Highmaps) Make the geoheatmap render its data points as an interpolated
- * image. It can be used to show a Temperature Map-like charts.
+ * Detailed options for interpolation object.
  */
 export interface InterpolationOptionsObject {
     /**
-     * (Highmaps) Represents how much blur should be added to the interpolated
-     * image. Works best in the range of 0-1, all higher values would need a lot
-     * more performance of the machine to calculate more detailed interpolation.
-     *
-     * * **Note:** Useful, if the data is spread into wide range of longitude
-     * and latitude values.
+     * Represents how much blur should be added to the interpolated image. Works
+     * best in the range of 0-1, all higher values would need a lot more
+     * performance of the machine to calculate more detailed interpolation.
      */
-    blur?: number;
+    blur: number;
     /**
-     * (Highmaps) Enable or disable the interpolation of the geoheatmap series.
+     * Enable or disable the interpolation.
      */
-    enabled?: boolean;
+    enabled: boolean;
 }
 /**
  * (Highcharts, Highstock, Highmaps, Gantt) Options for the focus border drawn
@@ -89673,7 +89686,7 @@ export interface NavigationBreadcrumbsOptions {
      * `.highcharts-breadcrumbs-buttons .highcharts-button` rule with its
      * different states.
      */
-    style?: SVGAttributes;
+    style?: CSSObject;
     /**
      * (Highcharts) Whether to use HTML to render the breadcrumbs items texts.
      */
@@ -91453,9 +91466,10 @@ export interface NavigatorXAxisOptions {
      */
     tickWidth?: (number|undefined);
     /**
-     * (Highstock, Gantt) The axis title, showing next to the axis line.
+     * (Highstock, Gantt) The axis title, showing next to the axis line. Set to
+     * `null` to disable the title.
      */
-    title?: NavigatorXAxisTitleOptions;
+    title?: (NavigatorXAxisTitleOptions|null);
     /**
      * (Highcharts, Highstock) The top position as the vertical axis. If it's a
      * number, it is interpreted as pixel position relative to the chart.
@@ -91856,7 +91870,8 @@ export interface NavigatorXAxisPlotLinesOptions {
     zIndex?: number;
 }
 /**
- * (Highstock, Gantt) The axis title, showing next to the axis line.
+ * (Highstock, Gantt) The axis title, showing next to the axis line. Set to
+ * `null` to disable the title.
  */
 export interface NavigatorXAxisTitleOptions {
     /**
@@ -92821,9 +92836,10 @@ export interface NavigatorYAxisOptions {
      */
     tickWidth?: number;
     /**
-     * (Highstock, Gantt) The axis title, showing next to the axis line.
+     * (Highstock, Gantt) The axis title, showing next to the axis line. Set to
+     * `null` to disable the title.
      */
-    title?: NavigatorYAxisTitleOptions;
+    title?: (NavigatorYAxisTitleOptions|null);
     /**
      * (Highcharts, Gantt) The type of axis. Can be one of `linear`,
      * `logarithmic`, `datetime`, `category` or `treegrid`. Defaults to
@@ -93230,7 +93246,8 @@ export interface NavigatorYAxisPlotLinesOptions {
     zIndex?: number;
 }
 /**
- * (Highstock, Gantt) The axis title, showing next to the axis line.
+ * (Highstock, Gantt) The axis title, showing next to the axis line. Set to
+ * `null` to disable the title.
  */
 export interface NavigatorYAxisTitleOptions {
     /**
@@ -93279,8 +93296,8 @@ export interface NavigatorYAxisTitleOptions {
      * (Highcharts, Highstock, Gantt) The actual text of the axis title.
      * Horizontal texts can contain HTML, but rotated texts are painted using
      * vector techniques and must be clean text. The Y axis title is disabled by
-     * setting the `text` option to `undefined`. The default value is overridden
-     * by the `lang.yAxisTitle` language option.
+     * setting the `text` option to `null`. The default value is overridden by
+     * the `lang.yAxisTitle` language option.
      */
     text?: string;
     /**
@@ -98042,15 +98059,15 @@ PlotPointandfigureMarkerUpStatesHoverAnimationOptions|PlotPolygonMarkerStatesHov
 PlotPsarMarkerStatesHoverAnimationOptions|PlotRocMarkerStatesHoverAnimationOptions|PlotRsiMarkerStatesHoverAnimationOptions|PlotScatter3dMarkerStatesHoverAnimationOptions|
 PlotScatterMarkerStatesHoverAnimationOptions|PlotSeriesMarkerStatesHoverAnimationOptions|PlotSlowstochasticMarkerStatesHoverAnimationOptions|PlotSmaMarkerStatesHoverAnimationOptions|
 PlotSplineMarkerStatesHoverAnimationOptions|PlotStochasticMarkerStatesHoverAnimationOptions|PlotStreamgraphMarkerStatesHoverAnimationOptions|PlotSupertrendMarkerStatesHoverAnimationOptions|
-PlotTemaMarkerStatesHoverAnimationOptions|PlotTimelineMarkerStatesHoverAnimationOptions|PlotTreegraphMarkerStatesHoverAnimationOptions|PlotTrendlineMarkerStatesHoverAnimationOptions|
-PlotTrixMarkerStatesHoverAnimationOptions|PlotVbpMarkerStatesHoverAnimationOptions|PlotVwapMarkerStatesHoverAnimationOptions|PlotWilliamsrMarkerStatesHoverAnimationOptions|
-PlotWmaMarkerStatesHoverAnimationOptions|PlotZigzagMarkerStatesHoverAnimationOptions|SeriesAreaDataMarkerStatesHoverAnimationOptions|SeriesAreasplineDataMarkerStatesHoverAnimationOptions|
-SeriesBubbleDataMarkerStatesHoverAnimationOptions|SeriesContourDataMarkerStatesHoverAnimationOptions|SeriesHeatmapDataMarkerStatesHoverAnimationOptions|SeriesLineDataMarkerStatesHoverAnimationOptions|
-SeriesNetworkgraphNodesMarkerStatesHoverAnimationOptions|SeriesPointandfigureDataMarkerStatesHoverAnimationOptions|SeriesPolygonDataMarkerStatesHoverAnimationOptions|
-SeriesScatter3dDataMarkerStatesHoverAnimationOptions|SeriesScatterDataMarkerStatesHoverAnimationOptions|SeriesSplineDataMarkerStatesHoverAnimationOptions|
-SeriesStreamgraphDataMarkerStatesHoverAnimationOptions|SeriesSunburstDataMarkerStatesHoverAnimationOptions|SeriesTreegraphDataMarkerStatesHoverAnimationOptions|
-SeriesTreemapDataMarkerStatesHoverAnimationOptions|SeriesVectorDataMarkerStatesHoverAnimationOptions|SeriesWindbarbDataMarkerStatesHoverAnimationOptions|
-SeriesXrangeDataMarkerStatesHoverAnimationOptions|Partial<AnimationOptionsObject>);
+PlotTemaMarkerStatesHoverAnimationOptions|PlotTimelineMarkerStatesHoverAnimationOptions|PlotTreegraphLevelsMarkerStatesHoverAnimationOptions|PlotTreegraphMarkerStatesHoverAnimationOptions|
+PlotTrendlineMarkerStatesHoverAnimationOptions|PlotTrixMarkerStatesHoverAnimationOptions|PlotVbpMarkerStatesHoverAnimationOptions|PlotVwapMarkerStatesHoverAnimationOptions|
+PlotWilliamsrMarkerStatesHoverAnimationOptions|PlotWmaMarkerStatesHoverAnimationOptions|PlotZigzagMarkerStatesHoverAnimationOptions|SeriesAreaDataMarkerStatesHoverAnimationOptions|
+SeriesAreasplineDataMarkerStatesHoverAnimationOptions|SeriesBubbleDataMarkerStatesHoverAnimationOptions|SeriesContourDataMarkerStatesHoverAnimationOptions|
+SeriesHeatmapDataMarkerStatesHoverAnimationOptions|SeriesLineDataMarkerStatesHoverAnimationOptions|SeriesNetworkgraphNodesMarkerStatesHoverAnimationOptions|
+SeriesPointandfigureDataMarkerStatesHoverAnimationOptions|SeriesPolygonDataMarkerStatesHoverAnimationOptions|SeriesScatter3dDataMarkerStatesHoverAnimationOptions|
+SeriesScatterDataMarkerStatesHoverAnimationOptions|SeriesSplineDataMarkerStatesHoverAnimationOptions|SeriesStreamgraphDataMarkerStatesHoverAnimationOptions|
+SeriesSunburstDataMarkerStatesHoverAnimationOptions|SeriesTreegraphDataMarkerStatesHoverAnimationOptions|SeriesTreemapDataMarkerStatesHoverAnimationOptions|
+SeriesVectorDataMarkerStatesHoverAnimationOptions|SeriesWindbarbDataMarkerStatesHoverAnimationOptions|SeriesXrangeDataMarkerStatesHoverAnimationOptions|Partial<AnimationOptionsObject>);
     /**
      * (Highcharts, Highstock) Enable or disable the point marker.
      */
@@ -98182,15 +98199,16 @@ PlotPointandfigureMarkerStatesSelectAnimationOptions|PlotPointandfigureMarkerUpS
 PlotPriceenvelopesMarkerStatesSelectAnimationOptions|PlotPsarMarkerStatesSelectAnimationOptions|PlotRocMarkerStatesSelectAnimationOptions|PlotRsiMarkerStatesSelectAnimationOptions|
 PlotScatter3dMarkerStatesSelectAnimationOptions|PlotScatterMarkerStatesSelectAnimationOptions|PlotSeriesMarkerStatesSelectAnimationOptions|PlotSlowstochasticMarkerStatesSelectAnimationOptions|
 PlotSmaMarkerStatesSelectAnimationOptions|PlotSplineMarkerStatesSelectAnimationOptions|PlotStochasticMarkerStatesSelectAnimationOptions|PlotStreamgraphMarkerStatesSelectAnimationOptions|
-PlotSupertrendMarkerStatesSelectAnimationOptions|PlotTemaMarkerStatesSelectAnimationOptions|PlotTimelineMarkerStatesSelectAnimationOptions|PlotTreegraphMarkerStatesSelectAnimationOptions|
-PlotTrendlineMarkerStatesSelectAnimationOptions|PlotTrixMarkerStatesSelectAnimationOptions|PlotVbpMarkerStatesSelectAnimationOptions|PlotVwapMarkerStatesSelectAnimationOptions|
-PlotWilliamsrMarkerStatesSelectAnimationOptions|PlotWmaMarkerStatesSelectAnimationOptions|PlotZigzagMarkerStatesSelectAnimationOptions|SeriesAreaDataMarkerStatesSelectAnimationOptions|
-SeriesAreasplineDataMarkerStatesSelectAnimationOptions|SeriesBubbleDataMarkerStatesSelectAnimationOptions|SeriesContourDataMarkerStatesSelectAnimationOptions|
-SeriesHeatmapDataMarkerStatesSelectAnimationOptions|SeriesLineDataMarkerStatesSelectAnimationOptions|SeriesNetworkgraphNodesMarkerStatesSelectAnimationOptions|
-SeriesPointandfigureDataMarkerStatesSelectAnimationOptions|SeriesPolygonDataMarkerStatesSelectAnimationOptions|SeriesScatter3dDataMarkerStatesSelectAnimationOptions|
-SeriesScatterDataMarkerStatesSelectAnimationOptions|SeriesSplineDataMarkerStatesSelectAnimationOptions|SeriesStreamgraphDataMarkerStatesSelectAnimationOptions|
-SeriesSunburstDataMarkerStatesSelectAnimationOptions|SeriesTreegraphDataMarkerStatesSelectAnimationOptions|SeriesTreemapDataMarkerStatesSelectAnimationOptions|
-SeriesVectorDataMarkerStatesSelectAnimationOptions|SeriesWindbarbDataMarkerStatesSelectAnimationOptions|SeriesXrangeDataMarkerStatesSelectAnimationOptions|Partial<AnimationOptionsObject>);
+PlotSupertrendMarkerStatesSelectAnimationOptions|PlotTemaMarkerStatesSelectAnimationOptions|PlotTimelineMarkerStatesSelectAnimationOptions|PlotTreegraphLevelsMarkerStatesSelectAnimationOptions|
+PlotTreegraphMarkerStatesSelectAnimationOptions|PlotTrendlineMarkerStatesSelectAnimationOptions|PlotTrixMarkerStatesSelectAnimationOptions|PlotVbpMarkerStatesSelectAnimationOptions|
+PlotVwapMarkerStatesSelectAnimationOptions|PlotWilliamsrMarkerStatesSelectAnimationOptions|PlotWmaMarkerStatesSelectAnimationOptions|PlotZigzagMarkerStatesSelectAnimationOptions|
+SeriesAreaDataMarkerStatesSelectAnimationOptions|SeriesAreasplineDataMarkerStatesSelectAnimationOptions|SeriesBubbleDataMarkerStatesSelectAnimationOptions|
+SeriesContourDataMarkerStatesSelectAnimationOptions|SeriesHeatmapDataMarkerStatesSelectAnimationOptions|SeriesLineDataMarkerStatesSelectAnimationOptions|
+SeriesNetworkgraphNodesMarkerStatesSelectAnimationOptions|SeriesPointandfigureDataMarkerStatesSelectAnimationOptions|SeriesPolygonDataMarkerStatesSelectAnimationOptions|
+SeriesScatter3dDataMarkerStatesSelectAnimationOptions|SeriesScatterDataMarkerStatesSelectAnimationOptions|SeriesSplineDataMarkerStatesSelectAnimationOptions|
+SeriesStreamgraphDataMarkerStatesSelectAnimationOptions|SeriesSunburstDataMarkerStatesSelectAnimationOptions|SeriesTreegraphDataMarkerStatesSelectAnimationOptions|
+SeriesTreemapDataMarkerStatesSelectAnimationOptions|SeriesVectorDataMarkerStatesSelectAnimationOptions|SeriesWindbarbDataMarkerStatesSelectAnimationOptions|
+SeriesXrangeDataMarkerStatesSelectAnimationOptions|Partial<AnimationOptionsObject>);
     /**
      * (Highcharts, Highstock) Enable or disable visible feedback for selection.
      */
@@ -108766,9 +108784,9 @@ export interface XAxisOptions {
     tickWidth?: (number|undefined);
     /**
      * (Highcharts, Highstock, Highmaps, Gantt) The axis title, showing next to
-     * the axis line.
+     * the axis line. Set to `null` to disable the title.
      */
-    title?: XAxisTitleOptions;
+    title?: (XAxisTitleOptions|null);
     /**
      * (Highcharts, Highstock) The top position as the vertical axis. If it's a
      * number, it is interpreted as pixel position relative to the chart.
@@ -109220,7 +109238,7 @@ export interface XAxisScrollbarOptions {
      */
     buttonsEnabled?: boolean;
     /**
-     * (Highstock) Enable or disable the scrollbar.
+     * (Highstock) Enable or disable the scrollbar on the X axis.
      */
     enabled?: boolean;
     /**
@@ -109288,7 +109306,7 @@ export interface XAxisScrollbarOptions {
 }
 /**
  * (Highcharts, Highstock, Highmaps, Gantt) The axis title, showing next to the
- * axis line.
+ * axis line. Set to `null` to disable the title.
  */
 export interface XAxisTitleOptions {
     /**
@@ -109297,8 +109315,7 @@ export interface XAxisTitleOptions {
      */
     align?: AxisTitleAlignValue;
     /**
-     * (Highcharts) Deprecated. Set the `text` to `undefined` to disable the
-     * title.
+     * (Highcharts) Deprecated. Set the `text` to `null` to disable the title.
      *
      * @deprecated 3.0.0
      */
@@ -110714,9 +110731,9 @@ export interface YAxisOptions {
     tickWidth?: number;
     /**
      * (Highcharts, Highstock, Highmaps, Gantt) The axis title, showing next to
-     * the axis line.
+     * the axis line. Set to `null` to disable the title.
      */
-    title?: YAxisTitleOptions;
+    title?: (YAxisTitleOptions|null);
     /**
      * (Highcharts) Parallel coordinates only. Format that will be used for
      * point.y and available in tooltip.pointFormat as `{point.formattedValue}`.
@@ -111270,7 +111287,7 @@ export interface YAxisScrollbarOptions {
      */
     buttonsEnabled?: boolean;
     /**
-     * (Highstock) Enable the scrollbar on the Y axis.
+     * (Highstock) Enable or disable the scrollbar on the Y axis.
      */
     enabled?: boolean;
     /**
@@ -111486,7 +111503,7 @@ export interface YAxisStackLabelsStyleOptions {
 }
 /**
  * (Highcharts, Highstock, Highmaps, Gantt) The axis title, showing next to the
- * axis line.
+ * axis line. Set to `null` to disable the title.
  */
 export interface YAxisTitleOptions {
     /**
@@ -111495,8 +111512,7 @@ export interface YAxisTitleOptions {
      */
     align?: AxisTitleAlignValue;
     /**
-     * (Highcharts) Deprecated. Set the `text` to `undefined` to disable the
-     * title.
+     * (Highcharts) Deprecated. Set the `text` to `null` to disable the title.
      *
      * @deprecated 3.0.0
      */
@@ -111579,10 +111595,10 @@ export interface YAxisTitleOptions {
      * (Highcharts, Highstock, Gantt) The actual text of the axis title.
      * Horizontal texts can contain HTML, but rotated texts are painted using
      * vector techniques and must be clean text. The Y axis title is disabled by
-     * setting the `text` option to `undefined`. The default value is overridden
-     * by the `lang.yAxisTitle` language option.
+     * setting the `text` option to `null`. The default value is overridden by
+     * the `lang.yAxisTitle` language option.
      */
-    text?: (string|undefined);
+    text?: (string|null);
     /**
      * (Highcharts, Highstock, Highmaps, Gantt) Alignment of the text, can be
      * `"left"`, `"right"` or `"center"`. Default alignment depends on the
@@ -112426,9 +112442,10 @@ export interface ZAxisOptions {
      */
     tickWidth?: (number|undefined);
     /**
-     * (Highcharts) The axis title, showing next to the axis line.
+     * (Highcharts) The axis title, showing next to the axis line. Set to `null`
+     * to disable the title.
      */
-    title?: ZAxisTitleOptions;
+    title?: (ZAxisTitleOptions|null);
     /**
      * (Highcharts, Gantt) The type of axis. Can be one of `linear`,
      * `logarithmic`, `datetime` or `category`. In a datetime axis, the numbers
@@ -112813,7 +112830,8 @@ export interface ZAxisPlotLinesOptions {
     zIndex?: number;
 }
 /**
- * (Highcharts) The axis title, showing next to the axis line.
+ * (Highcharts) The axis title, showing next to the axis line. Set to `null` to
+ * disable the title.
  */
 export interface ZAxisTitleOptions {
     /**
@@ -112822,8 +112840,7 @@ export interface ZAxisTitleOptions {
      */
     align?: AxisTitleAlignValue;
     /**
-     * (Highcharts) Deprecated. Set the `text` to `undefined` to disable the
-     * title.
+     * (Highcharts) Deprecated. Set the `text` to `null` to disable the title.
      *
      * @deprecated 3.0.0
      */
@@ -113291,6 +113308,26 @@ export class Axis {
      */
     userOptions: AxisOptions;
     /**
+     * Add a plot band after render time.
+     *
+     * @param options
+     *        A configuration object for the plot band, as defined in
+     *        xAxis.plotBands.
+     *
+     * @return The added plot band, or `undefined` if the options are not valid.
+     */
+    addPlotBand(options: AxisPlotBandsOptions): (PlotLineOrBand|undefined);
+    /**
+     * Add a plot line after render time.
+     *
+     * @param options
+     *        A configuration object for the plot line, as defined in
+     *        xAxis.plotLines.
+     *
+     * @return The added plot line, or `undefined` if the options are not valid.
+     */
+    addPlotLine(options: AxisPlotLinesOptions): (PlotLineOrBand|undefined);
+    /**
      * Adds the title defined in axis.options.title.
      *
      * @param display
@@ -113437,6 +113474,22 @@ export class Axis {
      *        Whether to redraw the chart following the remove.
      */
     remove(redraw?: boolean): void;
+    /**
+     * Remove a plot band by its id.
+     *
+     * @param id
+     *        The plot band's `id` as given in the original configuration object
+     *        or in the `addPlotBand` option.
+     */
+    removePlotBand(id: string): void;
+    /**
+     * Remove a plot line by its id.
+     *
+     * @param id
+     *        The plot line's `id` as given in the original configuration object
+     *        or in the `addPlotLine` option.
+     */
+    removePlotLine(id: string): void;
     /**
      * Render the axis line. Called internally when rendering and redrawing the
      * axis.

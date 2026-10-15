@@ -26,7 +26,7 @@ class GeoHeatmapPoint extends MapPoint {
      *
      * */
     /**
-     * @private
+     * @internal
      */
     applyOptions(options, x) {
         const point = super.applyOptions.call(this, options, x), { lat, lon } = point.options;

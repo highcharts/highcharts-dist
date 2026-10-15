@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.1.0 (2026-10-02)
+ * @license Highstock JS v13.1.1-modified (2026-10-15)
  * @module highcharts/indicators/vwap
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -242,8 +242,8 @@ class VWAPIndicator extends SMAIndicator {
  * @extends      plotOptions.sma
  * @since        6.0.0
  * @product      highstock
- * @requires     stock/indicators/indicators
- * @requires     stock/indicators/vwap
+ * @requires     indicators/indicators
+ * @requires     indicators/vwap
  * @optionparent plotOptions.vwap
  * @internal
  */
@@ -282,8 +282,8 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @extends   series,plotOptions.vwap
  * @since     6.0.0
  * @product   highstock
- * @requires  stock/indicators/indicators
- * @requires  stock/indicators/vwap
+ * @requires  indicators/indicators
+ * @requires  indicators/vwap
  * @apioption series.vwap
  */
 ''; // To include the above in the js output

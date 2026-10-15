@@ -99,8 +99,8 @@ class CCIIndicator extends SMAIndicator {
  * @extends      plotOptions.sma
  * @since        6.0.0
  * @product      highstock
- * @requires     stock/indicators/indicators
- * @requires     stock/indicators/cci
+ * @requires     indicators/indicators
+ * @requires     indicators/cci
  * @optionparent plotOptions.cci
  * @internal
  */
@@ -131,8 +131,8 @@ export default CCIIndicator;
  * @extends   series,plotOptions.cci
  * @since     6.0.0
  * @product   highstock
- * @requires  stock/indicators/indicators
- * @requires  stock/indicators/cci
+ * @requires  indicators/indicators
+ * @requires  indicators/cci
  * @apioption series.cci
  */
 ''; // To include the above in the js output

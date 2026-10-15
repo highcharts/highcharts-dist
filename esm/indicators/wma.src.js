@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.1.0 (2026-10-02)
+ * @license Highstock JS v13.1.1-modified (2026-10-15)
  * @module highcharts/indicators/wma
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -165,8 +165,8 @@ class WMAIndicator extends SMAIndicator {
  * @extends      plotOptions.sma
  * @since        6.0.0
  * @product      highstock
- * @requires     stock/indicators/indicators
- * @requires     stock/indicators/wma
+ * @requires     indicators/indicators
+ * @requires     indicators/wma
  * @optionparent plotOptions.wma
  * @internal
  */
@@ -195,8 +195,8 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  * @extends   series,plotOptions.wma
  * @since     6.0.0
  * @product   highstock
- * @requires  stock/indicators/indicators
- * @requires  stock/indicators/wma
+ * @requires  indicators/indicators
+ * @requires  indicators/wma
  * @apioption series.wma
  */
 ''; // Adds doclet above to the transpiled file

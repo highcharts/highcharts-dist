@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Gantt JS v13.1.0 (2026-10-02)
+ * @license Highcharts Gantt JS v13.1.1-modified (2026-10-15)
  * @module highcharts/highcharts-gantt
  *
  * (c) 2017-2026 Highsoft AS
@@ -80,7 +80,7 @@ var Globals;
      *  Constants
      *
      * */
-    Globals.SVG_NS = 'http://www.w3.org/2000/svg', Globals.product = 'Highcharts', Globals.version = '13.1.0', Globals.win = (typeof window !== 'undefined' ?
+    Globals.SVG_NS = 'http://www.w3.org/2000/svg', Globals.product = 'Highcharts', Globals.version = '13.1.1-modified', Globals.win = (typeof window !== 'undefined' ?
         window :
         {}), // eslint-disable-line node/no-unsupported-features/es-builtins
     Globals.doc = Globals.win.document, Globals.svg = !!Globals.doc?.createElementNS?.(Globals.SVG_NS, 'svg')?.createSVGRect, Globals.pageLang = Globals.doc?.documentElement?.closest('[lang]')?.lang, Globals.userAgent = Globals.win.navigator?.userAgent || '', Globals.isChrome = Globals.win.chrome, Globals.isFirefox = Globals.userAgent.indexOf('Firefox') !== -1, Globals.isMS = /(edge|msie|trident)/i.test(Globals.userAgent) && !Globals.win.opera, Globals.isSafari = !Globals.isChrome && Globals.userAgent.indexOf('Safari') !== -1, Globals.isTouchDevice = /(Mobile|Android|Windows Phone)/.test(Globals.userAgent), Globals.isWebKit = Globals.userAgent.indexOf('AppleWebKit') !== -1, Globals.deg2rad = Math.PI * 2 / 360, Globals.marginNames = [
@@ -9098,7 +9098,7 @@ class AST {
             if (AST.allowedAttributes.indexOf(key) === -1) {
                 valid = false;
             }
-            if (['background', 'dynsrc', 'href', 'lowsrc', 'src']
+            if (['background', 'dynsrc', 'href', 'lowsrc', 'src', 'xlink:href']
                 .indexOf(key) !== -1) {
                 valid = isString(val) && AST.allowedReferences.some((ref) => val.indexOf(ref) === 0);
             }
@@ -9281,17 +9281,25 @@ class AST {
                 markup, 'text/html');
         }
         catch {
-            // There are two cases where this fails:
-            // 1. IE9 and PhantomJS, where the DOMParser only supports parsing
-            //    XML
-            // 2. Due to a Chromium issue where chart redraws are triggered by
-            //    a `beforeprint` event (#16931),
-            //    https://issues.chromium.org/issues/40222135
+            // Due to a Chromium issue where chart redraws are triggered by a
+            // `beforeprint` event (#16931),
+            // https://issues.chromium.org/issues/40222135, the Trusted
+            // Types `createHTML` callback can throw "The provided callback
+            // is no longer runnable" while the browser is mid-print. Retry
+            // with the raw string - `DOMParser` itself is not a Trusted
+            // Types sink, so parsing it directly is safe.
+            try {
+                doc = new DOMParser().parseFromString(markup, 'text/html');
+            }
+            catch {
+                // Ignore, fall through to the inert-document fallback below.
+            }
         }
         if (!doc) {
-            const body = createElement('div');
-            body.innerHTML = markup;
-            doc = { body };
+            // Never assign untrusted markup to a live document's innerHTML.
+            // Parse into a detached, inert document instead.
+            doc = Core_Globals.doc.implementation.createHTMLDocument('');
+            doc.body.innerHTML = markup;
         }
         const appendChildNodes = (node, addTo) => {
             // Preserve the camelCase of SVG tags via localName (#24702).
@@ -13949,7 +13957,7 @@ class SVGRenderer {
         this.url = this.getReferenceURL();
         // Add description
         const desc = this.createElement('desc').add();
-        desc.element.appendChild(SVGRenderer_doc.createTextNode('Created with Highcharts 13.1.0'));
+        desc.element.appendChild(SVGRenderer_doc.createTextNode('Created with Highcharts 13.1.1-modified'));
         this.defs = this.createElement('defs').add();
         this.allowHTML = allowHTML;
         this.forExport = forExport;
@@ -17676,6 +17684,15 @@ var AxisDefaults;
          * @apioption xAxis.scrollbar
          */
         /**
+         * Enable or disable the scrollbar on the X axis.
+         *
+         * @see [scrollbar.enabled](#scrollbar.enabled)
+         *
+         * @default   false
+         * @product   highstock
+         * @apioption xAxis.scrollbar.enabled
+         */
+        /**
          * Whether to show the axis line and title when the axis has no data.
          *
          * @sample {highcharts} highcharts/yaxis/showempty/
@@ -17940,12 +17957,15 @@ var AxisDefaults;
          * @apioption xAxis.tickWidth
          */
         /**
-         * The axis title, showing next to the axis line.
+         * The axis title, showing next to the axis line. Set to `null` to
+         * disable the title.
          *
          * @productdesc {highmaps}
          * In Highmaps, the axis is hidden by default, but adding an axis title
          * is still possible. X axis and Y axis titles will appear at the bottom
          * and left by default.
+         *
+         * @type {null|*}
          */
         title: {
             /**
@@ -17967,7 +17987,7 @@ var AxisDefaults;
              */
             align: 'middle',
             /**
-             * Deprecated. Set the `text` to `undefined` to disable the title.
+             * Deprecated. Set the `text` to `null` to disable the title.
              *
              * @deprecated 3.0.0
              * @type      {boolean}
@@ -18744,14 +18764,14 @@ var AxisDefaults;
          * @apioption yAxis.scrollbar
          */
         /**
-         * Enable the scrollbar on the Y axis.
+         * Enable or disable the scrollbar on the Y axis.
+         *
+         * @see [scrollbar.enabled](#scrollbar.enabled)
          *
          * @sample {highstock} stock/yaxis/scrollbar/
          *         Enabled on Y axis
          *
-         * @type      {boolean}
          * @default   false
-         * @since     4.2.6
          * @product   highstock
          * @apioption yAxis.scrollbar.enabled
          */
@@ -18886,13 +18906,13 @@ var AxisDefaults;
          * The actual text of the axis title. Horizontal texts can contain
          * HTML, but rotated texts are painted using vector techniques and
          * must be clean text. The Y axis title is disabled by setting the
-         * `text` option to `undefined`. The default value is overridden by
+         * `text` option to `null`. The default value is overridden by
          * the `lang.yAxisTitle` language option.
          *
          * @sample {highcharts} highcharts/xaxis/title-text/
          *         Custom HTML
          *
-         * @type    {string|undefined}
+         * @type    {string|null}
          * @default {highcharts} Values
          * @default {highstock} undefined
          * @product highcharts highstock gantt
@@ -21215,9 +21235,10 @@ class Axis {
         }
         // Before normalizing the tick interval, handle minimum tick interval.
         // This applies only if tickInterval is not defined.
-        const minTickInterval = options.minTickInterval ?? (dateTime && !axis.series.some((s) => !s.sorted) ?
-            axis.closestPointRange :
-            0);
+        // Empty series must not affect ticks (#23555).
+        const minTickInterval = options.minTickInterval ?? (dateTime &&
+            !axis.series.some((s) => !s.sorted && s.hasData()) &&
+            axis.closestPointRange);
         if (!tickIntervalOption &&
             minTickInterval &&
             axis.tickInterval < minTickInterval) {
@@ -23890,6 +23911,70 @@ var PlotLineOrBandAxis;
  *
  * */
 /* harmony default export */ const PlotLineOrBand_PlotLineOrBandAxis = (PlotLineOrBandAxis);
+/* *
+ *
+ *  API Declarations
+ *
+ * */
+/**
+ * Add a plot band after render time.
+ *
+ * @sample highcharts/members/axis-addplotband/
+ *         Toggle the plot band from a button
+ *
+ * @function Highcharts.Axis#addPlotBand
+ *
+ * @param {Highcharts.AxisPlotBandsOptions} options
+ * A configuration object for the plot band, as defined in
+ * [xAxis.plotBands](https://api.highcharts.com/highcharts/xAxis.plotBands).
+ *
+ * @return {Highcharts.PlotLineOrBand|undefined}
+ * The added plot band, or `undefined` if the options are not valid.
+ */
+/**
+ * Add a plot line after render time.
+ *
+ * @sample highcharts/members/axis-addplotline/
+ *         Toggle the plot line from a button
+ *
+ * @function Highcharts.Axis#addPlotLine
+ *
+ * @param {Highcharts.AxisPlotLinesOptions} options
+ * A configuration object for the plot line, as defined in
+ * [xAxis.plotLines](https://api.highcharts.com/highcharts/xAxis.plotLines).
+ *
+ * @return {Highcharts.PlotLineOrBand|undefined}
+ * The added plot line, or `undefined` if the options are not valid.
+ */
+/**
+ * Remove a plot band by its id.
+ *
+ * @sample highcharts/members/axis-removeplotband/
+ *         Remove plot band by id
+ * @sample highcharts/members/axis-addplotband/
+ *         Toggle the plot band from a button
+ *
+ * @function Highcharts.Axis#removePlotBand
+ *
+ * @param {string} id
+ *        The plot band's `id` as given in the original configuration
+ *        object or in the `addPlotBand` option.
+ */
+/**
+ * Remove a plot line by its id.
+ *
+ * @sample highcharts/xaxis/plotlines-id/
+ *         Remove plot line by id
+ * @sample highcharts/members/axis-addplotline/
+ *         Toggle the plot line from a button
+ *
+ * @function Highcharts.Axis#removePlotLine
+ *
+ * @param {string} id
+ *        The plot line's `id` as given in the original configuration
+ *        object or in the `addPlotLine` option.
+ */
+(''); // Keeps doclets above in JS file
 
 ;// ./code/es-modules/Core/Axis/PlotLineOrBand/PlotLineOrBand.js
 /* *
@@ -29635,13 +29720,19 @@ const { setLength: DataTableCore_setLength, splice: DataTableCore_splice } = Dat
 class DataTableCore {
     constructor(options = {}) {
         this.isDataTable = true;
-        this.autoId = !options.id;
+        // Reject IDs that would pollute the prototype of ID-keyed maps.
+        const id = this.isPollutingKey(options.id) ? void 0 : options.id;
+        this.autoId = !id;
         this.columns = {};
-        this.id = (options.id || uniqueKey());
+        this.id = (id || uniqueKey());
         this.rowCount = 0;
         this.versionTag = uniqueKey();
         let rowCount = 0;
         objectEach(options.columns || {}, (column, columnId) => {
+            if (columnId === '__proto__' ||
+                columnId === 'constructor') {
+                return;
+            }
             this.columns[columnId] = column.slice();
             rowCount = Math.max(rowCount, column.length);
         });
@@ -29652,6 +29743,17 @@ class DataTableCore {
      *  Functions
      *
      * */
+    /**
+     * Checks whether a key would pollute the prototype if used to index a
+     * plain object (e.g. as a column ID or table ID).
+     *
+     * @private
+     * @param {string|undefined} key The key to check.
+     * @return {boolean} True if the key is unsafe to use.
+     */
+    isPollutingKey(key) {
+        return key === '__proto__' || key === 'constructor';
+    }
     /**
      * Applies a row count to the table by setting the `rowCount` property and
      * adjusting the length of all columns.
@@ -29810,6 +29912,10 @@ class DataTableCore {
     setColumns(columns, rowIndex, eventDetail) {
         let rowCount = this.rowCount;
         objectEach(columns, (column, columnId) => {
+            if (columnId === '__proto__' ||
+                columnId === 'constructor') {
+                return;
+            }
             this.columns[columnId] = column.slice();
             rowCount = column.length;
         });
@@ -29852,8 +29958,7 @@ class DataTableCore {
         if (eventDetail?.addColumns !== false) {
             for (let i = 0, iEnd = rowKeys.length; i < iEnd; i++) {
                 const rowKey = rowKeys[i];
-                if (rowKey !== '__proto__' &&
-                    rowKey !== 'constructor' &&
+                if (!this.isPollutingKey(rowKey) &&
                     !Object.hasOwnProperty.call(columns, rowKey)) {
                     columns[rowKey] = new Array(this.rowCount);
                 }
@@ -30594,7 +30699,7 @@ const seriesDefaults = {
      *
      * @type      {Highcharts.PlotSeriesOptions}
      * @since     5.0.0
-     * @product   highstock
+     * @product   highstock gantt
      * @apioption plotOptions.series.navigatorOptions
      */
     /**
@@ -30864,7 +30969,7 @@ const seriesDefaults = {
      *
      * @type      {boolean}
      * @since     5.0.0
-     * @product   highstock
+     * @product   highstock gantt
      * @apioption plotOptions.series.showInNavigator
      */
     /**
@@ -33499,7 +33604,12 @@ class Series {
     matchPoints(oldXColumn, oldIdColumn, oldNameColumn, 
     // Index matching is used by the data-sorting module
     oldIndexColumn) {
-        const { dataTable, options, requireSorting } = this, dataSorting = options.dataSorting, oldData = this.data, rowsToAdd = [], rowsToUpdate = [], equalLength = dataTable.rowCount === oldData.length;
+        const { dataTable, options, requireSorting } = this, dataSorting = options.dataSorting, oldData = this.data, 
+        // Keeps `data[i]` paired with `options.data[i]` (#25312)
+        newData = [], 
+        // Where to resume the search per needle, so that repeated
+        // values match distinct points (#25083)
+        searchFrom = new Map(), equalLength = dataTable.rowCount === oldData.length;
         let hasUpdatedByKey, i, point, lastIndex = 0, succeeded = true;
         this.xIncrement = null;
         delete this.xColumn;
@@ -33519,39 +33629,22 @@ class Series {
             let pointIndex = -1;
             // We have a needle and a haystack to search for matching points
             if (haystack) {
-                pointIndex = haystack.indexOf(needle, lastIndex);
-                // Matching X not found or used already due to non-unique x
-                // values (#8995), add point (but later)
-                if (pointIndex === -1) {
-                    const optionsX = newXColumn?.[i];
-                    let newIndex = oldXColumn?.length ?? dataTable.rowCount;
-                    while (newIndex &&
-                        oldXColumn &&
-                        typeof optionsX === 'number' &&
-                        oldXColumn[newIndex - 1] > optionsX) {
-                        newIndex--;
-                    }
-                    rowsToAdd.push({ newIndex, oldIndex: i });
-                    // Matching X found, update
+                // Speed optimize by only searching after the last known index.
+                // Performs ~20% better on large data sets.
+                pointIndex = haystack.indexOf(needle, requireSorting ? lastIndex : searchFrom.get(needle) ?? 0);
+                if (pointIndex !== -1) {
+                    searchFrom.set(needle, pointIndex + 1);
                 }
-                else if (oldData[pointIndex] /* &&
-                pOptions === oldData[pointIndex]?.options*/) {
-                    rowsToUpdate.push({
-                        newIndex: pointIndex,
-                        oldIndex: i
-                    });
+                // Matching X found, update
+                if (oldData[pointIndex]) {
+                    newData[i] = oldData[pointIndex];
                     // Mark it touched, below we will remove all points that
                     // are not touched.
                     oldData[pointIndex].touched = true;
-                    // Speed optimize by only searching after last known
-                    // index. Performs ~20% better on large data sets.
                     if (requireSorting) {
                         lastIndex = pointIndex + 1;
                     }
-                    // Point exists, no changes, don't remove it
-                } /*/ else if (oldData[pointIndex]) {
-                    oldData[pointIndex].touched = true;
-                }*/
+                }
                 // If the length is equal and some of the nodes had a
                 // match in the same position, we don't want to remove
                 // non-matches.
@@ -33562,33 +33655,27 @@ class Series {
                     hasUpdatedByKey = true;
                 }
             }
-            else {
-                // Gather all points that are not matched
-                rowsToAdd.push({ newIndex: i, oldIndex: i });
-            }
         }
         // Remove points that don't exist in the updated data set
         if (hasUpdatedByKey) {
+            newData.length = dataTable.rowCount;
             // Update matching points
-            rowsToUpdate.forEach((row) => {
-                oldData[row.newIndex].applyOptions(dataTable.getRowObject(row.oldIndex));
-            });
-            // Add new points
-            rowsToAdd.sort((a, b) => b.newIndex - a.newIndex);
-            rowsToAdd.forEach((data) => {
-                // Splice in an undefined item, `generatePoints` will pick it
-                // up and create the point
-                oldData.splice(data.newIndex, 0, void 0);
-            });
+            for (i = 0; i < newData.length; i++) {
+                point = newData[i];
+                if (point) {
+                    point.applyOptions(dataTable.getRowObject(i));
+                    point.index = i;
+                }
+            }
             // Remove points not touched
             i = oldData.length;
             while (i--) {
                 point = oldData[i];
                 if (point && !point.touched) {
                     point.destroy();
-                    oldData.splice(i, 1);
                 }
             }
+            this.data = newData;
             this.isDirtyData = this.isDirty = true;
             // If we did not find keys (ids or x-values), and the length is the
             // same, update one-to-one
@@ -33617,7 +33704,7 @@ class Series {
             succeeded = false;
         }
         oldData.forEach((point) => {
-            if (point) {
+            if (point && !point.condemned) {
                 point.touched = false;
             }
         });
@@ -34329,7 +34416,7 @@ class Series {
      */
     translate() {
         this.generatePoints();
-        const series = this, { hasRendered, options, xAxis, yAxis } = series, { stacking, threshold } = options, { polar } = series.chart, points = series.points.concat(series.condemnedPoints), dataLength = points.length, pointPlacement = series.pointPlacementToXValue(), // #7860
+        const series = this, { options, xAxis, yAxis } = series, { stacking, threshold } = options, { hasRendered, polar } = series.chart, points = series.points.concat(series.condemnedPoints), dataLength = points.length, pointPlacement = series.pointPlacementToXValue(), // #7860
         dynamicallyPlaced = Boolean(pointPlacement), stackThreshold = options.startFromThreshold ? threshold : 0, nullYSubstitute = (options?.nullInteraction &&
             yAxis.len);
         let i, plotX, lastPlotX, stackIndicator, closestPointRangePx = Number.MAX_VALUE;
@@ -34415,7 +34502,9 @@ class Series {
             }
             point.plotY = getPlotY(yValue, point);
             // Set the starting point of point entrance animation
-            point.origin = hasRendered && !point.graphic && !polar ? {
+            point.origin = (
+            // The isNumber check is for toggling treemap/treegraph series
+            hasRendered && !point.graphic && !polar && isNumber(yValue)) ? {
                 x: getPlotX(xValue, true),
                 y: getPlotY(yValue, point, true)
             } : void 0;
@@ -36430,9 +36519,28 @@ Series_SeriesRegistry.series = Series;
  *     }]
  * });
  *
- * @interface Highcharts.DataMappingOptionsObject
+ * @typedef {Record<string, string|Highcharts.DataMappingItemObject>} Highcharts.DataMappingOptionsObject
  * @since 13.0.0
  */
+/**
+ * The data table and column to read a point property from in
+ * [dataMapping](#plotOptions.series.dataMapping).
+ *
+ * @interface Highcharts.DataMappingItemObject
+ * @since 13.0.0
+ */ /**
+* The column from which to read the value for this data point property. This
+* can be either a column id (string) or a column index (number) in the data
+* table. Defaults to the column with the same id as the point property.
+* @name Highcharts.DataMappingItemObject#column
+* @type {number|string|undefined}
+*/ /**
+* The data table from which to read the value for this data point property.
+* This can be either a data table id (string) or a data table index (number).
+* Defaults to the first data table.
+* @name Highcharts.DataMappingItemObject#dataTable
+* @type {number|string|undefined}
+*/
 /**
  * Function callback when a series has been animated.
  *
@@ -48527,7 +48635,9 @@ function OverlappingDataLabels_onChartRender() {
                             label.labelrank =
                                 options.labelrank ??
                                     point.labelrank ??
-                                    point.shapeArgs?.height; // #4118
+                                    Math.abs(
+                                    // #4118, #23585
+                                    point[series.pointValKey || 'y'] || 0);
                             // #21725: Sync target positions for generic overlap
                             // checking. During animations (e.g., toggling a
                             // point), DOM positions may overlap. We force
@@ -49227,7 +49337,7 @@ var Responsive;
 ;// ./code/es-modules/masters/highcharts.src.js
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.0 (2026-10-02)
+ * @license Highcharts JS v13.1.1-modified (2026-10-15)
  * @module highcharts/highcharts
  *
  * (c) 2009-2026 Highsoft AS
@@ -53257,7 +53367,8 @@ class Navigator {
         this.scrollbarOptions = scrollbarOptions;
         this.setOpposite();
         const navigator = this, baseSeries = navigator.baseSeries, xAxisIndex = chart.xAxis.length, yAxisIndex = chart.yAxis.length, baseXaxis = baseSeries && baseSeries[0] && baseSeries[0].xAxis ||
-            chart.xAxis[0] || { options: {} };
+            chart.xAxis[0] || { options: {} }, baseYaxis = baseSeries && baseSeries[0] && baseSeries[0].yAxis ||
+            chart.yAxis[0];
         chart.isDirtyBox = true;
         if (navigator.navigatorEnabled) {
             const offsets = this.getXAxisOffsets();
@@ -53298,6 +53409,9 @@ class Navigator {
                     navigatorOptions.yAxis.reversed) ??
                     (chart.yAxis[0] && chart.yAxis[0].reversed) ??
                     false), // #14060
+                uniqueNames: (navigatorOptions.yAxis?.uniqueNames ??
+                    baseYaxis?.userOptions.uniqueNames ??
+                    false), // #24975
                 zoomEnabled: false
             }, chart.inverted ? {
                 width: height
@@ -55478,7 +55592,9 @@ class RangeSelector {
         };
     }
     createElements() {
-        const chart = this.chart, renderer = chart.renderer, container = chart.container, chartOptions = chart.options, options = chartOptions.rangeSelector, inputEnabled = options.inputEnabled, inputsZIndex = (chartOptions.chart.style?.zIndex ?? 0) + 1;
+        const chart = this.chart, renderer = chart.renderer, container = chart.container, chartOptions = chart.options, options = chartOptions.rangeSelector, inputEnabled = options.inputEnabled, 
+        // Put inputs above `scrollablePlotArea` (#22630)
+        inputsZIndex = (chartOptions.chart.style?.zIndex ?? 0) + 3;
         if (options.enabled === false) {
             return;
         }
@@ -58113,7 +58229,7 @@ Pathfinder.prototype.algorithms = PathfinderAlgorithms;
 /* unused harmony import specifier */ var Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Gantt JS v13.1.0 (2026-10-02)
+ * @license Highcharts Gantt JS v13.1.1-modified (2026-10-15)
  * @module highcharts/modules/pathfinder
  * @requires highcharts
  *
@@ -58246,7 +58362,7 @@ function chartAdjustHeight() {
 /* unused harmony import specifier */ var static_scale_src_Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Gantt JS v13.1.0 (2026-10-02)
+ * @license Highcharts Gantt JS v13.1.1-modified (2026-10-15)
  * @module highcharts/modules/static-scale
  * @requires highcharts
  *
@@ -58839,6 +58955,10 @@ class XRangeSeries extends XRangeSeries_ColumnSeries {
             r
         };
         point.shapeArgs = shapeArgs;
+        // Rank data labels by the length of the bar. The point's `y` is a
+        // category index here, so the generic value based rank would order
+        // the labels by their row rather than by size (#23585).
+        point.labelrank = point.options.labelrank ?? width;
         // Move tooltip to default position
         if (!inverted) {
             point.tooltipPos[0] -= oldColWidth +
@@ -59066,7 +59186,7 @@ Series_SeriesRegistry.registerSeriesType('xrange', XRangeSeries);
 /* unused harmony import specifier */ var xrange_src_Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.0 (2026-10-02)
+ * @license Highcharts JS v13.1.1-modified (2026-10-15)
  * @module highcharts/modules/xrange
  * @requires highcharts
  *
@@ -59113,7 +59233,7 @@ class GanttPoint extends GanttPoint_XRangePoint {
      *
      * */
     /**
-     * @private
+     * @internal
      */
     static setGanttPointAliases(options, chart) {
         options.x = options.start = chart.time.parse(options.start ?? options.x);
@@ -59130,7 +59250,7 @@ class GanttPoint extends GanttPoint_XRangePoint {
      * Applies the options containing the x and y data and possible some
      * extra properties. This is called on point init or from point.update.
      *
-     * @private
+     * @internal
      * @function Highcharts.Point#applyOptions
      *
      * @param {Object} options
@@ -59260,9 +59380,6 @@ const GanttSeriesDefaults = {
  * A `gantt` series.
  *
  * @extends   series,plotOptions.gantt
- * @excluding boostThreshold, dashStyle, findNearestPointBy,
- *            getExtremesFromAll, marker, negativeColor, pointInterval,
- *            pointIntervalUnit, pointPlacement, pointStart
  * @product   gantt
  * @requires  highcharts-gantt
  * @apioption series.gantt
@@ -62451,7 +62568,6 @@ const { series: GanttSeries_Series, seriesTypes: { xrange: GanttSeries_XRangeSer
  *
  * */
 /**
- * @private
  * @class
  * @name Highcharts.seriesTypes.gantt
  *
@@ -62504,7 +62620,7 @@ class GanttSeries extends GanttSeries_XRangeSeries {
      *
      * @requires highcharts-gantt
      *
-     * @private
+     * @internal
      * @function Highcharts.seriesTypes.gantt#drawPoint
      *
      * @param {Highcharts.Point} point
@@ -62548,7 +62664,7 @@ class GanttSeries extends GanttSeries_XRangeSeries {
     }
     /**
      * Handle milestones, as they have no x2.
-     * @private
+     * @internal
      */
     translatePoint(point) {
         let shapeArgs, size;
@@ -62589,7 +62705,7 @@ Series_SeriesRegistry.registerSeriesType('gantt', GanttSeries);
 /* unused harmony import specifier */ var gantt_src_Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Gantt JS v13.1.0 (2026-10-02)
+ * @license Highcharts Gantt JS v13.1.1-modified (2026-10-15)
  * @module highcharts/modules/gantt
  * @requires highcharts
  *

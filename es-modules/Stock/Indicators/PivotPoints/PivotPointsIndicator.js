@@ -235,8 +235,8 @@ class PivotPointsIndicator extends SMAIndicator {
  * @extends      plotOptions.sma
  * @since        6.0.0
  * @product      highstock
- * @requires     stock/indicators/indicators
- * @requires     stock/indicators/pivot-points
+ * @requires     indicators/indicators
+ * @requires     indicators/pivot-points
  * @optionparent plotOptions.pivotpoints
  * @internal
  */
@@ -296,8 +296,8 @@ export default PivotPointsIndicator;
  * @extends   series,plotOptions.pivotpoints
  * @since     6.0.0
  * @product   highstock
- * @requires  stock/indicators/indicators
- * @requires  stock/indicators/pivot-points
+ * @requires  indicators/indicators
+ * @requires  indicators/pivot-points
  * @apioption series.pivotpoints
  */
 ''; // To include the above in the js output'

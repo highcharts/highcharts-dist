@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.1.0 (2026-10-02)
+ * @license Highstock JS v13.1.1-modified (2026-10-15)
  * @module highcharts/indicators/ao
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -164,8 +164,8 @@ class AOIndicator extends SMAIndicator {
  * @excluding    allAreas, colorAxis, joinBy, keys, navigatorOptions,
  *               params, pointInterval, pointIntervalUnit, pointPlacement,
  *               pointRange, pointStart, showInNavigator, stacking
- * @requires     stock/indicators/indicators
- * @requires     stock/indicators/ao
+ * @requires     indicators/indicators
+ * @requires     indicators/ao
  * @optionparent plotOptions.ao
  * @internal
  */
@@ -243,8 +243,8 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  * @excluding allAreas, colorAxis, joinBy, keys,
  *            navigatorOptions, pointInterval, pointIntervalUnit,
  *            pointPlacement, pointRange, pointStart, showInNavigator, stacking
- * @requires  stock/indicators/indicators
- * @requires  stock/indicators/ao
+ * @requires  indicators/indicators
+ * @requires  indicators/ao
  * @apioption series.ao
  */
 ''; // For including the above in the doclets

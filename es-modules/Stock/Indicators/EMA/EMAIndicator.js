@@ -94,7 +94,7 @@ class EMAIndicator extends SMAIndicator {
  * @extends      plotOptions.sma
  * @since        6.0.0
  * @product      highstock
- * @requires     stock/indicators/indicators
+ * @requires     indicators/indicators
  * @optionparent plotOptions.ema
  * @internal
  */
@@ -133,7 +133,7 @@ export default EMAIndicator;
  * @extends   series,plotOptions.ema
  * @since     6.0.0
  * @product   highstock
- * @requires  stock/indicators/indicators
+ * @requires  indicators/indicators
  * @apioption series.ema
  */
 ''; // Adds doclet above to the transpiled file

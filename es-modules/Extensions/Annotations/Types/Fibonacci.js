@@ -8,6 +8,7 @@ import D from '../../../Core/Defaults.js';
 const { defaultOptions } = D;
 import MockPoint from '../MockPoint.js';
 import Tunnel from './Tunnel.js';
+import { interpolateAxisValue } from '../AnnotationUtilities.js';
 import { merge } from '../../../Shared/Utilities.js';
 if (defaultOptions.annotations?.types) {
     defaultOptions.annotations.types.fibonacci = merge(defaultOptions.annotations.types.tunnel, 
@@ -136,9 +137,9 @@ class Fibonacci extends Tunnel {
         return;
     }
     linkRetracementsPoints() {
-        const points = this.points, startDiff = points[0].y - points[3].y, endDiff = points[1].y - points[2].y, startX = points[0].x, endX = points[1].x;
+        const points = this.points, yAxis = points[0].series?.yAxis, startX = points[0].x, endX = points[1].x;
         Fibonacci.levels.forEach((level, i) => {
-            const startRetracement = points[0].y - startDiff * level, endRetracement = points[1].y - endDiff * level, index = this.options.typeOptions.reversed ?
+            const startRetracement = interpolateAxisValue(points[0].y, points[3].y, level, yAxis), endRetracement = interpolateAxisValue(points[1].y, points[2].y, level, yAxis), index = this.options.typeOptions.reversed ?
                 (Fibonacci.levels.length - i - 1) : i;
             this.startRetracements = this.startRetracements || [];
             this.endRetracements = this.endRetracements || [];

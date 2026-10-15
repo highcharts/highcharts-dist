@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.1.0 (2026-10-02)
+ * @license Highstock JS v13.1.1-modified (2026-10-15)
  * @module highcharts/indicators/price-channel
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -523,8 +523,8 @@ class PCIndicator extends SMAIndicator {
  *               navigatorOptions, pointInterval, pointIntervalUnit,
  *               pointPlacement, pointRange, pointStart, showInNavigator,
  *               stacking
- * @requires     stock/indicators/indicators
- * @requires     stock/indicators/price-channel
+ * @requires     indicators/indicators
+ * @requires     indicators/price-channel
  * @optionparent plotOptions.pc
  * @internal
  */
@@ -612,8 +612,8 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *               joinBy, keys, navigatorOptions, pointInterval,
  *               pointIntervalUnit, pointPlacement, pointRange, pointStart,
  *               showInNavigator, stacking
- * @requires     stock/indicators/indicators
- * @requires     stock/indicators/price-channel
+ * @requires     indicators/indicators
+ * @requires     indicators/price-channel
  * @apioption    series.pc
  */
 ''; // To include the above in the js output

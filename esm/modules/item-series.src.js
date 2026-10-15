@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.0 (2026-10-02)
+ * @license Highcharts JS v13.1.1-modified (2026-10-15)
  * @module highcharts/modules/item-series
  * @requires highcharts
  *
@@ -607,7 +607,7 @@ const seriesDefaults = {
      *
      * @type      {Highcharts.PlotSeriesOptions}
      * @since     5.0.0
-     * @product   highstock
+     * @product   highstock gantt
      * @apioption plotOptions.series.navigatorOptions
      */
     /**
@@ -877,7 +877,7 @@ const seriesDefaults = {
      *
      * @type      {boolean}
      * @since     5.0.0
-     * @product   highstock
+     * @product   highstock gantt
      * @apioption plotOptions.series.showInNavigator
      */
     /**

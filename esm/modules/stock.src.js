@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.1.0 (2026-10-02)
+ * @license Highstock JS v13.1.1-modified (2026-10-15)
  * @module highcharts/modules/stock
  * @requires highcharts
  *
@@ -4582,7 +4582,8 @@ class Navigator {
         this.scrollbarOptions = scrollbarOptions;
         this.setOpposite();
         const navigator = this, baseSeries = navigator.baseSeries, xAxisIndex = chart.xAxis.length, yAxisIndex = chart.yAxis.length, baseXaxis = baseSeries && baseSeries[0] && baseSeries[0].xAxis ||
-            chart.xAxis[0] || { options: {} };
+            chart.xAxis[0] || { options: {} }, baseYaxis = baseSeries && baseSeries[0] && baseSeries[0].yAxis ||
+            chart.yAxis[0];
         chart.isDirtyBox = true;
         if (navigator.navigatorEnabled) {
             const offsets = this.getXAxisOffsets();
@@ -4623,6 +4624,9 @@ class Navigator {
                     navigatorOptions.yAxis.reversed) ??
                     (chart.yAxis[0] && chart.yAxis[0].reversed) ??
                     false), // #14060
+                uniqueNames: (navigatorOptions.yAxis?.uniqueNames ??
+                    baseYaxis?.userOptions.uniqueNames ??
+                    false), // #24975
                 zoomEnabled: false
             }, chart.inverted ? {
                 width: height
@@ -5377,13 +5381,19 @@ const { setLength: DataTableCore_setLength, splice: DataTableCore_splice } = Dat
 class DataTableCore {
     constructor(options = {}) {
         this.isDataTable = true;
-        this.autoId = !options.id;
+        // Reject IDs that would pollute the prototype of ID-keyed maps.
+        const id = this.isPollutingKey(options.id) ? void 0 : options.id;
+        this.autoId = !id;
         this.columns = {};
-        this.id = (options.id || (0,external_highcharts_src_js_default_namespaceObject.uniqueKey)());
+        this.id = (id || (0,external_highcharts_src_js_default_namespaceObject.uniqueKey)());
         this.rowCount = 0;
         this.versionTag = (0,external_highcharts_src_js_default_namespaceObject.uniqueKey)();
         let rowCount = 0;
         (0,external_highcharts_src_js_default_namespaceObject.objectEach)(options.columns || {}, (column, columnId) => {
+            if (columnId === '__proto__' ||
+                columnId === 'constructor') {
+                return;
+            }
             this.columns[columnId] = column.slice();
             rowCount = Math.max(rowCount, column.length);
         });
@@ -5394,6 +5404,17 @@ class DataTableCore {
      *  Functions
      *
      * */
+    /**
+     * Checks whether a key would pollute the prototype if used to index a
+     * plain object (e.g. as a column ID or table ID).
+     *
+     * @private
+     * @param {string|undefined} key The key to check.
+     * @return {boolean} True if the key is unsafe to use.
+     */
+    isPollutingKey(key) {
+        return key === '__proto__' || key === 'constructor';
+    }
     /**
      * Applies a row count to the table by setting the `rowCount` property and
      * adjusting the length of all columns.
@@ -5552,6 +5573,10 @@ class DataTableCore {
     setColumns(columns, rowIndex, eventDetail) {
         let rowCount = this.rowCount;
         (0,external_highcharts_src_js_default_namespaceObject.objectEach)(columns, (column, columnId) => {
+            if (columnId === '__proto__' ||
+                columnId === 'constructor') {
+                return;
+            }
             this.columns[columnId] = column.slice();
             rowCount = column.length;
         });
@@ -5594,8 +5619,7 @@ class DataTableCore {
         if (eventDetail?.addColumns !== false) {
             for (let i = 0, iEnd = rowKeys.length; i < iEnd; i++) {
                 const rowKey = rowKeys[i];
-                if (rowKey !== '__proto__' &&
-                    rowKey !== 'constructor' &&
+                if (!this.isPollutingKey(rowKey) &&
                     !Object.hasOwnProperty.call(columns, rowKey)) {
                     columns[rowKey] = new Array(this.rowCount);
                 }
@@ -8352,7 +8376,9 @@ class RangeSelector {
         };
     }
     createElements() {
-        const chart = this.chart, renderer = chart.renderer, container = chart.container, chartOptions = chart.options, options = chartOptions.rangeSelector, inputEnabled = options.inputEnabled, inputsZIndex = (chartOptions.chart.style?.zIndex ?? 0) + 1;
+        const chart = this.chart, renderer = chart.renderer, container = chart.container, chartOptions = chart.options, options = chartOptions.rangeSelector, inputEnabled = options.inputEnabled, 
+        // Put inputs above `scrollablePlotArea` (#22630)
+        inputsZIndex = (chartOptions.chart.style?.zIndex ?? 0) + 3;
         if (options.enabled === false) {
             return;
         }
@@ -11209,9 +11235,12 @@ class FlagsPoint extends FlagsPoint_ColumnPoint {
  *         Flags on a line series
  *
  * @extends      plotOptions.column
- * @excluding    animation, borderColor, borderWidth,
- *               colorByPoint, cropThreshold, dataGrouping, pointPadding,
- *               pointWidth, turboThreshold
+ * @excluding    animation, boostBlending, boostThreshold, borderColor,
+ *               borderWidth, colorByPoint, cropThreshold, dataGrouping, depth,
+ *               edgeColor, edgeWidth, groupZPadding, lowMarker,
+ *               nullInteraction, onPoint, pointPadding, pointWidth,
+ *               startFromThreshold, threshold, trackByArea, turboThreshold,
+ *               zoomEnabled
  * @product      highstock
  * @optionparent plotOptions.flags
  */
@@ -11314,10 +11343,8 @@ const FlagsSeriesDefaults = {
     tooltip: {
         pointFormat: '{point.text}'
     },
-    /**
-     * @type {number|null}
-     */
-    threshold: null,
+    /** @ignore-option */
+    threshold: null, // Don't stretch the Y axis like column does
     /**
      * The text to display on each flag. This can be defined on series
      * level, or individually for each point. Defaults to `"A"`.
@@ -11436,12 +11463,20 @@ const FlagsSeriesDefaults = {
  * specified, it is inherited from [chart.type](#chart.type).
  *
  * @extends   series,plotOptions.flags
- * @excluding animation, borderColor, borderRadius, borderWidth, colorByPoint,
- *            connectNulls, cropThreshold, dashStyle, dataGrouping, gapSize,
- *            gapUnit, linecap, lineWidth, marker, pointPadding, pointWidth,
- *            step, turboThreshold, useOhlcData
+ * @excluding animation, boostBlending, boostThreshold, borderColor,
+ *            borderWidth, colorByPoint, connectNulls, cropThreshold,
+ *            dashStyle, dataGrouping, depth, edgeColor, edgeWidth, gapSize,
+ *            gapUnit, groupZPadding, linecap, lowMarker, marker,
+ *            nullInteraction, onPoint, pointPadding, pointWidth,
+ *            startFromThreshold, step, threshold, trackByArea,
+ *            turboThreshold, useOhlcData, zoomEnabled
  * @product   highstock
  * @apioption series.flags
+ */
+/**
+ * @excluding changeDecimals, valueDecimals, valuePrefix, valueSuffix
+ * @product   highstock
+ * @apioption series.flags.tooltip
  */
 /**
  * An array of data points for the series. For the `flags` series type,

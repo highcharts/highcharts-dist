@@ -1228,6 +1228,14 @@ declare module "../highcharts.src" {
         /**
          * Not available
          */
+        dataParser?: undefined;
+        /**
+         * Not available
+         */
+        dataURL?: undefined;
+        /**
+         * Not available
+         */
         stack?: undefined;
         /**
          * (Highcharts, Highstock, Highmaps, Gantt) This property is only in

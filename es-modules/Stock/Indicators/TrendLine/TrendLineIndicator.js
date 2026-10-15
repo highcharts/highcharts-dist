@@ -89,8 +89,8 @@ class TrendLineIndicator extends SMAIndicator {
  * @extends      plotOptions.sma
  * @since        7.1.3
  * @product      highstock
- * @requires     stock/indicators/indicators
- * @requires     stock/indicators/trendline
+ * @requires     indicators/indicators
+ * @requires     indicators/trendline
  * @optionparent plotOptions.trendline
  * @internal
  */
@@ -133,8 +133,8 @@ export default TrendLineIndicator;
  * @extends   series,plotOptions.trendline
  * @since     7.1.3
  * @product   highstock
- * @requires  stock/indicators/indicators
- * @requires  stock/indicators/trendline
+ * @requires  indicators/indicators
+ * @requires  indicators/trendline
  * @apioption series.trendline
  */
 ''; // To include the above in the js output

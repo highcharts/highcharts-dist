@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.0 (2026-10-02)
+ * @license Highcharts JS v13.1.1-modified (2026-10-15)
  * @module highcharts/modules/boost
  * @requires highcharts
  *
@@ -2568,13 +2568,19 @@ const { setLength: DataTableCore_setLength, splice: DataTableCore_splice } = Dat
 class DataTableCore {
     constructor(options = {}) {
         this.isDataTable = true;
-        this.autoId = !options.id;
+        // Reject IDs that would pollute the prototype of ID-keyed maps.
+        const id = this.isPollutingKey(options.id) ? void 0 : options.id;
+        this.autoId = !id;
         this.columns = {};
-        this.id = (options.id || (0,external_highcharts_src_js_default_namespaceObject.uniqueKey)());
+        this.id = (id || (0,external_highcharts_src_js_default_namespaceObject.uniqueKey)());
         this.rowCount = 0;
         this.versionTag = (0,external_highcharts_src_js_default_namespaceObject.uniqueKey)();
         let rowCount = 0;
         (0,external_highcharts_src_js_default_namespaceObject.objectEach)(options.columns || {}, (column, columnId) => {
+            if (columnId === '__proto__' ||
+                columnId === 'constructor') {
+                return;
+            }
             this.columns[columnId] = column.slice();
             rowCount = Math.max(rowCount, column.length);
         });
@@ -2585,6 +2591,17 @@ class DataTableCore {
      *  Functions
      *
      * */
+    /**
+     * Checks whether a key would pollute the prototype if used to index a
+     * plain object (e.g. as a column ID or table ID).
+     *
+     * @private
+     * @param {string|undefined} key The key to check.
+     * @return {boolean} True if the key is unsafe to use.
+     */
+    isPollutingKey(key) {
+        return key === '__proto__' || key === 'constructor';
+    }
     /**
      * Applies a row count to the table by setting the `rowCount` property and
      * adjusting the length of all columns.
@@ -2743,6 +2760,10 @@ class DataTableCore {
     setColumns(columns, rowIndex, eventDetail) {
         let rowCount = this.rowCount;
         (0,external_highcharts_src_js_default_namespaceObject.objectEach)(columns, (column, columnId) => {
+            if (columnId === '__proto__' ||
+                columnId === 'constructor') {
+                return;
+            }
             this.columns[columnId] = column.slice();
             rowCount = column.length;
         });
@@ -2785,8 +2806,7 @@ class DataTableCore {
         if (eventDetail?.addColumns !== false) {
             for (let i = 0, iEnd = rowKeys.length; i < iEnd; i++) {
                 const rowKey = rowKeys[i];
-                if (rowKey !== '__proto__' &&
-                    rowKey !== 'constructor' &&
+                if (!this.isPollutingKey(rowKey) &&
                     !Object.hasOwnProperty.call(columns, rowKey)) {
                     columns[rowKey] = new Array(this.rowCount);
                 }
@@ -3720,24 +3740,40 @@ function seriesRenderCanvas() {
     // Do not start building while drawing
     this.buildKDTree = noop;
     (0,external_highcharts_src_js_default_namespaceObject.fireEvent)(this, 'renderCanvas');
-    if (chartBoost && lineWidth > 1 && this.is('line')) {
-        chartBoost.lineWidthFilter?.remove();
-        chartBoost.lineWidthFilter = chart.renderer.definition({
-            tagName: 'filter',
-            children: [
-                {
-                    tagName: 'feMorphology',
-                    attributes: {
-                        operator: 'dilate',
-                        radius: 0.25 * lineWidth
+    if (chartBoost) {
+        const boostTarget = seriesBoost?.target || chartBoost.target, 
+        // The dilate filter is applied to the whole render target, so
+        // it must stay off when that target is shared with a visible
+        // non-line series (chart-level boosting). Otherwise it would
+        // also dilate/blur their pixels, washing out the chart
+        // (#24728). A target shared only by line series keeps the
+        // filter, so a thin line must not clear it (#23666).
+        sharesTargetWithNonLine = !seriesBoost?.target &&
+            chart.series.some((otherSeries) => otherSeries.visible &&
+                !!otherSeries.boosted &&
+                otherSeries.type !== 'line');
+        if (sharesTargetWithNonLine) {
+            boostTarget?.attr({ filter: 'none' });
+        }
+        else if (lineWidth > 1 && this.type === 'line') {
+            chartBoost.lineWidthFilter?.remove();
+            chartBoost.lineWidthFilter = chart.renderer.definition({
+                tagName: 'filter',
+                children: [
+                    {
+                        tagName: 'feMorphology',
+                        attributes: {
+                            operator: 'dilate',
+                            radius: 0.25 * lineWidth
+                        }
                     }
-                }
-            ],
-            attributes: { id: 'linewidth' }
-        });
-        (seriesBoost?.target || chartBoost.target)?.attr({
-            filter: 'url(#linewidth)'
-        });
+                ],
+                attributes: { id: 'linewidth' }
+            });
+            boostTarget?.attr({
+                filter: 'url(#linewidth)'
+            });
+        }
     }
     if (renderer) {
         allocateIfNotSeriesBoosting(renderer, this);

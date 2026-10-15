@@ -92,9 +92,6 @@ const GanttSeriesDefaults = {
  * A `gantt` series.
  *
  * @extends   series,plotOptions.gantt
- * @excluding boostThreshold, dashStyle, findNearestPointBy,
- *            getExtremesFromAll, marker, negativeColor, pointInterval,
- *            pointIntervalUnit, pointPlacement, pointStart
  * @product   gantt
  * @requires  highcharts-gantt
  * @apioption series.gantt

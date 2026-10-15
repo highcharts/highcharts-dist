@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.1.0 (2026-10-02)
+ * @license Highstock JS v13.1.1-modified (2026-10-15)
  * @module highcharts/indicators/cmf
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -241,8 +241,8 @@ class CMFIndicator extends SMAIndicator {
  * @since        6.0.0
  * @excluding    animationLimit
  * @product      highstock
- * @requires     stock/indicators/indicators
- * @requires     stock/indicators/cmf
+ * @requires     indicators/indicators
+ * @requires     indicators/cmf
  * @optionparent plotOptions.cmf
  * @internal
  */
@@ -278,8 +278,8 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  * @extends   series,plotOptions.cmf
  * @since     6.0.0
  * @product   highstock
- * @requires  stock/indicators/indicators
- * @requires  stock/indicators/cmf
+ * @requires  indicators/indicators
+ * @requires  indicators/cmf
  * @apioption series.cmf
  */
 ''; // Adds doclet above to the transpiled file

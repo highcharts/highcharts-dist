@@ -852,6 +852,15 @@ declare module "../highcharts.src" {
          */
         minPointLength?: number;
         /**
+         * (Highstock, Gantt) Options for the corresponding navigator series if
+         * `showInNavigator` is `true` for this series. Available options are
+         * the same as any series, documented at plotOptions and series.
+         *
+         * These options are merged with options in navigator.series, and will
+         * take precedence if the same option is defined both places.
+         */
+        navigatorOptions?: Highcharts.PlotSeriesOptions;
+        /**
          * (Gantt) Options for the _Series on point_ feature. Only `pie` and
          * `sunburst` series are supported at this moment.
          */
@@ -935,6 +944,11 @@ declare module "../highcharts.src" {
          * that use colorAxis by setting this option to `true`.
          */
         showInLegend?: boolean;
+        /**
+         * (Highstock, Gantt) Whether or not to show the series in the
+         * navigator. Takes precedence over navigator.baseSeries if defined.
+         */
+        showInNavigator?: boolean;
         /**
          * (Gantt) Deprecated. Use series.accessibility.keyboardNavigation
          * instead.
@@ -1172,6 +1186,18 @@ declare module "../highcharts.src" {
          * (Gantt) Data for a Gantt series.
          */
         data?: Array<Highcharts.GanttPointOptionsObject>;
+        /**
+         * Not available
+         */
+        depth?: undefined;
+        /**
+         * Not available
+         */
+        edgeColor?: undefined;
+        /**
+         * Not available
+         */
+        edgeWidth?: undefined;
         /**
          * (Highcharts, Highstock, Highmaps, Gantt) This property is only in
          * TypeScript non-optional and might be `undefined` in series objects

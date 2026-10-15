@@ -784,7 +784,12 @@ class Series {
     matchPoints(oldXColumn, oldIdColumn, oldNameColumn, 
     // Index matching is used by the data-sorting module
     oldIndexColumn) {
-        const { dataTable, options, requireSorting } = this, dataSorting = options.dataSorting, oldData = this.data, rowsToAdd = [], rowsToUpdate = [], equalLength = dataTable.rowCount === oldData.length;
+        const { dataTable, options, requireSorting } = this, dataSorting = options.dataSorting, oldData = this.data, 
+        // Keeps `data[i]` paired with `options.data[i]` (#25312)
+        newData = [], 
+        // Where to resume the search per needle, so that repeated
+        // values match distinct points (#25083)
+        searchFrom = new Map(), equalLength = dataTable.rowCount === oldData.length;
         let hasUpdatedByKey, i, point, lastIndex = 0, succeeded = true;
         this.xIncrement = null;
         delete this.xColumn;
@@ -804,39 +809,22 @@ class Series {
             let pointIndex = -1;
             // We have a needle and a haystack to search for matching points
             if (haystack) {
-                pointIndex = haystack.indexOf(needle, lastIndex);
-                // Matching X not found or used already due to non-unique x
-                // values (#8995), add point (but later)
-                if (pointIndex === -1) {
-                    const optionsX = newXColumn?.[i];
-                    let newIndex = oldXColumn?.length ?? dataTable.rowCount;
-                    while (newIndex &&
-                        oldXColumn &&
-                        typeof optionsX === 'number' &&
-                        oldXColumn[newIndex - 1] > optionsX) {
-                        newIndex--;
-                    }
-                    rowsToAdd.push({ newIndex, oldIndex: i });
-                    // Matching X found, update
+                // Speed optimize by only searching after the last known index.
+                // Performs ~20% better on large data sets.
+                pointIndex = haystack.indexOf(needle, requireSorting ? lastIndex : searchFrom.get(needle) ?? 0);
+                if (pointIndex !== -1) {
+                    searchFrom.set(needle, pointIndex + 1);
                 }
-                else if (oldData[pointIndex] /* &&
-                pOptions === oldData[pointIndex]?.options*/) {
-                    rowsToUpdate.push({
-                        newIndex: pointIndex,
-                        oldIndex: i
-                    });
+                // Matching X found, update
+                if (oldData[pointIndex]) {
+                    newData[i] = oldData[pointIndex];
                     // Mark it touched, below we will remove all points that
                     // are not touched.
                     oldData[pointIndex].touched = true;
-                    // Speed optimize by only searching after last known
-                    // index. Performs ~20% better on large data sets.
                     if (requireSorting) {
                         lastIndex = pointIndex + 1;
                     }
-                    // Point exists, no changes, don't remove it
-                } /*/ else if (oldData[pointIndex]) {
-                    oldData[pointIndex].touched = true;
-                }*/
+                }
                 // If the length is equal and some of the nodes had a
                 // match in the same position, we don't want to remove
                 // non-matches.
@@ -847,33 +835,27 @@ class Series {
                     hasUpdatedByKey = true;
                 }
             }
-            else {
-                // Gather all points that are not matched
-                rowsToAdd.push({ newIndex: i, oldIndex: i });
-            }
         }
         // Remove points that don't exist in the updated data set
         if (hasUpdatedByKey) {
+            newData.length = dataTable.rowCount;
             // Update matching points
-            rowsToUpdate.forEach((row) => {
-                oldData[row.newIndex].applyOptions(dataTable.getRowObject(row.oldIndex));
-            });
-            // Add new points
-            rowsToAdd.sort((a, b) => b.newIndex - a.newIndex);
-            rowsToAdd.forEach((data) => {
-                // Splice in an undefined item, `generatePoints` will pick it
-                // up and create the point
-                oldData.splice(data.newIndex, 0, void 0);
-            });
+            for (i = 0; i < newData.length; i++) {
+                point = newData[i];
+                if (point) {
+                    point.applyOptions(dataTable.getRowObject(i));
+                    point.index = i;
+                }
+            }
             // Remove points not touched
             i = oldData.length;
             while (i--) {
                 point = oldData[i];
                 if (point && !point.touched) {
                     point.destroy();
-                    oldData.splice(i, 1);
                 }
             }
+            this.data = newData;
             this.isDirtyData = this.isDirty = true;
             // If we did not find keys (ids or x-values), and the length is the
             // same, update one-to-one
@@ -902,7 +884,7 @@ class Series {
             succeeded = false;
         }
         oldData.forEach((point) => {
-            if (point) {
+            if (point && !point.condemned) {
                 point.touched = false;
             }
         });
@@ -1614,7 +1596,7 @@ class Series {
      */
     translate() {
         this.generatePoints();
-        const series = this, { hasRendered, options, xAxis, yAxis } = series, { stacking, threshold } = options, { polar } = series.chart, points = series.points.concat(series.condemnedPoints), dataLength = points.length, pointPlacement = series.pointPlacementToXValue(), // #7860
+        const series = this, { options, xAxis, yAxis } = series, { stacking, threshold } = options, { hasRendered, polar } = series.chart, points = series.points.concat(series.condemnedPoints), dataLength = points.length, pointPlacement = series.pointPlacementToXValue(), // #7860
         dynamicallyPlaced = Boolean(pointPlacement), stackThreshold = options.startFromThreshold ? threshold : 0, nullYSubstitute = (options?.nullInteraction &&
             yAxis.len);
         let i, plotX, lastPlotX, stackIndicator, closestPointRangePx = Number.MAX_VALUE;
@@ -1700,7 +1682,9 @@ class Series {
             }
             point.plotY = getPlotY(yValue, point);
             // Set the starting point of point entrance animation
-            point.origin = hasRendered && !point.graphic && !polar ? {
+            point.origin = (
+            // The isNumber check is for toggling treemap/treegraph series
+            hasRendered && !point.graphic && !polar && isNumber(yValue)) ? {
                 x: getPlotX(xValue, true),
                 y: getPlotY(yValue, point, true)
             } : void 0;
@@ -3715,9 +3699,28 @@ export default Series;
  *     }]
  * });
  *
- * @interface Highcharts.DataMappingOptionsObject
+ * @typedef {Record<string, string|Highcharts.DataMappingItemObject>} Highcharts.DataMappingOptionsObject
  * @since 13.0.0
  */
+/**
+ * The data table and column to read a point property from in
+ * [dataMapping](#plotOptions.series.dataMapping).
+ *
+ * @interface Highcharts.DataMappingItemObject
+ * @since 13.0.0
+ */ /**
+* The column from which to read the value for this data point property. This
+* can be either a column id (string) or a column index (number) in the data
+* table. Defaults to the column with the same id as the point property.
+* @name Highcharts.DataMappingItemObject#column
+* @type {number|string|undefined}
+*/ /**
+* The data table from which to read the value for this data point property.
+* This can be either a data table id (string) or a data table index (number).
+* Defaults to the first data table.
+* @name Highcharts.DataMappingItemObject#dataTable
+* @type {number|string|undefined}
+*/
 /**
  * Function callback when a series has been animated.
  *

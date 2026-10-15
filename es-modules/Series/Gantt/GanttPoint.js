@@ -25,7 +25,7 @@ class GanttPoint extends XRangePoint {
      *
      * */
     /**
-     * @private
+     * @internal
      */
     static setGanttPointAliases(options, chart) {
         options.x = options.start = chart.time.parse(options.start ?? options.x);
@@ -42,7 +42,7 @@ class GanttPoint extends XRangePoint {
      * Applies the options containing the x and y data and possible some
      * extra properties. This is called on point init or from point.update.
      *
-     * @private
+     * @internal
      * @function Highcharts.Point#applyOptions
      *
      * @param {Object} options

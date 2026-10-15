@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.1.0 (2026-10-02)
+ * @license Highstock JS v13.1.1-modified (2026-10-15)
  * @module highcharts/indicators/regressions
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -290,8 +290,8 @@ class LinearRegressionIndicator extends SMAIndicator {
  * @extends      plotOptions.sma
  * @since        7.0.0
  * @product      highstock
- * @requires     stock/indicators/indicators
- * @requires     stock/indicators/regressions
+ * @requires     indicators/indicators
+ * @requires     indicators/regressions
  * @optionparent plotOptions.linearregression
  * @internal
  */
@@ -376,8 +376,8 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @extends   series,plotOptions.linearregression
  * @since     7.0.0
  * @product   highstock
- * @requires  stock/indicators/indicators
- * @requires  stock/indicators/regressions
+ * @requires  indicators/indicators
+ * @requires  indicators/regressions
  * @apioption series.linearregression
  */
 ''; // To include the above in the js output
@@ -437,8 +437,8 @@ class LinearRegressionSlopesIndicator extends LinearRegressionSlopesIndicator_Li
  * @extends      plotOptions.linearregression
  * @since        7.0.0
  * @product      highstock
- * @requires     stock/indicators/indicators
- * @requires     stock/indicators/regressions
+ * @requires     indicators/indicators
+ * @requires     indicators/regressions
  * @optionparent plotOptions.linearregressionslope
  * @internal
  */
@@ -468,8 +468,8 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @extends   series,plotOptions.linearregressionslope
  * @since     7.0.0
  * @product   highstock
- * @requires  stock/indicators/indicators
- * @requires  stock/indicators/regressions
+ * @requires  indicators/indicators
+ * @requires  indicators/regressions
  * @apioption series.linearregressionslope
  */
 ''; // To include the above in the js output
@@ -529,8 +529,8 @@ class LinearRegressionInterceptIndicator extends LinearRegressionInterceptIndica
  * @extends      plotOptions.linearregression
  * @since        7.0.0
  * @product      highstock
- * @requires     stock/indicators/indicators
- * @requires     stock/indicators/regressions
+ * @requires     indicators/indicators
+ * @requires     indicators/regressions
  * @optionparent plotOptions.linearregressionintercept
  * @internal
  */
@@ -560,8 +560,8 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @extends   series,plotOptions.linearregressionintercept
  * @since     7.0.0
  * @product   highstock
- * @requires  stock/indicators/indicators
- * @requires  stock/indicators/regressions
+ * @requires  indicators/indicators
+ * @requires  indicators/regressions
  * @apioption series.linearregressionintercept
  */
 ''; // To include the above in the js output
@@ -631,8 +631,8 @@ class LinearRegressionAngleIndicator extends LinearRegressionAngleIndicator_Line
  * @extends      plotOptions.linearregression
  * @since        7.0.0
  * @product      highstock
- * @requires     stock/indicators/indicators
- * @requires     stock/indicators/regressions
+ * @requires     indicators/indicators
+ * @requires     indicators/regressions
  * @optionparent plotOptions.linearregressionangle
  * @internal
  */
@@ -662,8 +662,8 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @extends   series,plotOptions.linearregressionangle
  * @since     7.0.0
  * @product   highstock
- * @requires  stock/indicators/indicators
- * @requires  stock/indicators/regressions
+ * @requires  indicators/indicators
+ * @requires  indicators/regressions
  * @apioption series.linearregressionangle
  */
 ''; // To include the above in the js output

@@ -101,8 +101,8 @@ class KeltnerChannelsIndicator extends SMAIndicator {
  *               navigatorOptions, pointInterval, pointIntervalUnit,
  *               pointPlacement, pointRange, pointStart,showInNavigator,
  *               stacking
- * @requires     stock/indicators/indicators
- * @requires     stock/indicators/keltner-channels
+ * @requires     indicators/indicators
+ * @requires     indicators/keltner-channels
  * @optionparent plotOptions.keltnerchannels
  * @internal
  */
@@ -210,8 +210,8 @@ export default KeltnerChannelsIndicator;
  *               joinBy, keys, navigatorOptions, pointInterval,
  *               pointIntervalUnit, pointPlacement, pointRange, pointStart,
  *               stacking, showInNavigator
- * @requires     stock/indicators/indicators
- * @requires     stock/indicators/keltner-channels
+ * @requires     indicators/indicators
+ * @requires     indicators/keltner-channels
  * @apioption    series.keltnerchannels
  */
 ''; // To include the above in the js output

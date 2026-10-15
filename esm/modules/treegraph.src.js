@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.0 (2026-10-02)
+ * @license Highcharts JS v13.1.1-modified (2026-10-15)
  * Treegraph chart series type
  * @module highcharts/modules/treegraph
  * @requires highcharts
@@ -1341,6 +1341,12 @@ const TreegraphSeriesDefaults = {
      * @apioption plotOptions.treegraph.levels.dataLabels
      */
     /**
+     * Set marker options for nodes at the level.
+     *
+     * @extends   plotOptions.treegraph.marker
+     * @apioption plotOptions.treegraph.levels.marker
+     */
+    /**
      * Options applied to collapse Button. The collapse button is the
      * small button which indicates, that the node is collapsable.
      */
@@ -2336,11 +2342,6 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  * Set collapsed status for nodes level-wise.
  * @type {boolean}
  * @apioption series.treegraph.levels.collapsed
- */
-/**
- * Set marker options for nodes at the level.
- * @extends   series.treegraph.marker
- * @apioption series.treegraph.levels.marker
  */
 /**
  * An array of data points for the series. For the `treegraph` series type,

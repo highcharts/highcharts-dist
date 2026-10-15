@@ -428,80 +428,6 @@ declare module "../highcharts" {
         fontWeight?: string;
     }
     /**
-     * (Highstock) Options for the connector in the _Series on point_ feature.
-     *
-     * In styled mode, the connector can be styled with the
-     * `.highcharts-connector-seriesonpoint` class name.
-     */
-    interface PlotFlagsOnPointConnectorOptions {
-        /**
-         * (Highstock) A name for the dash style to use for the connector.
-         */
-        dashstyle?: string;
-        /**
-         * (Highstock) Color of the connector line. By default it's the series'
-         * color.
-         */
-        stroke?: string;
-        /**
-         * (Highstock) Pixel width of the connector line.
-         */
-        width?: number;
-    }
-    /**
-     * (Highstock) Options for the _Series on point_ feature. Only `pie` and
-     * `sunburst` series are supported at this moment.
-     */
-    interface PlotFlagsOnPointOptions {
-        /**
-         * (Highstock) Options for the connector in the _Series on point_
-         * feature.
-         *
-         * In styled mode, the connector can be styled with the
-         * `.highcharts-connector-seriesonpoint` class name.
-         */
-        connectorOptions?: (Highcharts.PlotFlagsOnPointConnectorOptions|Highcharts.SVGAttributes);
-        /**
-         * (Highstock) The `id` of the point that we connect the series to. Only
-         * points with a given `plotX` and `plotY` values and map points are
-         * valid.
-         */
-        id?: string;
-        /**
-         * (Highstock) Options allowing to set a position and an offset of the
-         * series in the _Series on point_ feature.
-         */
-        position?: (object|Highcharts.PlotFlagsOnPointPositionOptions);
-    }
-    /**
-     * (Highstock) Options allowing to set a position and an offset of the
-     * series in the _Series on point_ feature.
-     */
-    interface PlotFlagsOnPointPositionOptions {
-        /**
-         * (Highstock) Series center offset from the original x position. If
-         * defined, the connector line is drawn connecting original position
-         * with new position.
-         */
-        offsetX?: number;
-        /**
-         * (Highstock) Series center offset from the original y position. If
-         * defined, the connector line is drawn from original position to a new
-         * position.
-         */
-        offsetY?: number;
-        /**
-         * (Highstock) X position of the series center. By default, the series
-         * is displayed on the point that it is connected to.
-         */
-        x?: number;
-        /**
-         * (Highstock) Y position of the series center. By default, the series
-         * is displayed on the point that it is connected to.
-         */
-        y?: number;
-    }
-    /**
      * (Highstock) Flags are used to mark events in stock charts. They can be
      * added on the timeline, or attached to a specific series.
      *
@@ -556,26 +482,6 @@ declare module "../highcharts" {
          * points like e.g. during the initial animation.
          */
         animationLimit?: number;
-        /**
-         * (Highstock) Sets the color blending in the boost module.
-         */
-        boostBlending?: Highcharts.OptionsBoostBlendingValue;
-        /**
-         * (Highstock) Set the point threshold for when a series should enter
-         * boost mode.
-         *
-         * Setting it to e.g. 2000 will cause the series to enter boost mode
-         * when there are 2000 or more points in the series.
-         *
-         * To disable boosting on the series, set the `boostThreshold` to 0.
-         * Setting it to 1 will force boosting.
-         *
-         * Note that the cropThreshold also affects this setting. When zooming
-         * in on a series that has fewer points than the `cropThreshold`, all
-         * points are rendered although outside the visible plot area, and the
-         * `boostThreshold` won't take effect.
-         */
-        boostThreshold?: number;
         /**
          * (Highcharts, Highstock, Gantt) The corner radius of the border
          * surrounding each flag. For `squarepin` shaped flags only. A number
@@ -956,7 +862,7 @@ declare module "../highcharts" {
          */
         minPointLength?: number;
         /**
-         * (Highstock) Options for the corresponding navigator series if
+         * (Highstock, Gantt) Options for the corresponding navigator series if
          * `showInNavigator` is `true` for this series. Available options are
          * the same as any series, documented at plotOptions and series.
          *
@@ -972,26 +878,12 @@ declare module "../highcharts" {
          */
         negativeColor?: Highcharts.ColorType;
         /**
-         * (Highcharts, Highstock) Whether or not data-points with the value of
-         * `null` should be interactive. When this is set to `true`, tooltips
-         * may highlight these points, and this option also enables keyboard
-         * navigation for such points. Format options for such points include
-         * `nullFormat` and `nullFormatter`. Works for these series: `line`,
-         * `spline`, `area`, `area-spline`, `column`, `bar`, and `timeline`.
-         */
-        nullInteraction?: (boolean|undefined);
-        /**
          * (Highstock) In case the flag is placed on a series, on what point key
          * to place it. Line and columns have one key, `y`. In range or
          * OHLC-type series, however, the flag can optionally be placed on the
          * `open`, `high`, `low` or `close` key.
          */
         onKey?: Highcharts.OptionsOnKeyValue;
-        /**
-         * (Highstock) Options for the _Series on point_ feature. Only `pie` and
-         * `sunburst` series are supported at this moment.
-         */
-        onPoint?: (object|Highcharts.PlotFlagsOnPointOptions);
         /**
          * (Highstock) The id of the series that the flags should be drawn on.
          * If no id is given, the flags are drawn on the x axis.
@@ -1161,8 +1053,8 @@ declare module "../highcharts" {
          */
         showInLegend?: boolean;
         /**
-         * (Highstock) Whether or not to show the series in the navigator. Takes
-         * precedence over navigator.baseSeries if defined.
+         * (Highstock, Gantt) Whether or not to show the series in the
+         * navigator. Takes precedence over navigator.baseSeries if defined.
          */
         showInNavigator?: boolean;
         /**
@@ -1292,14 +1184,6 @@ declare module "../highcharts" {
          * option (view live demo).
          */
         zones?: Array<Highcharts.SeriesZonesOptionsObject>;
-        /**
-         * (Highstock) Whether to zoom non-cartesian series. If `chart.zooming`
-         * is set, the option allows to disable zooming on an individual
-         * non-cartesian series. By default zooming is enabled for all series.
-         *
-         * **Note**: This option works only for non-cartesian series.
-         */
-        zoomEnabled?: boolean;
     }
     /**
      * (Highcharts, Highstock) Animation setting for hovering the graph in
@@ -1476,11 +1360,39 @@ declare module "../highcharts" {
         /**
          * Not available
          */
+        depth?: undefined;
+        /**
+         * Not available
+         */
+        edgeColor?: undefined;
+        /**
+         * Not available
+         */
+        edgeWidth?: undefined;
+        /**
+         * Not available
+         */
+        groupZPadding?: undefined;
+        /**
+         * Not available
+         */
+        lowMarker?: undefined;
+        /**
+         * Not available
+         */
         pointPadding?: undefined;
         /**
          * Not available
          */
         pointWidth?: undefined;
+        /**
+         * Not available
+         */
+        startFromThreshold?: undefined;
+        /**
+         * Not available
+         */
+        trackByArea?: undefined;
         /**
          * (Highcharts, Highstock, Highmaps, Gantt) This property is only in
          * TypeScript non-optional and might be `undefined` in series objects

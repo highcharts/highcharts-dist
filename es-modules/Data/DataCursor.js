@@ -36,9 +36,10 @@ class DataCursor {
      *  Constructor
      *
      * */
-    constructor(stateMap = {}) {
+    constructor(stateMap = Object.create(null)) {
         this.emittingRegister = [];
-        this.listenerMap = {};
+        // Table IDs are used as keys, so keep the maps prototype-less.
+        this.listenerMap = Object.create(null);
         this.stateMap = stateMap;
     }
     /* *

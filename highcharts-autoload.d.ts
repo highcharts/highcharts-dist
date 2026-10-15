@@ -161,7 +161,10 @@ declare module "./highcharts" {
         whiteSpace?: string;
         width?: number;
     }
-    interface DataMappingOptionsObject {}
+    interface DataMappingItemObject {
+        column?: (number|string);
+        dataTable?: (number|string);
+    }
     interface DataTableOptionsObject {
         columns?: DataTableColumnCollection;
         id?: string;

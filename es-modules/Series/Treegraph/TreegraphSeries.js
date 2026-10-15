@@ -525,11 +525,6 @@ export default TreegraphSeries;
  * @apioption series.treegraph.levels.collapsed
  */
 /**
- * Set marker options for nodes at the level.
- * @extends   series.treegraph.marker
- * @apioption series.treegraph.levels.marker
- */
-/**
  * An array of data points for the series. For the `treegraph` series type,
  * points can be given in the following ways:
  *

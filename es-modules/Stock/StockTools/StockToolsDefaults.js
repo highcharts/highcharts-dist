@@ -533,7 +533,7 @@ const lang = {
  *
  * @since        7.0.0
  *
- * @requires stock/modules/stock-tools
+ * @requires modules/stock-tools
  * @optionparent stockTools
  */
 const stockTools = {

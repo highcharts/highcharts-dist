@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.0 (2026-10-02)
+ * @license Highcharts JS v13.1.1-modified (2026-10-15)
  * @module highcharts/modules/sankey
  * @requires highcharts
  *
@@ -2197,6 +2197,10 @@ class SankeySeries extends SankeySeries_ColumnSeries {
         for (const column of nodeColumns) {
             for (const node of column) {
                 series.translateNode(node, column);
+                // Rank node labels by the node size. The node's `y` is only
+                // a placeholder, so the generic value based rank would let
+                // the data order decide (#23585).
+                node.labelrank = node.options.labelrank ?? node.getSum();
             }
         }
         // Then translate links

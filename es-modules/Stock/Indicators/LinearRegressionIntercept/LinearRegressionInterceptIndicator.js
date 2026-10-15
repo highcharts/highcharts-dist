@@ -52,8 +52,8 @@ class LinearRegressionInterceptIndicator extends LinearRegressionIndicator {
  * @extends      plotOptions.linearregression
  * @since        7.0.0
  * @product      highstock
- * @requires     stock/indicators/indicators
- * @requires     stock/indicators/regressions
+ * @requires     indicators/indicators
+ * @requires     indicators/regressions
  * @optionparent plotOptions.linearregressionintercept
  * @internal
  */
@@ -83,8 +83,8 @@ export default LinearRegressionInterceptIndicator;
  * @extends   series,plotOptions.linearregressionintercept
  * @since     7.0.0
  * @product   highstock
- * @requires  stock/indicators/indicators
- * @requires  stock/indicators/regressions
+ * @requires  indicators/indicators
+ * @requires  indicators/regressions
  * @apioption series.linearregressionintercept
  */
 ''; // To include the above in the js output

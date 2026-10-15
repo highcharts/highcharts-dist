@@ -398,6 +398,27 @@ declare module "../highcharts" {
         zIndex?: number;
     }
     /**
+     * (Highmaps) Make the geoheatmap render its data points as an interpolated
+     * image. It can be used to show a Temperature Map-like charts.
+     */
+    interface PlotGeoheatmapInterpolationOptions {
+        /**
+         * (Highmaps) Represents how much blur should be added to the
+         * interpolated image. Works best in the range of 0-1, all higher values
+         * would need a lot more performance of the machine to calculate more
+         * detailed interpolation.
+         *
+         * * **Note:** Useful, if the data is spread into wide range of
+         * longitude and latitude values.
+         */
+        blur?: number;
+        /**
+         * (Highmaps) Enable or disable the interpolation of the geoheatmap
+         * series.
+         */
+        enabled?: boolean;
+    }
+    /**
      * (Highmaps) A `geoheatmap` series is a variety of heatmap series, composed
      * into the map projection, where the units are expressed in the latitude
      * and longitude, and individual values contained in a matrix are
@@ -681,7 +702,7 @@ declare module "../highcharts" {
          * interpolated image. It can be used to show a Temperature Map-like
          * charts.
          */
-        interpolation?: (boolean|Highcharts.InterpolationOptionsObject);
+        interpolation?: (boolean|Highcharts.InterpolationOptionsObject|Highcharts.PlotGeoheatmapInterpolationOptions);
         /**
          * (Highmaps) An array specifying which option maps to which key in the
          * data point array. This makes it convenient to work with unstructured
@@ -1095,6 +1116,14 @@ declare module "../highcharts" {
          * is not available. (see online documentation for example)
          */
         data?: Array<(Array<number>|Highcharts.SeriesGeoheatmapDataOptions)>;
+        /**
+         * Not available
+         */
+        dataParser?: undefined;
+        /**
+         * Not available
+         */
+        dataURL?: undefined;
         /**
          * Not available
          */

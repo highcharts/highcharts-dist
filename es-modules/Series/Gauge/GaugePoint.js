@@ -25,7 +25,7 @@ class GaugePoint extends Point {
      * */
     /**
      * Don't do any hover colors or anything
-     * @private
+     * @internal
      */
     setState(state) {
         this.state = state;

@@ -178,7 +178,7 @@ declare module "../highcharts.src" {
          * `.highcharts-breadcrumbs-buttons .highcharts-button` rule with its
          * different states.
          */
-        style?: Highcharts.SVGAttributes;
+        style?: Highcharts.CSSObject;
         /**
          * (Highcharts) Whether to use HTML to render the breadcrumbs items
          * texts.
@@ -1039,6 +1039,11 @@ declare module "../highcharts.src" {
          * level.
          */
         color?: Highcharts.ColorType;
+        /**
+         * (Highcharts) Determines whether the chart should receive one color
+         * per point based on this level.
+         */
+        colorByPoint?: boolean;
         /**
          * (Highcharts) A configuration object to define how the color of a
          * child varies from the parent's color. The variation is distributed

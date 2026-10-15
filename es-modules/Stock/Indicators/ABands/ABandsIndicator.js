@@ -132,8 +132,8 @@ class ABandsIndicator extends SMAIndicator {
  *               navigatorOptions, pointInterval, pointIntervalUnit,
  *               pointPlacement, pointRange, pointStart, showInNavigator,
  *               stacking,
- * @requires     stock/indicators/indicators
- * @requires     stock/indicators/acceleration-bands
+ * @requires     indicators/indicators
+ * @requires     indicators/acceleration-bands
  * @optionparent plotOptions.abands
  * @internal
  */
@@ -212,8 +212,8 @@ export default ABandsIndicator;
  *            joinBy, keys, navigatorOptions, pointInterval,
  *            pointIntervalUnit, pointPlacement, pointRange, pointStart,
  *            stacking, showInNavigator,
- * @requires  stock/indicators/indicators
- * @requires  stock/indicators/acceleration-bands
+ * @requires  indicators/indicators
+ * @requires  indicators/acceleration-bands
  * @apioption series.abands
  */
 ''; // To include the above in jsdoc

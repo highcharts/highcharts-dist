@@ -832,24 +832,40 @@ function seriesRenderCanvas() {
     // Do not start building while drawing
     this.buildKDTree = noop;
     fireEvent(this, 'renderCanvas');
-    if (chartBoost && lineWidth > 1 && this.is('line')) {
-        chartBoost.lineWidthFilter?.remove();
-        chartBoost.lineWidthFilter = chart.renderer.definition({
-            tagName: 'filter',
-            children: [
-                {
-                    tagName: 'feMorphology',
-                    attributes: {
-                        operator: 'dilate',
-                        radius: 0.25 * lineWidth
+    if (chartBoost) {
+        const boostTarget = seriesBoost?.target || chartBoost.target, 
+        // The dilate filter is applied to the whole render target, so
+        // it must stay off when that target is shared with a visible
+        // non-line series (chart-level boosting). Otherwise it would
+        // also dilate/blur their pixels, washing out the chart
+        // (#24728). A target shared only by line series keeps the
+        // filter, so a thin line must not clear it (#23666).
+        sharesTargetWithNonLine = !seriesBoost?.target &&
+            chart.series.some((otherSeries) => otherSeries.visible &&
+                !!otherSeries.boosted &&
+                otherSeries.type !== 'line');
+        if (sharesTargetWithNonLine) {
+            boostTarget?.attr({ filter: 'none' });
+        }
+        else if (lineWidth > 1 && this.type === 'line') {
+            chartBoost.lineWidthFilter?.remove();
+            chartBoost.lineWidthFilter = chart.renderer.definition({
+                tagName: 'filter',
+                children: [
+                    {
+                        tagName: 'feMorphology',
+                        attributes: {
+                            operator: 'dilate',
+                            radius: 0.25 * lineWidth
+                        }
                     }
-                }
-            ],
-            attributes: { id: 'linewidth' }
-        });
-        (seriesBoost?.target || chartBoost.target)?.attr({
-            filter: 'url(#linewidth)'
-        });
+                ],
+                attributes: { id: 'linewidth' }
+            });
+            boostTarget?.attr({
+                filter: 'url(#linewidth)'
+            });
+        }
     }
     if (renderer) {
         allocateIfNotSeriesBoosting(renderer, this);

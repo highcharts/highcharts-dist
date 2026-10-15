@@ -9,6 +9,7 @@ const { defaultOptions } = D;
 import InfinityLine from './InfinityLine.js';
 import MockPoint from '../MockPoint.js';
 import { merge } from '../../../Shared/Utilities.js';
+import { interpolateAxisValue } from '../AnnotationUtilities.js';
 if (defaultOptions.annotations?.types) {
     defaultOptions.annotations.types.pitchfork = merge(defaultOptions.annotations.types.infinityLine, 
     /**
@@ -86,12 +87,12 @@ class Pitchfork extends InfinityLine {
      *
      * */
     midPointOptions() {
-        const points = this.points;
+        const points = this.points, yAxis = points[0].series.yAxis;
         return {
             x: (points[1].x + points[2].x) / 2,
-            y: (points[1].y + points[2].y) / 2,
+            y: interpolateAxisValue(points[1].y, points[2].y, 0.5, yAxis),
             xAxis: points[0].series.xAxis,
-            yAxis: points[0].series.yAxis
+            yAxis
         };
     }
     addShapes() {
@@ -131,23 +132,23 @@ class Pitchfork extends InfinityLine {
             type: 'path',
             points: [
                 function (target) {
-                    const annotation = target.annotation, points = annotation.points, midPointOptions = annotation.midPointOptions();
+                    const annotation = target.annotation, points = annotation.points, midPointOptions = annotation.midPointOptions(), yAxis = midPointOptions.yAxis;
                     return {
                         x: (points[1].x + midPointOptions.x) / 2,
-                        y: (points[1].y + midPointOptions.y) / 2,
+                        y: interpolateAxisValue(points[1].y, midPointOptions.y, 0.5, yAxis),
                         xAxis: midPointOptions.xAxis,
-                        yAxis: midPointOptions.yAxis
+                        yAxis
                     };
                 },
                 shapes[1].points[1],
                 shapes[2].points[1],
                 function (target) {
-                    const annotation = target.annotation, points = annotation.points, midPointOptions = annotation.midPointOptions();
+                    const annotation = target.annotation, points = annotation.points, midPointOptions = annotation.midPointOptions(), yAxis = midPointOptions.yAxis;
                     return {
                         x: (midPointOptions.x + points[2].x) / 2,
-                        y: (midPointOptions.y + points[2].y) / 2,
+                        y: interpolateAxisValue(midPointOptions.y, points[2].y, 0.5, yAxis),
                         xAxis: midPointOptions.xAxis,
-                        yAxis: midPointOptions.yAxis
+                        yAxis
                     };
                 }
             ],

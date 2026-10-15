@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.0 (2026-10-02)
+ * @license Highcharts JS v13.1.1-modified (2026-10-15)
  * @module highcharts/modules/annotations-advanced
  * @requires highcharts
  *
@@ -8661,6 +8661,53 @@ Annotations_Annotation.types.timeCycles = TimeCycles;
  * */
 /* harmony default export */ const Types_TimeCycles = ((/* unused pure expression or super */ null && (TimeCycles)));
 
+;// ./code/es-modules/Extensions/Annotations/AnnotationUtilities.js
+/* *
+ *
+ *  (c) 2009-2026 Highsoft AS
+ *  Author: Highsoft, Black Label
+ *
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
+ *
+ * */
+
+
+/* *
+ *
+ *  Functions
+ *
+ * */
+/**
+ * Interpolates an axis value between `from` and `to`. Use for midpoints,
+ * Fibonacci levels and similar fractions of a range. On a logarithmic axis
+ * the fraction is measured in pixels, so equal steps match the screen.
+ *
+ * @internal
+ *
+ * @param {number|null|undefined} from
+ *        Start value.
+ * @param {number|null|undefined} to
+ *        End value.
+ * @param {number} fraction
+ *        Position along the range. `0` is `from` and `1` is `to`.
+ * @param {Highcharts.Axis|null|undefined} axis
+ *        Axis the values belong to.
+ * @return {number}
+ *         Axis value at that position.
+ */
+function interpolateAxisValue(from, to, fraction, axis) {
+    if (!(0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.isNumber)(from) || !(0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.isNumber)(to)) {
+        return 0;
+    }
+    if (axis?.logarithmic) {
+        const start = axis.toPixels(from), end = axis.toPixels(to);
+        return axis.toValue(start + (end - start) * fraction);
+    }
+    return from + (to - from) * fraction;
+}
+
 ;// ./code/es-modules/Extensions/Annotations/Types/Fibonacci.js
 /* *
  *
@@ -8670,6 +8717,7 @@ Annotations_Annotation.types.timeCycles = TimeCycles;
 
 
 const { defaultOptions: Fibonacci_defaultOptions } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
+
 
 
 
@@ -8800,9 +8848,9 @@ class Fibonacci extends Types_Tunnel {
         return;
     }
     linkRetracementsPoints() {
-        const points = this.points, startDiff = points[0].y - points[3].y, endDiff = points[1].y - points[2].y, startX = points[0].x, endX = points[1].x;
+        const points = this.points, yAxis = points[0].series?.yAxis, startX = points[0].x, endX = points[1].x;
         Fibonacci.levels.forEach((level, i) => {
-            const startRetracement = points[0].y - startDiff * level, endRetracement = points[1].y - endDiff * level, index = this.options.typeOptions.reversed ?
+            const startRetracement = interpolateAxisValue(points[0].y, points[3].y, level, yAxis), endRetracement = interpolateAxisValue(points[1].y, points[2].y, level, yAxis), index = this.options.typeOptions.reversed ?
                 (Fibonacci.levels.length - i - 1) : i;
             this.startRetracements = this.startRetracements || [];
             this.endRetracements = this.endRetracements || [];
@@ -9091,6 +9139,7 @@ const { defaultOptions: Pitchfork_defaultOptions } = (highcharts_commonjs_highch
 
 
 
+
 if (Pitchfork_defaultOptions.annotations?.types) {
     Pitchfork_defaultOptions.annotations.types.pitchfork = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(Pitchfork_defaultOptions.annotations.types.infinityLine, 
     /**
@@ -9168,12 +9217,12 @@ class Pitchfork extends Types_InfinityLine {
      *
      * */
     midPointOptions() {
-        const points = this.points;
+        const points = this.points, yAxis = points[0].series.yAxis;
         return {
             x: (points[1].x + points[2].x) / 2,
-            y: (points[1].y + points[2].y) / 2,
+            y: interpolateAxisValue(points[1].y, points[2].y, 0.5, yAxis),
             xAxis: points[0].series.xAxis,
-            yAxis: points[0].series.yAxis
+            yAxis
         };
     }
     addShapes() {
@@ -9213,23 +9262,23 @@ class Pitchfork extends Types_InfinityLine {
             type: 'path',
             points: [
                 function (target) {
-                    const annotation = target.annotation, points = annotation.points, midPointOptions = annotation.midPointOptions();
+                    const annotation = target.annotation, points = annotation.points, midPointOptions = annotation.midPointOptions(), yAxis = midPointOptions.yAxis;
                     return {
                         x: (points[1].x + midPointOptions.x) / 2,
-                        y: (points[1].y + midPointOptions.y) / 2,
+                        y: interpolateAxisValue(points[1].y, midPointOptions.y, 0.5, yAxis),
                         xAxis: midPointOptions.xAxis,
-                        yAxis: midPointOptions.yAxis
+                        yAxis
                     };
                 },
                 shapes[1].points[1],
                 shapes[2].points[1],
                 function (target) {
-                    const annotation = target.annotation, points = annotation.points, midPointOptions = annotation.midPointOptions();
+                    const annotation = target.annotation, points = annotation.points, midPointOptions = annotation.midPointOptions(), yAxis = midPointOptions.yAxis;
                     return {
                         x: (midPointOptions.x + points[2].x) / 2,
-                        y: (midPointOptions.y + points[2].y) / 2,
+                        y: interpolateAxisValue(midPointOptions.y, points[2].y, 0.5, yAxis),
                         xAxis: midPointOptions.xAxis,
-                        yAxis: midPointOptions.yAxis
+                        yAxis
                     };
                 }
             ],
@@ -9419,6 +9468,7 @@ Annotations_Annotation.types.verticalLine = VerticalLine;
 
 
 const { defaultOptions: Measure_defaultOptions } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
+
 
 const { getAxisFromOptions: Measure_getAxisFromOptions } = Annotations_NavigationBindingsUtilities;
 
@@ -9614,15 +9664,14 @@ if (Measure_defaultOptions.annotations?.types) {
                 }
                 let targetX = target.xAxisMax, targetY = target.yAxisMax, x, y;
                 if (selectType === 'x') {
-                    targetY = (ext.yAxisMax + ext.yAxisMin) / 2;
+                    targetY = interpolateAxisValue(ext.yAxisMin, ext.yAxisMax, 0.5, yAxis);
                     // First control point
                     if (cpIndex === 0) {
                         targetX = target.xAxisMin;
                     }
                 }
                 if (selectType === 'y') {
-                    targetX = ext.xAxisMin +
-                        ((ext.xAxisMax - ext.xAxisMin) / 2);
+                    targetX = interpolateAxisValue(ext.xAxisMin, ext.xAxisMax, 0.5, xAxis);
                     // First control point
                     if (cpIndex === 0) {
                         targetY = target.yAxisMin;

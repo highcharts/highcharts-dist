@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.0 (2026-10-02)
+ * @license Highcharts JS v13.1.1-modified (2026-10-15)
  * @module highcharts/modules/treemap
  * @requires highcharts
  *
@@ -283,7 +283,7 @@ const options = {
      * `.highcharts-breadcrumbs-buttons .highcharts-button` rule with its
      * different states.
      *
-     * @type  {Highcharts.SVGAttributes}
+     * @type  {Highcharts.CSSObject}
      * @since 10.0.0
      */
     style: {},
@@ -645,7 +645,12 @@ class Breadcrumbs {
      *        Returns the SVG button
      */
     renderButton(breadcrumb, posX, posY) {
-        const breadcrumbs = this, chart = this.chart, breadcrumbsOptions = breadcrumbs.options, buttonTheme = (0,external_highcharts_src_js_default_namespaceObject.merge)(breadcrumbsOptions.buttonTheme);
+        const breadcrumbs = this, chart = this.chart, breadcrumbsOptions = breadcrumbs.options, 
+        // The `style` option is CSS for the button text, so it belongs in
+        // the theme's `style` rather than being applied afterwards. A
+        // later `setState` re-applies the normal state style, which would
+        // otherwise wipe it (#25357).
+        buttonTheme = (0,external_highcharts_src_js_default_namespaceObject.merge)(breadcrumbsOptions.buttonTheme, chart.styledMode ? void 0 : { style: breadcrumbsOptions.style });
         const button = chart.renderer
             .button(breadcrumbs.getButtonText(breadcrumb), posX, posY, function (e /* @todo (Event|any) */) {
             // Extract events from button object and call
@@ -674,9 +679,6 @@ class Breadcrumbs {
         }, buttonTheme)
             .addClass('highcharts-breadcrumbs-button')
             .add(breadcrumbs.group);
-        if (!chart.styledMode) {
-            button.attr(breadcrumbsOptions.style);
-        }
         return button;
     }
     /**
@@ -1770,6 +1772,17 @@ const TreemapSeriesDefaults = {
      * @since     4.1.0
      * @product   highcharts
      * @apioption plotOptions.treemap.levels.color
+     */
+    /**
+     * Determines whether the chart should receive one color per point based
+     * on this level.
+     *
+     * @sample {highcharts} highcharts/demo/treemap-with-levels/
+     *         One color per point on the first level
+     *
+     * @type      {boolean}
+     * @product   highcharts
+     * @apioption plotOptions.treemap.levels.colorByPoint
      */
     /**
      * A configuration object to define how the color of a child varies from

@@ -488,8 +488,8 @@ class IKHIndicator extends SMAIndicator {
  *               pointPlacement, pointRange, pointStart, showInNavigator,
  *               stacking
  * @product      highstock
- * @requires     stock/indicators/indicators
- * @requires     stock/indicators/ichimoku-kinko-hyo
+ * @requires     indicators/indicators
+ * @requires     indicators/ichimoku-kinko-hyo
  * @optionparent plotOptions.ikh
  * @internal
  */
@@ -685,8 +685,8 @@ export default IKHIndicator;
  * @extends   series,plotOptions.ikh
  * @since     6.0.0
  * @product   highstock
- * @requires  stock/indicators/indicators
- * @requires  stock/indicators/ichimoku-kinko-hyo
+ * @requires  indicators/indicators
+ * @requires  indicators/ichimoku-kinko-hyo
  * @apioption series.ikh
  */
 (''); // Add doclet above to transpiled file

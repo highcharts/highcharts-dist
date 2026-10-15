@@ -251,6 +251,12 @@ declare module "../highcharts.src" {
      */
     interface PlotPackedbubbleLayoutAlgorithmParentNodeOptions {
         /**
+         * (Highcharts) The distance between two parent nodes, when the
+         * algorithm starts to treat them as overlapping. Defaults to the
+         * layoutAlgorithm.bubblePadding value.
+         */
+        bubblePadding?: number;
+        /**
          * (Highcharts) Friction applied on forces to prevent nodes rushing to
          * fast to the desired positions.
          */

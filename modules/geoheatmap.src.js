@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.0 (2026-10-02)
+ * @license Highcharts JS v13.1.1-modified (2026-10-15)
  * @module highcharts/modules/geoheatmap
  * @requires highcharts
  *
@@ -130,7 +130,7 @@ class GeoHeatmapPoint extends MapPoint {
      *
      * */
     /**
-     * @private
+     * @internal
      */
     applyOptions(options, x) {
         const point = super.applyOptions.call(this, options, x), { lat, lon } = point.options;
@@ -159,6 +159,232 @@ class GeoHeatmapPoint extends MapPoint {
  *
  * */
 /* harmony default export */ const GeoHeatmap_GeoHeatmapPoint = (GeoHeatmapPoint);
+
+;// ./code/es-modules/Series/GeoHeatmap/GeoHeatmapSeriesDefaults.js
+/* *
+ *
+ *  (c) 2010-2026 Highsoft AS
+ *
+ *  Authors: Magdalena Gut, Piotr Madej
+ *
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
+ *
+ *
+ * */
+
+/* *
+ *
+ *  API Options
+ *
+ * */
+/**
+ * A `geoheatmap` series is a variety of heatmap series, composed into
+ * the map projection, where the units are expressed in the latitude
+ * and longitude, and individual values contained in a matrix are
+ * represented as colors.
+ *
+ * @sample maps/demo/geoheatmap-europe/
+ *         GeoHeatmap Chart with interpolation on Europe map
+ * @sample maps/series-geoheatmap/geoheatmap-equalearth/
+ *         GeoHeatmap Chart on the Equal Earth Projection
+ *
+ * @extends      plotOptions.map
+ * @since        11.0.0
+ * @product      highmaps
+ * @excluding    allAreas, dragDrop, findNearestPointBy, geometry, joinBy,
+ * negativeColor, onPoint, stickyTracking
+ * @requires     modules/geoheatmap
+ * @optionparent plotOptions.geoheatmap
+ */
+const GeoHeatmapSeriesDefaults = {
+    nullColor: 'transparent',
+    tooltip: {
+        pointFormat: 'Lat: {point.lat}, Lon: {point.lon}, Value: {point.value}<br/>'
+    },
+    /**
+     * The border width of each geoheatmap tile.
+     *
+     * In styled mode, the border stroke width is given in the
+     * `.highcharts-point` class.
+     *
+     * @sample maps/demo/geoheatmap-orthographic/
+     *         borderWidth set to 1 to create a grid
+     *
+     * @type      {number|null}
+     * @default   0
+     * @product   highmaps
+     * @apioption plotOptions.geoheatmap.borderWidth
+     */
+    borderWidth: 0,
+    /**
+     * The column size - how many longitude units each column in the
+     * geoheatmap should span.
+     *
+     * @sample maps/demo/geoheatmap-europe/
+     *         1 by default, set to 5
+     *
+     * @product   highmaps
+     * @apioption plotOptions.geoheatmap.colsize
+     */
+    colsize: 1,
+    /**
+     * The main color of the series. In heat maps this color is rarely
+     * used, as we mostly use the color to denote the value of each
+     * point. Unless options are set in the [colorAxis](#colorAxis), the
+     * default value is pulled from the [options.colors](#colors) array.
+     *
+     * @type      {Highcharts.ColorType}
+     * @product   highmaps
+     * @apioption plotOptions.geoheatmap.color
+     */
+    /**
+     * The rowsize size - how many latitude units each row in the
+     * geoheatmap should span.
+     *
+     * @sample maps/demo/geoheatmap-europe/
+     *         1 by default, set to 5
+     *
+     * @product   highmaps
+     * @apioption plotOptions.geoheatmap.rowsize
+     */
+    rowsize: 1,
+    stickyTracking: true,
+    /**
+     * Make the geoheatmap render its data points as an interpolated
+     * image. It can be used to show a Temperature Map-like charts.
+     *
+     * @sample maps/demo/geoheatmap-earth-statistics
+     *         Advanced demo of GeoHeatmap interpolation with multiple
+     *         datasets
+     *
+     * @type      {boolean|Highcharts.InterpolationOptionsObject}
+     * @since     11.2.0
+     * @product   highmaps
+     */
+    interpolation: {
+        /**
+         * Enable or disable the interpolation of the geoheatmap series.
+         *
+         * @since 11.2.0
+         */
+        enabled: false,
+        /**
+         * Represents how much blur should be added to the interpolated
+         * image. Works best in the range of 0-1, all higher values
+         * would need a lot more performance of the machine to calculate
+         * more detailed interpolation.
+         *
+         *  * **Note:** Useful, if the data is spread into wide range of
+         *  longitude and latitude values.
+         *
+         * @sample maps/series-geoheatmap/turkey-fire-areas
+         *         Simple demo of GeoHeatmap interpolation
+         *
+         * @since  11.2.0
+         */
+        blur: 1
+    }
+};
+/**
+ * A `geoheatmap` series. If the [type](#series.map.type) option is not
+ * specified, it is inherited from [chart.type](#chart.type).
+ *
+ * @extends   series,plotOptions.geoheatmap
+ * @excluding allAreas, dataParser, dataURL, dragDrop, findNearestPointBy,
+ *            joinBy, marker, mapData, negativeColor, onPoint, shadow,
+ *            stickyTracking
+ * @product   highmaps
+ * @requires  modules/geoheatmap
+ * @apioption series.geoheatmap
+ */
+/**
+ * An array of data points for the series. For the `geoheatmap` series
+ * type, points can be given in the following ways:
+ *
+ * 1.  An array of arrays with 3 or 2 values. In this case, the values
+ * correspond to `lon,lat,value`. The `value` refers to the color on the `colorAxis`.
+ *
+ *  ```js
+ *     data: [
+ *         [51.50, -0.12, 7],
+ *         [54.59, -5.93, 4],
+ *         [55.8, -4.25, 3]
+ *     ]
+ *  ```
+ *
+ * 2.  An array of objects with named values. The following snippet shows only a
+ * few settings, see the complete options set below. If the total number of data
+ * points exceeds the series' [turboThreshold](#series.heatmap.turboThreshold),
+ * this option is not available.
+ *
+ *  ```js
+ *     data: [{
+ *         lat: 51.50,
+ *         lon: -0.12,
+ *         value: 7,
+ *         name: "London"
+ *     }, {
+ *         lat: 54.59,
+ *         lon: -5.93,
+ *         value: 4,
+ *         name: "Belfast"
+ *     }]
+ *  ```
+ *
+ * @sample maps/demo/geoheatmap-europe/
+ *         GeoHeatmap Chart with interpolation on Europe map
+ * @sample maps/series-geoheatmap/geoheatmap-equalearth/
+ *         GeoHeatmap Chart on the Equal Earth Projection
+ *
+ * @basic
+ * @type      {Array<Array<number>|*>}
+ * @extends   series.map.data
+ * @product   highmaps
+ * @apioption series.geoheatmap.data
+ */
+/**
+ * Individual color for the point. By default the color is either used
+ * to denote the value, or pulled from the global `colors` array.
+ *
+ * @type      {Highcharts.ColorType}
+ * @product   highmaps
+ * @apioption series.geoheatmap.data.color
+ */
+/**
+ * The value of the point, resulting in a color controlled by options
+ * as set in the [colorAxis](#colorAxis) configuration.
+ *
+ * @type      {number|null}
+ * @product   highmaps
+ * @apioption series.geoheatmap.data.value
+ */
+/**
+ * Detailed options for interpolation object.
+ *
+ * @interface Highcharts.InterpolationOptionsObject
+ */ /**
+*  Enable or disable the interpolation.
+*
+* @name Highcharts.InterpolationOptionsObject#enabled
+* @type {boolean}
+*/ /**
+* Represents how much blur should be added to the interpolated
+* image. Works best in the range of 0-1, all higher values
+* would need a lot more performance of the machine to calculate
+* more detailed interpolation.
+*
+* @name Highcharts.InterpolationOptionsObject#blur
+* @type {number}
+*/
+''; // Adds doclets above to the transpiled file
+/* *
+ *
+ *  Default Export
+ *
+ * */
+/* harmony default export */ const GeoHeatmap_GeoHeatmapSeriesDefaults = (GeoHeatmapSeriesDefaults);
 
 ;// ./code/es-modules/Series/InterpolationUtilities.js
 /* *
@@ -253,6 +479,7 @@ const InterpolationUtilities = {
 
 
 
+
 const { noop } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 
 const { colorFromPoint: GeoHeatmapSeries_colorFromPoint, getContext: GeoHeatmapSeries_getContext } = Series_InterpolationUtilities;
@@ -262,14 +489,14 @@ const { seriesTypes: { map: MapSeries } } = (highcharts_SeriesRegistry_commonjs_
 
 /**
  * Normalize longitude value to -180:180 range.
- * @private
+ * @internal
  */
 function normalizeLonValue(lon) {
     return lon - Math.floor((lon + 180) / 360) * 360;
 }
 /**
  * Get proper point's position for PixelData array.
- * @private
+ * @internal
  */
 function scaledPointPos(lon, lat, canvasWidth, canvasHeight, colsize, rowsize) {
     return Math.ceil((canvasWidth * (canvasHeight - 1 - (lat + 90) / rowsize)) +
@@ -283,7 +510,6 @@ function scaledPointPos(lon, lat, canvasWidth, canvasHeight, colsize, rowsize) {
 /**
  * The Geo Heatmap series type.
  *
- * @private
  * @class
  * @name Highcharts.seriesTypes.geoheatmap
  *
@@ -307,7 +533,7 @@ class GeoHeatmapSeries extends MapSeries {
      * */
     /**
      * For updated colsize and rowsize options
-     * @private
+     * @internal
      */
     update() {
         const series = this;
@@ -325,7 +551,7 @@ class GeoHeatmapSeries extends MapSeries {
     }
     /**
      * Override translate method to not fire if not needed.
-     * @private
+     * @internal
      */
     translate() {
         if (this.getInterpolation().enabled &&
@@ -338,7 +564,7 @@ class GeoHeatmapSeries extends MapSeries {
     }
     /**
      * Create the extended object out of the boolean
-     * @private
+     * @internal
      */
     getInterpolation() {
         if (!(0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.isObject)(this.options.interpolation)) {
@@ -351,7 +577,7 @@ class GeoHeatmapSeries extends MapSeries {
     }
     /**
      * Overriding drawPoints original method to apply new features.
-     * @private
+     * @internal
      */
     drawPoints() {
         const series = this, chart = series.chart, mapView = chart.mapView, seriesOptions = series.options;
@@ -476,7 +702,7 @@ class GeoHeatmapSeries extends MapSeries {
     }
     /**
      * Project ImageData to actual mapView projection used on a chart.
-     * @private
+     * @internal
      */
     getProjectedImageData(mapView, projectedWidth, projectedHeight, cartesianImageData, canvas, horizontalShift, verticalShift) {
         const projectedPixelData = new Uint8ClampedArray(projectedWidth * projectedHeight * 4), lambda = (mapView.projection.options.rotation?.[0] ?? 0), widthFactor = canvas.width / 360, heightFactor = -1 * canvas.height / 180;
@@ -568,115 +794,7 @@ class GeoHeatmapSeries extends MapSeries {
         }
     }
 }
-/**
- * A `geoheatmap` series is a variety of heatmap series, composed into
- * the map projection, where the units are expressed in the latitude
- * and longitude, and individual values contained in a matrix are
- * represented as colors.
- *
- * @sample maps/demo/geoheatmap-europe/
- *         GeoHeatmap Chart with interpolation on Europe map
- * @sample maps/series-geoheatmap/geoheatmap-equalearth/
- *         GeoHeatmap Chart on the Equal Earth Projection
- *
- * @extends      plotOptions.map
- * @since        11.0.0
- * @product      highmaps
- * @excluding    allAreas, dragDrop, findNearestPointBy, geometry, joinBy,
- * negativeColor, onPoint, stickyTracking
- * @requires     modules/geoheatmap
- * @optionparent plotOptions.geoheatmap
- */
-GeoHeatmapSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(MapSeries.defaultOptions, {
-    nullColor: 'transparent',
-    tooltip: {
-        pointFormat: 'Lat: {point.lat}, Lon: {point.lon}, Value: {point.value}<br/>'
-    },
-    /**
-     * The border width of each geoheatmap tile.
-     *
-     * In styled mode, the border stroke width is given in the
-     * `.highcharts-point` class.
-     *
-     * @sample maps/demo/geoheatmap-orthographic/
-     *         borderWidth set to 1 to create a grid
-     *
-     * @type      {number|null}
-     * @default   0
-     * @product   highmaps
-     * @apioption plotOptions.geoheatmap.borderWidth
-     */
-    borderWidth: 0,
-    /**
-     * The column size - how many longitude units each column in the
-     * geoheatmap should span.
-     *
-     * @sample maps/demo/geoheatmap-europe/
-     *         1 by default, set to 5
-     *
-     * @product   highmaps
-     * @apioption plotOptions.geoheatmap.colsize
-     */
-    colsize: 1,
-    /**
-     * The main color of the series. In heat maps this color is rarely
-     * used, as we mostly use the color to denote the value of each
-     * point. Unless options are set in the [colorAxis](#colorAxis), the
-     * default value is pulled from the [options.colors](#colors) array.
-     *
-     * @type      {Highcharts.ColorType}
-     * @product   highmaps
-     * @apioption plotOptions.geoheatmap.color
-     */
-    /**
-     * The rowsize size - how many latitude units each row in the
-     * geoheatmap should span.
-     *
-     * @sample maps/demo/geoheatmap-europe/
-     *         1 by default, set to 5
-     *
-     * @product   highmaps
-     * @apioption plotOptions.geoheatmap.rowsize
-     */
-    rowsize: 1,
-    stickyTracking: true,
-    /**
-     * Make the geoheatmap render its data points as an interpolated
-     * image. It can be used to show a Temperature Map-like charts.
-     *
-     * @sample maps/demo/geoheatmap-earth-statistics
-     *         Advanced demo of GeoHeatmap interpolation with multiple
-     *         datasets
-     *
-     * @declare Highcharts.InterpolationOptionsObject
-     * @product highmaps
-     * @since   11.2.0
-     * @type    {boolean|*}
-     */
-    interpolation: {
-        /**
-         * Enable or disable the interpolation of the geoheatmap series.
-         *
-         * @since 11.2.0
-         */
-        enabled: false,
-        /**
-         * Represents how much blur should be added to the interpolated
-         * image. Works best in the range of 0-1, all higher values
-         * would need a lot more performance of the machine to calculate
-         * more detailed interpolation.
-         *
-         *  * **Note:** Useful, if the data is spread into wide range of
-         *  longitude and latitude values.
-         *
-         * @sample maps/series-geoheatmap/turkey-fire-areas
-         *         Simple demo of GeoHeatmap interpolation
-         *
-         * @since  11.2.0
-         */
-        blur: 1
-    }
-});
+GeoHeatmapSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(MapSeries.defaultOptions, GeoHeatmap_GeoHeatmapSeriesDefaults);
 (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.addEvent)(GeoHeatmapSeries, 'afterDataClassLegendClick', function () {
     this.isDirtyCanvas = true;
     this.drawPoints();

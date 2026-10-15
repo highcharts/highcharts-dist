@@ -148,8 +148,8 @@ class TEMAIndicator extends EMAIndicator {
  *               navigatorOptions, pointInterval, pointIntervalUnit,
  *               pointPlacement, pointRange, pointStart, showInNavigator,
  *               stacking
- * @requires     stock/indicators/indicators
- * @requires     stock/indicators/tema
+ * @requires     indicators/indicators
+ * @requires     indicators/tema
  * @optionparent plotOptions.tema
  * @internal
  */
@@ -176,8 +176,8 @@ export default TEMAIndicator;
  * @excluding allAreas, colorAxis, compare, compareBase,
  *            joinBy, keys, navigatorOptions, pointInterval, pointIntervalUnit,
  *            pointPlacement, pointRange, pointStart, showInNavigator, stacking
- * @requires  stock/indicators/indicators
- * @requires  stock/indicators/tema
+ * @requires  indicators/indicators
+ * @requires  indicators/tema
  * @apioption series.tema
  */
 ''; // To include the above in the js output

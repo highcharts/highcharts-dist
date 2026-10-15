@@ -293,7 +293,7 @@ class SonificationTimeline {
         const filter = (e, ix, arr) => !!(eventFilter ?
             eventFilter(e, ix, arr) && e.relatedPoint :
             e.relatedPoint);
-        let closestValDiff = Infinity, closestEvent = null;
+        let closestValDiff = Infinity, closestEvent;
         (this.playingChannels || this.channels).forEach((channel) => {
             const events = channel.events;
             let i = events.length;

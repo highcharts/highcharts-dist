@@ -238,9 +238,7 @@ class Data {
         this.decimalRegex = (decimalPoint &&
             new RegExp('^(-?[0-9]+)' + decimalPoint + '([0-9]+)$'));
         // Always stop old polling when we have new options
-        if (this.liveDataTimeout !== void 0) {
-            internalClearTimeout(this.liveDataTimeout);
-        }
+        this.stopPolling();
         // This is a two-dimensional array holding the raw, trimmed string
         // values with the same organization as the columns array. It makes it
         // possible for example to revert from interpreted timestamps to
@@ -805,7 +803,7 @@ class Data {
                             if (!columns[colNo - startColumn]) {
                                 columns[colNo - startColumn] = [];
                             }
-                            columns[colNo - startColumn][rowNo - startRow] = item.innerHTML;
+                            columns[colNo - startColumn][rowNo - startRow] = item.textContent;
                             // Loop over all previous indices and make sure
                             // they are nulls, not undefined.
                             while (rowNo - startRow >= i &&
@@ -866,7 +864,7 @@ class Data {
                     return false;
                 }
                 if (initialFetch) {
-                    internalClearTimeout(data.liveDataTimeout);
+                    data.stopPolling();
                     chart.liveDataURL = url;
                 }
                 /**
@@ -877,7 +875,12 @@ class Data {
                 function poll() {
                     // Poll
                     if (pollingEnabled && chart.liveDataURL === url) {
-                        // We need to stop doing this if the URL has changed
+                        // We need to stop doing this if the URL has changed.
+                        // Updating the chart above re-enters `Data#init`,
+                        // which may have started a poller of its own. Drop it
+                        // so that a single pending timeout is left to keep
+                        // track of, and to clear on destroy (#25115).
+                        data.stopPolling();
                         data.liveDataTimeout =
                             setTimeout(performFetch, updateIntervalMs);
                     }
@@ -886,6 +889,12 @@ class Data {
                     url: url,
                     dataType: tp || 'json',
                     success: function (res) {
+                        if (data.destroyed) {
+                            // The chart was destroyed while the request was
+                            // in flight, so there is nothing left to update
+                            // (#25115)
+                            return;
+                        }
                         if (chart?.series) {
                             done(res);
                         }
@@ -928,6 +937,19 @@ class Data {
         }
         performFetch(true);
         return hasURLOption(options);
+    }
+    /**
+     * Stop polling for live data, clearing the pending timeout if there is
+     * one.
+     *
+     * @function Highcharts.Data#stopPolling
+     * @internal
+     */
+    stopPolling() {
+        if (this.liveDataTimeout !== void 0) {
+            internalClearTimeout(this.liveDataTimeout);
+            this.liveDataTimeout = void 0;
+        }
     }
     /**
      * Parse a Google spreadsheet.
@@ -976,6 +998,11 @@ class Data {
                 url,
                 dataType: 'json',
                 success: function (json) {
+                    if (data.destroyed) {
+                        // The chart was destroyed while the request was in
+                        // flight, so there is nothing left to update (#25115)
+                        return;
+                    }
                     fn(json);
                     if (options.enablePolling) {
                         data.liveDataTimeout = setTimeout(function () {
@@ -1519,6 +1546,15 @@ addEvent(Chart, 'init', function (e) {
             }
         }), userOptions, chart);
         e.preventDefault();
+    }
+});
+// Stop live data polling when the chart goes away, so that no request is
+// fired and no response is handled after teardown (#25115).
+addEvent(Chart, 'destroy', function () {
+    const data = this.data;
+    if (data) {
+        data.destroyed = true;
+        data.stopPolling();
     }
 });
 /**

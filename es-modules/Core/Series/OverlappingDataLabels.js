@@ -239,7 +239,9 @@ function onChartRender() {
                             label.labelrank =
                                 options.labelrank ??
                                     point.labelrank ??
-                                    point.shapeArgs?.height; // #4118
+                                    Math.abs(
+                                    // #4118, #23585
+                                    point[series.pointValKey || 'y'] || 0);
                             // #21725: Sync target positions for generic overlap
                             // checking. During animations (e.g., toggling a
                             // point), DOM positions may overlap. We force

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.1.0 (2026-10-02)
+ * @license Highstock JS v13.1.1-modified (2026-10-15)
  * @module highcharts/indicators/trix
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -169,9 +169,9 @@ class TRIXIndicator extends TEMAIndicator {
  *               navigatorOptions, pointInterval, pointIntervalUnit,
  *               pointPlacement, pointRange, pointStart, showInNavigator,
  *               stacking
- * @requires     stock/indicators/indicators
- * @requires     stock/indicators/tema
- * @requires     stock/indicators/trix
+ * @requires     indicators/indicators
+ * @requires     indicators/tema
+ * @requires     indicators/trix
  * @optionparent plotOptions.trix
  * @internal
  */
@@ -198,9 +198,9 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @excluding allAreas, colorAxis, compare, compareBase,
  *            joinBy, keys, navigatorOptions, pointInterval, pointIntervalUnit,
  *            pointPlacement, pointRange, pointStart, showInNavigator, stacking
- * @requires  stock/indicators/indicators
- * @requires  stock/indicators/tema
- * @requires  stock/indicators/trix
+ * @requires  indicators/indicators
+ * @requires  indicators/tema
+ * @requires  indicators/trix
  * @apioption series.trix
  */
 ''; // To include the above in the js output

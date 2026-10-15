@@ -261,6 +261,15 @@ const PackedBubbleSeriesDefaults = {
             initialPositionRadius: 100,
             seriesInteraction: true,
             /**
+             * The distance between two parent nodes, when the algorithm
+             * starts to treat them as overlapping. Defaults to the
+             * [layoutAlgorithm.bubblePadding](#plotOptions.packedbubble.layoutAlgorithm.bubblePadding)
+             * value.
+             *
+             * @type      {number}
+             * @apioption plotOptions.packedbubble.layoutAlgorithm.parentNodeOptions.bubblePadding
+             */
+            /**
              * Styling options for parentNodes markers. Similar to
              * line.marker options.
              *

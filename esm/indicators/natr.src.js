@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.1.0 (2026-10-02)
+ * @license Highstock JS v13.1.1-modified (2026-10-15)
  * @module highcharts/indicators/natr
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -112,9 +112,9 @@ class NATRIndicator extends ATRIndicator {
  * @extends      plotOptions.atr
  * @since        7.0.0
  * @product      highstock
- * @requires     stock/indicators/indicators
- * @requires     stock/indicators/atr
- * @requires     stock/indicators/natr
+ * @requires     indicators/indicators
+ * @requires     indicators/atr
+ * @requires     indicators/natr
  * @optionparent plotOptions.natr
  * @internal
  */
@@ -142,9 +142,9 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  * @extends   series,plotOptions.natr
  * @since     7.0.0
  * @product   highstock
- * @requires  stock/indicators/indicators
- * @requires  stock/indicators/atr
- * @requires  stock/indicators/natr
+ * @requires  indicators/indicators
+ * @requires  indicators/atr
+ * @requires  indicators/natr
  * @apioption series.natr
  */
 ''; // To include the above in the js output

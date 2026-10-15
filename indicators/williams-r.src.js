@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.1.0 (2026-10-02)
+ * @license Highstock JS v13.1.1-modified (2026-10-15)
  * @module highcharts/indicators/williams-r
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -245,8 +245,8 @@ class WilliamsRIndicator extends SMAIndicator {
  * @excluding    allAreas, colorAxis, joinBy, keys, navigatorOptions,
  *               pointInterval, pointIntervalUnit, pointPlacement,
  *               pointRange, pointStart, showInNavigator, stacking
- * @requires     stock/indicators/indicators
- * @requires     stock/indicators/williams-r
+ * @requires     indicators/indicators
+ * @requires     indicators/williams-r
  * @optionparent plotOptions.williamsr
  * @internal
  */
@@ -288,8 +288,8 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @excluding allAreas, colorAxis, joinBy, keys,
  *            navigatorOptions, pointInterval, pointIntervalUnit,
  *            pointPlacement, pointRange, pointStart, showInNavigator, stacking
- * @requires  stock/indicators/indicators
- * @requires  stock/indicators/williams-r
+ * @requires  indicators/indicators
+ * @requires  indicators/williams-r
  * @apioption series.williamsr
  */
 ''; // Adds doclets above to the transpiled file

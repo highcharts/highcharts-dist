@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.0 (2026-10-02)
+ * @license Highcharts JS v13.1.1-modified (2026-10-15)
  * @module highcharts/modules/data-tools
  * @requires highcharts
  *
@@ -427,13 +427,19 @@ const { setLength: DataTableCore_setLength, splice: DataTableCore_splice } = Dat
 class DataTableCore {
     constructor(options = {}) {
         this.isDataTable = true;
-        this.autoId = !options.id;
+        // Reject IDs that would pollute the prototype of ID-keyed maps.
+        const id = this.isPollutingKey(options.id) ? void 0 : options.id;
+        this.autoId = !id;
         this.columns = {};
-        this.id = (options.id || (0,external_highcharts_src_js_default_namespaceObject.uniqueKey)());
+        this.id = (id || (0,external_highcharts_src_js_default_namespaceObject.uniqueKey)());
         this.rowCount = 0;
         this.versionTag = (0,external_highcharts_src_js_default_namespaceObject.uniqueKey)();
         let rowCount = 0;
         (0,external_highcharts_src_js_default_namespaceObject.objectEach)(options.columns || {}, (column, columnId) => {
+            if (columnId === '__proto__' ||
+                columnId === 'constructor') {
+                return;
+            }
             this.columns[columnId] = column.slice();
             rowCount = Math.max(rowCount, column.length);
         });
@@ -444,6 +450,17 @@ class DataTableCore {
      *  Functions
      *
      * */
+    /**
+     * Checks whether a key would pollute the prototype if used to index a
+     * plain object (e.g. as a column ID or table ID).
+     *
+     * @private
+     * @param {string|undefined} key The key to check.
+     * @return {boolean} True if the key is unsafe to use.
+     */
+    isPollutingKey(key) {
+        return key === '__proto__' || key === 'constructor';
+    }
     /**
      * Applies a row count to the table by setting the `rowCount` property and
      * adjusting the length of all columns.
@@ -602,6 +619,10 @@ class DataTableCore {
     setColumns(columns, rowIndex, eventDetail) {
         let rowCount = this.rowCount;
         (0,external_highcharts_src_js_default_namespaceObject.objectEach)(columns, (column, columnId) => {
+            if (columnId === '__proto__' ||
+                columnId === 'constructor') {
+                return;
+            }
             this.columns[columnId] = column.slice();
             rowCount = column.length;
         });
@@ -644,8 +665,7 @@ class DataTableCore {
         if (eventDetail?.addColumns !== false) {
             for (let i = 0, iEnd = rowKeys.length; i < iEnd; i++) {
                 const rowKey = rowKeys[i];
-                if (rowKey !== '__proto__' &&
-                    rowKey !== 'constructor' &&
+                if (!this.isPollutingKey(rowKey) &&
                     !Object.hasOwnProperty.call(columns, rowKey)) {
                     columns[rowKey] = new Array(this.rowCount);
                 }
@@ -1390,8 +1410,14 @@ class DataTable extends Data_DataTableCore {
      * Returns `true` if successful, `false` if the column was not found.
      */
     changeColumnId(columnId, newColumnId) {
+        if (columnId === '__proto__' ||
+            columnId === 'constructor' ||
+            newColumnId === '__proto__' ||
+            newColumnId === 'constructor') {
+            return false;
+        }
         const table = this, columns = table.columns;
-        if (columns[columnId]) {
+        if (Object.hasOwnProperty.call(columns, columnId)) {
             if (columnId !== newColumnId) {
                 columns[newColumnId] = columns[columnId];
                 delete columns[columnId];
@@ -1425,8 +1451,14 @@ class DataTable extends Data_DataTableCore {
      * @emits #afterSetCell
      */
     setCell(columnId, rowIndex, cellValue, eventDetail) {
+        if (columnId === '__proto__' ||
+            columnId === 'constructor') {
+            return;
+        }
         const table = this, columns = table.columns, modifier = table.modifier;
-        let column = columns[columnId];
+        let column = Object.hasOwnProperty.call(columns, columnId) ?
+            columns[columnId] :
+            void 0;
         if (column && column[rowIndex] === cellValue) {
             return;
         }
@@ -1501,6 +1533,10 @@ class DataTable extends Data_DataTableCore {
             }
             for (let i = 0, iEnd = columnIds.length, column, tableColumn, columnId, ArrayConstructor; i < iEnd; ++i) {
                 columnId = columnIds[i];
+                if (columnId === '__proto__' ||
+                    columnId === 'constructor') {
+                    continue;
+                }
                 column = columns[columnId];
                 tableColumn = tableColumns[columnId];
                 ArrayConstructor = Object.getPrototypeOf((tableColumn && typeAsOriginal) ? tableColumn : column).constructor;
@@ -2719,9 +2755,10 @@ class DataCursor {
      *  Constructor
      *
      * */
-    constructor(stateMap = {}) {
+    constructor(stateMap = Object.create(null)) {
         this.emittingRegister = [];
-        this.listenerMap = {};
+        // Table IDs are used as keys, so keep the maps prototype-less.
+        this.listenerMap = Object.create(null);
         this.stateMap = stateMap;
     }
     /* *

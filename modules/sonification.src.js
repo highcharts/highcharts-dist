@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.0 (2026-10-02)
+ * @license Highcharts JS v13.1.1-modified (2026-10-15)
  * @module highcharts/modules/sonification
  * @requires highcharts
  *
@@ -4050,7 +4050,7 @@ class SonificationTimeline {
         const filter = (e, ix, arr) => !!(eventFilter ?
             eventFilter(e, ix, arr) && e.relatedPoint :
             e.relatedPoint);
-        let closestValDiff = Infinity, closestEvent = null;
+        let closestValDiff = Infinity, closestEvent;
         (this.playingChannels || this.channels).forEach((channel) => {
             const events = channel.events;
             let i = events.length;

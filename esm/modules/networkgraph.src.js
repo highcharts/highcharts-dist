@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.0 (2026-10-02)
+ * @license Highcharts JS v13.1.1-modified (2026-10-15)
  * @module highcharts/modules/networkgraph
  * @requires highcharts
  *
@@ -256,7 +256,7 @@ const layouts = {};
  *
  * */
 /**
- * @private
+ * @internal
  */
 function GraphLayoutComposition_compose(ChartClass) {
     if ((0,external_highcharts_src_js_default_namespaceObject.pushUnique)(GraphLayoutComposition_composed, 'GraphLayout')) {
@@ -268,7 +268,7 @@ function GraphLayoutComposition_compose(ChartClass) {
 }
 /**
  * Re-enable simulation after print.
- * @private
+ * @internal
  */
 function onChartAfterPrint() {
     if (this.graphLayoutsLookup) {
@@ -281,7 +281,7 @@ function onChartAfterPrint() {
 }
 /**
  * Disable simulation before print if enabled.
- * @private
+ * @internal
  */
 function onChartBeforePrint() {
     if (this.graphLayoutsLookup) {
@@ -293,7 +293,7 @@ function onChartBeforePrint() {
 }
 /**
  * Clear previous layouts.
- * @private
+ * @internal
  */
 function onChartPredraw() {
     if (this.graphLayoutsLookup) {
@@ -303,7 +303,7 @@ function onChartPredraw() {
     }
 }
 /**
- * @private
+ * @internal
  */
 function onChartRender() {
     let systemsStable, afterRender = false;
@@ -325,8 +325,9 @@ function onChartRender() {
             afterRender = true;
         }
     };
-    // Don't animate layout when series is dragged
-    if (this.graphLayoutsLookup && !this.pointer?.hasDragged) {
+    // Don't restart layout when chart is panned
+    if (this.graphLayoutsLookup && (!this.pointer?.hasDragged ||
+        this.graphLayoutsLookup.some((layout) => layout.nodes.some((node) => !!node.inDragMode)))) {
         (0,external_highcharts_src_js_default_namespaceObject.setAnimation)(false, this);
         // Start simulation
         this.graphLayoutsLookup.forEach((layout) => layout.start());
@@ -351,6 +352,7 @@ function onChartRender() {
  *  Default Export
  *
  * */
+/** @internal */
 const GraphLayoutComposition = {
     compose: GraphLayoutComposition_compose,
     integrations,

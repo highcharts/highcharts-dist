@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.1.0 (2026-10-02)
+ * @license Highstock JS v13.1.1-modified (2026-10-15)
  * @module highcharts/modules/stock-tools
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -1707,7 +1707,7 @@ function attractToPoint(e, chart) {
             }
         }
     });
-    if (closestPoint && closestPoint.x && closestPoint.y) {
+    if (closestPoint && (0,external_highcharts_src_js_default_namespaceObject.isNumber)(closestPoint.y)) {
         return {
             x: closestPoint.x,
             y: closestPoint.y,
@@ -4905,7 +4905,7 @@ const StockToolsDefaults_lang = {
  *
  * @since        7.0.0
  *
- * @requires stock/modules/stock-tools
+ * @requires modules/stock-tools
  * @optionparent stockTools
  */
 const stockTools = {

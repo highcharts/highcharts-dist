@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.1.0 (2026-10-02)
+ * @license Highstock JS v13.1.1-modified (2026-10-15)
  * @module highcharts/indicators/dmi
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -546,8 +546,8 @@ class DMIIndicator extends SMAIndicator {
  * @excluding    allAreas, colorAxis, joinBy, keys, navigatorOptions,
  *               pointInterval, pointIntervalUnit, pointPlacement,
  *               pointRange, pointStart, showInNavigator, stacking
- * @requires     stock/indicators/indicators
- * @requires     stock/indicators/dmi
+ * @requires     indicators/indicators
+ * @requires     indicators/dmi
  * @optionparent plotOptions.dmi
  * @internal
  */
@@ -648,8 +648,8 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @excluding allAreas, colorAxis, joinBy, keys, navigatorOptions,
  *            pointInterval, pointIntervalUnit, pointPlacement, pointRange,
  *            pointStart, showInNavigator, stacking
- * @requires  stock/indicators/indicators
- * @requires  stock/indicators/dmi
+ * @requires  indicators/indicators
+ * @requires  indicators/dmi
  * @apioption series.dmi
  */
 ''; // To include the above in the js output

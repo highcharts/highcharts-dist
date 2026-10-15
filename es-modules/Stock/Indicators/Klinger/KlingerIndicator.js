@@ -158,8 +158,8 @@ class KlingerIndicator extends SMAIndicator {
  * @extends      plotOptions.sma
  * @since 9.1.0
  * @product      highstock
- * @requires     stock/indicators/indicators
- * @requires     stock/indicators/klinger
+ * @requires     indicators/indicators
+ * @requires     indicators/klinger
  * @optionparent plotOptions.klinger
  * @internal
  */
@@ -250,8 +250,8 @@ export default KlingerIndicator;
  * @extends   series,plotOptions.klinger
  * @since 9.1.0
  * @product   highstock
- * @requires  stock/indicators/indicators
- * @requires  stock/indicators/klinger
+ * @requires  indicators/indicators
+ * @requires  indicators/klinger
  * @apioption series.klinger
  */
 ''; // To include the above in the js output

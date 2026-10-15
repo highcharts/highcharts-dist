@@ -195,8 +195,8 @@ class PSARIndicator extends SMAIndicator {
  * @extends      plotOptions.sma
  * @since        6.0.0
  * @product      highstock
- * @requires     stock/indicators/indicators
- * @requires     stock/indicators/psar
+ * @requires     indicators/indicators
+ * @requires     indicators/psar
  * @optionparent plotOptions.psar
  * @internal
  */
@@ -270,8 +270,8 @@ export default PSARIndicator;
  * @extends   series,plotOptions.psar
  * @since     6.0.0
  * @product   highstock
- * @requires  stock/indicators/indicators
- * @requires  stock/indicators/psar
+ * @requires  indicators/indicators
+ * @requires  indicators/psar
  * @apioption series.psar
  */
 ''; // To include the above in the js output

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Stock JS v13.1.0 (2026-10-02)
+ * @license Highcharts Stock JS v13.1.1-modified (2026-10-15)
  * @module highcharts/indicators/klinger
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -550,8 +550,8 @@ class KlingerIndicator extends SMAIndicator {
  * @extends      plotOptions.sma
  * @since 9.1.0
  * @product      highstock
- * @requires     stock/indicators/indicators
- * @requires     stock/indicators/klinger
+ * @requires     indicators/indicators
+ * @requires     indicators/klinger
  * @optionparent plotOptions.klinger
  * @internal
  */
@@ -642,8 +642,8 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @extends   series,plotOptions.klinger
  * @since 9.1.0
  * @product   highstock
- * @requires  stock/indicators/indicators
- * @requires  stock/indicators/klinger
+ * @requires  indicators/indicators
+ * @requires  indicators/klinger
  * @apioption series.klinger
  */
 ''; // To include the above in the js output

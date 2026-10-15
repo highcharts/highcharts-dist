@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Gantt JS v13.1.0 (2026-10-02)
+ * @license Highcharts Gantt JS v13.1.1-modified (2026-10-15)
  * @module highcharts/modules/gantt
  * @requires highcharts
  *
@@ -4959,7 +4959,8 @@ class Navigator {
         this.scrollbarOptions = scrollbarOptions;
         this.setOpposite();
         const navigator = this, baseSeries = navigator.baseSeries, xAxisIndex = chart.xAxis.length, yAxisIndex = chart.yAxis.length, baseXaxis = baseSeries && baseSeries[0] && baseSeries[0].xAxis ||
-            chart.xAxis[0] || { options: {} };
+            chart.xAxis[0] || { options: {} }, baseYaxis = baseSeries && baseSeries[0] && baseSeries[0].yAxis ||
+            chart.yAxis[0];
         chart.isDirtyBox = true;
         if (navigator.navigatorEnabled) {
             const offsets = this.getXAxisOffsets();
@@ -5000,6 +5001,9 @@ class Navigator {
                     navigatorOptions.yAxis.reversed) ??
                     (chart.yAxis[0] && chart.yAxis[0].reversed) ??
                     false), // #14060
+                uniqueNames: (navigatorOptions.yAxis?.uniqueNames ??
+                    baseYaxis?.userOptions.uniqueNames ??
+                    false), // #24975
                 zoomEnabled: false
             }, chart.inverted ? {
                 width: height
@@ -7186,7 +7190,9 @@ class RangeSelector {
         };
     }
     createElements() {
-        const chart = this.chart, renderer = chart.renderer, container = chart.container, chartOptions = chart.options, options = chartOptions.rangeSelector, inputEnabled = options.inputEnabled, inputsZIndex = (chartOptions.chart.style?.zIndex ?? 0) + 1;
+        const chart = this.chart, renderer = chart.renderer, container = chart.container, chartOptions = chart.options, options = chartOptions.rangeSelector, inputEnabled = options.inputEnabled, 
+        // Put inputs above `scrollablePlotArea` (#22630)
+        inputsZIndex = (chartOptions.chart.style?.zIndex ?? 0) + 3;
         if (options.enabled === false) {
             return;
         }
@@ -9824,7 +9830,7 @@ Pathfinder.prototype.algorithms = PathfinderAlgorithms;
 /* unused harmony import specifier */ var Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Gantt JS v13.1.0 (2026-10-02)
+ * @license Highcharts Gantt JS v13.1.1-modified (2026-10-15)
  * @module highcharts/modules/pathfinder
  * @requires highcharts
  *
@@ -9957,7 +9963,7 @@ function chartAdjustHeight() {
 /* unused harmony import specifier */ var static_scale_src_Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Gantt JS v13.1.0 (2026-10-02)
+ * @license Highcharts Gantt JS v13.1.1-modified (2026-10-15)
  * @module highcharts/modules/static-scale
  * @requires highcharts
  *
@@ -10553,6 +10559,10 @@ class XRangeSeries extends ColumnSeries {
             r
         };
         point.shapeArgs = shapeArgs;
+        // Rank data labels by the length of the bar. The point's `y` is a
+        // category index here, so the generic value based rank would order
+        // the labels by their row rather than by size (#23585).
+        point.labelrank = point.options.labelrank ?? width;
         // Move tooltip to default position
         if (!inverted) {
             point.tooltipPos[0] -= oldColWidth +
@@ -10780,7 +10790,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
 /* unused harmony import specifier */ var xrange_src_Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.0 (2026-10-02)
+ * @license Highcharts JS v13.1.1-modified (2026-10-15)
  * @module highcharts/modules/xrange
  * @requires highcharts
  *
@@ -10827,7 +10837,7 @@ class GanttPoint extends GanttPoint_XRangePoint {
      *
      * */
     /**
-     * @private
+     * @internal
      */
     static setGanttPointAliases(options, chart) {
         options.x = options.start = chart.time.parse(options.start ?? options.x);
@@ -10844,7 +10854,7 @@ class GanttPoint extends GanttPoint_XRangePoint {
      * Applies the options containing the x and y data and possible some
      * extra properties. This is called on point init or from point.update.
      *
-     * @private
+     * @internal
      * @function Highcharts.Point#applyOptions
      *
      * @param {Object} options
@@ -10974,9 +10984,6 @@ const GanttSeriesDefaults = {
  * A `gantt` series.
  *
  * @extends   series,plotOptions.gantt
- * @excluding boostThreshold, dashStyle, findNearestPointBy,
- *            getExtremesFromAll, marker, negativeColor, pointInterval,
- *            pointIntervalUnit, pointPlacement, pointStart
  * @product   gantt
  * @requires  highcharts-gantt
  * @apioption series.gantt
@@ -14168,7 +14175,6 @@ const { series: Series, seriesTypes: { xrange: GanttSeries_XRangeSeries } } = (h
  *
  * */
 /**
- * @private
  * @class
  * @name Highcharts.seriesTypes.gantt
  *
@@ -14221,7 +14227,7 @@ class GanttSeries extends GanttSeries_XRangeSeries {
      *
      * @requires highcharts-gantt
      *
-     * @private
+     * @internal
      * @function Highcharts.seriesTypes.gantt#drawPoint
      *
      * @param {Highcharts.Point} point
@@ -14265,7 +14271,7 @@ class GanttSeries extends GanttSeries_XRangeSeries {
     }
     /**
      * Handle milestones, as they have no x2.
-     * @private
+     * @internal
      */
     translatePoint(point) {
         let shapeArgs, size;

@@ -324,7 +324,12 @@ class Breadcrumbs {
      *        Returns the SVG button
      */
     renderButton(breadcrumb, posX, posY) {
-        const breadcrumbs = this, chart = this.chart, breadcrumbsOptions = breadcrumbs.options, buttonTheme = merge(breadcrumbsOptions.buttonTheme);
+        const breadcrumbs = this, chart = this.chart, breadcrumbsOptions = breadcrumbs.options, 
+        // The `style` option is CSS for the button text, so it belongs in
+        // the theme's `style` rather than being applied afterwards. A
+        // later `setState` re-applies the normal state style, which would
+        // otherwise wipe it (#25357).
+        buttonTheme = merge(breadcrumbsOptions.buttonTheme, chart.styledMode ? void 0 : { style: breadcrumbsOptions.style });
         const button = chart.renderer
             .button(breadcrumbs.getButtonText(breadcrumb), posX, posY, function (e /* @todo (Event|any) */) {
             // Extract events from button object and call
@@ -353,9 +358,6 @@ class Breadcrumbs {
         }, buttonTheme)
             .addClass('highcharts-breadcrumbs-button')
             .add(breadcrumbs.group);
-        if (!chart.styledMode) {
-            button.attr(breadcrumbsOptions.style);
-        }
         return button;
     }
     /**

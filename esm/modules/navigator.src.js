@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.0 (2026-10-02)
+ * @license Highcharts JS v13.1.1-modified (2026-10-15)
  * @module highcharts/modules/navigator
  * @requires highcharts
  *
@@ -4019,7 +4019,8 @@ class Navigator {
         this.scrollbarOptions = scrollbarOptions;
         this.setOpposite();
         const navigator = this, baseSeries = navigator.baseSeries, xAxisIndex = chart.xAxis.length, yAxisIndex = chart.yAxis.length, baseXaxis = baseSeries && baseSeries[0] && baseSeries[0].xAxis ||
-            chart.xAxis[0] || { options: {} };
+            chart.xAxis[0] || { options: {} }, baseYaxis = baseSeries && baseSeries[0] && baseSeries[0].yAxis ||
+            chart.yAxis[0];
         chart.isDirtyBox = true;
         if (navigator.navigatorEnabled) {
             const offsets = this.getXAxisOffsets();
@@ -4060,6 +4061,9 @@ class Navigator {
                     navigatorOptions.yAxis.reversed) ??
                     (chart.yAxis[0] && chart.yAxis[0].reversed) ??
                     false), // #14060
+                uniqueNames: (navigatorOptions.yAxis?.uniqueNames ??
+                    baseYaxis?.userOptions.uniqueNames ??
+                    false), // #24975
                 zoomEnabled: false
             }, chart.inverted ? {
                 width: height

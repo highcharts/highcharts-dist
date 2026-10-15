@@ -102,8 +102,8 @@ class ATRIndicator extends SMAIndicator {
  * @extends      plotOptions.sma
  * @since        6.0.0
  * @product      highstock
- * @requires     stock/indicators/indicators
- * @requires     stock/indicators/atr
+ * @requires     indicators/indicators
+ * @requires     indicators/atr
  * @optionparent plotOptions.atr
  * @internal
  */
@@ -134,8 +134,8 @@ export default ATRIndicator;
  * @extends   series,plotOptions.atr
  * @since     6.0.0
  * @product   highstock
- * @requires  stock/indicators/indicators
- * @requires  stock/indicators/atr
+ * @requires  indicators/indicators
+ * @requires  indicators/atr
  * @apioption series.atr
  */
 ''; // To include the above in the js output

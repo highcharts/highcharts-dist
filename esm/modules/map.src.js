@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highmaps JS v13.1.0 (2026-10-02)
+ * @license Highmaps JS v13.1.1-modified (2026-10-15)
  * @module highcharts/modules/map
  * @requires highcharts
  *
@@ -1267,13 +1267,19 @@ const { setLength: DataTableCore_setLength, splice: DataTableCore_splice } = Dat
 class DataTableCore {
     constructor(options = {}) {
         this.isDataTable = true;
-        this.autoId = !options.id;
+        // Reject IDs that would pollute the prototype of ID-keyed maps.
+        const id = this.isPollutingKey(options.id) ? void 0 : options.id;
+        this.autoId = !id;
         this.columns = {};
-        this.id = (options.id || (0,external_highcharts_src_js_default_namespaceObject.uniqueKey)());
+        this.id = (id || (0,external_highcharts_src_js_default_namespaceObject.uniqueKey)());
         this.rowCount = 0;
         this.versionTag = (0,external_highcharts_src_js_default_namespaceObject.uniqueKey)();
         let rowCount = 0;
         (0,external_highcharts_src_js_default_namespaceObject.objectEach)(options.columns || {}, (column, columnId) => {
+            if (columnId === '__proto__' ||
+                columnId === 'constructor') {
+                return;
+            }
             this.columns[columnId] = column.slice();
             rowCount = Math.max(rowCount, column.length);
         });
@@ -1284,6 +1290,17 @@ class DataTableCore {
      *  Functions
      *
      * */
+    /**
+     * Checks whether a key would pollute the prototype if used to index a
+     * plain object (e.g. as a column ID or table ID).
+     *
+     * @private
+     * @param {string|undefined} key The key to check.
+     * @return {boolean} True if the key is unsafe to use.
+     */
+    isPollutingKey(key) {
+        return key === '__proto__' || key === 'constructor';
+    }
     /**
      * Applies a row count to the table by setting the `rowCount` property and
      * adjusting the length of all columns.
@@ -1442,6 +1459,10 @@ class DataTableCore {
     setColumns(columns, rowIndex, eventDetail) {
         let rowCount = this.rowCount;
         (0,external_highcharts_src_js_default_namespaceObject.objectEach)(columns, (column, columnId) => {
+            if (columnId === '__proto__' ||
+                columnId === 'constructor') {
+                return;
+            }
             this.columns[columnId] = column.slice();
             rowCount = column.length;
         });
@@ -1484,8 +1505,7 @@ class DataTableCore {
         if (eventDetail?.addColumns !== false) {
             for (let i = 0, iEnd = rowKeys.length; i < iEnd; i++) {
                 const rowKey = rowKeys[i];
-                if (rowKey !== '__proto__' &&
-                    rowKey !== 'constructor' &&
+                if (!this.isPollutingKey(rowKey) &&
                     !Object.hasOwnProperty.call(columns, rowKey)) {
                     columns[rowKey] = new Array(this.rowCount);
                 }
@@ -7227,6 +7247,9 @@ class MapPointSeries extends MapPointSeries_ScatterSeries {
             const mainSvgTransform = mapView.getSVGTransform(), { hasCoordinates } = mapView.projection;
             this.points.forEach((p) => {
                 let { x = void 0, y = void 0 } = p;
+                // Map points have no size, and `y` is a coordinate or a color
+                // value, so rank all data labels equally (#23585)
+                p.labelrank = p.options.labelrank ?? 0;
                 const svgTransform = ((0,external_highcharts_src_js_default_namespaceObject.isNumber)(p.insetIndex) &&
                     mapView.insets[p.insetIndex].getSVGTransform()) || mainSvgTransform;
                 const xy = (this.projectPoint(p.options) ||
@@ -8674,6 +8697,10 @@ class BubbleSeries extends BubbleSeries_ScatterSeries {
                     width: 2 * radius,
                     height: 2 * radius
                 });
+                // Rank data labels by the bubble size. The point's `y` is a
+                // position, and the radius accounts for `sizeBy`,
+                // `zThreshold` and the size limits (#23585).
+                point.labelrank = point.options.labelrank ?? radius;
             }
             if ((0,external_highcharts_src_js_default_namespaceObject.isNumber)(radius) && radius >= minPxSize / 2) {
                 // Alignment box for the data label

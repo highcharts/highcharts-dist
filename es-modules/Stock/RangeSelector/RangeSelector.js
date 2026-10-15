@@ -786,7 +786,9 @@ class RangeSelector {
         };
     }
     createElements() {
-        const chart = this.chart, renderer = chart.renderer, container = chart.container, chartOptions = chart.options, options = chartOptions.rangeSelector, inputEnabled = options.inputEnabled, inputsZIndex = (chartOptions.chart.style?.zIndex ?? 0) + 1;
+        const chart = this.chart, renderer = chart.renderer, container = chart.container, chartOptions = chart.options, options = chartOptions.rangeSelector, inputEnabled = options.inputEnabled, 
+        // Put inputs above `scrollablePlotArea` (#22630)
+        inputsZIndex = (chartOptions.chart.style?.zIndex ?? 0) + 3;
         if (options.enabled === false) {
             return;
         }

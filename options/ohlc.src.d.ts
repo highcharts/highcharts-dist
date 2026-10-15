@@ -981,7 +981,7 @@ declare module "../highcharts.src" {
          */
         minPointLength?: number;
         /**
-         * (Highstock) Options for the corresponding navigator series if
+         * (Highstock, Gantt) Options for the corresponding navigator series if
          * `showInNavigator` is `true` for this series. Available options are
          * the same as any series, documented at plotOptions and series.
          *
@@ -1187,8 +1187,8 @@ declare module "../highcharts.src" {
          */
         showInLegend?: boolean;
         /**
-         * (Highstock) Whether or not to show the series in the navigator. Takes
-         * precedence over navigator.baseSeries if defined.
+         * (Highstock, Gantt) Whether or not to show the series in the
+         * navigator. Takes precedence over navigator.baseSeries if defined.
          */
         showInNavigator?: boolean;
         /**

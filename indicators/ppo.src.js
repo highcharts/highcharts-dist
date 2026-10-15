@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.1.0 (2026-10-02)
+ * @license Highstock JS v13.1.1-modified (2026-10-15)
  * @module highcharts/indicators/ppo
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -200,8 +200,8 @@ class PPOIndicator extends EMAIndicator {
  * @excluding    allAreas, colorAxis, joinBy, keys, navigatorOptions,
  *               pointInterval, pointIntervalUnit, pointPlacement,
  *               pointRange, pointStart, showInNavigator, stacking
- * @requires     stock/indicators/indicators
- * @requires     stock/indicators/ppo
+ * @requires     indicators/indicators
+ * @requires     indicators/ppo
  * @optionparent plotOptions.ppo
  * @internal
  */
@@ -249,8 +249,8 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @excluding allAreas, colorAxis, joinBy, keys,
  *            navigatorOptions, pointInterval, pointIntervalUnit,
  *            pointPlacement, pointRange, pointStart, showInNavigator, stacking
- * @requires  stock/indicators/indicators
- * @requires  stock/indicators/ppo
+ * @requires  indicators/indicators
+ * @requires  indicators/ppo
  * @apioption series.ppo
  */
 ''; // To include the above in the js output

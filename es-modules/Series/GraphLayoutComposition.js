@@ -29,7 +29,7 @@ const layouts = {};
  *
  * */
 /**
- * @private
+ * @internal
  */
 function compose(ChartClass) {
     if (pushUnique(composed, 'GraphLayout')) {
@@ -41,7 +41,7 @@ function compose(ChartClass) {
 }
 /**
  * Re-enable simulation after print.
- * @private
+ * @internal
  */
 function onChartAfterPrint() {
     if (this.graphLayoutsLookup) {
@@ -54,7 +54,7 @@ function onChartAfterPrint() {
 }
 /**
  * Disable simulation before print if enabled.
- * @private
+ * @internal
  */
 function onChartBeforePrint() {
     if (this.graphLayoutsLookup) {
@@ -66,7 +66,7 @@ function onChartBeforePrint() {
 }
 /**
  * Clear previous layouts.
- * @private
+ * @internal
  */
 function onChartPredraw() {
     if (this.graphLayoutsLookup) {
@@ -76,7 +76,7 @@ function onChartPredraw() {
     }
 }
 /**
- * @private
+ * @internal
  */
 function onChartRender() {
     let systemsStable, afterRender = false;
@@ -98,8 +98,9 @@ function onChartRender() {
             afterRender = true;
         }
     };
-    // Don't animate layout when series is dragged
-    if (this.graphLayoutsLookup && !this.pointer?.hasDragged) {
+    // Don't restart layout when chart is panned
+    if (this.graphLayoutsLookup && (!this.pointer?.hasDragged ||
+        this.graphLayoutsLookup.some((layout) => layout.nodes.some((node) => !!node.inDragMode)))) {
         setAnimation(false, this);
         // Start simulation
         this.graphLayoutsLookup.forEach((layout) => layout.start());
@@ -124,6 +125,7 @@ function onChartRender() {
  *  Default Export
  *
  * */
+/** @internal */
 const GraphLayoutComposition = {
     compose,
     integrations,

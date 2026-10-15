@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.0 (2026-10-02)
+ * @license Highcharts JS v13.1.1-modified (2026-10-15)
  * @module modules/arc-diagram
  * @requires highcharts/modules/sankey
  *
@@ -599,8 +599,18 @@ const ArcDiagramSeriesDefaults = {
  *     }]
  *  ```
  *
+ *  When you provide the data as tuples, the keys option has to be set as well.
+ *
+ *  ```js
+ *     keys: ['from', 'to', 'weight'],
+ *     data: [
+ *         ['Category1', 'Category2', 2],
+ *         ['Category1', 'Category3', 5]
+ *     ]
+ *  ```
+ *
  * @basic
- * @type      {Array<*>}
+ * @type      {Array<*>|Array<Array<(string|number)>>}
  * @extends   series.sankey.data
  * @product   highcharts
  * @excluding outgoing

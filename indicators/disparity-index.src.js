@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.1.0 (2026-10-02)
+ * @license Highstock JS v13.1.1-modified (2026-10-15)
  * @module highcharts/indicators/disparity-index
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -202,8 +202,8 @@ class DisparityIndexIndicator extends SMAIndicator {
  * @excluding    allAreas, colorAxis, joinBy, keys, navigatorOptions,
  *               pointInterval, pointIntervalUnit, pointPlacement,
  *               pointRange, pointStart, showInNavigator, stacking
- * @requires     stock/indicators/indicators
- * @requires     stock/indicators/disparity-index
+ * @requires     indicators/indicators
+ * @requires     indicators/disparity-index
  * @optionparent plotOptions.disparityindex
  * @internal
  */
@@ -255,8 +255,8 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @excluding allAreas, colorAxis, joinBy, keys, navigatorOptions,
  *            pointInterval, pointIntervalUnit, pointPlacement, pointRange,
  *            pointStart, showInNavigator, stacking
- * @requires  stock/indicators/indicators
- * @requires  stock/indicators/disparity-index
+ * @requires  indicators/indicators
+ * @requires  indicators/disparity-index
  * @apioption series.disparityindex
  */
 ''; // To include the above in the js output
