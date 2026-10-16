@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v13.1.1-modified (2026-10-15)
+ * @license Highmaps JS v13.1.1-modified (2026-10-16)
  * @module highcharts/modules/contour
  * @requires highcharts
  * @requires highcharts/modules/coloraxis

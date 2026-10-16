@@ -1,5 +1,5 @@
 !/**
- * Highcharts JS v13.1.1-modified (2026-10-15)
+ * Highcharts JS v13.1.1-modified (2026-10-16)
  * @module highcharts/modules/cylinder
  * @requires highcharts
  * @requires highcharts/highcharts-3d

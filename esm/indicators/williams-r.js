@@ -1,5 +1,5 @@
 /**
- * Highstock JS v13.1.1-modified (2026-10-15)
+ * Highstock JS v13.1.1-modified (2026-10-16)
  * @module highcharts/indicators/williams-r
  * @requires highcharts
  * @requires highcharts/modules/stock

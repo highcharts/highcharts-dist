@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-15)
+ * @license Highcharts JS v13.1.1-modified (2026-10-16)
  * @module highcharts/highcharts-autoload
  *
  * (c) 2009-2024 Torstein Honsi
@@ -49329,7 +49329,7 @@ var Responsive;
 ;// ./code/es-modules/masters/highcharts.src.js
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-15)
+ * @license Highcharts JS v13.1.1-modified (2026-10-16)
  * @module highcharts/highcharts
  *
  * (c) 2009-2026 Highsoft AS
