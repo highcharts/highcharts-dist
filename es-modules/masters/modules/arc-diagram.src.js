@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-16)
+ * @license Highcharts JS v13.1.1-modified (2026-10-17)
  * @module modules/arc-diagram
  * @requires highcharts/modules/sankey
  *
