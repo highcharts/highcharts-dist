@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.1.1-modified (2026-10-17)
+ * @license Highstock JS v13.1.1-modified (2026-10-18)
  * @module highcharts/indicators/vwap
  * @requires highcharts
  * @requires highcharts/modules/stock

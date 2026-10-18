@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Stock v13.1.1-modified (2026-10-17)
+ * @license Highcharts Stock v13.1.1-modified (2026-10-18)
  * @module highcharts/highstock
  *
  * (c) 2009-2026 Highsoft AS
