@@ -1,5 +1,5 @@
 !/**
- * Highcharts Stock JS v13.1.1-modified (2026-10-18)
+ * Highcharts Stock JS v13.1.1-modified (2026-10-19)
  * @module highcharts/indicators/klinger
  * @requires highcharts
  * @requires highcharts/modules/stock

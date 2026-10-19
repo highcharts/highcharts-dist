@@ -1,5 +1,5 @@
 let e,t,i;/**
- * Highcharts JS v13.1.1-modified (2026-10-18)
+ * Highcharts JS v13.1.1-modified (2026-10-19)
  * @module highcharts/modules/boost
  * @requires highcharts
  *

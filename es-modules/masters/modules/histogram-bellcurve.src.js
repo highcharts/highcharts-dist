@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-18)
+ * @license Highcharts JS v13.1.1-modified (2026-10-19)
  * @module highcharts/modules/histogram-bellcurve
  * @requires highcharts
  *
