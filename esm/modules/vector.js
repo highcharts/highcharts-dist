@@ -1,5 +1,5 @@
 /**
- * Highcharts JS v13.1.1-modified (2026-10-19)
+ * Highcharts JS v13.1.1-modified (2026-10-20)
  * @module highcharts/modules/vector
  * @requires highcharts
  *

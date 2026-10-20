@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-19)
+ * @license Highcharts JS v13.1.1-modified (2026-10-20)
  * Organization chart series type
  * @module highcharts/modules/organization
  * @requires highcharts

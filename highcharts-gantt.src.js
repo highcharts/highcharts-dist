@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Gantt JS v13.1.1-modified (2026-10-19)
+ * @license Highcharts Gantt JS v13.1.1-modified (2026-10-20)
  * @module highcharts/highcharts-gantt
  *
  * (c) 2017-2026 Highsoft AS
@@ -49337,7 +49337,7 @@ var Responsive;
 ;// ./code/es-modules/masters/highcharts.src.js
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-19)
+ * @license Highcharts JS v13.1.1-modified (2026-10-20)
  * @module highcharts/highcharts
  *
  * (c) 2009-2026 Highsoft AS
@@ -58229,7 +58229,7 @@ Pathfinder.prototype.algorithms = PathfinderAlgorithms;
 /* unused harmony import specifier */ var Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Gantt JS v13.1.1-modified (2026-10-19)
+ * @license Highcharts Gantt JS v13.1.1-modified (2026-10-20)
  * @module highcharts/modules/pathfinder
  * @requires highcharts
  *
@@ -58362,7 +58362,7 @@ function chartAdjustHeight() {
 /* unused harmony import specifier */ var static_scale_src_Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Gantt JS v13.1.1-modified (2026-10-19)
+ * @license Highcharts Gantt JS v13.1.1-modified (2026-10-20)
  * @module highcharts/modules/static-scale
  * @requires highcharts
  *
@@ -59186,7 +59186,7 @@ Series_SeriesRegistry.registerSeriesType('xrange', XRangeSeries);
 /* unused harmony import specifier */ var xrange_src_Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-19)
+ * @license Highcharts JS v13.1.1-modified (2026-10-20)
  * @module highcharts/modules/xrange
  * @requires highcharts
  *
@@ -62705,7 +62705,7 @@ Series_SeriesRegistry.registerSeriesType('gantt', GanttSeries);
 /* unused harmony import specifier */ var gantt_src_Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Gantt JS v13.1.1-modified (2026-10-19)
+ * @license Highcharts Gantt JS v13.1.1-modified (2026-10-20)
  * @module highcharts/modules/gantt
  * @requires highcharts
  *
