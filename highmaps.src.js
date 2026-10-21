@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Maps v13.1.1-modified (2026-10-20)
+ * @license Highcharts Maps v13.1.1-modified (2026-10-21)
  * @module highcharts/highmaps
  *
  * (c) 2011-2026 Highsoft AS
@@ -22800,8 +22800,8 @@ class Axis {
         ].forEach(destroyObjectProperties);
         // Destroy elements and clear reference
         [
-            'axisLine', 'axisTitle', 'axisGroup',
-            'gridGroup', 'labelGroup', 'cross', 'scrollbar'
+            'axisLine', 'axisTitle', 'axisGroup', 'gridGroup', 'labelGroup',
+            'cross', 'plotBandClip', 'scrollbar'
         ].forEach((prop) => {
             this[prop] = this[prop]?.destroy();
         });
@@ -23843,29 +23843,32 @@ var PlotLineOrBandAxis;
      */
     function getPlotBandPath(from, to, options) {
         options = options || this.options;
+        // Keep real coordinates so a gradient spans the full band. The band is
+        // clipped to the axis in `PlotLineOrBand.render` (#6257).
         const toPath = this.getPlotLinePath({
             value: to,
-            force: true,
+            force: 'pass',
             acrossPanes: options.acrossPanes
         }), result = [], horiz = this.horiz, outside = !isNumber(this.min) ||
             !isNumber(this.max) ||
             (from < this.min && to < this.min) ||
             (from > this.max && to > this.max), path = this.getPlotLinePath({
             value: from,
-            force: true,
+            force: 'pass',
             acrossPanes: options.acrossPanes
         });
-        let i, 
-        // #4964 check if chart is inverted or plot band is on yAxis
-        plus = 1, isFlat;
         if (path && toPath) {
-            // Flat paths don't need labels (#3836)
-            if (outside) {
-                isFlat = path.toString() === toPath.toString();
-                plus = 0;
+            // The band isn't fitted to the axis, so flag the ones that extend
+            // outside it for clipping (#6257)
+            if (isNumber(this.min) && isNumber(this.max)) {
+                result.isOverflowing = Math.min(from, to) < this.min ||
+                    Math.max(from, to) > this.max;
             }
+            // Flat paths don't need labels (#3836), neither do bands clipped
+            // away entirely (#6257)
+            result.isFlat = outside;
             // Go over each subpath - for panes in Highcharts Stock
-            for (i = 0; i < path.length; i += 2) {
+            for (let i = 0; i < path.length; i += 2) {
                 const pathStart = path[i], pathEnd = path[i + 1], toPathStart = toPath[i], toPathEnd = toPath[i + 1];
                 // Type checking all affected path segments. Consider
                 // something smarter.
@@ -23873,18 +23876,18 @@ var PlotLineOrBandAxis;
                     (pathEnd[0] === 'M' || pathEnd[0] === 'L') &&
                     (toPathStart[0] === 'M' || toPathStart[0] === 'L') &&
                     (toPathEnd[0] === 'M' || toPathEnd[0] === 'L')) {
-                    // Add 1 pixel when coordinates are the same
+                    // Add 1 pixel when coordinates are the same, also when
+                    // inverted or on the yAxis (#4964)
                     if (horiz && toPathStart[1] === pathStart[1]) {
-                        toPathStart[1] += plus;
-                        toPathEnd[1] += plus;
+                        toPathStart[1]++;
+                        toPathEnd[1]++;
                     }
                     else if (!horiz && toPathStart[2] === pathStart[2]) {
-                        toPathStart[2] += plus;
-                        toPathEnd[2] += plus;
+                        toPathStart[2]++;
+                        toPathEnd[2]++;
                     }
                     result.push(['M', pathStart[1], pathStart[2]], ['L', pathEnd[1], pathEnd[2]], ['L', toPathEnd[1], toPathEnd[2]], ['L', toPathStart[1], toPathStart[2]], ['Z']);
                 }
-                result.isFlat = isFlat;
             }
         }
         return result;
@@ -24123,6 +24126,21 @@ class PlotLineOrBand {
         }
         else if (isBand && defined(from) && defined(to)) { // Plot band
             path = axis.getPlotBandPath(logarithmic?.log2lin(from) ?? from, logarithmic?.log2lin(to) ?? to, options);
+            // The band isn't fitted to the axis, so clip the ones that extend
+            // outside it. Only along the axis, to leave `acrossPanes` bands and
+            // the navigator alone (#6257).
+            let clip = axis.plotBandClip;
+            if (path.isOverflowing || clip) {
+                const { len, pos } = axis, 
+                // Left wide open across the axis, so that a scrollable plot
+                // area isn't cut off
+                clipBox = horiz ?
+                    { height: 1e5, width: len, x: pos, y: 0 } :
+                    { height: len, width: 1e5, x: 0, y: pos };
+                clip || (clip = axis.plotBandClip = renderer.clipRect(clipBox));
+                clip.attr(clipBox);
+                svgElem.clip(clip);
+            }
         }
         if (path) {
             attribs.d = path;
@@ -24237,14 +24255,22 @@ class PlotLineOrBand {
         }
         // Get the bounding box and align the label
         // #3000 changed to better handle choice between plotband or plotline
-        const xBounds = path.xBounds ||
+        const { horiz, len, pos } = axis, xBounds = path.xBounds ||
             [path[0][1], path[1][1], (isBand ? path[2][1] : path[0][1])], yBounds = path.yBounds ||
-            [path[0][2], path[1][2], (isBand ? path[2][2] : path[0][2])], x = arrayMin(xBounds), y = arrayMin(yBounds), bBoxWidth = arrayMax(xBounds) - x;
+            [path[0][2], path[1][2], (isBand ? path[2][2] : path[0][2])], bounds = horiz ? xBounds : yBounds;
+        let low = arrayMin(bounds), high = arrayMax(bounds);
+        // A clipped band is only partly visible, so align the label within the
+        // visible part (#6257)
+        if (path.isOverflowing) {
+            low = clamp(low, pos, pos + len);
+            high = clamp(high, pos, pos + len);
+        }
+        const x = horiz ? low : arrayMin(xBounds), y = horiz ? arrayMin(yBounds) : low, bBoxWidth = horiz ? high - low : arrayMax(xBounds) - x;
         label.align(optionsLabel, false, {
             x,
             y,
             width: bBoxWidth,
-            height: arrayMax(yBounds) - y
+            height: horiz ? arrayMax(yBounds) - y : high - low
         });
         label.alignAttr.y -= renderer.fontMetrics(label).b;
         if (!label.alignValue ||
@@ -49331,7 +49357,7 @@ var Responsive;
 ;// ./code/es-modules/masters/highcharts.src.js
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-20)
+ * @license Highcharts JS v13.1.1-modified (2026-10-21)
  * @module highcharts/highcharts
  *
  * (c) 2009-2026 Highsoft AS
@@ -51096,7 +51122,7 @@ extend(ColorAxis.prototype, Color_ColorAxisBase);
 /* unused harmony import specifier */ var Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-20)
+ * @license Highcharts JS v13.1.1-modified (2026-10-21)
  * @module highcharts/modules/color-axis
  * @requires highcharts
  *
@@ -58756,6 +58782,87 @@ function onAxisFoundExtremes() {
     }
 }
 /**
+ * The padding above is applied before the tick positions are known, and the
+ * extremes shift again while they are computed, which can leave bubbles
+ * outside the plot area. Run it again against the final extremes, and repeat,
+ * since padding one end moves every bubble. #24039
+ */
+function onAxisAfterSetTickPositions() {
+    const paddedMin = this.min, paddedMax = this.max, { options, tickInterval, tickPositions } = this;
+    if (!isNumber(paddedMin) || !isNumber(paddedMax)) {
+        return;
+    }
+    // Growing by whole ticks keeps `startOnTick` and `endOnTick` true, but
+    // only where they are evenly spaced and no tick count has been settled on
+    const firstTick = tickPositions[0], lastTick = tickPositions[tickPositions.length - 1], canSnap = (tickInterval > 0 &&
+        tickPositions.length > 0 &&
+        !this.tickAmount &&
+        !this.categories &&
+        !this.dateTime &&
+        // Custom positions are not laid out on the tick interval, and
+        // ticks inside a break are filtered out by the broken axis
+        !options.tickPositions &&
+        !options.tickPositioner &&
+        !this.brokenAxis?.hasBreaks), snapStart = canSnap && options.startOnTick, snapEnd = canSnap && options.endOnTick, tickSteps = (value, atEnd) => Math.max(Math.ceil(correctFloat((atEnd ? value - lastTick : firstTick - value) /
+        tickInterval)), 0);
+    // The overflow halves with each pass rather than clearing at once, so
+    // bubbles a third of the axis wide settle a couple of pixels out. Beyond
+    // five the axis has widened past the give-up threshold below anyway
+    let passes = 5;
+    while (passes--) {
+        const { min, max } = this;
+        onAxisFoundExtremes.call(this);
+        // Rounding out moves every bubble too, so it belongs in the loop.
+        // Only where the padding moved something, or an axis with no bubbles
+        // to seat would lose the tick positions it settled on
+        if (this.min !== min || this.max !== max) {
+            const stepsMin = snapStart ? tickSteps(this.min || 0, false) : 0, stepsMax = snapEnd ? tickSteps(this.max || 0, true) : 0;
+            if (stepsMin) {
+                this.min = correctFloat(firstTick - stepsMin * tickInterval);
+            }
+            if (stepsMax) {
+                this.max = correctFloat(lastTick + stepsMax * tickInterval);
+            }
+        }
+        // Bubbles near the width of the plot area are only seated by zooming
+        // far out. Rather than do that, give up past double the padded range
+        if ((this.max || 0) - (this.min || 0) > (paddedMax - paddedMin) * 2) {
+            this.min = paddedMin;
+            this.max = paddedMax;
+            break;
+        }
+        if (this.min === min && this.max === max) {
+            break;
+        }
+    }
+    // Leave a chart whose bubbles already fit exactly as it was, rather than
+    // nudging every bubble chart by a fraction of a pixel
+    const transA = this.len / ((paddedMax - paddedMin) || 1);
+    if (Math.abs((this.min || 0) - paddedMin) * transA < 1 &&
+        Math.abs((this.max || 0) - paddedMax) * transA < 1) {
+        this.min = paddedMin;
+        this.max = paddedMax;
+        return;
+    }
+    for (const atEnd of [false, true]) {
+        if (!(atEnd ? snapEnd : snapStart) ||
+            (atEnd ? this.max === paddedMax : this.min === paddedMin)) {
+            continue;
+        }
+        const steps = tickSteps((atEnd ? this.max : this.min) || 0, atEnd);
+        for (let i = 1; i <= steps; i++) {
+            const tick = correctFloat((atEnd ? lastTick : firstTick) +
+                (atEnd ? i : -i) * tickInterval);
+            if (atEnd) {
+                tickPositions.push(tick);
+            }
+            else {
+                tickPositions.unshift(tick);
+            }
+        }
+    }
+}
+/**
  * If a user has defined categories, it is necessary to retroactively hide any
  * ticks added by the 'onAxisFoundExtremes' function above (#21672).
  *
@@ -58792,6 +58899,7 @@ class BubbleSeries extends BubbleSeries_ScatterSeries {
         Bubble_BubbleLegendComposition.compose(ChartClass, LegendClass);
         if (pushUnique(BubbleSeries_composed, 'Series.Bubble')) {
             addEvent(AxisClass, 'foundExtremes', onAxisFoundExtremes);
+            addEvent(AxisClass, 'afterSetTickPositions', onAxisAfterSetTickPositions);
             addEvent(AxisClass, 'afterRender', onAxisAfterRender);
         }
     }
@@ -60989,7 +61097,7 @@ Series_SeriesRegistry.registerSeriesType('heatmap', HeatmapSeries);
 /* unused harmony import specifier */ var map_src_Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highmaps JS v13.1.1-modified (2026-10-20)
+ * @license Highmaps JS v13.1.1-modified (2026-10-21)
  * @module highcharts/modules/map
  * @requires highcharts
  *

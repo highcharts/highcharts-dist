@@ -68,7 +68,7 @@ const CandlestickSeriesDefaults = {
      * @sample {highstock} stock/plotoptions/financial-legend-symbols/
      *         Financial series legend symbols
      *
-     * @default   candlestick
+     * @default   'candlestick'
      * @product   highstock
      * @apioption plotOptions.candlestick.legendSymbol
      */
@@ -85,7 +85,6 @@ const CandlestickSeriesDefaults = {
      *         Candlestick line colors
      *
      * @type    {Highcharts.ColorType}
-     * @default #000000
      * @product highstock
      */
     lineColor: 'var(--highcharts-neutral-color-100)',
@@ -111,7 +110,6 @@ const CandlestickSeriesDefaults = {
      *         Colors in styled mode
      *
      * @type    {Highcharts.ColorType}
-     * @default #ffffff
      * @product highstock
     */
     upColor: 'var(--highcharts-background-color)',
@@ -127,7 +125,7 @@ const CandlestickSeriesDefaults = {
  *
  * @type      {*}
  * @extends   series,plotOptions.candlestick
- * @excluding marker
+ * @excluding borderColor, borderRadius, borderWidth, marker
  * @product   highstock
  * @apioption series.candlestick
  */

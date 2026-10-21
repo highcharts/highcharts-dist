@@ -25,7 +25,7 @@ import { addEvent, merge, pushUnique } from '../../Shared/Utilities.js';
 /**
  * After processing and grouping the data, calculate how the heikinashi data
  * set should look like.
- * @private
+ * @internal
  */
 function onAxisPostProcessData() {
     const series = this.series;
@@ -39,7 +39,7 @@ function onAxisPostProcessData() {
 }
 /**
  * Assign heikinashi data into the points.
- * @private
+ * @internal
  * @todo move to HeikinAshiPoint class
  */
 function onHeikinAshiSeriesAfterTranslate() {
@@ -55,7 +55,7 @@ function onHeikinAshiSeriesAfterTranslate() {
 }
 /**
  * Force to recalculate the heikinashi data set after updating data.
- * @private
+ * @internal
  */
 function onHeikinAshiSeriesUpdatedData() {
     if (this.heikinashiData.length) {
@@ -70,11 +70,8 @@ function onHeikinAshiSeriesUpdatedData() {
 /**
  * The Heikin Ashi series.
  *
- * @private
  * @class
  * @name Highcharts.seriesTypes.heikinashi
- *
- * @augments Highcharts.Series
  */
 class HeikinAshiSeries extends CandlestickSeries {
     constructor() {
@@ -108,7 +105,7 @@ class HeikinAshiSeries extends CandlestickSeries {
      * */
     /**
      * Calculate data set for the heikinashi series before creating the points.
-     * @private
+     * @internal
      */
     getHeikinashiData() {
         const series = this, table = series.allGroupedTable || series.dataTable, dataLength = table.rowCount, heikinashiData = series.heikinashiData;
@@ -122,16 +119,14 @@ class HeikinAshiSeries extends CandlestickSeries {
         }
         series.heikinashiData = heikinashiData;
     }
-    /**
-     * @private
-     */
+    /** @internal */
     init() {
         super.init.apply(this, arguments);
         this.heikinashiData = [];
     }
     /**
      * Calculate and modify the first data point value.
-     * @private
+     * @internal
      * @param {Object} dataPoint
      *        Current data point.
      */
@@ -144,7 +139,7 @@ class HeikinAshiSeries extends CandlestickSeries {
     }
     /**
      * Calculate and modify the data point's value.
-     * @private
+     * @internal
      * @param {Object} dataPoint
      *        Current data point.
      * @param {Array<(number)>} previousDataPoint

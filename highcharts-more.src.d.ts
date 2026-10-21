@@ -59,6 +59,13 @@ declare module "./highcharts.src" {
      */
     function onAxisAfterRender(): void;
     /**
+     * The padding above is applied before the tick positions are known, and the
+     * extremes shift again while they are computed, which can leave bubbles
+     * outside the plot area. Run it again against the final extremes, and
+     * repeat, since padding one end moves every bubble. #24039
+     */
+    function onAxisAfterSetTickPositions(): void;
+    /**
      * Gauge-specific tick length
      */
     function onAxisAfterTickSize(): void;

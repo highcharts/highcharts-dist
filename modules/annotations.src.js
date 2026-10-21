@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-20)
+ * @license Highcharts JS v13.1.1-modified (2026-10-21)
  * @module highcharts/modules/annotations
  * @requires highcharts
  *
@@ -823,10 +823,11 @@ const AnnotationDefaults = {
      * @apioption annotations.shapes.points
      */
     /**
-     * Id of the marker which will be drawn at the final vertex of
-     * the path. Custom markers can be defined in defs property.
+     * Id of the marker which will be drawn at the final vertex of the path. The
+     * `arrow` and `reverse-arrow` markers are available by default; custom
+     * markers can be defined in the [defs](#defs) option.
      *
-     * @see [defs.markers](#defs.markers)
+     * @see [defs](#defs)
      *
      * @sample highcharts/annotations/custom-markers/
      *         Define a custom marker for annotations
@@ -835,12 +836,13 @@ const AnnotationDefaults = {
      * @apioption annotations.shapes.markerEnd
      */
     /**
-     * Id of the marker which will be drawn at the first vertex of
-     * the path. Custom markers can be defined in defs property.
+     * Id of the marker which will be drawn at the first vertex of the path. The
+     * `arrow` and `reverse-arrow` markers are available by default; custom
+     * markers can be defined in the [defs](#defs) option.
      *
-     * @see [defs.markers](#defs.markers)
+     * @see [defs](#defs)
      *
-     * @sample {highcharts} highcharts/annotations/custom-markers/
+     * @sample highcharts/annotations/custom-markers/
      *         Define a custom marker for annotations
      *
      * @type      {string}
@@ -2706,7 +2708,15 @@ Annotations_ControlTarget.compose(Controllable);
  * */
 
 /**
- * Options for configuring markers for annotations.
+ * A collection of SVG definitions for reusable elements such as markers,
+ * gradients, filters and patterns. Used mostly in styled mode - see
+ * [gradients, shadows and
+ * patterns](https://www.highcharts.com/docs/chart-design-and-style/gradients-shadows-and-patterns).
+ *
+ * Annotations use it to define arrow markers, referenced from a shape's
+ * [markerEnd](#annotations.shapes.markerEnd) or
+ * [markerStart](#annotations.shapes.markerStart) option. Two markers are
+ * available by default: `arrow` and `reverse-arrow`.
  *
  * An example of the arrow marker:
  * <pre>
@@ -2741,6 +2751,11 @@ Annotations_ControlTarget.compose(Controllable);
  */
 const defaultMarkers = {
     /**
+     * The default `arrow` marker, rendered as a filled triangle pointing
+     * towards the end of the path. Reference it by id in
+     * [markerEnd](#annotations.shapes.markerEnd) or
+     * [markerStart](#annotations.shapes.markerStart).
+     *
      * @type {Highcharts.ASTNode}
      */
     arrow: {
@@ -2752,9 +2767,6 @@ const defaultMarkers = {
             markerWidth: 10,
             markerHeight: 10
         },
-        /**
-         * @type {Array<Highcharts.DefsOptions>}
-         */
         children: [{
                 tagName: 'path',
                 attributes: {
@@ -2764,6 +2776,11 @@ const defaultMarkers = {
             }]
     },
     /**
+     * The default `reverse-arrow` marker, rendered as a filled triangle
+     * pointing towards the start of the path. Reference it by id in
+     * [markerEnd](#annotations.shapes.markerEnd) or
+     * [markerStart](#annotations.shapes.markerStart).
+     *
      * @type {Highcharts.ASTNode}
      */
     'reverse-arrow': {

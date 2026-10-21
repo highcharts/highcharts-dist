@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.1.1-modified (2026-10-20)
+ * @license Highstock JS v13.1.1-modified (2026-10-21)
  * @module highcharts/modules/stock
  * @requires highcharts
  *
@@ -9983,7 +9983,8 @@ const { column: { prototype: { pointClass: ColumnPoint } } } = (highcharts_Serie
  * */
 class HLCPoint extends ColumnPoint {
     /**
-     * Get the origin position for entrance animation of new points
+     * Get the origin position for entrance animation of new points.
+     * @internal
      */
     getOrigin({ x = 0 }, shape = {}) {
         const d = shape.d, shiftX = x - (this.plotX || 0);
@@ -10348,11 +10349,8 @@ const { defaultOptions: HLCSeries_defaultOptions } = (highcharts_commonjs_highch
 /**
  * The hlc series type.
  *
- * @private
  * @class
  * @name Highcharts.seriesTypes.hlc
- *
- * @augments Highcharts.Series
  */
 class HLCSeries extends ColumnSeries {
     /* *
@@ -10372,9 +10370,16 @@ class HLCSeries extends ColumnSeries {
     /**
      * Extend the path if close is not between high and low.
      *
-     * @param {SVGPath} path the path array of the point
+     * @param {SVGPath} path
+     * the path array of the point
+     *
      * @param {number} halfStrokeWidth
-     * @param {number} value value of the point to which the stem should be extended
+     * half of the stroke width
+     *
+     * @param {number} value
+     * value of the point to which the stem should be extended
+     *
+     * @internal
      */
     extendStem(path, halfStrokeWidth, value) {
         const start = path[0];
@@ -10391,7 +10396,7 @@ class HLCSeries extends ColumnSeries {
     /**
      * Function to create SVGPath of the point based on the plot positions of
      * this point.
-     * @private
+     * @internal
      */
     getPointPath(point) {
         // Crisp vector coordinates
@@ -10412,7 +10417,7 @@ class HLCSeries extends ColumnSeries {
         return path;
     }
     /**
-     * @private
+     * @internal
      * @function Highcharts.seriesTypes.hlc#init
      */
     init() {
@@ -10421,7 +10426,7 @@ class HLCSeries extends ColumnSeries {
     }
     /**
      * Postprocess mapping between options and SVG attributes
-     * @private
+     * @internal
      */
     pointAttribs(point, state) {
         const attribs = super.pointAttribs.call(this, point, state);
@@ -10438,7 +10443,7 @@ class HLCSeries extends ColumnSeries {
     /**
      * Translate data points from raw values x and y to plotX and plotY
      *
-     * @private
+     * @internal
      * @function Highcharts.seriesTypes.hlc#translate
      */
     translate() {
@@ -10487,13 +10492,9 @@ HLCSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highchart
 });
 // Extend default lang options with OHLC terms
 const HLCDefaultLangOptions = {
-    /** @internal */
     stockOpen: 'Open',
-    /** @internal */
     stockHigh: 'High',
-    /** @internal */
     stockLow: 'Low',
-    /** @internal */
     stockClose: 'Close'
 };
 (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.extend)(HLCSeries_defaultOptions.lang, HLCDefaultLangOptions);
@@ -11009,7 +11010,7 @@ const CandlestickSeriesDefaults = {
      * @sample {highstock} stock/plotoptions/financial-legend-symbols/
      *         Financial series legend symbols
      *
-     * @default   candlestick
+     * @default   'candlestick'
      * @product   highstock
      * @apioption plotOptions.candlestick.legendSymbol
      */
@@ -11026,7 +11027,6 @@ const CandlestickSeriesDefaults = {
      *         Candlestick line colors
      *
      * @type    {Highcharts.ColorType}
-     * @default #000000
      * @product highstock
      */
     lineColor: 'var(--highcharts-neutral-color-100)',
@@ -11052,7 +11052,6 @@ const CandlestickSeriesDefaults = {
      *         Colors in styled mode
      *
      * @type    {Highcharts.ColorType}
-     * @default #ffffff
      * @product highstock
     */
     upColor: 'var(--highcharts-background-color)',
@@ -11068,7 +11067,7 @@ const CandlestickSeriesDefaults = {
  *
  * @type      {*}
  * @extends   series,plotOptions.candlestick
- * @excluding marker
+ * @excluding borderColor, borderRadius, borderWidth, marker
  * @product   highstock
  * @apioption series.candlestick
  */
@@ -11156,7 +11155,6 @@ const { column: CandlestickSeries_ColumnSeries, ohlc: CandlestickSeries_OHLCSeri
 /**
  * The candlestick series type.
  *
- * @private
  * @class
  * @name Highcharts.seriesTypes.candlestick
  *
@@ -11186,7 +11184,7 @@ class CandlestickSeries extends CandlestickSeries_OHLCSeries {
     /**
      * Postprocess mapping between options and SVG attributes
      *
-     * @private
+     * @internal
      * @function Highcharts.seriesTypes.candlestick#pointAttribs
      */
     pointAttribs(point, state) {
@@ -11208,7 +11206,7 @@ class CandlestickSeries extends CandlestickSeries_OHLCSeries {
     }
     /**
      * Create the SVGPath of the point based on the plot positions
-     * @private
+     * @internal
      */
     getPointPath(point) {
         // Crisp vector coordinates
@@ -12908,7 +12906,7 @@ var BrokenAxis;
 /* unused harmony import specifier */ var Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-20)
+ * @license Highcharts JS v13.1.1-modified (2026-10-21)
  * @module highcharts/modules/broken-axis
  * @requires highcharts
  *
@@ -13768,17 +13766,23 @@ function DataGroupingSeriesComposition_applyGrouping(hasExtremesChanged) {
         // Force recreation of point instances in series.translate, #5699
         series.isDirty = true;
         series.points = null; // #6709
-        const xMin = extremes.min, xMax = extremes.max, groupIntervalFactor = (ordinal &&
+        const xMin = extremes.min, xMax = extremes.max, last = xData.length - 1, { startOfWeek } = xAxis.options, groupIntervalFactor = (ordinal &&
             xAxis.ordinal &&
-            xAxis.ordinal.getGroupIntervalFactor(xMin, xMax, series)) || 1, interval = (groupPixelWidth * (xMax - xMin) / plotSizeX) *
-            groupIntervalFactor, groupPositions = xAxis.getTimeTicks(Axis_DateTimeAxis.Additions.prototype.normalizeTimeTickInterval(interval, dataGroupingOptions.units ||
-            DataGrouping_DataGroupingDefaults.units), 
-        // Processed data may extend beyond axis (#4907)
-        Math.min(xMin, xData[0]), Math.max(xMax, xData[xData.length - 1]), xAxis.options.startOfWeek, processedXData, series.closestPointRange), groupedData = DataGroupingSeriesComposition_seriesProto.groupData.apply(series, [
-            table,
-            groupPositions,
-            dataGroupingOptions.approximation
-        ]);
+            xAxis.ordinal.getGroupIntervalFactor(xMin, xMax, series)) || 1, normalizedInterval = Axis_DateTimeAxis.Additions.prototype
+            .normalizeTimeTickInterval(Math.max((groupPixelWidth * (xMax - xMin) / plotSizeX) *
+            groupIntervalFactor, 
+        // Don't group far finer than the data (#23958)
+        (series.basePointRange || 0) / 100), dataGroupingOptions.units || DataGrouping_DataGroupingDefaults.units), 
+        // Processed data may extend beyond axis (#4907), but skip the gaps
+        // to the shoulder points (#23958)
+        groupPositions = xAxis.getTimeTicks(normalizedInterval, Math.min(xMin, xData[Math.min(1, last)]), Math.max(xMax, xData[Math.max(last - 1, 0)]), startOfWeek, processedXData, series.closestPointRange), { info } = groupPositions, getGroupStart = (x) => chart.time.getTimeTicks(normalizedInterval, x, x, startOfWeek)[0], lastStart = getGroupStart(xData[last]), leftShoulder = +(xData[0] < groupPositions[0]), rightShoulder = +(lastStart > groupPositions[groupPositions.length - 1]);
+        if (leftShoulder) {
+            groupPositions.unshift(getGroupStart(xData[0]));
+        }
+        if (rightShoulder) {
+            groupPositions.push(lastStart);
+        }
+        const groupedData = DataGroupingSeriesComposition_seriesProto.groupData.call(series, table, groupPositions, dataGroupingOptions.approximation);
         let modified = groupedData.modified, groupedXData = modified.getColumn('x', true), gapSize = 0;
         // The smoothed option is deprecated, instead, there is a fallback
         // to the new anchoring mechanism. #12455.
@@ -13792,19 +13796,17 @@ function DataGroupingSeriesComposition_applyGrouping(hasExtremesChanged) {
             });
         }
         // Record what data grouping values were used
-        for (i = 1; i < groupPositions.length; i++) {
+        for (i = 1 + leftShoulder; i < groupPositions.length - rightShoulder; i++) {
             // The grouped gapSize needs to be the largest distance between
             // the group to capture varying group sizes like months or DST
             // crossing (#10000). Also check that the gap is not at the
             // start of a segment.
-            if (!groupPositions.info.segmentStarts ||
-                groupPositions.info.segmentStarts.indexOf(i) === -1) {
+            if (!info?.segmentStarts?.includes(i - leftShoulder)) {
                 gapSize = Math.max(groupPositions[i] - groupPositions[i - 1], gapSize);
             }
         }
-        currentDataGrouping = groupPositions.info;
-        currentDataGrouping.gapSize = gapSize;
-        series.closestPointRange = groupPositions.info.totalRange;
+        currentDataGrouping = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.extend)(info, { gapSize });
+        series.closestPointRange = currentDataGrouping.totalRange;
         series.groupMap = groupedData.groupMap;
         series.currentDataGrouping = currentDataGrouping;
         anchorPoints(series, groupedXData || [], xMax);
@@ -14582,7 +14584,7 @@ const DataGroupingComposition = {
 /* unused harmony import specifier */ var datagrouping_src_Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.1.1-modified (2026-10-20)
+ * @license Highstock JS v13.1.1-modified (2026-10-21)
  * @module highcharts/modules/datagrouping
  * @requires highcharts
  *
@@ -14947,7 +14949,7 @@ const MouseWheelZoomComposition = {
 /* unused harmony import specifier */ var mouse_wheel_zoom_src_Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-20)
+ * @license Highcharts JS v13.1.1-modified (2026-10-21)
  * @module highcharts/modules/mouse-wheel-zoom
  * @requires highcharts
  *

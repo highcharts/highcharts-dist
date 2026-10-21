@@ -19,7 +19,8 @@ const { column: { prototype: { pointClass: ColumnPoint } } } = SeriesRegistry.se
  * */
 class HLCPoint extends ColumnPoint {
     /**
-     * Get the origin position for entrance animation of new points
+     * Get the origin position for entrance animation of new points.
+     * @internal
      */
     getOrigin({ x = 0 }, shape = {}) {
         const d = shape.d, shiftX = x - (this.plotX || 0);

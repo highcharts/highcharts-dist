@@ -1502,6 +1502,10 @@ declare module "../highcharts.src" {
      */
     interface SeriesCandlestickOptions extends Highcharts.PlotCandlestickOptions, Highcharts.SeriesOptions {
         /**
+         * Not available
+         */
+        borderRadius?: undefined;
+        /**
          * (Highstock) An array of data points for the series. For the
          * `candlestick` series type, points can be given in the following ways:
          *

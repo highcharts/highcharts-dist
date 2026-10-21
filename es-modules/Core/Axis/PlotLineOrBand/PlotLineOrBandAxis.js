@@ -145,29 +145,32 @@ var PlotLineOrBandAxis;
      */
     function getPlotBandPath(from, to, options) {
         options = options || this.options;
+        // Keep real coordinates so a gradient spans the full band. The band is
+        // clipped to the axis in `PlotLineOrBand.render` (#6257).
         const toPath = this.getPlotLinePath({
             value: to,
-            force: true,
+            force: 'pass',
             acrossPanes: options.acrossPanes
         }), result = [], horiz = this.horiz, outside = !isNumber(this.min) ||
             !isNumber(this.max) ||
             (from < this.min && to < this.min) ||
             (from > this.max && to > this.max), path = this.getPlotLinePath({
             value: from,
-            force: true,
+            force: 'pass',
             acrossPanes: options.acrossPanes
         });
-        let i, 
-        // #4964 check if chart is inverted or plot band is on yAxis
-        plus = 1, isFlat;
         if (path && toPath) {
-            // Flat paths don't need labels (#3836)
-            if (outside) {
-                isFlat = path.toString() === toPath.toString();
-                plus = 0;
+            // The band isn't fitted to the axis, so flag the ones that extend
+            // outside it for clipping (#6257)
+            if (isNumber(this.min) && isNumber(this.max)) {
+                result.isOverflowing = Math.min(from, to) < this.min ||
+                    Math.max(from, to) > this.max;
             }
+            // Flat paths don't need labels (#3836), neither do bands clipped
+            // away entirely (#6257)
+            result.isFlat = outside;
             // Go over each subpath - for panes in Highcharts Stock
-            for (i = 0; i < path.length; i += 2) {
+            for (let i = 0; i < path.length; i += 2) {
                 const pathStart = path[i], pathEnd = path[i + 1], toPathStart = toPath[i], toPathEnd = toPath[i + 1];
                 // Type checking all affected path segments. Consider
                 // something smarter.
@@ -175,18 +178,18 @@ var PlotLineOrBandAxis;
                     (pathEnd[0] === 'M' || pathEnd[0] === 'L') &&
                     (toPathStart[0] === 'M' || toPathStart[0] === 'L') &&
                     (toPathEnd[0] === 'M' || toPathEnd[0] === 'L')) {
-                    // Add 1 pixel when coordinates are the same
+                    // Add 1 pixel when coordinates are the same, also when
+                    // inverted or on the yAxis (#4964)
                     if (horiz && toPathStart[1] === pathStart[1]) {
-                        toPathStart[1] += plus;
-                        toPathEnd[1] += plus;
+                        toPathStart[1]++;
+                        toPathEnd[1]++;
                     }
                     else if (!horiz && toPathStart[2] === pathStart[2]) {
-                        toPathStart[2] += plus;
-                        toPathEnd[2] += plus;
+                        toPathStart[2]++;
+                        toPathEnd[2]++;
                     }
                     result.push(['M', pathStart[1], pathStart[2]], ['L', pathEnd[1], pathEnd[2]], ['L', toPathEnd[1], toPathEnd[2]], ['L', toPathStart[1], toPathStart[2]], ['Z']);
                 }
-                result.isFlat = isFlat;
             }
         }
         return result;

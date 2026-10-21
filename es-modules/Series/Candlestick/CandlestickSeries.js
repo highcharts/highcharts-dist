@@ -22,7 +22,6 @@ import { crisp, merge } from '../../Shared/Utilities.js';
 /**
  * The candlestick series type.
  *
- * @private
  * @class
  * @name Highcharts.seriesTypes.candlestick
  *
@@ -52,7 +51,7 @@ class CandlestickSeries extends OHLCSeries {
     /**
      * Postprocess mapping between options and SVG attributes
      *
-     * @private
+     * @internal
      * @function Highcharts.seriesTypes.candlestick#pointAttribs
      */
     pointAttribs(point, state) {
@@ -74,7 +73,7 @@ class CandlestickSeries extends OHLCSeries {
     }
     /**
      * Create the SVGPath of the point based on the plot positions
-     * @private
+     * @internal
      */
     getPointPath(point) {
         // Crisp vector coordinates

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.1.1-modified (2026-10-20)
+ * @license Highstock JS v13.1.1-modified (2026-10-21)
  * @module highcharts/modules/hollowcandlestick
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -82,7 +82,7 @@ class HollowCandlestickPoint extends CandlestickSeries.prototype.pointClass {
      * */
     /**
      * Update class name if needed.
-     * @private
+     * @internal
      * @function Highcharts.seriesTypes.hollowcandlestick#getClassName
      */
     getClassName() {
@@ -94,11 +94,6 @@ class HollowCandlestickPoint extends CandlestickSeries.prototype.pointClass {
         return className;
     }
 }
-/* *
- *
- *  Class Namespace
- *
- * */
 /* *
  *
  *  Default Export
@@ -140,11 +135,8 @@ const { seriesTypes: { candlestick: HollowCandlestickSeries_CandlestickSeries } 
 /**
  * The hollowcandlestick series.
  *
- * @private
  * @class
  * @name Highcharts.seriesTypes.hollowcandlestick
- *
- * @augments Highcharts.seriesTypes.candlestick
  */
 class HollowCandlestickSeries extends HollowCandlestickSeries_CandlestickSeries {
     constructor() {
@@ -164,7 +156,7 @@ class HollowCandlestickSeries extends HollowCandlestickSeries_CandlestickSeries 
      * */
     /**
      * Iterate through all points and get their type.
-     * @private
+     * @internal
      *
      * @function Highcharts.seriesTypes.hollowcandlestick#getPriceMovement
      *
@@ -185,7 +177,7 @@ class HollowCandlestickSeries extends HollowCandlestickSeries_CandlestickSeries 
     }
     /**
      * Return line color based on candle type.
-     * @private
+     * @internal
      *
      * @function Highcharts.seriesTypes.hollowcandlestick#getLineColor
      *
@@ -204,7 +196,7 @@ class HollowCandlestickSeries extends HollowCandlestickSeries_CandlestickSeries 
     }
     /**
      * Return fill color based on candle type.
-     * @private
+     * @internal
      *
      * @function Highcharts.seriesTypes.hollowcandlestick#getPointFill
      *
@@ -224,10 +216,7 @@ class HollowCandlestickSeries extends HollowCandlestickSeries_CandlestickSeries 
             series.options.upColor || 'var(--highcharts-positive-color)' :
             series.options.color || 'var(--highcharts-negative-color)';
     }
-    /**
-     * @private
-     * @function Highcharts.seriesTypes.hollowcandlestick#init
-     */
+    /** @internal */
     init() {
         super.init.apply(this, arguments);
         this.hollowCandlestickData = [];
@@ -236,13 +225,13 @@ class HollowCandlestickSeries extends HollowCandlestickSeries_CandlestickSeries 
      * Check if the candle is bearish or bullish. For bullish one, return true.
      * For bearish, return string depending on the previous point.
      *
-     * @function Highcharts.seriesTypes.hollowcandlestick#isBullish
-     *
      * @param {Object} dataPoint
      * Current point which we calculate.
      *
      * @param {Object} previousDataPoint
      * Previous point.
+     *
+     * @internal
      */
     isBullish(dataPoint, previousDataPoint) {
         return {
@@ -257,7 +246,6 @@ class HollowCandlestickSeries extends HollowCandlestickSeries_CandlestickSeries 
      * The legend's bullish candle is hollow, and colored by trend (#24567).
      *
      * @internal
-     * @function Highcharts.seriesTypes.hollowcandlestick#legendSymbolAttribs
      */
     legendSymbolAttribs() {
         return {
@@ -272,15 +260,13 @@ class HollowCandlestickSeries extends HollowCandlestickSeries_CandlestickSeries 
     /**
      * Add color and fill attribute for each point.
      *
-     * @private
-     *
-     * @function Highcharts.seriesTypes.hollowcandlestick#pointAttribs
-     *
      * @param {HollowCandlestickPoint} point
      * Point to which we are adding attributes.
      *
      * @param {StatesOptionsKey} state
      * Current point state.
+     *
+     * @internal
      */
     pointAttribs(point, state) {
         const attribs = super.pointAttribs.call(this, point, state);

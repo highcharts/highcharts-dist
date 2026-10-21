@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.1.1-modified (2026-10-20)
+ * @license Highstock JS v13.1.1-modified (2026-10-21)
  * @module highcharts/modules/stock
  * @requires highcharts
  *
@@ -9867,7 +9867,8 @@ const { column: { prototype: { pointClass: ColumnPoint } } } = (external_highcha
  * */
 class HLCPoint extends ColumnPoint {
     /**
-     * Get the origin position for entrance animation of new points
+     * Get the origin position for entrance animation of new points.
+     * @internal
      */
     getOrigin({ x = 0 }, shape = {}) {
         const d = shape.d, shiftX = x - (this.plotX || 0);
@@ -10232,11 +10233,8 @@ const { defaultOptions: HLCSeries_defaultOptions } = (external_highcharts_src_js
 /**
  * The hlc series type.
  *
- * @private
  * @class
  * @name Highcharts.seriesTypes.hlc
- *
- * @augments Highcharts.Series
  */
 class HLCSeries extends ColumnSeries {
     /* *
@@ -10256,9 +10254,16 @@ class HLCSeries extends ColumnSeries {
     /**
      * Extend the path if close is not between high and low.
      *
-     * @param {SVGPath} path the path array of the point
+     * @param {SVGPath} path
+     * the path array of the point
+     *
      * @param {number} halfStrokeWidth
-     * @param {number} value value of the point to which the stem should be extended
+     * half of the stroke width
+     *
+     * @param {number} value
+     * value of the point to which the stem should be extended
+     *
+     * @internal
      */
     extendStem(path, halfStrokeWidth, value) {
         const start = path[0];
@@ -10275,7 +10280,7 @@ class HLCSeries extends ColumnSeries {
     /**
      * Function to create SVGPath of the point based on the plot positions of
      * this point.
-     * @private
+     * @internal
      */
     getPointPath(point) {
         // Crisp vector coordinates
@@ -10296,7 +10301,7 @@ class HLCSeries extends ColumnSeries {
         return path;
     }
     /**
-     * @private
+     * @internal
      * @function Highcharts.seriesTypes.hlc#init
      */
     init() {
@@ -10305,7 +10310,7 @@ class HLCSeries extends ColumnSeries {
     }
     /**
      * Postprocess mapping between options and SVG attributes
-     * @private
+     * @internal
      */
     pointAttribs(point, state) {
         const attribs = super.pointAttribs.call(this, point, state);
@@ -10322,7 +10327,7 @@ class HLCSeries extends ColumnSeries {
     /**
      * Translate data points from raw values x and y to plotX and plotY
      *
-     * @private
+     * @internal
      * @function Highcharts.seriesTypes.hlc#translate
      */
     translate() {
@@ -10371,13 +10376,9 @@ HLCSeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject
 });
 // Extend default lang options with OHLC terms
 const HLCDefaultLangOptions = {
-    /** @internal */
     stockOpen: 'Open',
-    /** @internal */
     stockHigh: 'High',
-    /** @internal */
     stockLow: 'Low',
-    /** @internal */
     stockClose: 'Close'
 };
 (0,external_highcharts_src_js_default_namespaceObject.extend)(HLCSeries_defaultOptions.lang, HLCDefaultLangOptions);
@@ -10893,7 +10894,7 @@ const CandlestickSeriesDefaults = {
      * @sample {highstock} stock/plotoptions/financial-legend-symbols/
      *         Financial series legend symbols
      *
-     * @default   candlestick
+     * @default   'candlestick'
      * @product   highstock
      * @apioption plotOptions.candlestick.legendSymbol
      */
@@ -10910,7 +10911,6 @@ const CandlestickSeriesDefaults = {
      *         Candlestick line colors
      *
      * @type    {Highcharts.ColorType}
-     * @default #000000
      * @product highstock
      */
     lineColor: 'var(--highcharts-neutral-color-100)',
@@ -10936,7 +10936,6 @@ const CandlestickSeriesDefaults = {
      *         Colors in styled mode
      *
      * @type    {Highcharts.ColorType}
-     * @default #ffffff
      * @product highstock
     */
     upColor: 'var(--highcharts-background-color)',
@@ -10952,7 +10951,7 @@ const CandlestickSeriesDefaults = {
  *
  * @type      {*}
  * @extends   series,plotOptions.candlestick
- * @excluding marker
+ * @excluding borderColor, borderRadius, borderWidth, marker
  * @product   highstock
  * @apioption series.candlestick
  */
@@ -11040,7 +11039,6 @@ const { column: CandlestickSeries_ColumnSeries, ohlc: CandlestickSeries_OHLCSeri
 /**
  * The candlestick series type.
  *
- * @private
  * @class
  * @name Highcharts.seriesTypes.candlestick
  *
@@ -11070,7 +11068,7 @@ class CandlestickSeries extends CandlestickSeries_OHLCSeries {
     /**
      * Postprocess mapping between options and SVG attributes
      *
-     * @private
+     * @internal
      * @function Highcharts.seriesTypes.candlestick#pointAttribs
      */
     pointAttribs(point, state) {
@@ -11092,7 +11090,7 @@ class CandlestickSeries extends CandlestickSeries_OHLCSeries {
     }
     /**
      * Create the SVGPath of the point based on the plot positions
-     * @private
+     * @internal
      */
     getPointPath(point) {
         // Crisp vector coordinates

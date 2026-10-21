@@ -28,11 +28,8 @@ const { seriesTypes: { candlestick: CandlestickSeries } } = SeriesRegistry;
 /**
  * The hollowcandlestick series.
  *
- * @private
  * @class
  * @name Highcharts.seriesTypes.hollowcandlestick
- *
- * @augments Highcharts.seriesTypes.candlestick
  */
 class HollowCandlestickSeries extends CandlestickSeries {
     constructor() {
@@ -52,7 +49,7 @@ class HollowCandlestickSeries extends CandlestickSeries {
      * */
     /**
      * Iterate through all points and get their type.
-     * @private
+     * @internal
      *
      * @function Highcharts.seriesTypes.hollowcandlestick#getPriceMovement
      *
@@ -73,7 +70,7 @@ class HollowCandlestickSeries extends CandlestickSeries {
     }
     /**
      * Return line color based on candle type.
-     * @private
+     * @internal
      *
      * @function Highcharts.seriesTypes.hollowcandlestick#getLineColor
      *
@@ -92,7 +89,7 @@ class HollowCandlestickSeries extends CandlestickSeries {
     }
     /**
      * Return fill color based on candle type.
-     * @private
+     * @internal
      *
      * @function Highcharts.seriesTypes.hollowcandlestick#getPointFill
      *
@@ -112,10 +109,7 @@ class HollowCandlestickSeries extends CandlestickSeries {
             series.options.upColor || 'var(--highcharts-positive-color)' :
             series.options.color || 'var(--highcharts-negative-color)';
     }
-    /**
-     * @private
-     * @function Highcharts.seriesTypes.hollowcandlestick#init
-     */
+    /** @internal */
     init() {
         super.init.apply(this, arguments);
         this.hollowCandlestickData = [];
@@ -124,13 +118,13 @@ class HollowCandlestickSeries extends CandlestickSeries {
      * Check if the candle is bearish or bullish. For bullish one, return true.
      * For bearish, return string depending on the previous point.
      *
-     * @function Highcharts.seriesTypes.hollowcandlestick#isBullish
-     *
      * @param {Object} dataPoint
      * Current point which we calculate.
      *
      * @param {Object} previousDataPoint
      * Previous point.
+     *
+     * @internal
      */
     isBullish(dataPoint, previousDataPoint) {
         return {
@@ -145,7 +139,6 @@ class HollowCandlestickSeries extends CandlestickSeries {
      * The legend's bullish candle is hollow, and colored by trend (#24567).
      *
      * @internal
-     * @function Highcharts.seriesTypes.hollowcandlestick#legendSymbolAttribs
      */
     legendSymbolAttribs() {
         return {
@@ -160,15 +153,13 @@ class HollowCandlestickSeries extends CandlestickSeries {
     /**
      * Add color and fill attribute for each point.
      *
-     * @private
-     *
-     * @function Highcharts.seriesTypes.hollowcandlestick#pointAttribs
-     *
      * @param {HollowCandlestickPoint} point
      * Point to which we are adding attributes.
      *
      * @param {StatesOptionsKey} state
      * Current point state.
+     *
+     * @internal
      */
     pointAttribs(point, state) {
         const attribs = super.pointAttribs.call(this, point, state);

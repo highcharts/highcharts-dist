@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v13.1.1-modified (2026-10-20)
+ * @license Highmaps JS v13.1.1-modified (2026-10-21)
  * @module highcharts/modules/contour
  * @requires highcharts
  * @requires highcharts/modules/coloraxis
@@ -898,7 +898,6 @@ const { seriesTypes: { scatter: ScatterSeries } } = (external_highcharts_src_js_
  *  Class
  *
  * */
-/** @internal */
 class ContourSeries extends ScatterSeries {
     /** @internal */
     static compose(SVGRendererClass) {
@@ -962,6 +961,7 @@ class ContourSeries extends ScatterSeries {
             this.setUniforms();
         }
     }
+    /** @internal */
     drawPoints() {
         const { group } = this;
         if (!group) {
@@ -1350,6 +1350,7 @@ class ContourSeries extends ScatterSeries {
     /**
      * Returns the contour interval from the series options in format of the
      * WebGPU uniform.
+     * @internal
      */
     getContourInterval() {
         const interval = this.options.contourInterval ?? (() => {
@@ -1364,6 +1365,7 @@ class ContourSeries extends ScatterSeries {
     /**
      * Returns the contour offset from the series options in format of the
      * WebGPU uniform.
+     * @internal
      */
     getContourOffset() {
         const offset = this.options.contourOffset ?? 0;
@@ -1375,6 +1377,7 @@ class ContourSeries extends ScatterSeries {
     /**
      * Returns the smooth coloring from the series options in format of the
      * WebGPU uniform.
+     * @internal
      */
     getSmoothColoring() {
         return this.options.smoothColoring ? 1 : 0;
@@ -1382,6 +1385,7 @@ class ContourSeries extends ScatterSeries {
     /**
      * Returns the lineWidth from the series options, which controls the
      * visibility of contour lines, in format of the WebGPU uniform.
+     * @internal
      */
     getLineWidth() {
         return this.userOptions.lineWidth ?? 1;
@@ -1389,6 +1393,7 @@ class ContourSeries extends ScatterSeries {
     /**
      * Returns the contour line color from the series options in format of the
      * WebGPU uniform.
+     * @internal
      */
     getContourLineColor() {
         const { lineColor = '#000000' } = this.options;
@@ -1396,6 +1401,7 @@ class ContourSeries extends ScatterSeries {
     }
     /**
      * Returns the extremes of the x and y axes in format of the WebGPU uniform.
+     * @internal
      */
     getFrameExtremes() {
         const { xAxis, yAxis } = this;
@@ -1408,6 +1414,7 @@ class ContourSeries extends ScatterSeries {
     }
     /**
      * Returns the extremes of the data in format of the WebGPU uniform.
+     * @internal
      */
     getValueAxisExtremes() {
         const series = this;
@@ -1427,6 +1434,7 @@ class ContourSeries extends ScatterSeries {
         }
         return [min || 0, max || 0];
     }
+    /** @internal */
     getColorAxisStopsData() {
         const colorAxisStops = this.colorAxis?.stops;
         let flattenedData;

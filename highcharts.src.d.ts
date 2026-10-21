@@ -2529,14 +2529,16 @@ export interface AnnotationsShapesOptions {
     height?: number;
     /**
      * (Highcharts, Highstock, Highmaps, Gantt) Id of the marker which will be
-     * drawn at the final vertex of the path. Custom markers can be defined in
-     * defs property.
+     * drawn at the final vertex of the path. The `arrow` and `reverse-arrow`
+     * markers are available by default; custom markers can be defined in the
+     * defs option.
      */
     markerEnd?: string;
     /**
      * (Highcharts, Highstock, Highmaps, Gantt) Id of the marker which will be
-     * drawn at the first vertex of the path. Custom markers can be defined in
-     * defs property.
+     * drawn at the first vertex of the path. The `arrow` and `reverse-arrow`
+     * markers are available by default; custom markers can be defined in the
+     * defs option.
      */
     markerStart?: string;
     /**
@@ -10194,19 +10196,38 @@ export interface DefsArrowAttributesOptions {
     refX?: number;
     refY?: number;
 }
+/**
+ * (Highcharts, Highstock, Highmaps, Gantt) The default `arrow` marker, rendered
+ * as a filled triangle pointing towards the end of the path. Reference it by id
+ * in markerEnd or markerStart.
+ */
 export interface DefsArrowOptions {
     attributes?: DefsArrowAttributesOptions;
-    children?: Array<DefsOptions>;
     tagName?: string;
 }
 /**
- * (Highcharts, Highstock, Highmaps, Gantt) Options for configuring markers for
- * annotations.
+ * (Highcharts, Highstock, Highmaps, Gantt) A collection of SVG definitions for
+ * reusable elements such as markers, gradients, filters and patterns. Used
+ * mostly in styled mode - see gradients, shadows and patterns.
+ *
+ * Annotations use it to define arrow markers, referenced from a shape's
+ * markerEnd or markerStart option. Two markers are available by default:
+ * `arrow` and `reverse-arrow`.
  *
  * An example of the arrow marker: (see online documentation for example)
  */
 export interface DefsOptions {
+    /**
+     * (Highcharts, Highstock, Highmaps, Gantt) The default `arrow` marker,
+     * rendered as a filled triangle pointing towards the end of the path.
+     * Reference it by id in markerEnd or markerStart.
+     */
     arrow?: (ASTNode|DefsArrowOptions);
+    /**
+     * (Highcharts, Highstock, Highmaps, Gantt) The default `reverse-arrow`
+     * marker, rendered as a filled triangle pointing towards the start of the
+     * path. Reference it by id in markerEnd or markerStart.
+     */
     "reverse-arrow"?: (ASTNode|DefsReverseArrowOptions);
 }
 export interface DefsReverseArrowAttributesOptions {
@@ -10216,6 +10237,11 @@ export interface DefsReverseArrowAttributesOptions {
     refX?: number;
     refY?: number;
 }
+/**
+ * (Highcharts, Highstock, Highmaps, Gantt) The default `reverse-arrow` marker,
+ * rendered as a filled triangle pointing towards the start of the path.
+ * Reference it by id in markerEnd or markerStart.
+ */
 export interface DefsReverseArrowOptions {
     attributes?: DefsReverseArrowAttributesOptions;
     tagName?: string;
@@ -14834,14 +14860,16 @@ export interface NavigationAnnotationsShapesOptions {
     height?: number;
     /**
      * (Highcharts, Highstock, Highmaps, Gantt) Id of the marker which will be
-     * drawn at the final vertex of the path. Custom markers can be defined in
-     * defs property.
+     * drawn at the final vertex of the path. The `arrow` and `reverse-arrow`
+     * markers are available by default; custom markers can be defined in the
+     * defs option.
      */
     markerEnd?: string;
     /**
      * (Highcharts, Highstock, Highmaps, Gantt) Id of the marker which will be
-     * drawn at the first vertex of the path. Custom markers can be defined in
-     * defs property.
+     * drawn at the first vertex of the path. The `arrow` and `reverse-arrow`
+     * markers are available by default; custom markers can be defined in the
+     * defs option.
      */
     markerStart?: string;
     /**
@@ -17967,12 +17995,14 @@ export interface NavigationBindingsArrowInfinityLineAnnotationsShapesOptions {
     height?: number;
     /**
      * (Highstock) Id of the marker which will be drawn at the final vertex of
-     * the path. Custom markers can be defined in defs property.
+     * the path. The `arrow` and `reverse-arrow` markers are available by
+     * default; custom markers can be defined in the defs option.
      */
     markerEnd?: string;
     /**
      * (Highstock) Id of the marker which will be drawn at the first vertex of
-     * the path. Custom markers can be defined in defs property.
+     * the path. The `arrow` and `reverse-arrow` markers are available by
+     * default; custom markers can be defined in the defs option.
      */
     markerStart?: string;
     /**
@@ -21089,12 +21119,14 @@ export interface NavigationBindingsArrowRayAnnotationsShapesOptions {
     height?: number;
     /**
      * (Highstock) Id of the marker which will be drawn at the final vertex of
-     * the path. Custom markers can be defined in defs property.
+     * the path. The `arrow` and `reverse-arrow` markers are available by
+     * default; custom markers can be defined in the defs option.
      */
     markerEnd?: string;
     /**
      * (Highstock) Id of the marker which will be drawn at the first vertex of
-     * the path. Custom markers can be defined in defs property.
+     * the path. The `arrow` and `reverse-arrow` markers are available by
+     * default; custom markers can be defined in the defs option.
      */
     markerStart?: string;
     /**
@@ -24211,12 +24243,14 @@ export interface NavigationBindingsArrowSegmentAnnotationsShapesOptions {
     height?: number;
     /**
      * (Highstock) Id of the marker which will be drawn at the final vertex of
-     * the path. Custom markers can be defined in defs property.
+     * the path. The `arrow` and `reverse-arrow` markers are available by
+     * default; custom markers can be defined in the defs option.
      */
     markerEnd?: string;
     /**
      * (Highstock) Id of the marker which will be drawn at the first vertex of
-     * the path. Custom markers can be defined in defs property.
+     * the path. The `arrow` and `reverse-arrow` markers are available by
+     * default; custom markers can be defined in the defs option.
      */
     markerStart?: string;
     /**
@@ -27333,12 +27367,14 @@ export interface NavigationBindingsCrooked3AnnotationsShapesOptions {
     height?: number;
     /**
      * (Highstock) Id of the marker which will be drawn at the final vertex of
-     * the path. Custom markers can be defined in defs property.
+     * the path. The `arrow` and `reverse-arrow` markers are available by
+     * default; custom markers can be defined in the defs option.
      */
     markerEnd?: string;
     /**
      * (Highstock) Id of the marker which will be drawn at the first vertex of
-     * the path. Custom markers can be defined in defs property.
+     * the path. The `arrow` and `reverse-arrow` markers are available by
+     * default; custom markers can be defined in the defs option.
      */
     markerStart?: string;
     /**
@@ -30456,12 +30492,14 @@ export interface NavigationBindingsCrooked5AnnotationsShapesOptions {
     height?: number;
     /**
      * (Highstock) Id of the marker which will be drawn at the final vertex of
-     * the path. Custom markers can be defined in defs property.
+     * the path. The `arrow` and `reverse-arrow` markers are available by
+     * default; custom markers can be defined in the defs option.
      */
     markerEnd?: string;
     /**
      * (Highstock) Id of the marker which will be drawn at the first vertex of
-     * the path. Custom markers can be defined in defs property.
+     * the path. The `arrow` and `reverse-arrow` markers are available by
+     * default; custom markers can be defined in the defs option.
      */
     markerStart?: string;
     /**
@@ -33578,12 +33616,14 @@ export interface NavigationBindingsElliott3AnnotationsShapesOptions {
     height?: number;
     /**
      * (Highstock) Id of the marker which will be drawn at the final vertex of
-     * the path. Custom markers can be defined in defs property.
+     * the path. The `arrow` and `reverse-arrow` markers are available by
+     * default; custom markers can be defined in the defs option.
      */
     markerEnd?: string;
     /**
      * (Highstock) Id of the marker which will be drawn at the first vertex of
-     * the path. Custom markers can be defined in defs property.
+     * the path. The `arrow` and `reverse-arrow` markers are available by
+     * default; custom markers can be defined in the defs option.
      */
     markerStart?: string;
     /**
@@ -36700,12 +36740,14 @@ export interface NavigationBindingsElliott5AnnotationsShapesOptions {
     height?: number;
     /**
      * (Highstock) Id of the marker which will be drawn at the final vertex of
-     * the path. Custom markers can be defined in defs property.
+     * the path. The `arrow` and `reverse-arrow` markers are available by
+     * default; custom markers can be defined in the defs option.
      */
     markerEnd?: string;
     /**
      * (Highstock) Id of the marker which will be drawn at the first vertex of
-     * the path. Custom markers can be defined in defs property.
+     * the path. The `arrow` and `reverse-arrow` markers are available by
+     * default; custom markers can be defined in the defs option.
      */
     markerStart?: string;
     /**
@@ -39822,12 +39864,14 @@ export interface NavigationBindingsFibonacciAnnotationsShapesOptions {
     height?: number;
     /**
      * (Highstock) Id of the marker which will be drawn at the final vertex of
-     * the path. Custom markers can be defined in defs property.
+     * the path. The `arrow` and `reverse-arrow` markers are available by
+     * default; custom markers can be defined in the defs option.
      */
     markerEnd?: string;
     /**
      * (Highstock) Id of the marker which will be drawn at the first vertex of
-     * the path. Custom markers can be defined in defs property.
+     * the path. The `arrow` and `reverse-arrow` markers are available by
+     * default; custom markers can be defined in the defs option.
      */
     markerStart?: string;
     /**
@@ -42944,12 +42988,14 @@ export interface NavigationBindingsFibonacciTimeZonesAnnotationsShapesOptions {
     height?: number;
     /**
      * (Highstock) Id of the marker which will be drawn at the final vertex of
-     * the path. Custom markers can be defined in defs property.
+     * the path. The `arrow` and `reverse-arrow` markers are available by
+     * default; custom markers can be defined in the defs option.
      */
     markerEnd?: string;
     /**
      * (Highstock) Id of the marker which will be drawn at the first vertex of
-     * the path. Custom markers can be defined in defs property.
+     * the path. The `arrow` and `reverse-arrow` markers are available by
+     * default; custom markers can be defined in the defs option.
      */
     markerStart?: string;
     /**
@@ -46066,12 +46112,14 @@ export interface NavigationBindingsHorizontalLineAnnotationsShapesOptions {
     height?: number;
     /**
      * (Highstock) Id of the marker which will be drawn at the final vertex of
-     * the path. Custom markers can be defined in defs property.
+     * the path. The `arrow` and `reverse-arrow` markers are available by
+     * default; custom markers can be defined in the defs option.
      */
     markerEnd?: string;
     /**
      * (Highstock) Id of the marker which will be drawn at the first vertex of
-     * the path. Custom markers can be defined in defs property.
+     * the path. The `arrow` and `reverse-arrow` markers are available by
+     * default; custom markers can be defined in the defs option.
      */
     markerStart?: string;
     /**
@@ -49187,12 +49235,14 @@ export interface NavigationBindingsInfinityLineAnnotationsShapesOptions {
     height?: number;
     /**
      * (Highstock) Id of the marker which will be drawn at the final vertex of
-     * the path. Custom markers can be defined in defs property.
+     * the path. The `arrow` and `reverse-arrow` markers are available by
+     * default; custom markers can be defined in the defs option.
      */
     markerEnd?: string;
     /**
      * (Highstock) Id of the marker which will be drawn at the first vertex of
-     * the path. Custom markers can be defined in defs property.
+     * the path. The `arrow` and `reverse-arrow` markers are available by
+     * default; custom markers can be defined in the defs option.
      */
     markerStart?: string;
     /**
@@ -52309,12 +52359,14 @@ export interface NavigationBindingsMeasureXAnnotationsShapesOptions {
     height?: number;
     /**
      * (Highstock) Id of the marker which will be drawn at the final vertex of
-     * the path. Custom markers can be defined in defs property.
+     * the path. The `arrow` and `reverse-arrow` markers are available by
+     * default; custom markers can be defined in the defs option.
      */
     markerEnd?: string;
     /**
      * (Highstock) Id of the marker which will be drawn at the first vertex of
-     * the path. Custom markers can be defined in defs property.
+     * the path. The `arrow` and `reverse-arrow` markers are available by
+     * default; custom markers can be defined in the defs option.
      */
     markerStart?: string;
     /**
@@ -55431,12 +55483,14 @@ export interface NavigationBindingsMeasureXYAnnotationsShapesOptions {
     height?: number;
     /**
      * (Highstock) Id of the marker which will be drawn at the final vertex of
-     * the path. Custom markers can be defined in defs property.
+     * the path. The `arrow` and `reverse-arrow` markers are available by
+     * default; custom markers can be defined in the defs option.
      */
     markerEnd?: string;
     /**
      * (Highstock) Id of the marker which will be drawn at the first vertex of
-     * the path. Custom markers can be defined in defs property.
+     * the path. The `arrow` and `reverse-arrow` markers are available by
+     * default; custom markers can be defined in the defs option.
      */
     markerStart?: string;
     /**
@@ -58553,12 +58607,14 @@ export interface NavigationBindingsMeasureYAnnotationsShapesOptions {
     height?: number;
     /**
      * (Highstock) Id of the marker which will be drawn at the final vertex of
-     * the path. Custom markers can be defined in defs property.
+     * the path. The `arrow` and `reverse-arrow` markers are available by
+     * default; custom markers can be defined in the defs option.
      */
     markerEnd?: string;
     /**
      * (Highstock) Id of the marker which will be drawn at the first vertex of
-     * the path. Custom markers can be defined in defs property.
+     * the path. The `arrow` and `reverse-arrow` markers are available by
+     * default; custom markers can be defined in the defs option.
      */
     markerStart?: string;
     /**
@@ -61919,12 +61975,14 @@ export interface NavigationBindingsParallelChannelAnnotationsShapesOptions {
     height?: number;
     /**
      * (Highstock) Id of the marker which will be drawn at the final vertex of
-     * the path. Custom markers can be defined in defs property.
+     * the path. The `arrow` and `reverse-arrow` markers are available by
+     * default; custom markers can be defined in the defs option.
      */
     markerEnd?: string;
     /**
      * (Highstock) Id of the marker which will be drawn at the first vertex of
-     * the path. Custom markers can be defined in defs property.
+     * the path. The `arrow` and `reverse-arrow` markers are available by
+     * default; custom markers can be defined in the defs option.
      */
     markerStart?: string;
     /**
@@ -65041,12 +65099,14 @@ export interface NavigationBindingsPitchforkAnnotationsShapesOptions {
     height?: number;
     /**
      * (Highstock) Id of the marker which will be drawn at the final vertex of
-     * the path. Custom markers can be defined in defs property.
+     * the path. The `arrow` and `reverse-arrow` markers are available by
+     * default; custom markers can be defined in the defs option.
      */
     markerEnd?: string;
     /**
      * (Highstock) Id of the marker which will be drawn at the first vertex of
-     * the path. Custom markers can be defined in defs property.
+     * the path. The `arrow` and `reverse-arrow` markers are available by
+     * default; custom markers can be defined in the defs option.
      */
     markerStart?: string;
     /**
@@ -68163,12 +68223,14 @@ export interface NavigationBindingsRayAnnotationsShapesOptions {
     height?: number;
     /**
      * (Highstock) Id of the marker which will be drawn at the final vertex of
-     * the path. Custom markers can be defined in defs property.
+     * the path. The `arrow` and `reverse-arrow` markers are available by
+     * default; custom markers can be defined in the defs option.
      */
     markerEnd?: string;
     /**
      * (Highstock) Id of the marker which will be drawn at the first vertex of
-     * the path. Custom markers can be defined in defs property.
+     * the path. The `arrow` and `reverse-arrow` markers are available by
+     * default; custom markers can be defined in the defs option.
      */
     markerStart?: string;
     /**
@@ -71285,12 +71347,14 @@ export interface NavigationBindingsSegmentAnnotationsShapesOptions {
     height?: number;
     /**
      * (Highstock) Id of the marker which will be drawn at the final vertex of
-     * the path. Custom markers can be defined in defs property.
+     * the path. The `arrow` and `reverse-arrow` markers are available by
+     * default; custom markers can be defined in the defs option.
      */
     markerEnd?: string;
     /**
      * (Highstock) Id of the marker which will be drawn at the first vertex of
-     * the path. Custom markers can be defined in defs property.
+     * the path. The `arrow` and `reverse-arrow` markers are available by
+     * default; custom markers can be defined in the defs option.
      */
     markerStart?: string;
     /**
@@ -74407,12 +74471,14 @@ export interface NavigationBindingsTimeCyclesAnnotationsShapesOptions {
     height?: number;
     /**
      * (Highstock) Id of the marker which will be drawn at the final vertex of
-     * the path. Custom markers can be defined in defs property.
+     * the path. The `arrow` and `reverse-arrow` markers are available by
+     * default; custom markers can be defined in the defs option.
      */
     markerEnd?: string;
     /**
      * (Highstock) Id of the marker which will be drawn at the first vertex of
-     * the path. Custom markers can be defined in defs property.
+     * the path. The `arrow` and `reverse-arrow` markers are available by
+     * default; custom markers can be defined in the defs option.
      */
     markerStart?: string;
     /**
@@ -77530,12 +77596,14 @@ export interface NavigationBindingsVerticalArrowAnnotationsShapesOptions {
     height?: number;
     /**
      * (Highstock) Id of the marker which will be drawn at the final vertex of
-     * the path. Custom markers can be defined in defs property.
+     * the path. The `arrow` and `reverse-arrow` markers are available by
+     * default; custom markers can be defined in the defs option.
      */
     markerEnd?: string;
     /**
      * (Highstock) Id of the marker which will be drawn at the first vertex of
-     * the path. Custom markers can be defined in defs property.
+     * the path. The `arrow` and `reverse-arrow` markers are available by
+     * default; custom markers can be defined in the defs option.
      */
     markerStart?: string;
     /**
@@ -80655,12 +80723,14 @@ export interface NavigationBindingsVerticalCounterAnnotationsShapesOptions {
     height?: number;
     /**
      * (Highstock) Id of the marker which will be drawn at the final vertex of
-     * the path. Custom markers can be defined in defs property.
+     * the path. The `arrow` and `reverse-arrow` markers are available by
+     * default; custom markers can be defined in the defs option.
      */
     markerEnd?: string;
     /**
      * (Highstock) Id of the marker which will be drawn at the first vertex of
-     * the path. Custom markers can be defined in defs property.
+     * the path. The `arrow` and `reverse-arrow` markers are available by
+     * default; custom markers can be defined in the defs option.
      */
     markerStart?: string;
     /**
@@ -83827,14 +83897,16 @@ export interface NavigationBindingsVerticalLabelAnnotationsShapesOptions {
     height?: number;
     /**
      * (Highcharts, Highstock, Highmaps, Gantt) Id of the marker which will be
-     * drawn at the final vertex of the path. Custom markers can be defined in
-     * defs property.
+     * drawn at the final vertex of the path. The `arrow` and `reverse-arrow`
+     * markers are available by default; custom markers can be defined in the
+     * defs option.
      */
     markerEnd?: string;
     /**
      * (Highcharts, Highstock, Highmaps, Gantt) Id of the marker which will be
-     * drawn at the first vertex of the path. Custom markers can be defined in
-     * defs property.
+     * drawn at the first vertex of the path. The `arrow` and `reverse-arrow`
+     * markers are available by default; custom markers can be defined in the
+     * defs option.
      */
     markerStart?: string;
     /**
@@ -86967,12 +87039,14 @@ export interface NavigationBindingsVerticalLineAnnotationsShapesOptions {
     height?: number;
     /**
      * (Highstock) Id of the marker which will be drawn at the final vertex of
-     * the path. Custom markers can be defined in defs property.
+     * the path. The `arrow` and `reverse-arrow` markers are available by
+     * default; custom markers can be defined in the defs option.
      */
     markerEnd?: string;
     /**
      * (Highstock) Id of the marker which will be drawn at the first vertex of
-     * the path. Custom markers can be defined in defs property.
+     * the path. The `arrow` and `reverse-arrow` markers are available by
+     * default; custom markers can be defined in the defs option.
      */
     markerStart?: string;
     /**
@@ -93556,8 +93630,13 @@ export interface Options {
      */
     dataTable?: (DataTable|DataTableOptions|DataTableOptionsObject|Array<(DataTable|DataTableOptionsObject)>);
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) Options for configuring markers
-     * for annotations.
+     * (Highcharts, Highstock, Highmaps, Gantt) A collection of SVG definitions
+     * for reusable elements such as markers, gradients, filters and patterns.
+     * Used mostly in styled mode - see gradients, shadows and patterns.
+     *
+     * Annotations use it to define arrow markers, referenced from a shape's
+     * markerEnd or markerStart option. Two markers are available by default:
+     * `arrow` and `reverse-arrow`.
      *
      * An example of the arrow marker: (see online documentation for example)
      */

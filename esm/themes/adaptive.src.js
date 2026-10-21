@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-20)
+ * @license Highcharts JS v13.1.1-modified (2026-10-21)
  * @module highcharts/themes/adaptive
  * @requires highcharts
  *
@@ -381,7 +381,6 @@ var DynamicDefaultTheme;
                         borderColor: 'var(--highcharts-neutral-color-100)'
                     }
                 },
-                borderColor: 'var(--highcharts-background-color)',
                 lineColor: 'var(--highcharts-neutral-color-100)',
                 upColor: 'var(--highcharts-background-color)'
             },

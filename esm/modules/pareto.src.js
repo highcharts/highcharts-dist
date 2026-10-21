@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-20)
+ * @license Highcharts JS v13.1.1-modified (2026-10-21)
  * @module highcharts/modules/pareto
  * @requires highcharts
  *
@@ -292,7 +292,6 @@ const { line: LineSeries } = (external_highcharts_src_js_default_SeriesRegistry_
 /**
  * The pareto series type.
  *
- * @internal
  * @class
  * @name Highcharts.seriesTypes.pareto
  *

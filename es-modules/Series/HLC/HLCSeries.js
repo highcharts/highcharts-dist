@@ -26,11 +26,8 @@ const { defaultOptions } = D;
 /**
  * The hlc series type.
  *
- * @private
  * @class
  * @name Highcharts.seriesTypes.hlc
- *
- * @augments Highcharts.Series
  */
 class HLCSeries extends ColumnSeries {
     /* *
@@ -50,9 +47,16 @@ class HLCSeries extends ColumnSeries {
     /**
      * Extend the path if close is not between high and low.
      *
-     * @param {SVGPath} path the path array of the point
+     * @param {SVGPath} path
+     * the path array of the point
+     *
      * @param {number} halfStrokeWidth
-     * @param {number} value value of the point to which the stem should be extended
+     * half of the stroke width
+     *
+     * @param {number} value
+     * value of the point to which the stem should be extended
+     *
+     * @internal
      */
     extendStem(path, halfStrokeWidth, value) {
         const start = path[0];
@@ -69,7 +73,7 @@ class HLCSeries extends ColumnSeries {
     /**
      * Function to create SVGPath of the point based on the plot positions of
      * this point.
-     * @private
+     * @internal
      */
     getPointPath(point) {
         // Crisp vector coordinates
@@ -90,7 +94,7 @@ class HLCSeries extends ColumnSeries {
         return path;
     }
     /**
-     * @private
+     * @internal
      * @function Highcharts.seriesTypes.hlc#init
      */
     init() {
@@ -99,7 +103,7 @@ class HLCSeries extends ColumnSeries {
     }
     /**
      * Postprocess mapping between options and SVG attributes
-     * @private
+     * @internal
      */
     pointAttribs(point, state) {
         const attribs = super.pointAttribs.call(this, point, state);
@@ -116,7 +120,7 @@ class HLCSeries extends ColumnSeries {
     /**
      * Translate data points from raw values x and y to plotX and plotY
      *
-     * @private
+     * @internal
      * @function Highcharts.seriesTypes.hlc#translate
      */
     translate() {
@@ -165,13 +169,9 @@ extend(HLCSeries.prototype, {
 });
 // Extend default lang options with OHLC terms
 const HLCDefaultLangOptions = {
-    /** @internal */
     stockOpen: 'Open',
-    /** @internal */
     stockHigh: 'High',
-    /** @internal */
     stockLow: 'Low',
-    /** @internal */
     stockClose: 'Close'
 };
 extend(defaultOptions.lang, HLCDefaultLangOptions);

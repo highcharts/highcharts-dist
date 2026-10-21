@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Gantt JS v13.1.1-modified (2026-10-20)
+ * @license Highcharts Gantt JS v13.1.1-modified (2026-10-21)
  * @module highcharts/modules/current-date-indicator
  * @requires highcharts
  *

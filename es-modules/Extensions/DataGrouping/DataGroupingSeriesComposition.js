@@ -155,17 +155,23 @@ function applyGrouping(hasExtremesChanged) {
         // Force recreation of point instances in series.translate, #5699
         series.isDirty = true;
         series.points = null; // #6709
-        const xMin = extremes.min, xMax = extremes.max, groupIntervalFactor = (ordinal &&
+        const xMin = extremes.min, xMax = extremes.max, last = xData.length - 1, { startOfWeek } = xAxis.options, groupIntervalFactor = (ordinal &&
             xAxis.ordinal &&
-            xAxis.ordinal.getGroupIntervalFactor(xMin, xMax, series)) || 1, interval = (groupPixelWidth * (xMax - xMin) / plotSizeX) *
-            groupIntervalFactor, groupPositions = xAxis.getTimeTicks(DateTimeAxis.Additions.prototype.normalizeTimeTickInterval(interval, dataGroupingOptions.units ||
-            DataGroupingDefaults.units), 
-        // Processed data may extend beyond axis (#4907)
-        Math.min(xMin, xData[0]), Math.max(xMax, xData[xData.length - 1]), xAxis.options.startOfWeek, processedXData, series.closestPointRange), groupedData = seriesProto.groupData.apply(series, [
-            table,
-            groupPositions,
-            dataGroupingOptions.approximation
-        ]);
+            xAxis.ordinal.getGroupIntervalFactor(xMin, xMax, series)) || 1, normalizedInterval = DateTimeAxis.Additions.prototype
+            .normalizeTimeTickInterval(Math.max((groupPixelWidth * (xMax - xMin) / plotSizeX) *
+            groupIntervalFactor, 
+        // Don't group far finer than the data (#23958)
+        (series.basePointRange || 0) / 100), dataGroupingOptions.units || DataGroupingDefaults.units), 
+        // Processed data may extend beyond axis (#4907), but skip the gaps
+        // to the shoulder points (#23958)
+        groupPositions = xAxis.getTimeTicks(normalizedInterval, Math.min(xMin, xData[Math.min(1, last)]), Math.max(xMax, xData[Math.max(last - 1, 0)]), startOfWeek, processedXData, series.closestPointRange), { info } = groupPositions, getGroupStart = (x) => chart.time.getTimeTicks(normalizedInterval, x, x, startOfWeek)[0], lastStart = getGroupStart(xData[last]), leftShoulder = +(xData[0] < groupPositions[0]), rightShoulder = +(lastStart > groupPositions[groupPositions.length - 1]);
+        if (leftShoulder) {
+            groupPositions.unshift(getGroupStart(xData[0]));
+        }
+        if (rightShoulder) {
+            groupPositions.push(lastStart);
+        }
+        const groupedData = seriesProto.groupData.call(series, table, groupPositions, dataGroupingOptions.approximation);
         let modified = groupedData.modified, groupedXData = modified.getColumn('x', true), gapSize = 0;
         // The smoothed option is deprecated, instead, there is a fallback
         // to the new anchoring mechanism. #12455.
@@ -179,19 +185,17 @@ function applyGrouping(hasExtremesChanged) {
             });
         }
         // Record what data grouping values were used
-        for (i = 1; i < groupPositions.length; i++) {
+        for (i = 1 + leftShoulder; i < groupPositions.length - rightShoulder; i++) {
             // The grouped gapSize needs to be the largest distance between
             // the group to capture varying group sizes like months or DST
             // crossing (#10000). Also check that the gap is not at the
             // start of a segment.
-            if (!groupPositions.info.segmentStarts ||
-                groupPositions.info.segmentStarts.indexOf(i) === -1) {
+            if (!info?.segmentStarts?.includes(i - leftShoulder)) {
                 gapSize = Math.max(groupPositions[i] - groupPositions[i - 1], gapSize);
             }
         }
-        currentDataGrouping = groupPositions.info;
-        currentDataGrouping.gapSize = gapSize;
-        series.closestPointRange = groupPositions.info.totalRange;
+        currentDataGrouping = extend(info, { gapSize });
+        series.closestPointRange = currentDataGrouping.totalRange;
         series.groupMap = groupedData.groupMap;
         series.currentDataGrouping = currentDataGrouping;
         anchorPoints(series, groupedXData || [], xMax);

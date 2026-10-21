@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Stock v13.1.1-modified (2026-10-20)
+ * @license Highcharts Stock v13.1.1-modified (2026-10-21)
  * @module highcharts/highstock
  *
  * (c) 2009-2026 Highsoft AS
@@ -22800,8 +22800,8 @@ class Axis {
         ].forEach(destroyObjectProperties);
         // Destroy elements and clear reference
         [
-            'axisLine', 'axisTitle', 'axisGroup',
-            'gridGroup', 'labelGroup', 'cross', 'scrollbar'
+            'axisLine', 'axisTitle', 'axisGroup', 'gridGroup', 'labelGroup',
+            'cross', 'plotBandClip', 'scrollbar'
         ].forEach((prop) => {
             this[prop] = this[prop]?.destroy();
         });
@@ -23843,29 +23843,32 @@ var PlotLineOrBandAxis;
      */
     function getPlotBandPath(from, to, options) {
         options = options || this.options;
+        // Keep real coordinates so a gradient spans the full band. The band is
+        // clipped to the axis in `PlotLineOrBand.render` (#6257).
         const toPath = this.getPlotLinePath({
             value: to,
-            force: true,
+            force: 'pass',
             acrossPanes: options.acrossPanes
         }), result = [], horiz = this.horiz, outside = !isNumber(this.min) ||
             !isNumber(this.max) ||
             (from < this.min && to < this.min) ||
             (from > this.max && to > this.max), path = this.getPlotLinePath({
             value: from,
-            force: true,
+            force: 'pass',
             acrossPanes: options.acrossPanes
         });
-        let i, 
-        // #4964 check if chart is inverted or plot band is on yAxis
-        plus = 1, isFlat;
         if (path && toPath) {
-            // Flat paths don't need labels (#3836)
-            if (outside) {
-                isFlat = path.toString() === toPath.toString();
-                plus = 0;
+            // The band isn't fitted to the axis, so flag the ones that extend
+            // outside it for clipping (#6257)
+            if (isNumber(this.min) && isNumber(this.max)) {
+                result.isOverflowing = Math.min(from, to) < this.min ||
+                    Math.max(from, to) > this.max;
             }
+            // Flat paths don't need labels (#3836), neither do bands clipped
+            // away entirely (#6257)
+            result.isFlat = outside;
             // Go over each subpath - for panes in Highcharts Stock
-            for (i = 0; i < path.length; i += 2) {
+            for (let i = 0; i < path.length; i += 2) {
                 const pathStart = path[i], pathEnd = path[i + 1], toPathStart = toPath[i], toPathEnd = toPath[i + 1];
                 // Type checking all affected path segments. Consider
                 // something smarter.
@@ -23873,18 +23876,18 @@ var PlotLineOrBandAxis;
                     (pathEnd[0] === 'M' || pathEnd[0] === 'L') &&
                     (toPathStart[0] === 'M' || toPathStart[0] === 'L') &&
                     (toPathEnd[0] === 'M' || toPathEnd[0] === 'L')) {
-                    // Add 1 pixel when coordinates are the same
+                    // Add 1 pixel when coordinates are the same, also when
+                    // inverted or on the yAxis (#4964)
                     if (horiz && toPathStart[1] === pathStart[1]) {
-                        toPathStart[1] += plus;
-                        toPathEnd[1] += plus;
+                        toPathStart[1]++;
+                        toPathEnd[1]++;
                     }
                     else if (!horiz && toPathStart[2] === pathStart[2]) {
-                        toPathStart[2] += plus;
-                        toPathEnd[2] += plus;
+                        toPathStart[2]++;
+                        toPathEnd[2]++;
                     }
                     result.push(['M', pathStart[1], pathStart[2]], ['L', pathEnd[1], pathEnd[2]], ['L', toPathEnd[1], toPathEnd[2]], ['L', toPathStart[1], toPathStart[2]], ['Z']);
                 }
-                result.isFlat = isFlat;
             }
         }
         return result;
@@ -24123,6 +24126,21 @@ class PlotLineOrBand {
         }
         else if (isBand && defined(from) && defined(to)) { // Plot band
             path = axis.getPlotBandPath(logarithmic?.log2lin(from) ?? from, logarithmic?.log2lin(to) ?? to, options);
+            // The band isn't fitted to the axis, so clip the ones that extend
+            // outside it. Only along the axis, to leave `acrossPanes` bands and
+            // the navigator alone (#6257).
+            let clip = axis.plotBandClip;
+            if (path.isOverflowing || clip) {
+                const { len, pos } = axis, 
+                // Left wide open across the axis, so that a scrollable plot
+                // area isn't cut off
+                clipBox = horiz ?
+                    { height: 1e5, width: len, x: pos, y: 0 } :
+                    { height: len, width: 1e5, x: 0, y: pos };
+                clip || (clip = axis.plotBandClip = renderer.clipRect(clipBox));
+                clip.attr(clipBox);
+                svgElem.clip(clip);
+            }
         }
         if (path) {
             attribs.d = path;
@@ -24237,14 +24255,22 @@ class PlotLineOrBand {
         }
         // Get the bounding box and align the label
         // #3000 changed to better handle choice between plotband or plotline
-        const xBounds = path.xBounds ||
+        const { horiz, len, pos } = axis, xBounds = path.xBounds ||
             [path[0][1], path[1][1], (isBand ? path[2][1] : path[0][1])], yBounds = path.yBounds ||
-            [path[0][2], path[1][2], (isBand ? path[2][2] : path[0][2])], x = arrayMin(xBounds), y = arrayMin(yBounds), bBoxWidth = arrayMax(xBounds) - x;
+            [path[0][2], path[1][2], (isBand ? path[2][2] : path[0][2])], bounds = horiz ? xBounds : yBounds;
+        let low = arrayMin(bounds), high = arrayMax(bounds);
+        // A clipped band is only partly visible, so align the label within the
+        // visible part (#6257)
+        if (path.isOverflowing) {
+            low = clamp(low, pos, pos + len);
+            high = clamp(high, pos, pos + len);
+        }
+        const x = horiz ? low : arrayMin(xBounds), y = horiz ? arrayMin(yBounds) : low, bBoxWidth = horiz ? high - low : arrayMax(xBounds) - x;
         label.align(optionsLabel, false, {
             x,
             y,
             width: bBoxWidth,
-            height: arrayMax(yBounds) - y
+            height: horiz ? arrayMax(yBounds) - y : high - low
         });
         label.alignAttr.y -= renderer.fontMetrics(label).b;
         if (!label.alignValue ||
@@ -49331,7 +49357,7 @@ var Responsive;
 ;// ./code/es-modules/masters/highcharts.src.js
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-20)
+ * @license Highcharts JS v13.1.1-modified (2026-10-21)
  * @module highcharts/highcharts
  *
  * (c) 2009-2026 Highsoft AS
@@ -57829,7 +57855,8 @@ const { column: { prototype: { pointClass: ColumnPoint } } } = Series_SeriesRegi
  * */
 class HLCPoint extends ColumnPoint {
     /**
-     * Get the origin position for entrance animation of new points
+     * Get the origin position for entrance animation of new points.
+     * @internal
      */
     getOrigin({ x = 0 }, shape = {}) {
         const d = shape.d, shiftX = x - (this.plotX || 0);
@@ -58194,11 +58221,8 @@ const { defaultOptions: HLCSeries_defaultOptions } = Defaults;
 /**
  * The hlc series type.
  *
- * @private
  * @class
  * @name Highcharts.seriesTypes.hlc
- *
- * @augments Highcharts.Series
  */
 class HLCSeries extends HLCSeries_ColumnSeries {
     /* *
@@ -58218,9 +58242,16 @@ class HLCSeries extends HLCSeries_ColumnSeries {
     /**
      * Extend the path if close is not between high and low.
      *
-     * @param {SVGPath} path the path array of the point
+     * @param {SVGPath} path
+     * the path array of the point
+     *
      * @param {number} halfStrokeWidth
-     * @param {number} value value of the point to which the stem should be extended
+     * half of the stroke width
+     *
+     * @param {number} value
+     * value of the point to which the stem should be extended
+     *
+     * @internal
      */
     extendStem(path, halfStrokeWidth, value) {
         const start = path[0];
@@ -58237,7 +58268,7 @@ class HLCSeries extends HLCSeries_ColumnSeries {
     /**
      * Function to create SVGPath of the point based on the plot positions of
      * this point.
-     * @private
+     * @internal
      */
     getPointPath(point) {
         // Crisp vector coordinates
@@ -58258,7 +58289,7 @@ class HLCSeries extends HLCSeries_ColumnSeries {
         return path;
     }
     /**
-     * @private
+     * @internal
      * @function Highcharts.seriesTypes.hlc#init
      */
     init() {
@@ -58267,7 +58298,7 @@ class HLCSeries extends HLCSeries_ColumnSeries {
     }
     /**
      * Postprocess mapping between options and SVG attributes
-     * @private
+     * @internal
      */
     pointAttribs(point, state) {
         const attribs = super.pointAttribs.call(this, point, state);
@@ -58284,7 +58315,7 @@ class HLCSeries extends HLCSeries_ColumnSeries {
     /**
      * Translate data points from raw values x and y to plotX and plotY
      *
-     * @private
+     * @internal
      * @function Highcharts.seriesTypes.hlc#translate
      */
     translate() {
@@ -58333,13 +58364,9 @@ extend(HLCSeries.prototype, {
 });
 // Extend default lang options with OHLC terms
 const HLCDefaultLangOptions = {
-    /** @internal */
     stockOpen: 'Open',
-    /** @internal */
     stockHigh: 'High',
-    /** @internal */
     stockLow: 'Low',
-    /** @internal */
     stockClose: 'Close'
 };
 extend(HLCSeries_defaultOptions.lang, HLCDefaultLangOptions);
@@ -58855,7 +58882,7 @@ const CandlestickSeriesDefaults = {
      * @sample {highstock} stock/plotoptions/financial-legend-symbols/
      *         Financial series legend symbols
      *
-     * @default   candlestick
+     * @default   'candlestick'
      * @product   highstock
      * @apioption plotOptions.candlestick.legendSymbol
      */
@@ -58872,7 +58899,6 @@ const CandlestickSeriesDefaults = {
      *         Candlestick line colors
      *
      * @type    {Highcharts.ColorType}
-     * @default #000000
      * @product highstock
      */
     lineColor: 'var(--highcharts-neutral-color-100)',
@@ -58898,7 +58924,6 @@ const CandlestickSeriesDefaults = {
      *         Colors in styled mode
      *
      * @type    {Highcharts.ColorType}
-     * @default #ffffff
      * @product highstock
     */
     upColor: 'var(--highcharts-background-color)',
@@ -58914,7 +58939,7 @@ const CandlestickSeriesDefaults = {
  *
  * @type      {*}
  * @extends   series,plotOptions.candlestick
- * @excluding marker
+ * @excluding borderColor, borderRadius, borderWidth, marker
  * @product   highstock
  * @apioption series.candlestick
  */
@@ -59002,7 +59027,6 @@ const { column: CandlestickSeries_ColumnSeries, ohlc: CandlestickSeries_OHLCSeri
 /**
  * The candlestick series type.
  *
- * @private
  * @class
  * @name Highcharts.seriesTypes.candlestick
  *
@@ -59032,7 +59056,7 @@ class CandlestickSeries extends CandlestickSeries_OHLCSeries {
     /**
      * Postprocess mapping between options and SVG attributes
      *
-     * @private
+     * @internal
      * @function Highcharts.seriesTypes.candlestick#pointAttribs
      */
     pointAttribs(point, state) {
@@ -59054,7 +59078,7 @@ class CandlestickSeries extends CandlestickSeries_OHLCSeries {
     }
     /**
      * Create the SVGPath of the point based on the plot positions
-     * @private
+     * @internal
      */
     getPointPath(point) {
         // Crisp vector coordinates
@@ -60748,7 +60772,7 @@ var BrokenAxis;
 /* unused harmony import specifier */ var Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-20)
+ * @license Highcharts JS v13.1.1-modified (2026-10-21)
  * @module highcharts/modules/broken-axis
  * @requires highcharts
  *
@@ -61421,17 +61445,23 @@ function DataGroupingSeriesComposition_applyGrouping(hasExtremesChanged) {
         // Force recreation of point instances in series.translate, #5699
         series.isDirty = true;
         series.points = null; // #6709
-        const xMin = extremes.min, xMax = extremes.max, groupIntervalFactor = (ordinal &&
+        const xMin = extremes.min, xMax = extremes.max, last = xData.length - 1, { startOfWeek } = xAxis.options, groupIntervalFactor = (ordinal &&
             xAxis.ordinal &&
-            xAxis.ordinal.getGroupIntervalFactor(xMin, xMax, series)) || 1, interval = (groupPixelWidth * (xMax - xMin) / plotSizeX) *
-            groupIntervalFactor, groupPositions = xAxis.getTimeTicks(Axis_DateTimeAxis.Additions.prototype.normalizeTimeTickInterval(interval, dataGroupingOptions.units ||
-            DataGrouping_DataGroupingDefaults.units), 
-        // Processed data may extend beyond axis (#4907)
-        Math.min(xMin, xData[0]), Math.max(xMax, xData[xData.length - 1]), xAxis.options.startOfWeek, processedXData, series.closestPointRange), groupedData = DataGroupingSeriesComposition_seriesProto.groupData.apply(series, [
-            table,
-            groupPositions,
-            dataGroupingOptions.approximation
-        ]);
+            xAxis.ordinal.getGroupIntervalFactor(xMin, xMax, series)) || 1, normalizedInterval = Axis_DateTimeAxis.Additions.prototype
+            .normalizeTimeTickInterval(Math.max((groupPixelWidth * (xMax - xMin) / plotSizeX) *
+            groupIntervalFactor, 
+        // Don't group far finer than the data (#23958)
+        (series.basePointRange || 0) / 100), dataGroupingOptions.units || DataGrouping_DataGroupingDefaults.units), 
+        // Processed data may extend beyond axis (#4907), but skip the gaps
+        // to the shoulder points (#23958)
+        groupPositions = xAxis.getTimeTicks(normalizedInterval, Math.min(xMin, xData[Math.min(1, last)]), Math.max(xMax, xData[Math.max(last - 1, 0)]), startOfWeek, processedXData, series.closestPointRange), { info } = groupPositions, getGroupStart = (x) => chart.time.getTimeTicks(normalizedInterval, x, x, startOfWeek)[0], lastStart = getGroupStart(xData[last]), leftShoulder = +(xData[0] < groupPositions[0]), rightShoulder = +(lastStart > groupPositions[groupPositions.length - 1]);
+        if (leftShoulder) {
+            groupPositions.unshift(getGroupStart(xData[0]));
+        }
+        if (rightShoulder) {
+            groupPositions.push(lastStart);
+        }
+        const groupedData = DataGroupingSeriesComposition_seriesProto.groupData.call(series, table, groupPositions, dataGroupingOptions.approximation);
         let modified = groupedData.modified, groupedXData = modified.getColumn('x', true), gapSize = 0;
         // The smoothed option is deprecated, instead, there is a fallback
         // to the new anchoring mechanism. #12455.
@@ -61445,19 +61475,17 @@ function DataGroupingSeriesComposition_applyGrouping(hasExtremesChanged) {
             });
         }
         // Record what data grouping values were used
-        for (i = 1; i < groupPositions.length; i++) {
+        for (i = 1 + leftShoulder; i < groupPositions.length - rightShoulder; i++) {
             // The grouped gapSize needs to be the largest distance between
             // the group to capture varying group sizes like months or DST
             // crossing (#10000). Also check that the gap is not at the
             // start of a segment.
-            if (!groupPositions.info.segmentStarts ||
-                groupPositions.info.segmentStarts.indexOf(i) === -1) {
+            if (!info?.segmentStarts?.includes(i - leftShoulder)) {
                 gapSize = Math.max(groupPositions[i] - groupPositions[i - 1], gapSize);
             }
         }
-        currentDataGrouping = groupPositions.info;
-        currentDataGrouping.gapSize = gapSize;
-        series.closestPointRange = groupPositions.info.totalRange;
+        currentDataGrouping = extend(info, { gapSize });
+        series.closestPointRange = currentDataGrouping.totalRange;
         series.groupMap = groupedData.groupMap;
         series.currentDataGrouping = currentDataGrouping;
         anchorPoints(series, groupedXData || [], xMax);
@@ -62235,7 +62263,7 @@ const DataGroupingComposition = {
 /* unused harmony import specifier */ var datagrouping_src_Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.1.1-modified (2026-10-20)
+ * @license Highstock JS v13.1.1-modified (2026-10-21)
  * @module highcharts/modules/datagrouping
  * @requires highcharts
  *
@@ -62600,7 +62628,7 @@ const MouseWheelZoomComposition = {
 /* unused harmony import specifier */ var mouse_wheel_zoom_src_Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-20)
+ * @license Highcharts JS v13.1.1-modified (2026-10-21)
  * @module highcharts/modules/mouse-wheel-zoom
  * @requires highcharts
  *
@@ -62624,7 +62652,7 @@ mouse_wheel_zoom_src_G.MouseWheelZoom.compose(mouse_wheel_zoom_src_G.Chart);
 /* unused harmony import specifier */ var stock_src_Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.1.1-modified (2026-10-20)
+ * @license Highstock JS v13.1.1-modified (2026-10-21)
  * @module highcharts/modules/stock
  * @requires highcharts
  *

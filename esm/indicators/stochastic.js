@@ -1,5 +1,5 @@
 /**
- * Highstock JS v13.1.1-modified (2026-10-20)
+ * Highstock JS v13.1.1-modified (2026-10-21)
  * @module highcharts/indicators/stochastic
  * @requires highcharts
  * @requires highcharts/modules/stock

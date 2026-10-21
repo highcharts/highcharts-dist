@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-20)
+ * @license Highcharts JS v13.1.1-modified (2026-10-21)
  * @module highcharts/highcharts-more
  * @requires highcharts
  *
@@ -4252,6 +4252,87 @@ function onAxisFoundExtremes() {
     }
 }
 /**
+ * The padding above is applied before the tick positions are known, and the
+ * extremes shift again while they are computed, which can leave bubbles
+ * outside the plot area. Run it again against the final extremes, and repeat,
+ * since padding one end moves every bubble. #24039
+ */
+function onAxisAfterSetTickPositions() {
+    const paddedMin = this.min, paddedMax = this.max, { options, tickInterval, tickPositions } = this;
+    if (!(0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.isNumber)(paddedMin) || !(0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.isNumber)(paddedMax)) {
+        return;
+    }
+    // Growing by whole ticks keeps `startOnTick` and `endOnTick` true, but
+    // only where they are evenly spaced and no tick count has been settled on
+    const firstTick = tickPositions[0], lastTick = tickPositions[tickPositions.length - 1], canSnap = (tickInterval > 0 &&
+        tickPositions.length > 0 &&
+        !this.tickAmount &&
+        !this.categories &&
+        !this.dateTime &&
+        // Custom positions are not laid out on the tick interval, and
+        // ticks inside a break are filtered out by the broken axis
+        !options.tickPositions &&
+        !options.tickPositioner &&
+        !this.brokenAxis?.hasBreaks), snapStart = canSnap && options.startOnTick, snapEnd = canSnap && options.endOnTick, tickSteps = (value, atEnd) => Math.max(Math.ceil((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.correctFloat)((atEnd ? value - lastTick : firstTick - value) /
+        tickInterval)), 0);
+    // The overflow halves with each pass rather than clearing at once, so
+    // bubbles a third of the axis wide settle a couple of pixels out. Beyond
+    // five the axis has widened past the give-up threshold below anyway
+    let passes = 5;
+    while (passes--) {
+        const { min, max } = this;
+        onAxisFoundExtremes.call(this);
+        // Rounding out moves every bubble too, so it belongs in the loop.
+        // Only where the padding moved something, or an axis with no bubbles
+        // to seat would lose the tick positions it settled on
+        if (this.min !== min || this.max !== max) {
+            const stepsMin = snapStart ? tickSteps(this.min || 0, false) : 0, stepsMax = snapEnd ? tickSteps(this.max || 0, true) : 0;
+            if (stepsMin) {
+                this.min = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.correctFloat)(firstTick - stepsMin * tickInterval);
+            }
+            if (stepsMax) {
+                this.max = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.correctFloat)(lastTick + stepsMax * tickInterval);
+            }
+        }
+        // Bubbles near the width of the plot area are only seated by zooming
+        // far out. Rather than do that, give up past double the padded range
+        if ((this.max || 0) - (this.min || 0) > (paddedMax - paddedMin) * 2) {
+            this.min = paddedMin;
+            this.max = paddedMax;
+            break;
+        }
+        if (this.min === min && this.max === max) {
+            break;
+        }
+    }
+    // Leave a chart whose bubbles already fit exactly as it was, rather than
+    // nudging every bubble chart by a fraction of a pixel
+    const transA = this.len / ((paddedMax - paddedMin) || 1);
+    if (Math.abs((this.min || 0) - paddedMin) * transA < 1 &&
+        Math.abs((this.max || 0) - paddedMax) * transA < 1) {
+        this.min = paddedMin;
+        this.max = paddedMax;
+        return;
+    }
+    for (const atEnd of [false, true]) {
+        if (!(atEnd ? snapEnd : snapStart) ||
+            (atEnd ? this.max === paddedMax : this.min === paddedMin)) {
+            continue;
+        }
+        const steps = tickSteps((atEnd ? this.max : this.min) || 0, atEnd);
+        for (let i = 1; i <= steps; i++) {
+            const tick = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.correctFloat)((atEnd ? lastTick : firstTick) +
+                (atEnd ? i : -i) * tickInterval);
+            if (atEnd) {
+                tickPositions.push(tick);
+            }
+            else {
+                tickPositions.unshift(tick);
+            }
+        }
+    }
+}
+/**
  * If a user has defined categories, it is necessary to retroactively hide any
  * ticks added by the 'onAxisFoundExtremes' function above (#21672).
  *
@@ -4288,6 +4369,7 @@ class BubbleSeries extends ScatterSeries {
         Bubble_BubbleLegendComposition.compose(ChartClass, LegendClass);
         if ((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pushUnique)(BubbleSeries_composed, 'Series.Bubble')) {
             (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.addEvent)(AxisClass, 'foundExtremes', onAxisFoundExtremes);
+            (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.addEvent)(AxisClass, 'afterSetTickPositions', onAxisAfterSetTickPositions);
             (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.addEvent)(AxisClass, 'afterRender', onAxisAfterRender);
         }
     }
