@@ -11,11 +11,10 @@
  * */
 'use strict';
 import Chart from '../../Core/Chart/Chart.js';
-import Navigator from './Navigator.js';
 import G from '../../Core/Globals.js';
 import Axis from '../../Core/Axis/Axis.js';
-import standaloneNavigatorDefaults from './StandaloneNavigatorDefaults.js';
-import { addEvent, fireEvent, merge } from '../../Shared/Utilities.js';
+import standaloneNavigatorDefaults, { getChartDefaults } from './StandaloneNavigatorDefaults.js';
+import { addEvent, defined, find, fireEvent, merge } from '../../Shared/Utilities.js';
 import { error } from '../../Core/Utilities.js';
 /* *
  *
@@ -36,6 +35,15 @@ function compatChartOptions(options, chart) {
         return merge({ chartOptions: options.chart }, options);
     }
     return options;
+}
+/** @internal */
+function getSizeOptions(options) {
+    const { height, width, margin, inverted } = options.chartOptions?.chart || {}, chartHeight = height ?? (!inverted && options.height ?
+        options.height + 30 :
+        void 0), chartWidth = width ?? (inverted && options.height ?
+        options.height + 20 :
+        void 0);
+    return merge(getChartDefaults(inverted, chartWidth), defined(margin) ? { chart: { margin } } : void 0, defined(chartWidth) ? { chart: { width: chartWidth } } : void 0, defined(chartHeight) ? { chart: { height: chartHeight } } : void 0);
 }
 /* *
  *
@@ -94,25 +102,11 @@ class StandaloneNavigator {
     constructor(element, userOptions) {
         this.boundAxes = [];
         this.userOptions = userOptions = compatChartOptions(userOptions);
-        this.chartOptions = merge(G.getOptions(), standaloneNavigatorDefaults, userOptions.chartOptions, { navigator: userOptions });
-        // For a non-inverted navigator, the height option sets the chart
-        // height unless it is set explicitly in chart options (#21268,
-        // #24715).
-        if (this.chartOptions.chart &&
-            !this.chartOptions.chart.inverted &&
-            !userOptions.chartOptions?.chart?.height &&
-            userOptions.height) {
-            this.chartOptions.chart.height = userOptions.height;
-        }
-        const chart = new Chart(element, this.chartOptions);
-        chart.options = merge(chart.options, { navigator: { enabled: true }, scrollbar: { enabled: true } });
-        if (this.chartOptions.navigator && this.chartOptions.scrollbar) {
-            this.chartOptions.navigator.enabled = true;
-            this.chartOptions.scrollbar.enabled = true;
-        }
-        this.navigator = new Navigator(chart);
-        chart.navigator = this.navigator;
-        this.initNavigator();
+        this.chartOptions = merge(G.getOptions(), standaloneNavigatorDefaults, userOptions.chartOptions, getSizeOptions(userOptions), { navigator: userOptions }, { navigator: { enabled: true } });
+        const chart = new Chart(element, this.chartOptions), navigator = this.navigator = chart.navigator, { min, max } = navigator.xAxis.getExtremes();
+        chart.xAxis[0].userMin = min;
+        chart.xAxis[0].userMax = max;
+        navigator.render(min, max);
     }
     /**
      * Binds an axis to the standalone navigator,
@@ -159,9 +153,7 @@ class StandaloneNavigator {
             axis.setExtremes(e.min, e.max, e.redraw, e.animation);
         });
         removeEventCallbacks.push(removeSetRangeEvent);
-        let boundAxis = this.boundAxes.filter(function (boundAxis) {
-            return boundAxis.axis === axis;
-        })[0];
+        let boundAxis = find(this.boundAxes, (boundAxis) => boundAxis.axis === axis);
         if (!boundAxis) {
             boundAxis = { axis, callbacks: [] };
             // A navigator bound to a yAxis defines the full range the axis
@@ -286,10 +278,7 @@ class StandaloneNavigator {
     update(newOptions, redraw) {
         newOptions = compatChartOptions(newOptions, this.navigator.chart);
         this.userOptions = merge(this.userOptions, newOptions);
-        const chartUserOptions = this.userOptions.chartOptions?.chart;
-        this.chartOptions = merge(this.chartOptions, (newOptions.height &&
-            !chartUserOptions?.inverted &&
-            !chartUserOptions?.height) ? { chart: { height: newOptions.height } } : void 0, newOptions.chartOptions, { navigator: newOptions });
+        this.chartOptions = merge(this.chartOptions, newOptions.chartOptions, getSizeOptions(this.userOptions), { navigator: newOptions });
         this.navigator.chart.update(this.chartOptions, redraw);
     }
     /**
@@ -311,28 +300,6 @@ class StandaloneNavigator {
     addSeries(seriesOptions) {
         this.navigator.chart.addSeries(merge(seriesOptions, { showInNavigator: (seriesOptions.showInNavigator ?? true) }));
         this.navigator.setBaseSeries();
-    }
-    /**
-     * Initialize the standalone navigator.
-     *
-     * @internal
-     */
-    initNavigator() {
-        const nav = this.navigator;
-        nav.top = 1;
-        nav.xAxis.setScale();
-        nav.yAxis.setScale();
-        nav.xAxis.render();
-        nav.yAxis.render();
-        nav.series?.forEach((s) => {
-            s.translate();
-            s.render();
-            s.redraw();
-        });
-        const { min, max } = this.getInitialExtremes();
-        nav.chart.xAxis[0].userMin = min;
-        nav.chart.xAxis[0].userMax = max;
-        nav.render(min, max);
     }
     /**
      * Get the current range of the standalone navigator.
@@ -380,21 +347,6 @@ class StandaloneNavigator {
             animation,
             eventArguments: merge(eventArguments, { trigger: 'navigator' })
         });
-    }
-    /**
-     * Get the initial, options based extremes for the standalone navigator.
-     *
-     * @internal
-     *
-     * @return {{ min: number, max: number }}
-     *         The initial minimum and maximum extremes values.
-     */
-    getInitialExtremes() {
-        const { min, max } = this.navigator.xAxis.getExtremes();
-        return {
-            min: min,
-            max: max
-        };
     }
 }
 /** @internal */

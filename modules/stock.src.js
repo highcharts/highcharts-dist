@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.1.1-modified (2026-10-21)
+ * @license Highstock JS v13.1.1-modified (2026-10-24)
  * @module highcharts/modules/stock
  * @requires highcharts
  *
@@ -744,14 +744,13 @@ var highcharts_Axis_commonjs_highcharts_Axis_commonjs2_highcharts_Axis_root_High
  * */
 
 
-const { isTouchDevice } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
+const { composed, isTouchDevice } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 
 /* *
  *
  *  Constants
  *
  * */
-const composedMembers = [];
 /* *
  *
  *  Variables
@@ -765,7 +764,7 @@ let NavigatorConstructor;
  * */
 /** @internal */
 function compose(ChartClass, NavigatorClass) {
-    if ((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pushUnique)(composedMembers, ChartClass)) {
+    if ((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pushUnique)(composed, 'Navigator.Chart')) {
         const chartProto = ChartClass.prototype;
         NavigatorConstructor = NavigatorClass;
         chartProto.callbacks.push(onChartCallback);
@@ -933,7 +932,7 @@ const ChartNavigatorComposition = {
  * */
 
 
-const { composed, isTouchDevice: NavigatorAxisComposition_isTouchDevice } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
+const { composed: NavigatorAxisComposition_composed, isTouchDevice: NavigatorAxisComposition_isTouchDevice } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 
 /* *
  *
@@ -999,7 +998,7 @@ class NavigatorAxisAdditions {
      *
      * */
     static compose(AxisClass) {
-        if ((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pushUnique)(composed, 'Axis.Navigator')) {
+        if ((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pushUnique)(NavigatorAxisComposition_composed, 'Axis.Navigator')) {
             (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.addEvent)(AxisClass, 'init', onAxisInit);
             (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.addEvent)(AxisClass, 'setExtremes', onAxisSetExtremes);
         }
@@ -12906,7 +12905,7 @@ var BrokenAxis;
 /* unused harmony import specifier */ var Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-21)
+ * @license Highcharts JS v13.1.1-modified (2026-10-24)
  * @module highcharts/modules/broken-axis
  * @requires highcharts
  *
@@ -14584,7 +14583,7 @@ const DataGroupingComposition = {
 /* unused harmony import specifier */ var datagrouping_src_Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.1.1-modified (2026-10-21)
+ * @license Highstock JS v13.1.1-modified (2026-10-24)
  * @module highcharts/modules/datagrouping
  * @requires highcharts
  *
@@ -14949,7 +14948,7 @@ const MouseWheelZoomComposition = {
 /* unused harmony import specifier */ var mouse_wheel_zoom_src_Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-21)
+ * @license Highcharts JS v13.1.1-modified (2026-10-24)
  * @module highcharts/modules/mouse-wheel-zoom
  * @requires highcharts
  *

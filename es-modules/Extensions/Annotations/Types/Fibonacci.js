@@ -185,10 +185,12 @@ class Fibonacci extends Tunnel {
     }
     addLabels() {
         Fibonacci.levels.forEach(function (level, i) {
-            const options = this.options.typeOptions, label = this.initLabel(merge(options.labels[i], {
-                point: function (target) {
-                    const point = MockPoint.pointToOptions(target.annotation.startRetracements[i]);
-                    return point;
+            const annotation = this, options = annotation.options.typeOptions, label = annotation.initLabel(merge(options.labels[i], {
+                point: function () {
+                    const retracement = annotation.startRetracements?.[i];
+                    return retracement ?
+                        MockPoint.pointToOptions(retracement) :
+                        {};
                 },
                 text: level.toString()
             }));

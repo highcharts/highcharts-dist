@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-21)
+ * @license Highcharts JS v13.1.1-modified (2026-10-24)
  * @module highcharts/modules/annotations-advanced
  * @requires highcharts
  *
@@ -8029,9 +8029,9 @@ class CrookedLine extends Annotations_Annotation {
         const typeOptions = (_a = this.options).typeOptions || (_a.typeOptions = {}), shape = this.initShape((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(typeOptions.line, {
             type: 'path',
             className: 'highcharts-crooked-lines',
-            points: this.points.map((_point, i) => (function (target) {
+            points: this.points.map((_point, i) => function (target) {
                 return target.annotation.points[i];
-            }))
+            })
         }), 0);
         typeOptions.line = shape.options;
     }
@@ -8381,19 +8381,23 @@ class InfinityLine extends Types_CrookedLine {
      * */
     static edgePoint(startIndex, endIndex) {
         return function (target) {
-            const annotation = target.annotation, type = annotation.options.typeOptions.type;
+            const annotation = target.annotation, type = annotation.options.typeOptions?.type;
             let points = annotation.points;
-            if (type === 'horizontalLine' || type === 'verticalLine') {
+            const firstPoint = points[0];
+            if ((type === 'horizontalLine' || type === 'verticalLine') &&
+                (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.isNumber)(firstPoint.x) &&
+                (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.isNumber)(firstPoint.y)) {
+                const { x: firstX, y: firstY } = firstPoint, { xAxis, yAxis } = firstPoint.getOptions();
                 // Horizontal and vertical lines have only one point,
                 // make a copy of it:
                 points = [
-                    points[0],
-                    new Annotations_MockPoint(annotation.chart, points[0].target, {
+                    firstPoint,
+                    new Annotations_MockPoint(annotation.chart, firstPoint.target, {
                         // Add 0 or 1 to x or y depending on type
-                        x: points[0].x + +(type === 'horizontalLine'),
-                        y: points[0].y + +(type === 'verticalLine'),
-                        xAxis: points[0].options.xAxis,
-                        yAxis: points[0].options.yAxis
+                        x: firstX + +(type === 'horizontalLine'),
+                        y: firstY + +(type === 'verticalLine'),
+                        xAxis,
+                        yAxis
                     })
                 ];
             }
@@ -8456,7 +8460,7 @@ class InfinityLine extends Types_CrookedLine {
         const line = this.initShape((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(typeOptions.line, {
             type: 'path',
             className: 'highcharts-infinity-lines',
-            points: points
+            points
         }), 0);
         typeOptions.line = line.options;
     }
@@ -8913,10 +8917,12 @@ class Fibonacci extends Types_Tunnel {
     }
     addLabels() {
         Fibonacci.levels.forEach(function (level, i) {
-            const options = this.options.typeOptions, label = this.initLabel((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(options.labels[i], {
-                point: function (target) {
-                    const point = Annotations_MockPoint.pointToOptions(target.annotation.startRetracements[i]);
-                    return point;
+            const annotation = this, options = annotation.options.typeOptions, label = annotation.initLabel((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(options.labels[i], {
+                point: function () {
+                    const retracement = annotation.startRetracements?.[i];
+                    return retracement ?
+                        Annotations_MockPoint.pointToOptions(retracement) :
+                        {};
                 },
                 text: level.toString()
             }));
@@ -9069,25 +9075,25 @@ function edgePoint(startIndex, endIndex, fibonacciIndex) {
     return function (target) {
         const chart = target.annotation.chart, plotLeftOrTop = chart.inverted ? chart.plotTop : chart.plotLeft;
         let points = target.annotation.points;
-        const xAxis = points[0].series.xAxis, 
+        const firstPoint = points[0], { xAxis, yAxis } = firstPoint.getOptions(), 
         // Distance between the two first lines in pixels
         deltaX = points.length > 1 ?
-            points[1].plotX - points[0].plotX : 0, 
+            points[1].plotX - firstPoint.plotX : 0, 
         // `firstLine.x + fibb * offset`
-        x = xAxis.toValue(points[0].plotX + plotLeftOrTop + fibonacciIndex * deltaX);
+        x = firstPoint.series.xAxis?.toValue(firstPoint.plotX + plotLeftOrTop + fibonacciIndex * deltaX);
         // We need 2 mock points with the same x coordinate, different y
         points = [
-            new Annotations_MockPoint(chart, points[0].target, {
-                x: x,
+            new Annotations_MockPoint(chart, firstPoint.target, {
+                x,
                 y: 0,
-                xAxis: points[0].options.xAxis,
-                yAxis: points[0].options.yAxis
+                xAxis,
+                yAxis
             }),
-            new Annotations_MockPoint(chart, points[0].target, {
-                x: x,
+            new Annotations_MockPoint(chart, firstPoint.target, {
+                x,
                 y: 1,
-                xAxis: points[0].options.xAxis,
-                yAxis: points[0].options.yAxis
+                xAxis,
+                yAxis
             })
         ];
         return Types_InfinityLine.findEdgePoint(points[startIndex], points[endIndex]);
@@ -9216,6 +9222,30 @@ class Pitchfork extends Types_InfinityLine {
             return Pitchfork.findEdgePoint(points[firstPointIndex], points[0], new Annotations_MockPoint(annotation.chart, target, annotation.midPointOptions()));
         };
     }
+    /**
+     * Returns a point in the middle between the annotation point at the given
+     * index and the pitchfork's mid point. Used for the inner background
+     * shape.
+     * @internal
+     */
+    static innerBackgroundPoint(pointIndex) {
+        return function (target) {
+            const annotation = target.annotation, point = annotation.points[pointIndex], midPointOptions = annotation.midPointOptions();
+            if ((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.isNumber)(point.x) &&
+                (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.isNumber)(point.y) &&
+                (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.isNumber)(midPointOptions.x) &&
+                (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.isNumber)(midPointOptions.y)) {
+                const yAxis = annotation.points[0].series.yAxis;
+                return {
+                    x: (point.x + midPointOptions.x) / 2,
+                    y: interpolateAxisValue(point.y, midPointOptions.y, 0.5, yAxis),
+                    xAxis: midPointOptions.xAxis,
+                    yAxis
+                };
+            }
+            return {};
+        };
+    }
     static findEdgePoint(point, firstAnglePoint, secondAnglePoint) {
         const angle = Math.atan2((secondAnglePoint.plotY -
             firstAnglePoint.plotY), secondAnglePoint.plotX - firstAnglePoint.plotX), distance = 1e7;
@@ -9278,26 +9308,10 @@ class Pitchfork extends Types_InfinityLine {
         const innerBackground = this.initShape((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(typeOptions.innerBackground, {
             type: 'path',
             points: [
-                function (target) {
-                    const annotation = target.annotation, points = annotation.points, midPointOptions = annotation.midPointOptions(), yAxis = midPointOptions.yAxis;
-                    return {
-                        x: (points[1].x + midPointOptions.x) / 2,
-                        y: interpolateAxisValue(points[1].y, midPointOptions.y, 0.5, yAxis),
-                        xAxis: midPointOptions.xAxis,
-                        yAxis
-                    };
-                },
+                Pitchfork.innerBackgroundPoint(1),
                 shapes[1].points[1],
                 shapes[2].points[1],
-                function (target) {
-                    const annotation = target.annotation, points = annotation.points, midPointOptions = annotation.midPointOptions(), yAxis = midPointOptions.yAxis;
-                    return {
-                        x: (midPointOptions.x + points[2].x) / 2,
-                        y: interpolateAxisValue(midPointOptions.y, points[2].y, 0.5, yAxis),
-                        xAxis: midPointOptions.xAxis,
-                        yAxis
-                    };
-                }
+                Pitchfork.innerBackgroundPoint(2)
             ],
             className: 'highcharts-pitchfork-inner-background'
         }), 3);

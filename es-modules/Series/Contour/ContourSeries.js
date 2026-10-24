@@ -9,7 +9,6 @@
  *
  *
  * */
-/// <reference types="@webgpu/types" />
 'use strict';
 import Color from '../../Core/Color/Color.js';
 import ContourPoint from './ContourPoint.js';
@@ -126,7 +125,8 @@ class ContourSeries extends ScatterSeries {
     }
     /** @internal */
     async run() {
-        const series = this, chart = series.chart, renderer = chart.renderer, canvas = series.canvas, gpu = navigator.gpu, context = series.context = canvas.getContext('webgpu');
+        const series = this, chart = series.chart, renderer = chart.renderer, canvas = series.canvas, gpu = navigator.gpu, context = series.context =
+            canvas.getContext('webgpu');
         if (!gpu || !context) {
             error(37, false, chart);
             return;

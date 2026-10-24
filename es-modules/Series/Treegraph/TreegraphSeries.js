@@ -35,7 +35,6 @@ composeTextPath(SVGElement);
 /**
  * The Treegraph series type.
  *
- * @private
  * @class
  * @name Highcharts.seriesTypes.treegraph
  *
@@ -195,7 +194,7 @@ class TreegraphSeries extends TreemapSeries {
     }
     /**
      * Run pre-translation by generating the nodeColumns.
-     * @private
+     * @internal
      */
     translate() {
         const series = this, options = series.options;
@@ -370,7 +369,7 @@ class TreegraphSeries extends TreemapSeries {
     }
     /**
      * Return the presentational attributes.
-     * @private
+     * @internal
      */
     pointAttribs(point, state) {
         const series = this, levelOptions = point &&
@@ -405,7 +404,7 @@ class TreegraphSeries extends TreemapSeries {
     }
     /**
      * Run translation operations for one node.
-     * @private
+     * @internal
      */
     translateNode(point) {
         const chart = this.chart, { node, plotX = 0 } = point, plotSizeY = chart.plotSizeY, plotSizeX = chart.plotSizeX, 

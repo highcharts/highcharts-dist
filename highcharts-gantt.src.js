@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Gantt JS v13.1.1-modified (2026-10-21)
+ * @license Highcharts Gantt JS v13.1.1-modified (2026-10-24)
  * @module highcharts/highcharts-gantt
  *
  * (c) 2017-2026 Highsoft AS
@@ -11786,13 +11786,10 @@ class SVGElement {
         if (defined(matrix)) {
             transform.push('matrix(' + matrix.join(',') + ')');
         }
-        // Apply rotation
+        // Apply rotation. The origin falls back to 0 also for NaN, the position
+        // of a useHTML element that is not placed yet (#25277).
         if (rotation) {
-            transform.push('rotate(' + rotation + ' ' +
-                (rotationOriginX ?? element.getAttribute('x') ?? this.x ?? 0) +
-                ' ' +
-                (rotationOriginY ?? element.getAttribute('y') ?? this.y ?? 0) +
-                ')');
+            transform.push(`rotate(${rotation} ${(rotationOriginX ?? element.getAttribute('x') ?? this.x) || 0} ${(rotationOriginY ?? element.getAttribute('y') ?? this.y) || 0})`);
         }
         // Apply scale
         if (defined(scaleX) || defined(scaleY)) {
@@ -29211,10 +29208,7 @@ class Pointer {
         const container = this.chart.container, ownerDoc = container.ownerDocument, 
         // Get the parent element, including handling Shadow DOM (#23450)
         getParent = (el) => el.parentElement || el.getRootNode()?.host?.parentElement;
-        container.onmousedown = this.onContainerMouseDown.bind(this);
-        container.onmousemove = this.onContainerMouseMove.bind(this);
-        container.onclick = this.onContainerClick.bind(this);
-        this.eventsToUnbind.push(addEvent(container, 'mouseenter', this.onContainerMouseEnter.bind(this)), addEvent(container, 'mouseleave', this.onContainerMouseLeave.bind(this)));
+        this.eventsToUnbind.push(addEvent(container, 'mousedown', this.onContainerMouseDown.bind(this)), addEvent(container, 'mousemove', this.onContainerMouseMove.bind(this)), addEvent(container, 'click', this.onContainerClick.bind(this)), addEvent(container, 'mouseenter', this.onContainerMouseEnter.bind(this)), addEvent(container, 'mouseleave', this.onContainerMouseLeave.bind(this)));
         if (!Pointer.unbindDocumentMouseUp.some((el) => el.doc === ownerDoc)) {
             Pointer.unbindDocumentMouseUp.push({
                 doc: ownerDoc,
@@ -29392,11 +29386,20 @@ Pointer.unbindDocumentMouseUp = [];
      * */
     /* *
      *
+     *  Variables
+     *
+     * */
+    let PointerClass = Pointer;
+    /* *
+     *
      *  Functions
      *
      * */
     /** @internal */
-    function compose(ChartClass) {
+    function compose(ChartClass, PointerSubclass) {
+        // A subclass, like MSPointer in the ES5 build, replaces the class
+        // instead of adding a second pointer to each chart
+        PointerClass = PointerSubclass || PointerClass;
         if (pushUnique(Pointer_composed, 'Core.Pointer')) {
             addEvent(ChartClass, 'beforeRender', function () {
                 /**
@@ -29408,7 +29411,7 @@ Pointer.unbindDocumentMouseUp = [];
                  * @type {Highcharts.Pointer}
                  * @instance
                  */
-                this.pointer = new Pointer(this, this.options);
+                this.pointer = new PointerClass(this, this.options);
             });
         }
     }
@@ -49363,7 +49366,7 @@ var Responsive;
 ;// ./code/es-modules/masters/highcharts.src.js
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-21)
+ * @license Highcharts JS v13.1.1-modified (2026-10-24)
  * @module highcharts/highcharts
  *
  * (c) 2009-2026 Highsoft AS
@@ -50378,14 +50381,13 @@ class GanttChart extends Chart_Chart {
  * */
 
 
-const { isTouchDevice: ChartNavigatorComposition_isTouchDevice } = Core_Globals;
+const { composed: ChartNavigatorComposition_composed, isTouchDevice: ChartNavigatorComposition_isTouchDevice } = Core_Globals;
 
 /* *
  *
  *  Constants
  *
  * */
-const composedMembers = [];
 /* *
  *
  *  Variables
@@ -50399,7 +50401,7 @@ let NavigatorConstructor;
  * */
 /** @internal */
 function compose(ChartClass, NavigatorClass) {
-    if (pushUnique(composedMembers, ChartClass)) {
+    if (pushUnique(ChartNavigatorComposition_composed, 'Navigator.Chart')) {
         const chartProto = ChartClass.prototype;
         NavigatorConstructor = NavigatorClass;
         chartProto.callbacks.push(onChartCallback);
@@ -58255,7 +58257,7 @@ Pathfinder.prototype.algorithms = PathfinderAlgorithms;
 /* unused harmony import specifier */ var Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Gantt JS v13.1.1-modified (2026-10-21)
+ * @license Highcharts Gantt JS v13.1.1-modified (2026-10-24)
  * @module highcharts/modules/pathfinder
  * @requires highcharts
  *
@@ -58388,7 +58390,7 @@ function chartAdjustHeight() {
 /* unused harmony import specifier */ var static_scale_src_Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Gantt JS v13.1.1-modified (2026-10-21)
+ * @license Highcharts Gantt JS v13.1.1-modified (2026-10-24)
  * @module highcharts/modules/static-scale
  * @requires highcharts
  *
@@ -59212,7 +59214,7 @@ Series_SeriesRegistry.registerSeriesType('xrange', XRangeSeries);
 /* unused harmony import specifier */ var xrange_src_Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-21)
+ * @license Highcharts JS v13.1.1-modified (2026-10-24)
  * @module highcharts/modules/xrange
  * @requires highcharts
  *
@@ -61668,13 +61670,13 @@ class TreeGridTickAdditions {
  *
  * */
 /**
- * @private
+ * @internal
  */
 function getColor(node, options) {
     const index = options.index, mapOptionsToLevel = options.mapOptionsToLevel, parentColor = options.parentColor, parentColorIndex = options.parentColorIndex, series = options.series, colors = options.colors, siblings = options.siblings, points = series.points, chartOptionsChart = series.chart.options.chart;
     let getColorByPoint, point, level, colorByPoint, colorIndexByPoint, color, colorIndex;
     /**
-     * @private
+     * @internal
      */
     const variateColor = (color) => {
         const colorVariation = level && level.colorVariation;
@@ -61718,7 +61720,7 @@ function getColor(node, options) {
 /**
  * Creates a map from level number to its given options.
  *
- * @private
+ * @internal
  *
  * @param {Object} params
  * Object containing parameters.
@@ -61770,7 +61772,7 @@ function getLevelOptions(params) {
     return result;
 }
 /**
- * @private
+ * @internal
  * @todo Combine buildTree and buildNode with setTreeValues
  * @todo Remove logic from Treemap and make it utilize this mixin.
  */
@@ -61811,7 +61813,7 @@ function setTreeValues(tree, options) {
  * Update the rootId property on the series. Also makes sure that it is
  * accessible to exporting.
  *
- * @private
+ * @internal
  *
  * @param {Object} series
  * The series to operate on.
@@ -61839,7 +61841,7 @@ function updateRootId(series) {
  * Get the node width, which relies on the plot width and the nodeDistance
  * option.
  *
- * @private
+ * @internal
  */
 function getNodeWidth(series, columnCount) {
     const { chart, options } = series, { nodeDistance = 0, nodeWidth = 0 } = options, { plotSizeX = 1 } = chart;
@@ -62731,7 +62733,7 @@ Series_SeriesRegistry.registerSeriesType('gantt', GanttSeries);
 /* unused harmony import specifier */ var gantt_src_Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Gantt JS v13.1.1-modified (2026-10-21)
+ * @license Highcharts Gantt JS v13.1.1-modified (2026-10-24)
  * @module highcharts/modules/gantt
  * @requires highcharts
  *

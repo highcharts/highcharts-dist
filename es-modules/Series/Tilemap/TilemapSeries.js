@@ -29,7 +29,7 @@ import { addEvent, extend, merge, pushUnique } from '../../Shared/Utilities.js';
  * Extension to add pixel padding for series. Uses getSeriesPixelPadding on each
  * series and adds the largest padding required. If no series has this function
  * defined, we add nothing.
- * @private
+ * @internal
  */
 function onAxisAfterSetAxisTranslation() {
     if (this.recomputingForTilemap || this.coll === 'colorAxis') {
@@ -68,7 +68,6 @@ function onAxisAfterSetAxisTranslation() {
  *
  * */
 /**
- * @private
  * @class
  * @name Highcharts.seriesTypes.tilemap
  *
@@ -93,7 +92,7 @@ class TilemapSeries extends HeatmapSeries {
      * */
     /**
      * Use the shape's defined data label alignment function.
-     * @private
+     * @internal
      */
     alignDataLabel() {
         return this.tileShape.alignDataLabel.apply(this, arguments);
@@ -111,7 +110,7 @@ class TilemapSeries extends HeatmapSeries {
     }
     /**
      * Get metrics for padding of axis for this series.
-     * @private
+     * @internal
      */
     getSeriesPixelPadding(axis) {
         const isX = axis.isXAxis, padding = this.tileShape.getSeriesPadding(this);
@@ -143,7 +142,7 @@ class TilemapSeries extends HeatmapSeries {
     }
     /**
      * Set tile shape object on series.
-     * @private
+     * @internal
      */
     setOptions() {
         // Call original function
@@ -153,7 +152,7 @@ class TilemapSeries extends HeatmapSeries {
     }
     /**
      * Use translate from tileShape.
-     * @private
+     * @internal
      */
     translate() {
         return this.tileShape.translate.apply(this, arguments);

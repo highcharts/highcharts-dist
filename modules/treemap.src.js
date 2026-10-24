@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-21)
+ * @license Highcharts JS v13.1.1-modified (2026-10-24)
  * @module highcharts/modules/treemap
  * @requires highcharts
  *
@@ -1460,7 +1460,7 @@ class TreemapPoint extends ScatterPoint {
      * A tree point is valid if it has han id too, assume it may be a parent
      * item.
      *
-     * @private
+     * @internal
      * @function Highcharts.Point#isValid
      */
     isValid() {
@@ -2274,6 +2274,7 @@ var TreemapUtilities;
     /**
      * @todo find correct name for this function.
      * @todo Similar to reduce, this function is likely redundant
+     * @internal
      */
     function recursive(item, func, context) {
         const next = func.call(context || this, item);
@@ -2312,13 +2313,13 @@ var TreemapUtilities;
  *
  * */
 /**
- * @private
+ * @internal
  */
 function getColor(node, options) {
     const index = options.index, mapOptionsToLevel = options.mapOptionsToLevel, parentColor = options.parentColor, parentColorIndex = options.parentColorIndex, series = options.series, colors = options.colors, siblings = options.siblings, points = series.points, chartOptionsChart = series.chart.options.chart;
     let getColorByPoint, point, level, colorByPoint, colorIndexByPoint, color, colorIndex;
     /**
-     * @private
+     * @internal
      */
     const variateColor = (color) => {
         const colorVariation = level && level.colorVariation;
@@ -2362,7 +2363,7 @@ function getColor(node, options) {
 /**
  * Creates a map from level number to its given options.
  *
- * @private
+ * @internal
  *
  * @param {Object} params
  * Object containing parameters.
@@ -2414,7 +2415,7 @@ function getLevelOptions(params) {
     return result;
 }
 /**
- * @private
+ * @internal
  * @todo Combine buildTree and buildNode with setTreeValues
  * @todo Remove logic from Treemap and make it utilize this mixin.
  */
@@ -2455,7 +2456,7 @@ function setTreeValues(tree, options) {
  * Update the rootId property on the series. Also makes sure that it is
  * accessible to exporting.
  *
- * @private
+ * @internal
  *
  * @param {Object} series
  * The series to operate on.
@@ -2483,7 +2484,7 @@ function updateRootId(series) {
  * Get the node width, which relies on the plot width and the nodeDistance
  * option.
  *
- * @private
+ * @internal
  */
 function getNodeWidth(series, columnCount) {
     const { chart, options } = series, { nodeDistance = 0, nodeWidth = 0 } = options, { plotSizeX = 1 } = chart;
@@ -2564,7 +2565,7 @@ let treemapAxisDefaultValues = false;
  *  Functions
  *
  * */
-/** @private */
+/** @internal */
 function onSeriesAfterBindAxes() {
     const series = this, xAxis = series.xAxis, yAxis = series.yAxis;
     if (xAxis && yAxis) {
@@ -2607,7 +2608,6 @@ function onSeriesAfterBindAxes() {
  *
  * */
 /**
- * @private
  * @class
  * @name Highcharts.seriesTypes.treemap
  *
@@ -2760,7 +2760,7 @@ class TreemapSeries extends ScatterSeries {
     }
     /**
      * Over the alignment method by setting z index.
-     * @private
+     * @internal
      */
     alignDataLabel(point, 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -2854,7 +2854,7 @@ class TreemapSeries extends ScatterSeries {
      * Recursive function which calculates the area for all children of a
      * node.
      *
-     * @private
+     * @internal
      * @function Highcharts.Series#calculateChildrenAreas
      *
      * @param {Object} parent
@@ -3003,7 +3003,7 @@ class TreemapSeries extends ScatterSeries {
     }
     /**
      * Create level list.
-     * @private
+     * @internal
      */
     createList(e) {
         const chart = this.chart, breadcrumbs = chart.breadcrumbs, list = [];
@@ -3046,7 +3046,7 @@ class TreemapSeries extends ScatterSeries {
      * - Width of the dataLabel is set to match the width of the point
      *   shape.
      *
-     * @private
+     * @internal
      */
     drawDataLabels() {
         const series = this, mapOptionsToLevel = series.mapOptionsToLevel, points = series.points.filter(function (n) {
@@ -3113,7 +3113,7 @@ class TreemapSeries extends ScatterSeries {
     }
     /**
      * Override drawPoints
-     * @private
+     * @internal
      */
     drawPoints(points = this.points) {
         const series = this, chart = series.chart, renderer = chart.renderer, styledMode = chart.styledMode, options = series.options, shadow = styledMode ? {} : options.shadow, borderRadius = options.borderRadius, withinAnimationLimit = chart.pointCount < options.animationLimit, allowTraversingTree = options.allowTraversingTree;
@@ -3176,7 +3176,7 @@ class TreemapSeries extends ScatterSeries {
     /**
      * Finds the drill id for a parent node. Returns false if point should
      * not have a click event.
-     * @private
+     * @internal
      */
     drillToByGroup(point) {
         return (!point.node.isLeaf || point.node.isGroup) ?
@@ -3185,7 +3185,7 @@ class TreemapSeries extends ScatterSeries {
     /**
      * Finds the drill id for a leaf node. Returns false if point should not
      * have a click event
-     * @private
+     * @internal
      */
     drillToByLeaf(point) {
         const { traverseToLeaf } = point.series.options;
@@ -3211,7 +3211,7 @@ class TreemapSeries extends ScatterSeries {
     }
     /**
      * @todo remove this function at a suitable version.
-     * @private
+     * @internal
      */
     drillToNode(id, redraw) {
         ;(0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.error)(32, false, void 0, { 'treemap.drillToNode': 'use treemap.setRootNode' });
@@ -3236,7 +3236,7 @@ class TreemapSeries extends ScatterSeries {
     /**
      * Creates an object map from parent id to children index.
      *
-     * @private
+     * @internal
      * @function Highcharts.Series#getListOfParents
      *
      * @param {Highcharts.SeriesTreemapDataOptions} [data]
@@ -3273,7 +3273,7 @@ class TreemapSeries extends ScatterSeries {
     }
     /**
      * Creates a tree structured object from the series points.
-     * @private
+     * @internal
      */
     getTree() {
         const series = this, allIds = this.data.map(function (d) {
@@ -3316,7 +3316,7 @@ class TreemapSeries extends ScatterSeries {
     /**
      * Define hasData function for non-cartesian series. Returns true if the
      * series has points at all.
-     * @private
+     * @internal
      */
     hasData() {
         return !!this.dataTable.rowCount;
@@ -3386,7 +3386,7 @@ class TreemapSeries extends ScatterSeries {
     }
     /**
      * Add drilling on the suitable points.
-     * @private
+     * @internal
      */
     onClickDrillToNode(event) {
         const series = this, point = event.point, drillId = point?.drillId;
@@ -3398,7 +3398,7 @@ class TreemapSeries extends ScatterSeries {
     }
     /**
      * Get presentational attributes
-     * @private
+     * @internal
      */
     pointAttribs(point, state) {
         const series = this, mapOptionsToLevel = ((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.isObject)(series.mapOptionsToLevel) ?
@@ -3445,7 +3445,7 @@ class TreemapSeries extends ScatterSeries {
     }
     /**
      * Set the node's color recursively, from the parent down.
-     * @private
+     * @internal
      */
     setColorRecursive(node, parentColor, colorIndex, index, siblings) {
         const series = this, chart = series?.chart, colors = chart?.options?.colors;
@@ -3522,7 +3522,7 @@ class TreemapSeries extends ScatterSeries {
     /**
      * Sets a new root node for the series.
      *
-     * @private
+     * @internal
      * @function Highcharts.Series#setRootNode
      *
      * @param {string} id
@@ -3562,7 +3562,7 @@ class TreemapSeries extends ScatterSeries {
         /**
          * The default functionality of the setRootNode event.
          *
-         * @private
+         * @internal
          * @param {Object} args The event arguments.
          * @param {string} args.newRootId Id of the new root.
          * @param {string} args.previousRootId Id of the previous root.
@@ -3590,7 +3590,7 @@ class TreemapSeries extends ScatterSeries {
      * Workaround for `inactive` state. Since `series.opacity` option is
      * already reserved, don't use that state at all by disabling
      * `inactiveOtherPoints` and not inheriting states by points.
-     * @private
+     * @internal
      */
     setState(state) {
         this.options.inactiveOtherPoints = true;

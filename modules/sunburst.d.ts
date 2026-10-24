@@ -5,7 +5,5 @@
  *!*/
 import * as globals from "../globals";
 import * as _Highcharts from "../highcharts";
-declare module "../highcharts" {
-    function recursive(): void;
-}
+declare module "../highcharts" {}
 export default _Highcharts;

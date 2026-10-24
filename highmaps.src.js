@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Maps v13.1.1-modified (2026-10-21)
+ * @license Highcharts Maps v13.1.1-modified (2026-10-24)
  * @module highcharts/highmaps
  *
  * (c) 2011-2026 Highsoft AS
@@ -11780,13 +11780,10 @@ class SVGElement {
         if (defined(matrix)) {
             transform.push('matrix(' + matrix.join(',') + ')');
         }
-        // Apply rotation
+        // Apply rotation. The origin falls back to 0 also for NaN, the position
+        // of a useHTML element that is not placed yet (#25277).
         if (rotation) {
-            transform.push('rotate(' + rotation + ' ' +
-                (rotationOriginX ?? element.getAttribute('x') ?? this.x ?? 0) +
-                ' ' +
-                (rotationOriginY ?? element.getAttribute('y') ?? this.y ?? 0) +
-                ')');
+            transform.push(`rotate(${rotation} ${(rotationOriginX ?? element.getAttribute('x') ?? this.x) || 0} ${(rotationOriginY ?? element.getAttribute('y') ?? this.y) || 0})`);
         }
         // Apply scale
         if (defined(scaleX) || defined(scaleY)) {
@@ -29205,10 +29202,7 @@ class Pointer {
         const container = this.chart.container, ownerDoc = container.ownerDocument, 
         // Get the parent element, including handling Shadow DOM (#23450)
         getParent = (el) => el.parentElement || el.getRootNode()?.host?.parentElement;
-        container.onmousedown = this.onContainerMouseDown.bind(this);
-        container.onmousemove = this.onContainerMouseMove.bind(this);
-        container.onclick = this.onContainerClick.bind(this);
-        this.eventsToUnbind.push(addEvent(container, 'mouseenter', this.onContainerMouseEnter.bind(this)), addEvent(container, 'mouseleave', this.onContainerMouseLeave.bind(this)));
+        this.eventsToUnbind.push(addEvent(container, 'mousedown', this.onContainerMouseDown.bind(this)), addEvent(container, 'mousemove', this.onContainerMouseMove.bind(this)), addEvent(container, 'click', this.onContainerClick.bind(this)), addEvent(container, 'mouseenter', this.onContainerMouseEnter.bind(this)), addEvent(container, 'mouseleave', this.onContainerMouseLeave.bind(this)));
         if (!Pointer.unbindDocumentMouseUp.some((el) => el.doc === ownerDoc)) {
             Pointer.unbindDocumentMouseUp.push({
                 doc: ownerDoc,
@@ -29386,11 +29380,20 @@ Pointer.unbindDocumentMouseUp = [];
      * */
     /* *
      *
+     *  Variables
+     *
+     * */
+    let PointerClass = Pointer;
+    /* *
+     *
      *  Functions
      *
      * */
     /** @internal */
-    function compose(ChartClass) {
+    function compose(ChartClass, PointerSubclass) {
+        // A subclass, like MSPointer in the ES5 build, replaces the class
+        // instead of adding a second pointer to each chart
+        PointerClass = PointerSubclass || PointerClass;
         if (pushUnique(Pointer_composed, 'Core.Pointer')) {
             addEvent(ChartClass, 'beforeRender', function () {
                 /**
@@ -29402,7 +29405,7 @@ Pointer.unbindDocumentMouseUp = [];
                  * @type {Highcharts.Pointer}
                  * @instance
                  */
-                this.pointer = new Pointer(this, this.options);
+                this.pointer = new PointerClass(this, this.options);
             });
         }
     }
@@ -49357,7 +49360,7 @@ var Responsive;
 ;// ./code/es-modules/masters/highcharts.src.js
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-21)
+ * @license Highcharts JS v13.1.1-modified (2026-10-24)
  * @module highcharts/highcharts
  *
  * (c) 2009-2026 Highsoft AS
@@ -51122,7 +51125,7 @@ extend(ColorAxis.prototype, Color_ColorAxisBase);
 /* unused harmony import specifier */ var Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-21)
+ * @license Highcharts JS v13.1.1-modified (2026-10-24)
  * @module highcharts/modules/color-axis
  * @requires highcharts
  *
@@ -61097,7 +61100,7 @@ Series_SeriesRegistry.registerSeriesType('heatmap', HeatmapSeries);
 /* unused harmony import specifier */ var map_src_Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highmaps JS v13.1.1-modified (2026-10-21)
+ * @license Highmaps JS v13.1.1-modified (2026-10-24)
  * @module highcharts/modules/map
  * @requires highcharts
  *

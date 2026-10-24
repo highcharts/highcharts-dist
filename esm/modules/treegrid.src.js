@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Gantt JS v13.1.1-modified (2026-10-21)
+ * @license Highcharts Gantt JS v13.1.1-modified (2026-10-24)
  * @module highcharts/modules/treegrid
  * @requires highcharts
  *
@@ -2185,13 +2185,13 @@ var external_highcharts_src_js_default_Color_default = /*#__PURE__*/__webpack_re
  *
  * */
 /**
- * @private
+ * @internal
  */
 function getColor(node, options) {
     const index = options.index, mapOptionsToLevel = options.mapOptionsToLevel, parentColor = options.parentColor, parentColorIndex = options.parentColorIndex, series = options.series, colors = options.colors, siblings = options.siblings, points = series.points, chartOptionsChart = series.chart.options.chart;
     let getColorByPoint, point, level, colorByPoint, colorIndexByPoint, color, colorIndex;
     /**
-     * @private
+     * @internal
      */
     const variateColor = (color) => {
         const colorVariation = level && level.colorVariation;
@@ -2235,7 +2235,7 @@ function getColor(node, options) {
 /**
  * Creates a map from level number to its given options.
  *
- * @private
+ * @internal
  *
  * @param {Object} params
  * Object containing parameters.
@@ -2287,7 +2287,7 @@ function getLevelOptions(params) {
     return result;
 }
 /**
- * @private
+ * @internal
  * @todo Combine buildTree and buildNode with setTreeValues
  * @todo Remove logic from Treemap and make it utilize this mixin.
  */
@@ -2328,7 +2328,7 @@ function setTreeValues(tree, options) {
  * Update the rootId property on the series. Also makes sure that it is
  * accessible to exporting.
  *
- * @private
+ * @internal
  *
  * @param {Object} series
  * The series to operate on.
@@ -2356,7 +2356,7 @@ function updateRootId(series) {
  * Get the node width, which relies on the plot width and the nodeDistance
  * option.
  *
- * @private
+ * @internal
  */
 function getNodeWidth(series, columnCount) {
     const { chart, options } = series, { nodeDistance = 0, nodeWidth = 0 } = options, { plotSizeX = 1 } = chart;

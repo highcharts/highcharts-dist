@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v13.1.1-modified (2026-10-21)
+ * @license Highmaps JS v13.1.1-modified (2026-10-24)
  * @module highcharts/modules/contour
  * @requires highcharts
  * @requires highcharts/modules/coloraxis
@@ -881,7 +881,6 @@ class Delaunay {
  *
  *
  * */
-/// <reference types="@webgpu/types" />
 
 
 
@@ -998,7 +997,8 @@ class ContourSeries extends ScatterSeries {
     }
     /** @internal */
     async run() {
-        const series = this, chart = series.chart, renderer = chart.renderer, canvas = series.canvas, gpu = navigator.gpu, context = series.context = canvas.getContext('webgpu');
+        const series = this, chart = series.chart, renderer = chart.renderer, canvas = series.canvas, gpu = navigator.gpu, context = series.context =
+            canvas.getContext('webgpu');
         if (!gpu || !context) {
             (0,external_highcharts_src_js_default_namespaceObject.error)(37, false, chart);
             return;

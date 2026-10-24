@@ -1544,13 +1544,10 @@ class SVGElement {
         if (defined(matrix)) {
             transform.push('matrix(' + matrix.join(',') + ')');
         }
-        // Apply rotation
+        // Apply rotation. The origin falls back to 0 also for NaN, the position
+        // of a useHTML element that is not placed yet (#25277).
         if (rotation) {
-            transform.push('rotate(' + rotation + ' ' +
-                (rotationOriginX ?? element.getAttribute('x') ?? this.x ?? 0) +
-                ' ' +
-                (rotationOriginY ?? element.getAttribute('y') ?? this.y ?? 0) +
-                ')');
+            transform.push(`rotate(${rotation} ${(rotationOriginX ?? element.getAttribute('x') ?? this.x) || 0} ${(rotationOriginY ?? element.getAttribute('y') ?? this.y) || 0})`);
         }
         // Apply scale
         if (defined(scaleX) || defined(scaleY)) {

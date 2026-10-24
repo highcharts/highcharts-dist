@@ -24,7 +24,7 @@ import { clamp } from '../../Shared/Utilities.js';
  * */
 /**
  * Utility func to get padding definition from tile size division
- * @private
+ * @internal
  */
 function tilePaddingFromTileSize(series, xDiv, yDiv) {
     const options = series.options;
@@ -40,7 +40,7 @@ function tilePaddingFromTileSize(series, xDiv, yDiv) {
  * */
 /**
  * Map of shape types.
- * @private
+ * @internal
  */
 const TilemapShapes = {
     // Hexagon shape type.

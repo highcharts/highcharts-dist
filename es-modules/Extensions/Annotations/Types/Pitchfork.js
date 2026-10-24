@@ -8,7 +8,7 @@ import D from '../../../Core/Defaults.js';
 const { defaultOptions } = D;
 import InfinityLine from './InfinityLine.js';
 import MockPoint from '../MockPoint.js';
-import { merge } from '../../../Shared/Utilities.js';
+import { isNumber, merge } from '../../../Shared/Utilities.js';
 import { interpolateAxisValue } from '../AnnotationUtilities.js';
 if (defaultOptions.annotations?.types) {
     defaultOptions.annotations.types.pitchfork = merge(defaultOptions.annotations.types.infinityLine, 
@@ -67,6 +67,30 @@ class Pitchfork extends InfinityLine {
         return function (target) {
             const annotation = target.annotation, points = annotation.points;
             return Pitchfork.findEdgePoint(points[firstPointIndex], points[0], new MockPoint(annotation.chart, target, annotation.midPointOptions()));
+        };
+    }
+    /**
+     * Returns a point in the middle between the annotation point at the given
+     * index and the pitchfork's mid point. Used for the inner background
+     * shape.
+     * @internal
+     */
+    static innerBackgroundPoint(pointIndex) {
+        return function (target) {
+            const annotation = target.annotation, point = annotation.points[pointIndex], midPointOptions = annotation.midPointOptions();
+            if (isNumber(point.x) &&
+                isNumber(point.y) &&
+                isNumber(midPointOptions.x) &&
+                isNumber(midPointOptions.y)) {
+                const yAxis = annotation.points[0].series.yAxis;
+                return {
+                    x: (point.x + midPointOptions.x) / 2,
+                    y: interpolateAxisValue(point.y, midPointOptions.y, 0.5, yAxis),
+                    xAxis: midPointOptions.xAxis,
+                    yAxis
+                };
+            }
+            return {};
         };
     }
     static findEdgePoint(point, firstAnglePoint, secondAnglePoint) {
@@ -131,26 +155,10 @@ class Pitchfork extends InfinityLine {
         const innerBackground = this.initShape(merge(typeOptions.innerBackground, {
             type: 'path',
             points: [
-                function (target) {
-                    const annotation = target.annotation, points = annotation.points, midPointOptions = annotation.midPointOptions(), yAxis = midPointOptions.yAxis;
-                    return {
-                        x: (points[1].x + midPointOptions.x) / 2,
-                        y: interpolateAxisValue(points[1].y, midPointOptions.y, 0.5, yAxis),
-                        xAxis: midPointOptions.xAxis,
-                        yAxis
-                    };
-                },
+                Pitchfork.innerBackgroundPoint(1),
                 shapes[1].points[1],
                 shapes[2].points[1],
-                function (target) {
-                    const annotation = target.annotation, points = annotation.points, midPointOptions = annotation.midPointOptions(), yAxis = midPointOptions.yAxis;
-                    return {
-                        x: (midPointOptions.x + points[2].x) / 2,
-                        y: interpolateAxisValue(midPointOptions.y, points[2].y, 0.5, yAxis),
-                        xAxis: midPointOptions.xAxis,
-                        yAxis
-                    };
-                }
+                Pitchfork.innerBackgroundPoint(2)
             ],
             className: 'highcharts-pitchfork-inner-background'
         }), 3);

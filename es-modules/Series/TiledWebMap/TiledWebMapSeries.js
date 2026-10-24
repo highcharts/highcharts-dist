@@ -25,7 +25,7 @@ import { error } from '../../Core/Utilities.js';
  *  Functions
  *
  * */
-/** @private */
+/** @internal */
 function onRecommendMapView(e) {
     const { geoBounds, chart } = e, twm = (chart.options.series || []).filter((s) => s.type === 'tiledwebmap')[0];
     if (twm && twm.provider && twm.provider.type && !twm.provider.url) {
@@ -67,7 +67,6 @@ function onRecommendMapView(e) {
 /**
  * The series type
  *
- * @private
  * @class
  * @name Highcharts.seriesTypes.tiledwebmap
  *
@@ -104,7 +103,7 @@ class TiledWebMapSeries extends MapSeries {
      * */
     /**
      * Convert map coordinates in longitude/latitude to tile
-     * @private
+     * @internal
      * @param  {Highcharts.MapLonLatObject} lonLat
      *         The map coordinates
      * @return {Highcharts.PositionObject}
@@ -118,7 +117,7 @@ class TiledWebMapSeries extends MapSeries {
     }
     /**
      * Convert tile to map coordinates in longitude/latitude
-     * @private
+     * @internal
      * @return {Highcharts.MapLonLatObject}
      *         The map coordinates
      */

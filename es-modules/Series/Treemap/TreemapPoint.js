@@ -68,7 +68,7 @@ class TreemapPoint extends ScatterPoint {
      * A tree point is valid if it has han id too, assume it may be a parent
      * item.
      *
-     * @private
+     * @internal
      * @function Highcharts.Point#isValid
      */
     isValid() {

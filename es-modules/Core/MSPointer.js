@@ -11,9 +11,9 @@
  * */
 'use strict';
 import H from './Globals.js';
-const { charts, composed, doc, noop, win } = H;
+const { charts, doc, noop, win } = H;
 import Pointer from './Pointer.js';
-import { addEvent, attr, css, defined, objectEach, pushUnique, removeEvent } from '../Shared/Utilities.js';
+import { addEvent, attr, css, defined, objectEach, removeEvent } from '../Shared/Utilities.js';
 /* *
  *
  *  Constants
@@ -210,11 +210,7 @@ class MSPointer extends Pointer {
      * */
     /** @internal */
     function compose(ChartClass) {
-        if (pushUnique(composed, 'Core.MSPointer')) {
-            addEvent(ChartClass, 'beforeRender', function () {
-                this.pointer = new MSPointer(this, this.options);
-            });
-        }
+        Pointer.compose(ChartClass, MSPointer);
     }
     MSPointer.compose = compose;
 })(MSPointer || (MSPointer = {}));

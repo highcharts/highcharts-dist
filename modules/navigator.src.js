@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-21)
+ * @license Highcharts JS v13.1.1-modified (2026-10-24)
  * @module highcharts/modules/navigator
  * @requires highcharts
  *
@@ -128,6 +128,474 @@ var highcharts_Chart_commonjs_highcharts_Chart_commonjs2_highcharts_Chart_root_H
 // EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Axis"],"commonjs":["highcharts","Axis"],"commonjs2":["highcharts","Axis"],"root":["Highcharts","Axis"]}
 var highcharts_Axis_commonjs_highcharts_Axis_commonjs2_highcharts_Axis_root_Highcharts_Axis_ = __webpack_require__(532);
 var highcharts_Axis_commonjs_highcharts_Axis_commonjs2_highcharts_Axis_root_Highcharts_Axis_default = /*#__PURE__*/__webpack_require__.n(highcharts_Axis_commonjs_highcharts_Axis_commonjs2_highcharts_Axis_root_Highcharts_Axis_);
+;// ./code/es-modules/Stock/Navigator/StandaloneNavigatorDefaults.js
+/* *
+ *
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Mateusz Bernacik
+ *
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
+ *
+ *
+ * */
+
+
+/* *
+ *
+ *  Constants
+ *
+ * */
+/** @internal */
+const standaloneNavigatorDefaults = {
+    exporting: {
+        enabled: false
+    },
+    legend: {
+        enabled: false
+    },
+    navigator: {
+        enabled: true,
+        margin: 0,
+        top: 1
+    },
+    plotOptions: {
+        series: {
+            states: {
+                hover: {
+                    enabled: false
+                }
+            },
+            marker: {
+                enabled: false
+            }
+        }
+    },
+    scrollbar: {
+        enabled: true
+    },
+    title: {
+        text: ''
+    },
+    tooltip: {
+        enabled: false
+    },
+    xAxis: {
+        visible: false
+    },
+    yAxis: {
+        height: 0,
+        visible: false
+    }
+};
+/* *
+ *
+ *  Functions
+ *
+ * */
+function getChartDefaults(inverted, chartWidth = 70) {
+    return (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)({
+        chart: inverted ? {
+            width: 70,
+            height: void 0,
+            margin: [15, 0, 25, 0]
+        } : {
+            width: void 0,
+            height: 70,
+            margin: [0, 5, 0, 5]
+        }
+    }, {
+        navigator: {
+            xAxis: {
+                labels: {
+                    style: {
+                        width: inverted ?
+                            (chartWidth - 30) + 'px' :
+                            void 0
+                    }
+                }
+            }
+        }
+    });
+}
+/* *
+ *
+ *  Default Export
+ *
+ * */
+/** @internal */
+
+/** @internal */
+/* harmony default export */ const StandaloneNavigatorDefaults = (standaloneNavigatorDefaults);
+
+;// ./code/es-modules/Stock/Navigator/StandaloneNavigator.js
+/* *
+ *
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Mateusz Bernacik
+ *
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
+ *
+ *
+ * */
+
+
+
+
+
+
+
+/* *
+ *
+ *  Functions
+ *
+ * */
+/**
+ * Support for the deprecated `chart` option, renamed to `chartOptions`.
+ * The new option takes precedence. #24715
+ *
+ * @internal
+ */
+function compatChartOptions(options, chart) {
+    if (options.chart) {
+        (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.error)(32, false, chart, {
+            'standaloneNavigator.chart': 'use standaloneNavigator.chartOptions'
+        });
+        return (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)({ chartOptions: options.chart }, options);
+    }
+    return options;
+}
+/** @internal */
+function getSizeOptions(options) {
+    const { height, width, margin, inverted } = options.chartOptions?.chart || {}, chartHeight = height ?? (!inverted && options.height ?
+        options.height + 30 :
+        void 0), chartWidth = width ?? (inverted && options.height ?
+        options.height + 20 :
+        void 0);
+    return (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(getChartDefaults(inverted, chartWidth), (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.defined)(margin) ? { chart: { margin } } : void 0, (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.defined)(chartWidth) ? { chart: { width: chartWidth } } : void 0, (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.defined)(chartHeight) ? { chart: { height: chartHeight } } : void 0);
+}
+/* *
+ *
+ *  Class
+ *
+ * */
+/**
+ * The StandaloneNavigator class. The StandaloneNavigator class allows for
+ * creating a standalone navigator component that synchronizes the extremes
+ * across multiple bound charts.
+ *
+ * @internal
+ * @class
+ * @name Highcharts.StandaloneNavigator
+ *
+ * @param {string|Highcharts.HTMLDOMElement} [renderTo]
+ * The DOM element to render to, or its id.
+ *
+ * @param {StandaloneNavigatorOptions} userOptions
+ * The standalone navigator options.
+ */
+class StandaloneNavigator {
+    /* *
+     *
+     *  Static Functions
+     *
+     * */
+    /**
+     * Factory function for standalone navigator.
+     *
+     * @function Highcharts.navigator
+     *
+     * @param {string|Highcharts.HTMLDOMElement} [renderTo]
+     * The DOM element to render to, or its id.
+     *
+     * @param {StandaloneNavigatorOptions} options
+     * The standalone navigator options with chart-like structure.
+     *
+     * Returns the navigator object.
+     */
+    static navigator(renderTo, options) {
+        const nav = new StandaloneNavigator(renderTo, options);
+        if (!(highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default()).navigators) {
+            (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default()).navigators = [nav];
+        }
+        else {
+            highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default().navigators.push(nav);
+        }
+        return nav;
+    }
+    /* *
+     *
+     *  Constructor
+     *
+     * */
+    constructor(element, userOptions) {
+        this.boundAxes = [];
+        this.userOptions = userOptions = compatChartOptions(userOptions);
+        this.chartOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default().getOptions(), StandaloneNavigatorDefaults, userOptions.chartOptions, getSizeOptions(userOptions), { navigator: userOptions }, { navigator: { enabled: true } });
+        const chart = new (highcharts_Chart_commonjs_highcharts_Chart_commonjs2_highcharts_Chart_root_Highcharts_Chart_default())(element, this.chartOptions), navigator = this.navigator = chart.navigator, { min, max } = navigator.xAxis.getExtremes();
+        chart.xAxis[0].userMin = min;
+        chart.xAxis[0].userMax = max;
+        navigator.render(min, max);
+    }
+    /**
+     * Binds an axis to the standalone navigator,
+     * allowing the navigator to control the axis' range.
+     *
+     * @sample stock/standalone-navigator/bind/
+     *         Bind chart with a button
+     *
+     * @function Highcharts.StandaloneNavigator#bind
+     *
+     * @param {Axis | Chart} axisOrChart
+     *        The Axis or Chart to bind to the navigator.
+     *
+     * @param {boolean} [twoWay=true]
+     *        Enables two-way binding between the navigator and the axis/chart.
+     *        When true, changes in the navigator's range will update the axis
+     *        and vice versa. When false, changes in the navigator's range will
+     *        be reflected in the axis, but changes in the axis ranges won't be
+     *        reflected on the navigator.
+     */
+    bind(axisOrChart, twoWay = true) {
+        const nav = this;
+        // If the chart is passed, bind the first xAxis
+        const axis = (axisOrChart instanceof (highcharts_Chart_commonjs_highcharts_Chart_commonjs2_highcharts_Chart_root_Highcharts_Chart_default())) ?
+            axisOrChart.xAxis[0] :
+            axisOrChart;
+        if (!(axis instanceof (highcharts_Axis_commonjs_highcharts_Axis_commonjs2_highcharts_Axis_root_Highcharts_Axis_default()))) {
+            return;
+        }
+        const navigator = this.navigator, { min, max } = navigator.xAxis, removeEventCallbacks = [];
+        if (twoWay) {
+            const removeSetExtremesEvent = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.addEvent)(axis, 'setExtremes', (e) => {
+                if (e.trigger === 'pan' ||
+                    e.trigger === 'zoom' ||
+                    e.trigger === 'mousewheel' ||
+                    e.trigger === 'rangeSelectorButton' ||
+                    e.trigger === 'rangeSelectorInput') {
+                    nav.setRange(e.min, e.max, true, e.trigger !== 'pan' && e.trigger !== 'mousewheel', { trigger: axis });
+                }
+            });
+            removeEventCallbacks.push(removeSetExtremesEvent);
+        }
+        const removeSetRangeEvent = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.addEvent)(navigator, 'setRange', (e) => {
+            axis.setExtremes(e.min, e.max, e.redraw, e.animation);
+        });
+        removeEventCallbacks.push(removeSetRangeEvent);
+        let boundAxis = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.find)(this.boundAxes, (boundAxis) => boundAxis.axis === axis);
+        if (!boundAxis) {
+            boundAxis = { axis, callbacks: [] };
+            // A navigator bound to a yAxis defines the full range the axis
+            // should cover. Stash the axis' own bounds before overriding them,
+            // so `unbind` can restore them, #24716
+            if (axis.coll === 'yAxis') {
+                boundAxis.oldMin = axis.options.min ?? axis.min;
+                boundAxis.oldMax = axis.options.max ?? axis.max;
+            }
+            this.boundAxes.push(boundAxis);
+        }
+        boundAxis.callbacks = removeEventCallbacks;
+        // Show axis' series in navigator based on showInNavigator property
+        axis.series.forEach((series) => {
+            if (series.options.showInNavigator) {
+                nav.addSeries(series.options);
+            }
+        });
+        // Bind a yAxis to the navigator's full range so vertical panning isn't
+        // capped at the series' data extremes, #24716
+        if (axis.coll === 'yAxis') {
+            const { dataMin, dataMax } = navigator.xAxis.getExtremes();
+            axis.update({ min: dataMin, max: dataMax }, false);
+        }
+        // Set extremes to match the navigator's extremes
+        axis.setExtremes(min, max);
+        // Unbind the axis before it's destroyed
+        (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.addEvent)(axis, 'destroy', () => {
+            this.unbind(axis);
+        });
+    }
+    /**
+     * Unbinds a single axis or all bound axes from the standalone navigator.
+     *
+     * @sample stock/standalone-navigator/unbind/
+     *         Unbind chart with a button
+     *
+     * @function Highcharts.StandaloneNavigator#unbind
+     *
+     * @param {Chart | Axis | undefined} axisOrChart
+     *        Passing a Chart object unbinds the first X axis of the chart,
+     *        an Axis object unbinds that specific axis,
+     *        and undefined unbinds all axes bound to the navigator.
+     * @param {boolean} restoreExtremes
+     *        Whether to restore the axis' original min/max that were
+     *        overridden when binding a yAxis.
+     */
+    unbind(axisOrChart, restoreExtremes) {
+        // If no axis or chart is provided, unbind all bound axes
+        if (!axisOrChart) {
+            this.boundAxes.forEach((boundAxis) => {
+                this.releaseAxis(boundAxis, restoreExtremes);
+            });
+            this.boundAxes.length = 0;
+            return;
+        }
+        const axis = (axisOrChart instanceof (highcharts_Axis_commonjs_highcharts_Axis_commonjs2_highcharts_Axis_root_Highcharts_Axis_default())) ?
+            axisOrChart :
+            axisOrChart.xAxis[0];
+        for (let i = this.boundAxes.length - 1; i >= 0; i--) {
+            if (this.boundAxes[i].axis === axis) {
+                this.releaseAxis(this.boundAxes[i], restoreExtremes);
+                this.boundAxes.splice(i, 1);
+            }
+        }
+    }
+    /**
+     * Disconnect a bound axis' events and restore the axis' own bounds that
+     * were overridden when binding a yAxis.
+     *
+     * @internal
+     *
+     * @param {BoundAxis} boundAxis
+     *        The bound axis entry to release.
+     * @param {boolean} [restoreExtremes=false]
+     *        Whether to restore the axis' original min/max that were
+     *        overridden when binding a yAxis.
+     */
+    releaseAxis(boundAxis, restoreExtremes = false) {
+        // Disconnect events
+        boundAxis.callbacks.forEach((removeCallback) => removeCallback());
+        // Restore the axis' original min/max that were overridden in `bind`
+        if (boundAxis.axis.coll === 'yAxis' && restoreExtremes) {
+            const min = boundAxis.oldMin ?? void 0, max = boundAxis.oldMax ?? void 0;
+            boundAxis.axis.update({ min, max }, false);
+            boundAxis.axis.setExtremes(min, max);
+        }
+    }
+    /**
+     * Destroys allocated standalone navigator elements.
+     *
+     * @function Highcharts.StandaloneNavigator#destroy
+     *
+     * @param {boolean} restoreExtremes
+     *        Whether to restore the axis' original min/max that were
+     *        overridden when binding a yAxis.
+     */
+    destroy(restoreExtremes) {
+        this.boundAxes.forEach((boundAxis) => {
+            this.releaseAxis(boundAxis, restoreExtremes);
+        });
+        this.boundAxes.length = 0;
+        this.navigator.destroy();
+        this.navigator.chart.destroy();
+    }
+    /**
+     * Updates the standalone navigator's options with a new set of user
+     * options.
+     *
+     * @sample stock/standalone-navigator/update/
+     *         Bind chart with a button
+     *
+     * @function Highcharts.StandaloneNavigator#update
+     *
+     * @param  {StandaloneNavigatorOptions} newOptions
+     *         Updates the standalone navigator's options with new user options.
+     *
+     * @param  {boolean | undefined} redraw
+     *         Whether to redraw the standalone navigator. By default, if not
+     *         specified, the standalone navigator will be redrawn.
+     */
+    update(newOptions, redraw) {
+        newOptions = compatChartOptions(newOptions, this.navigator.chart);
+        this.userOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(this.userOptions, newOptions);
+        this.chartOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(this.chartOptions, newOptions.chartOptions, getSizeOptions(this.userOptions), { navigator: newOptions });
+        this.navigator.chart.update(this.chartOptions, redraw);
+    }
+    /**
+     * Redraws the standalone navigator.
+     *
+     * @function Highcharts.StandaloneNavigator#redraw
+     */
+    redraw() {
+        this.navigator.chart.redraw();
+    }
+    /**
+     * Adds a series to the standalone navigator.
+     *
+     * @internal
+     *
+     * @param {SeriesOptions} seriesOptions
+     *        Options for the series to be added to the navigator.
+     */
+    addSeries(seriesOptions) {
+        this.navigator.chart.addSeries((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(seriesOptions, { showInNavigator: (seriesOptions.showInNavigator ?? true) }));
+        this.navigator.setBaseSeries();
+    }
+    /**
+     * Get the current range of the standalone navigator.
+     *
+     * @sample stock/standalone-navigator/getrange/
+     *         Report the standalone navigator's range by clicking on a button
+     *
+     * @function Highcharts.StandaloneNavigator#getRange
+     *
+     * @return {Highcharts.ExtremesObject}
+     *         The current range of the standalone navigator.
+     */
+    getRange() {
+        const { min, max } = this.navigator.chart.xAxis[0].getExtremes(), { userMin, userMax, min: dataMin, max: dataMax } = this.navigator.xAxis.getExtremes();
+        return {
+            min: (min ?? dataMin),
+            max: (max ?? dataMax),
+            dataMin,
+            dataMax,
+            userMin,
+            userMax
+        };
+    }
+    /**
+     * Set the range of the standalone navigator.
+     *
+     * @sample stock/standalone-navigator/setrange/
+     *         Set range from a button
+     *
+     * @function Highcharts.StandaloneNavigator#setRange
+     *
+     * @param {number | undefined} min
+     *        The new minimum value.
+     *
+     * @param {number | undefined} max
+     *        The new maximum value.
+     *
+     * @emits Highcharts.StandaloneNavigator#event:setRange
+     */
+    setRange(min, max, redraw, animation, eventArguments) {
+        ;(0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.fireEvent)(this.navigator, 'setRange', {
+            min,
+            max,
+            redraw,
+            animation,
+            eventArguments: (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(eventArguments, { trigger: 'navigator' })
+        });
+    }
+}
+/** @internal */
+/* harmony default export */ const Navigator_StandaloneNavigator = (StandaloneNavigator);
+/* *
+ *
+ *  API Declarations
+ *
+ * */
+/**
+ * Standalone Navigator options.
+ *
+ * @interface Highcharts.StandaloneNavigatorOptions
+ */ /**
+*/
+''; // Detach doclets above
+
 ;// ./code/es-modules/Stock/Navigator/ChartNavigatorComposition.js
 /* *
  *
@@ -142,14 +610,13 @@ var highcharts_Axis_commonjs_highcharts_Axis_commonjs2_highcharts_Axis_root_High
  * */
 
 
-const { isTouchDevice } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
+const { composed, isTouchDevice } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 
 /* *
  *
  *  Constants
  *
  * */
-const composedMembers = [];
 /* *
  *
  *  Variables
@@ -163,7 +630,7 @@ let NavigatorConstructor;
  * */
 /** @internal */
 function compose(ChartClass, NavigatorClass) {
-    if ((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pushUnique)(composedMembers, ChartClass)) {
+    if ((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pushUnique)(composed, 'Navigator.Chart')) {
         const chartProto = ChartClass.prototype;
         NavigatorConstructor = NavigatorClass;
         chartProto.callbacks.push(onChartCallback);
@@ -331,7 +798,7 @@ const ChartNavigatorComposition = {
  * */
 
 
-const { composed, isTouchDevice: NavigatorAxisComposition_isTouchDevice } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
+const { composed: NavigatorAxisComposition_composed, isTouchDevice: NavigatorAxisComposition_isTouchDevice } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 
 /* *
  *
@@ -397,7 +864,7 @@ class NavigatorAxisAdditions {
      *
      * */
     static compose(AxisClass) {
-        if ((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pushUnique)(composed, 'Axis.Navigator')) {
+        if ((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pushUnique)(NavigatorAxisComposition_composed, 'Axis.Navigator')) {
             (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.addEvent)(AxisClass, 'init', onAxisInit);
             (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.addEvent)(AxisClass, 'setExtremes', onAxisSetExtremes);
         }
@@ -4695,492 +5162,8 @@ class Navigator {
 /** @internal */
 /* harmony default export */ const Navigator_Navigator = (Navigator);
 
-;// ./code/es-modules/Stock/Navigator/StandaloneNavigatorDefaults.js
-/* *
- *
- *  (c) 2010-2026 Highsoft AS
- *  Author: Mateusz Bernacik
- *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
- *
- *
- * */
-
-/* *
- *
- *  Constants
- *
- * */
-/** @internal */
-const standaloneNavigatorDefaults = {
-    chart: {
-        height: 70,
-        margin: [0, 5, 0, 5]
-    },
-    exporting: {
-        enabled: false
-    },
-    legend: {
-        enabled: false
-    },
-    navigator: {
-        enabled: false
-    },
-    plotOptions: {
-        series: {
-            states: {
-                hover: {
-                    enabled: false
-                }
-            },
-            marker: {
-                enabled: false
-            }
-        }
-    },
-    scrollbar: {
-        enabled: false
-    },
-    title: {
-        text: ''
-    },
-    tooltip: {
-        enabled: false
-    },
-    xAxis: {
-        visible: false
-    },
-    yAxis: {
-        height: 0,
-        visible: false
-    }
-};
-/* *
- *
- *  Default Export
- *
- * */
-/** @internal */
-/* harmony default export */ const StandaloneNavigatorDefaults = (standaloneNavigatorDefaults);
-
-;// ./code/es-modules/Stock/Navigator/StandaloneNavigator.js
-/* *
- *
- *  (c) 2010-2026 Highsoft AS
- *  Author: Mateusz Bernacik
- *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
- *
- *
- * */
-
-
-
-
-
-
-
-
-/* *
- *
- *  Functions
- *
- * */
-/**
- * Support for the deprecated `chart` option, renamed to `chartOptions`.
- * The new option takes precedence. #24715
- *
- * @internal
- */
-function compatChartOptions(options, chart) {
-    if (options.chart) {
-        (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.error)(32, false, chart, {
-            'standaloneNavigator.chart': 'use standaloneNavigator.chartOptions'
-        });
-        return (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)({ chartOptions: options.chart }, options);
-    }
-    return options;
-}
-/* *
- *
- *  Class
- *
- * */
-/**
- * The StandaloneNavigator class. The StandaloneNavigator class allows for
- * creating a standalone navigator component that synchronizes the extremes
- * across multiple bound charts.
- *
- * @internal
- * @class
- * @name Highcharts.StandaloneNavigator
- *
- * @param {string|Highcharts.HTMLDOMElement} [renderTo]
- * The DOM element to render to, or its id.
- *
- * @param {StandaloneNavigatorOptions} userOptions
- * The standalone navigator options.
- */
-class StandaloneNavigator {
-    /* *
-     *
-     *  Static Functions
-     *
-     * */
-    /**
-     * Factory function for standalone navigator.
-     *
-     * @function Highcharts.navigator
-     *
-     * @param {string|Highcharts.HTMLDOMElement} [renderTo]
-     * The DOM element to render to, or its id.
-     *
-     * @param {StandaloneNavigatorOptions} options
-     * The standalone navigator options with chart-like structure.
-     *
-     * Returns the navigator object.
-     */
-    static navigator(renderTo, options) {
-        const nav = new StandaloneNavigator(renderTo, options);
-        if (!(highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default()).navigators) {
-            (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default()).navigators = [nav];
-        }
-        else {
-            highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default().navigators.push(nav);
-        }
-        return nav;
-    }
-    /* *
-     *
-     *  Constructor
-     *
-     * */
-    constructor(element, userOptions) {
-        this.boundAxes = [];
-        this.userOptions = userOptions = compatChartOptions(userOptions);
-        this.chartOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default().getOptions(), StandaloneNavigatorDefaults, userOptions.chartOptions, { navigator: userOptions });
-        // For a non-inverted navigator, the height option sets the chart
-        // height unless it is set explicitly in chart options (#21268,
-        // #24715).
-        if (this.chartOptions.chart &&
-            !this.chartOptions.chart.inverted &&
-            !userOptions.chartOptions?.chart?.height &&
-            userOptions.height) {
-            this.chartOptions.chart.height = userOptions.height;
-        }
-        const chart = new (highcharts_Chart_commonjs_highcharts_Chart_commonjs2_highcharts_Chart_root_Highcharts_Chart_default())(element, this.chartOptions);
-        chart.options = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(chart.options, { navigator: { enabled: true }, scrollbar: { enabled: true } });
-        if (this.chartOptions.navigator && this.chartOptions.scrollbar) {
-            this.chartOptions.navigator.enabled = true;
-            this.chartOptions.scrollbar.enabled = true;
-        }
-        this.navigator = new Navigator_Navigator(chart);
-        chart.navigator = this.navigator;
-        this.initNavigator();
-    }
-    /**
-     * Binds an axis to the standalone navigator,
-     * allowing the navigator to control the axis' range.
-     *
-     * @sample stock/standalone-navigator/bind/
-     *         Bind chart with a button
-     *
-     * @function Highcharts.StandaloneNavigator#bind
-     *
-     * @param {Axis | Chart} axisOrChart
-     *        The Axis or Chart to bind to the navigator.
-     *
-     * @param {boolean} [twoWay=true]
-     *        Enables two-way binding between the navigator and the axis/chart.
-     *        When true, changes in the navigator's range will update the axis
-     *        and vice versa. When false, changes in the navigator's range will
-     *        be reflected in the axis, but changes in the axis ranges won't be
-     *        reflected on the navigator.
-     */
-    bind(axisOrChart, twoWay = true) {
-        const nav = this;
-        // If the chart is passed, bind the first xAxis
-        const axis = (axisOrChart instanceof (highcharts_Chart_commonjs_highcharts_Chart_commonjs2_highcharts_Chart_root_Highcharts_Chart_default())) ?
-            axisOrChart.xAxis[0] :
-            axisOrChart;
-        if (!(axis instanceof (highcharts_Axis_commonjs_highcharts_Axis_commonjs2_highcharts_Axis_root_Highcharts_Axis_default()))) {
-            return;
-        }
-        const navigator = this.navigator, { min, max } = navigator.xAxis, removeEventCallbacks = [];
-        if (twoWay) {
-            const removeSetExtremesEvent = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.addEvent)(axis, 'setExtremes', (e) => {
-                if (e.trigger === 'pan' ||
-                    e.trigger === 'zoom' ||
-                    e.trigger === 'mousewheel' ||
-                    e.trigger === 'rangeSelectorButton' ||
-                    e.trigger === 'rangeSelectorInput') {
-                    nav.setRange(e.min, e.max, true, e.trigger !== 'pan' && e.trigger !== 'mousewheel', { trigger: axis });
-                }
-            });
-            removeEventCallbacks.push(removeSetExtremesEvent);
-        }
-        const removeSetRangeEvent = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.addEvent)(navigator, 'setRange', (e) => {
-            axis.setExtremes(e.min, e.max, e.redraw, e.animation);
-        });
-        removeEventCallbacks.push(removeSetRangeEvent);
-        let boundAxis = this.boundAxes.filter(function (boundAxis) {
-            return boundAxis.axis === axis;
-        })[0];
-        if (!boundAxis) {
-            boundAxis = { axis, callbacks: [] };
-            // A navigator bound to a yAxis defines the full range the axis
-            // should cover. Stash the axis' own bounds before overriding them,
-            // so `unbind` can restore them, #24716
-            if (axis.coll === 'yAxis') {
-                boundAxis.oldMin = axis.options.min ?? axis.min;
-                boundAxis.oldMax = axis.options.max ?? axis.max;
-            }
-            this.boundAxes.push(boundAxis);
-        }
-        boundAxis.callbacks = removeEventCallbacks;
-        // Show axis' series in navigator based on showInNavigator property
-        axis.series.forEach((series) => {
-            if (series.options.showInNavigator) {
-                nav.addSeries(series.options);
-            }
-        });
-        // Bind a yAxis to the navigator's full range so vertical panning isn't
-        // capped at the series' data extremes, #24716
-        if (axis.coll === 'yAxis') {
-            const { dataMin, dataMax } = navigator.xAxis.getExtremes();
-            axis.update({ min: dataMin, max: dataMax }, false);
-        }
-        // Set extremes to match the navigator's extremes
-        axis.setExtremes(min, max);
-        // Unbind the axis before it's destroyed
-        (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.addEvent)(axis, 'destroy', () => {
-            this.unbind(axis);
-        });
-    }
-    /**
-     * Unbinds a single axis or all bound axes from the standalone navigator.
-     *
-     * @sample stock/standalone-navigator/unbind/
-     *         Unbind chart with a button
-     *
-     * @function Highcharts.StandaloneNavigator#unbind
-     *
-     * @param {Chart | Axis | undefined} axisOrChart
-     *        Passing a Chart object unbinds the first X axis of the chart,
-     *        an Axis object unbinds that specific axis,
-     *        and undefined unbinds all axes bound to the navigator.
-     * @param {boolean} restoreExtremes
-     *        Whether to restore the axis' original min/max that were
-     *        overridden when binding a yAxis.
-     */
-    unbind(axisOrChart, restoreExtremes) {
-        // If no axis or chart is provided, unbind all bound axes
-        if (!axisOrChart) {
-            this.boundAxes.forEach((boundAxis) => {
-                this.releaseAxis(boundAxis, restoreExtremes);
-            });
-            this.boundAxes.length = 0;
-            return;
-        }
-        const axis = (axisOrChart instanceof (highcharts_Axis_commonjs_highcharts_Axis_commonjs2_highcharts_Axis_root_Highcharts_Axis_default())) ?
-            axisOrChart :
-            axisOrChart.xAxis[0];
-        for (let i = this.boundAxes.length - 1; i >= 0; i--) {
-            if (this.boundAxes[i].axis === axis) {
-                this.releaseAxis(this.boundAxes[i], restoreExtremes);
-                this.boundAxes.splice(i, 1);
-            }
-        }
-    }
-    /**
-     * Disconnect a bound axis' events and restore the axis' own bounds that
-     * were overridden when binding a yAxis.
-     *
-     * @internal
-     *
-     * @param {BoundAxis} boundAxis
-     *        The bound axis entry to release.
-     * @param {boolean} [restoreExtremes=false]
-     *        Whether to restore the axis' original min/max that were
-     *        overridden when binding a yAxis.
-     */
-    releaseAxis(boundAxis, restoreExtremes = false) {
-        // Disconnect events
-        boundAxis.callbacks.forEach((removeCallback) => removeCallback());
-        // Restore the axis' original min/max that were overridden in `bind`
-        if (boundAxis.axis.coll === 'yAxis' && restoreExtremes) {
-            const min = boundAxis.oldMin ?? void 0, max = boundAxis.oldMax ?? void 0;
-            boundAxis.axis.update({ min, max }, false);
-            boundAxis.axis.setExtremes(min, max);
-        }
-    }
-    /**
-     * Destroys allocated standalone navigator elements.
-     *
-     * @function Highcharts.StandaloneNavigator#destroy
-     *
-     * @param {boolean} restoreExtremes
-     *        Whether to restore the axis' original min/max that were
-     *        overridden when binding a yAxis.
-     */
-    destroy(restoreExtremes) {
-        this.boundAxes.forEach((boundAxis) => {
-            this.releaseAxis(boundAxis, restoreExtremes);
-        });
-        this.boundAxes.length = 0;
-        this.navigator.destroy();
-        this.navigator.chart.destroy();
-    }
-    /**
-     * Updates the standalone navigator's options with a new set of user
-     * options.
-     *
-     * @sample stock/standalone-navigator/update/
-     *         Bind chart with a button
-     *
-     * @function Highcharts.StandaloneNavigator#update
-     *
-     * @param  {StandaloneNavigatorOptions} newOptions
-     *         Updates the standalone navigator's options with new user options.
-     *
-     * @param  {boolean | undefined} redraw
-     *         Whether to redraw the standalone navigator. By default, if not
-     *         specified, the standalone navigator will be redrawn.
-     */
-    update(newOptions, redraw) {
-        newOptions = compatChartOptions(newOptions, this.navigator.chart);
-        this.userOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(this.userOptions, newOptions);
-        const chartUserOptions = this.userOptions.chartOptions?.chart;
-        this.chartOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(this.chartOptions, (newOptions.height &&
-            !chartUserOptions?.inverted &&
-            !chartUserOptions?.height) ? { chart: { height: newOptions.height } } : void 0, newOptions.chartOptions, { navigator: newOptions });
-        this.navigator.chart.update(this.chartOptions, redraw);
-    }
-    /**
-     * Redraws the standalone navigator.
-     *
-     * @function Highcharts.StandaloneNavigator#redraw
-     */
-    redraw() {
-        this.navigator.chart.redraw();
-    }
-    /**
-     * Adds a series to the standalone navigator.
-     *
-     * @internal
-     *
-     * @param {SeriesOptions} seriesOptions
-     *        Options for the series to be added to the navigator.
-     */
-    addSeries(seriesOptions) {
-        this.navigator.chart.addSeries((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(seriesOptions, { showInNavigator: (seriesOptions.showInNavigator ?? true) }));
-        this.navigator.setBaseSeries();
-    }
-    /**
-     * Initialize the standalone navigator.
-     *
-     * @internal
-     */
-    initNavigator() {
-        const nav = this.navigator;
-        nav.top = 1;
-        nav.xAxis.setScale();
-        nav.yAxis.setScale();
-        nav.xAxis.render();
-        nav.yAxis.render();
-        nav.series?.forEach((s) => {
-            s.translate();
-            s.render();
-            s.redraw();
-        });
-        const { min, max } = this.getInitialExtremes();
-        nav.chart.xAxis[0].userMin = min;
-        nav.chart.xAxis[0].userMax = max;
-        nav.render(min, max);
-    }
-    /**
-     * Get the current range of the standalone navigator.
-     *
-     * @sample stock/standalone-navigator/getrange/
-     *         Report the standalone navigator's range by clicking on a button
-     *
-     * @function Highcharts.StandaloneNavigator#getRange
-     *
-     * @return {Highcharts.ExtremesObject}
-     *         The current range of the standalone navigator.
-     */
-    getRange() {
-        const { min, max } = this.navigator.chart.xAxis[0].getExtremes(), { userMin, userMax, min: dataMin, max: dataMax } = this.navigator.xAxis.getExtremes();
-        return {
-            min: (min ?? dataMin),
-            max: (max ?? dataMax),
-            dataMin,
-            dataMax,
-            userMin,
-            userMax
-        };
-    }
-    /**
-     * Set the range of the standalone navigator.
-     *
-     * @sample stock/standalone-navigator/setrange/
-     *         Set range from a button
-     *
-     * @function Highcharts.StandaloneNavigator#setRange
-     *
-     * @param {number | undefined} min
-     *        The new minimum value.
-     *
-     * @param {number | undefined} max
-     *        The new maximum value.
-     *
-     * @emits Highcharts.StandaloneNavigator#event:setRange
-     */
-    setRange(min, max, redraw, animation, eventArguments) {
-        ;(0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.fireEvent)(this.navigator, 'setRange', {
-            min,
-            max,
-            redraw,
-            animation,
-            eventArguments: (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(eventArguments, { trigger: 'navigator' })
-        });
-    }
-    /**
-     * Get the initial, options based extremes for the standalone navigator.
-     *
-     * @internal
-     *
-     * @return {{ min: number, max: number }}
-     *         The initial minimum and maximum extremes values.
-     */
-    getInitialExtremes() {
-        const { min, max } = this.navigator.xAxis.getExtremes();
-        return {
-            min: min,
-            max: max
-        };
-    }
-}
-/** @internal */
-/* harmony default export */ const Navigator_StandaloneNavigator = (StandaloneNavigator);
-/* *
- *
- *  API Declarations
- *
- * */
-/**
- * Standalone Navigator options.
- *
- * @interface Highcharts.StandaloneNavigatorOptions
- */ /**
-*/
-''; // Detach doclets above
-
 ;// ./code/es-modules/masters/modules/navigator.src.js
+
 
 
 
@@ -5189,7 +5172,10 @@ class StandaloneNavigator {
 const G = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 G.StandaloneNavigator = G.StandaloneNavigator || Navigator_StandaloneNavigator;
 G.navigator = G.StandaloneNavigator.navigator;
-Navigator_NavigatorComposition.compose(G.Chart, G.Axis, G.Series);
+G.Navigator = G.Navigator || Navigator_Navigator;
+G.Scrollbar = G.Scrollbar || Scrollbar_Scrollbar;
+G.Scrollbar.compose(G.Axis);
+G.Navigator.compose(G.Chart, G.Axis, G.Series);
 /* harmony default export */ const navigator_src = ((highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default()));
 
 __webpack_exports__ = __webpack_exports__["default"];

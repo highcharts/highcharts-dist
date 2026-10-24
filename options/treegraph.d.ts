@@ -867,14 +867,6 @@ declare module "../highcharts" {
          */
         nodeDistance?: (number|string);
         /**
-         * (Highcharts) Experimental. How to set the size of child nodes when a
-         * header or padding is present. When `leaf`, the group is expanded to
-         * make room for headers and padding in order to preserve the relative
-         * sizes between leaves. When `group`, the leaves are naïvely fit into
-         * the remaining area after the header and padding are subtracted.
-         */
-        nodeSizeBy?: Highcharts.OptionsNodeSizeByValue;
-        /**
          * (Highcharts) The pixel width of each node in a, or the height in case
          * the chart is inverted. For tree graphs, the node width is only
          * applied if the marker symbol is `rect`, otherwise the `marker` sizing
@@ -1397,6 +1389,10 @@ declare module "../highcharts" {
          * Not available
          */
         nodePadding?: undefined;
+        /**
+         * Not available
+         */
+        nodeSizeBy?: undefined;
         /**
          * Not available
          */

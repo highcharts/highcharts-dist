@@ -11,14 +11,13 @@
  * */
 'use strict';
 import H from '../../Core/Globals.js';
-const { isTouchDevice } = H;
+const { composed, isTouchDevice } = H;
 import { addEvent, merge, pushUnique } from '../../Shared/Utilities.js';
 /* *
  *
  *  Constants
  *
  * */
-const composedMembers = [];
 /* *
  *
  *  Variables
@@ -32,7 +31,7 @@ let NavigatorConstructor;
  * */
 /** @internal */
 function compose(ChartClass, NavigatorClass) {
-    if (pushUnique(composedMembers, ChartClass)) {
+    if (pushUnique(composed, 'Navigator.Chart')) {
         const chartProto = ChartClass.prototype;
         NavigatorConstructor = NavigatorClass;
         chartProto.callbacks.push(onChartCallback);

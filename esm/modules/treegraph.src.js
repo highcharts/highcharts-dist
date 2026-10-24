@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-21)
+ * @license Highcharts JS v13.1.1-modified (2026-10-24)
  * Treegraph chart series type
  * @module highcharts/modules/treegraph
  * @requires highcharts
@@ -595,13 +595,13 @@ var external_highcharts_src_js_default_Color_default = /*#__PURE__*/__webpack_re
  *
  * */
 /**
- * @private
+ * @internal
  */
 function getColor(node, options) {
     const index = options.index, mapOptionsToLevel = options.mapOptionsToLevel, parentColor = options.parentColor, parentColorIndex = options.parentColorIndex, series = options.series, colors = options.colors, siblings = options.siblings, points = series.points, chartOptionsChart = series.chart.options.chart;
     let getColorByPoint, point, level, colorByPoint, colorIndexByPoint, color, colorIndex;
     /**
-     * @private
+     * @internal
      */
     const variateColor = (color) => {
         const colorVariation = level && level.colorVariation;
@@ -645,7 +645,7 @@ function getColor(node, options) {
 /**
  * Creates a map from level number to its given options.
  *
- * @private
+ * @internal
  *
  * @param {Object} params
  * Object containing parameters.
@@ -697,7 +697,7 @@ function getLevelOptions(params) {
     return result;
 }
 /**
- * @private
+ * @internal
  * @todo Combine buildTree and buildNode with setTreeValues
  * @todo Remove logic from Treemap and make it utilize this mixin.
  */
@@ -738,7 +738,7 @@ function setTreeValues(tree, options) {
  * Update the rootId property on the series. Also makes sure that it is
  * accessible to exporting.
  *
- * @private
+ * @internal
  *
  * @param {Object} series
  * The series to operate on.
@@ -766,7 +766,7 @@ function updateRootId(series) {
  * Get the node width, which relies on the plot width and the nodeDistance
  * option.
  *
- * @private
+ * @internal
  */
 function getNodeWidth(series, columnCount) {
     const { chart, options } = series, { nodeDistance = 0, nodeWidth = 0 } = options, { plotSizeX = 1 } = chart;
@@ -1245,8 +1245,8 @@ class TreegraphLayout {
  *               minSize, navigatorOptions, pointRange, allowTraversingTree,
  *               alternateStartingDirection, borderRadius, breadcrumbs,
  *               interactByLeaf, layoutStartingDirection, levelIsConstant,
- *               lineWidth, negativeColor, nodes, sortIndex, zoneAxis,
- *               zones, cluster
+ *               lineWidth, negativeColor, nodes, nodeSizeBy, sortIndex,
+ *               zoneAxis, zones, cluster
  *
  * @product      highcharts
  * @since        10.3.0
@@ -1854,7 +1854,6 @@ composeTextPath((external_highcharts_src_js_default_SVGElement_default()));
 /**
  * The Treegraph series type.
  *
- * @private
  * @class
  * @name Highcharts.seriesTypes.treegraph
  *
@@ -2014,7 +2013,7 @@ class TreegraphSeries extends TreemapSeries {
     }
     /**
      * Run pre-translation by generating the nodeColumns.
-     * @private
+     * @internal
      */
     translate() {
         const series = this, options = series.options;
@@ -2189,7 +2188,7 @@ class TreegraphSeries extends TreemapSeries {
     }
     /**
      * Return the presentational attributes.
-     * @private
+     * @internal
      */
     pointAttribs(point, state) {
         const series = this, levelOptions = point &&
@@ -2224,7 +2223,7 @@ class TreegraphSeries extends TreemapSeries {
     }
     /**
      * Run translation operations for one node.
-     * @private
+     * @internal
      */
     translateNode(point) {
         const chart = this.chart, { node, plotX = 0 } = point, plotSizeY = chart.plotSizeY, plotSizeX = chart.plotSizeX, 

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-21)
+ * @license Highcharts JS v13.1.1-modified (2026-10-24)
  * @module highcharts/modules/accessibility
  * @requires highcharts
  *
@@ -4043,14 +4043,13 @@ var external_highcharts_src_js_default_Axis_default = /*#__PURE__*/__webpack_req
  * */
 
 
-const { isTouchDevice } = (external_highcharts_src_js_default_default());
+const { composed, isTouchDevice } = (external_highcharts_src_js_default_default());
 
 /* *
  *
  *  Constants
  *
  * */
-const composedMembers = [];
 /* *
  *
  *  Variables
@@ -4064,7 +4063,7 @@ let NavigatorConstructor;
  * */
 /** @internal */
 function compose(ChartClass, NavigatorClass) {
-    if ((0,external_highcharts_src_js_default_namespaceObject.pushUnique)(composedMembers, ChartClass)) {
+    if ((0,external_highcharts_src_js_default_namespaceObject.pushUnique)(composed, 'Navigator.Chart')) {
         const chartProto = ChartClass.prototype;
         NavigatorConstructor = NavigatorClass;
         chartProto.callbacks.push(onChartCallback);
@@ -4232,7 +4231,7 @@ const ChartNavigatorComposition = {
  * */
 
 
-const { composed, isTouchDevice: NavigatorAxisComposition_isTouchDevice } = (external_highcharts_src_js_default_default());
+const { composed: NavigatorAxisComposition_composed, isTouchDevice: NavigatorAxisComposition_isTouchDevice } = (external_highcharts_src_js_default_default());
 
 /* *
  *
@@ -4298,7 +4297,7 @@ class NavigatorAxisAdditions {
      *
      * */
     static compose(AxisClass) {
-        if ((0,external_highcharts_src_js_default_namespaceObject.pushUnique)(composed, 'Axis.Navigator')) {
+        if ((0,external_highcharts_src_js_default_namespaceObject.pushUnique)(NavigatorAxisComposition_composed, 'Axis.Navigator')) {
             (0,external_highcharts_src_js_default_namespaceObject.addEvent)(AxisClass, 'init', onAxisInit);
             (0,external_highcharts_src_js_default_namespaceObject.addEvent)(AxisClass, 'setExtremes', onAxisSetExtremes);
         }

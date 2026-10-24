@@ -1300,10 +1300,7 @@ class Pointer {
         const container = this.chart.container, ownerDoc = container.ownerDocument, 
         // Get the parent element, including handling Shadow DOM (#23450)
         getParent = (el) => el.parentElement || el.getRootNode()?.host?.parentElement;
-        container.onmousedown = this.onContainerMouseDown.bind(this);
-        container.onmousemove = this.onContainerMouseMove.bind(this);
-        container.onclick = this.onContainerClick.bind(this);
-        this.eventsToUnbind.push(addEvent(container, 'mouseenter', this.onContainerMouseEnter.bind(this)), addEvent(container, 'mouseleave', this.onContainerMouseLeave.bind(this)));
+        this.eventsToUnbind.push(addEvent(container, 'mousedown', this.onContainerMouseDown.bind(this)), addEvent(container, 'mousemove', this.onContainerMouseMove.bind(this)), addEvent(container, 'click', this.onContainerClick.bind(this)), addEvent(container, 'mouseenter', this.onContainerMouseEnter.bind(this)), addEvent(container, 'mouseleave', this.onContainerMouseLeave.bind(this)));
         if (!Pointer.unbindDocumentMouseUp.some((el) => el.doc === ownerDoc)) {
             Pointer.unbindDocumentMouseUp.push({
                 doc: ownerDoc,
@@ -1481,11 +1478,20 @@ Pointer.unbindDocumentMouseUp = [];
      * */
     /* *
      *
+     *  Variables
+     *
+     * */
+    let PointerClass = Pointer;
+    /* *
+     *
      *  Functions
      *
      * */
     /** @internal */
-    function compose(ChartClass) {
+    function compose(ChartClass, PointerSubclass) {
+        // A subclass, like MSPointer in the ES5 build, replaces the class
+        // instead of adding a second pointer to each chart
+        PointerClass = PointerSubclass || PointerClass;
         if (pushUnique(composed, 'Core.Pointer')) {
             addEvent(ChartClass, 'beforeRender', function () {
                 /**
@@ -1497,7 +1503,7 @@ Pointer.unbindDocumentMouseUp = [];
                  * @type {Highcharts.Pointer}
                  * @instance
                  */
-                this.pointer = new Pointer(this, this.options);
+                this.pointer = new PointerClass(this, this.options);
             });
         }
     }

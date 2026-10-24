@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v13.1.1-modified (2026-10-21)
+ * @license Highmaps JS v13.1.1-modified (2026-10-24)
  * @module highcharts/modules/contour
  * @requires highcharts
  * @requires highcharts/modules/coloraxis
@@ -1712,7 +1712,7 @@ ColorAxis.defaultLegendLength = 200;
 /* unused harmony import specifier */ var Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-21)
+ * @license Highcharts JS v13.1.1-modified (2026-10-24)
  * @module highcharts/modules/color-axis
  * @requires highcharts
  *
@@ -2563,7 +2563,6 @@ class Delaunay {
  *
  *
  * */
-/// <reference types="@webgpu/types" />
 
 
 
@@ -2680,7 +2679,8 @@ class ContourSeries extends ScatterSeries {
     }
     /** @internal */
     async run() {
-        const series = this, chart = series.chart, renderer = chart.renderer, canvas = series.canvas, gpu = navigator.gpu, context = series.context = canvas.getContext('webgpu');
+        const series = this, chart = series.chart, renderer = chart.renderer, canvas = series.canvas, gpu = navigator.gpu, context = series.context =
+            canvas.getContext('webgpu');
         if (!gpu || !context) {
             (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.error)(37, false, chart);
             return;

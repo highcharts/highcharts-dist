@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-21)
+ * @license Highcharts JS v13.1.1-modified (2026-10-24)
  * @module highcharts/modules/navigator
  * @requires highcharts
  *
@@ -15,9 +15,13 @@
 'use strict';
 import Highcharts from '../../Core/Globals.js';
 import StandaloneNavigator from '../../Stock/Navigator/StandaloneNavigator.js';
-import NavigatorComposition from '../../Stock/Navigator/NavigatorComposition.js';
+import Navigator from '../../Stock/Navigator/Navigator.js';
+import Scrollbar from '../../Stock/Scrollbar/Scrollbar.js';
 const G = Highcharts;
 G.StandaloneNavigator = G.StandaloneNavigator || StandaloneNavigator;
 G.navigator = G.StandaloneNavigator.navigator;
-NavigatorComposition.compose(G.Chart, G.Axis, G.Series);
+G.Navigator = G.Navigator || Navigator;
+G.Scrollbar = G.Scrollbar || Scrollbar;
+G.Scrollbar.compose(G.Axis);
+G.Navigator.compose(G.Chart, G.Axis, G.Series);
 export default Highcharts;

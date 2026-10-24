@@ -147,9 +147,9 @@ class CrookedLine extends Annotation {
         const typeOptions = (_a = this.options).typeOptions || (_a.typeOptions = {}), shape = this.initShape(merge(typeOptions.line, {
             type: 'path',
             className: 'highcharts-crooked-lines',
-            points: this.points.map((_point, i) => (function (target) {
+            points: this.points.map((_point, i) => function (target) {
                 return target.annotation.points[i];
-            }))
+            })
         }), 0);
         typeOptions.line = shape.options;
     }
