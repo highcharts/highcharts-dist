@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-24)
+ * @license Highcharts JS v13.1.1-modified (2026-10-26)
  * @module highcharts/modules/variable-pie
  * @requires highcharts
  *

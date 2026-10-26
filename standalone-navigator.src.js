@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-24)
+ * @license Highcharts JS v13.1.1-modified (2026-10-26)
  * @module highcharts/standalone-navigator
  *
  * Standalone Navigator for Highcharts.
@@ -49362,7 +49362,7 @@ var Responsive;
 ;// ./code/es-modules/masters/highcharts.src.js
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-24)
+ * @license Highcharts JS v13.1.1-modified (2026-10-26)
  * @module highcharts/highcharts
  *
  * (c) 2009-2026 Highsoft AS
@@ -53634,7 +53634,7 @@ class Navigator {
 /* unused harmony import specifier */ var Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-24)
+ * @license Highcharts JS v13.1.1-modified (2026-10-26)
  * @module highcharts/modules/navigator
  * @requires highcharts
  *
