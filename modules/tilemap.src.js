@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highmaps JS v13.1.1-modified (2026-10-26)
+ * @license Highmaps JS v13.1.1-modified (2026-10-27)
  * @module highcharts/modules/tilemap
  * @requires highcharts
  * @requires highcharts/modules/map
@@ -14,14 +14,14 @@
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(root["_Highcharts"]["Color"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
+		module.exports = factory(root["_Highcharts"]["Color"], root["_Highcharts"]["Series"]["types"]["column"], root["_Highcharts"]["Series"]["types"]["heatmap"], root["_Highcharts"]["Series"]["types"]["scatter"], root["_Highcharts"]["Series"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
 	else if(typeof define === 'function' && define.amd)
-		define("highcharts/modules/tilemap", ["highcharts/highcharts"], function (amd1) {return factory(amd1["Color"],amd1["SeriesRegistry"],amd1);});
+		define("highcharts/modules/tilemap", ["highcharts/highcharts"], function (amd1) {return factory(amd1["Color"],amd1["Series"]["types"]["column"],amd1["Series"]["types"]["heatmap"],amd1["Series"]["types"]["scatter"],amd1["Series"],amd1["SeriesRegistry"],amd1);});
 	else if(typeof exports === 'object')
-		exports["highcharts/modules/tilemap"] = factory(root["_Highcharts"]["Color"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
+		exports["highcharts/modules/tilemap"] = factory(root["_Highcharts"]["Color"], root["_Highcharts"]["Series"]["types"]["column"], root["_Highcharts"]["Series"]["types"]["heatmap"], root["_Highcharts"]["Series"]["types"]["scatter"], root["_Highcharts"]["Series"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
 	else
-		root["Highcharts"] = factory(root["Highcharts"]["Color"], root["Highcharts"]["SeriesRegistry"], root["Highcharts"]);
-})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__620__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__944__) => {
+		root["Highcharts"] = factory(root["Highcharts"]["Color"], root["Highcharts"]["Series"]["types"]["column"], root["Highcharts"]["Series"]["types"]["heatmap"], root["Highcharts"]["Series"]["types"]["scatter"], root["Highcharts"]["Series"], root["Highcharts"]["SeriesRegistry"], root["Highcharts"]);
+})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__620__, __WEBPACK_EXTERNAL_MODULE__448__, __WEBPACK_EXTERNAL_MODULE__720__, __WEBPACK_EXTERNAL_MODULE__632__, __WEBPACK_EXTERNAL_MODULE__820__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__944__) => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
@@ -30,6 +30,34 @@ return /******/ (() => { // webpackBootstrap
 (module) {
 
 module.exports = __WEBPACK_EXTERNAL_MODULE__620__;
+
+/***/ },
+
+/***/ 448
+(module) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__448__;
+
+/***/ },
+
+/***/ 720
+(module) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__720__;
+
+/***/ },
+
+/***/ 632
+(module) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__632__;
+
+/***/ },
+
+/***/ 820
+(module) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__820__;
 
 /***/ },
 
@@ -108,6 +136,15 @@ __webpack_require__.d(__webpack_exports__, {
 // EXTERNAL MODULE: external {"amd":["highcharts/highcharts"],"commonjs":["highcharts"],"commonjs2":["highcharts"],"root":["Highcharts"]}
 var highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_ = __webpack_require__(944);
 var highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default = /*#__PURE__*/__webpack_require__.n(highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_);
+// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Series","types","column"],"commonjs":["highcharts","Series","types","column"],"commonjs2":["highcharts","Series","types","column"],"root":["Highcharts","Series","types","column"]}
+var highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_ = __webpack_require__(448);
+var highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_default = /*#__PURE__*/__webpack_require__.n(highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_);
+// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Series","types","heatmap"],"commonjs":["highcharts","Series","types","heatmap"],"commonjs2":["highcharts","Series","types","heatmap"],"root":["Highcharts","Series","types","heatmap"]}
+var highcharts_Series_types_heatmap_commonjs_highcharts_Series_types_heatmap_commonjs2_highcharts_Series_types_heatmap_root_Highcharts_Series_types_heatmap_ = __webpack_require__(720);
+var highcharts_Series_types_heatmap_commonjs_highcharts_Series_types_heatmap_commonjs2_highcharts_Series_types_heatmap_root_Highcharts_Series_types_heatmap_default = /*#__PURE__*/__webpack_require__.n(highcharts_Series_types_heatmap_commonjs_highcharts_Series_types_heatmap_commonjs2_highcharts_Series_types_heatmap_root_Highcharts_Series_types_heatmap_);
+// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Series","types","scatter"],"commonjs":["highcharts","Series","types","scatter"],"commonjs2":["highcharts","Series","types","scatter"],"root":["Highcharts","Series","types","scatter"]}
+var highcharts_Series_types_scatter_commonjs_highcharts_Series_types_scatter_commonjs2_highcharts_Series_types_scatter_root_Highcharts_Series_types_scatter_ = __webpack_require__(632);
+var highcharts_Series_types_scatter_commonjs_highcharts_Series_types_scatter_commonjs2_highcharts_Series_types_scatter_root_Highcharts_Series_types_scatter_default = /*#__PURE__*/__webpack_require__.n(highcharts_Series_types_scatter_commonjs_highcharts_Series_types_scatter_commonjs2_highcharts_Series_types_scatter_root_Highcharts_Series_types_scatter_);
 // EXTERNAL MODULE: external {"amd":["highcharts/highcharts","SeriesRegistry"],"commonjs":["highcharts","SeriesRegistry"],"commonjs2":["highcharts","SeriesRegistry"],"root":["Highcharts","SeriesRegistry"]}
 var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_ = __webpack_require__(512);
 var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_);
@@ -378,6 +415,9 @@ var ColorAxisComposition;
  * */
 /* harmony default export */ const Color_ColorAxisComposition = (ColorAxisComposition);
 
+// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Series"],"commonjs":["highcharts","Series"],"commonjs2":["highcharts","Series"],"root":["Highcharts","Series"]}
+var highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_ = __webpack_require__(820);
+var highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_default = /*#__PURE__*/__webpack_require__.n(highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_);
 ;// ./code/es-modules/Series/Tilemap/TilemapPoint.js
 /* *
  *
@@ -396,7 +436,14 @@ var ColorAxisComposition;
 
 
 
-const { series: { prototype: { pointClass: Point } }, seriesTypes: { heatmap: { prototype: { pointClass: HeatmapPoint } } } } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default());
+
+/* *
+ *
+ *  Constants
+ *
+ * */
+const Point = (highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_default()).prototype.pointClass;
+const HeatmapPoint = (highcharts_Series_types_heatmap_commonjs_highcharts_Series_types_heatmap_commonjs2_highcharts_Series_types_heatmap_root_Highcharts_Series_types_heatmap_default()).prototype.pointClass;
 /* *
  *
  *  Class
@@ -691,7 +738,7 @@ const TilemapSeriesDefaults = {
 
 const { noop } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 
-const { heatmap: HeatmapSeries, scatter: ScatterSeries } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
+
 
 /* *
  *
@@ -721,7 +768,7 @@ function tilePaddingFromTileSize(series, xDiv, yDiv) {
 const TilemapShapes = {
     // Hexagon shape type.
     hexagon: {
-        alignDataLabel: ScatterSeries.prototype.alignDataLabel,
+        alignDataLabel: (highcharts_Series_types_scatter_commonjs_highcharts_Series_types_scatter_commonjs2_highcharts_Series_types_scatter_root_Highcharts_Series_types_scatter_default()).prototype.alignDataLabel,
         getSeriesPadding: function (series) {
             return tilePaddingFromTileSize(series, 3, 2);
         },
@@ -800,7 +847,7 @@ const TilemapShapes = {
     },
     // Diamond shape type.
     diamond: {
-        alignDataLabel: ScatterSeries.prototype.alignDataLabel,
+        alignDataLabel: (highcharts_Series_types_scatter_commonjs_highcharts_Series_types_scatter_commonjs2_highcharts_Series_types_scatter_root_Highcharts_Series_types_scatter_default()).prototype.alignDataLabel,
         getSeriesPadding: function (series) {
             return tilePaddingFromTileSize(series, 2, 2);
         },
@@ -870,12 +917,12 @@ const TilemapShapes = {
     },
     // Circle shape type.
     circle: {
-        alignDataLabel: ScatterSeries.prototype.alignDataLabel,
+        alignDataLabel: (highcharts_Series_types_scatter_commonjs_highcharts_Series_types_scatter_commonjs2_highcharts_Series_types_scatter_root_Highcharts_Series_types_scatter_default()).prototype.alignDataLabel,
         getSeriesPadding: function (series) {
             return tilePaddingFromTileSize(series, 2, 2);
         },
         haloPath: function (size) {
-            return ScatterSeries.prototype.pointClass.prototype.haloPath
+            return highcharts_Series_types_scatter_commonjs_highcharts_Series_types_scatter_commonjs2_highcharts_Series_types_scatter_root_Highcharts_Series_types_scatter_default().prototype.pointClass.prototype.haloPath
                 .call(this, size + (size && this.radius));
         },
         translate: function () {
@@ -948,10 +995,10 @@ const TilemapShapes = {
     },
     // Square shape type.
     square: {
-        alignDataLabel: HeatmapSeries.prototype.alignDataLabel,
-        translate: HeatmapSeries.prototype.translate,
+        alignDataLabel: (highcharts_Series_types_heatmap_commonjs_highcharts_Series_types_heatmap_commonjs2_highcharts_Series_types_heatmap_root_Highcharts_Series_types_heatmap_default()).prototype.alignDataLabel,
+        translate: (highcharts_Series_types_heatmap_commonjs_highcharts_Series_types_heatmap_commonjs2_highcharts_Series_types_heatmap_root_Highcharts_Series_types_heatmap_default()).prototype.translate,
         getSeriesPadding: noop,
-        haloPath: HeatmapSeries.prototype.pointClass.prototype.haloPath
+        haloPath: (highcharts_Series_types_heatmap_commonjs_highcharts_Series_types_heatmap_commonjs2_highcharts_Series_types_heatmap_root_Highcharts_Series_types_heatmap_default()).prototype.pointClass.prototype.haloPath
     }
 };
 /* *
@@ -979,7 +1026,9 @@ const TilemapShapes = {
 
 const { composed, noop: TilemapSeries_noop } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 
-const { column: ColumnSeries, heatmap: TilemapSeries_HeatmapSeries, scatter: TilemapSeries_ScatterSeries } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
+
+
+
 
 
 
@@ -1037,7 +1086,7 @@ function onAxisAfterSetAxisTranslation() {
  *
  * @augments Highcharts.Series
  */
-class TilemapSeries extends TilemapSeries_HeatmapSeries {
+class TilemapSeries extends (highcharts_Series_types_heatmap_commonjs_highcharts_Series_types_heatmap_commonjs2_highcharts_Series_types_heatmap_root_Highcharts_Series_types_heatmap_default()) {
     /* *
      *
      *  Static Functions
@@ -1065,7 +1114,7 @@ class TilemapSeries extends TilemapSeries_HeatmapSeries {
     drawPoints() {
         // In styled mode, use CSS, otherwise the fill used in the style
         // sheet will take precedence over the fill attribute.
-        ColumnSeries.prototype.drawPoints.call(this);
+        highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_default().prototype.drawPoints.call(this);
         for (const point of this.points) {
             if (point.graphic) {
                 point.graphic[this.chart.styledMode ? 'css' : 'animate'](this.colorAttribs(point));
@@ -1128,7 +1177,7 @@ class TilemapSeries extends TilemapSeries_HeatmapSeries {
  *
  * */
 /** @internal */
-TilemapSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(TilemapSeries_HeatmapSeries.defaultOptions, Tilemap_TilemapSeriesDefaults);
+TilemapSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)((highcharts_Series_types_heatmap_commonjs_highcharts_Series_types_heatmap_commonjs2_highcharts_Series_types_heatmap_root_Highcharts_Series_types_heatmap_default()).defaultOptions, Tilemap_TilemapSeriesDefaults);
 (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.extend)(TilemapSeries.prototype, {
     // Revert the noop on getSymbol.
     getSymbol: TilemapSeries_noop,
@@ -1136,8 +1185,8 @@ TilemapSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highc
     // heatmap implementation.
     // TODO: Consider standardizing heatmap and tilemap into more
     // consistent form.
-    markerAttribs: TilemapSeries_ScatterSeries.prototype.markerAttribs,
-    pointAttribs: ColumnSeries.prototype.pointAttribs,
+    markerAttribs: (highcharts_Series_types_scatter_commonjs_highcharts_Series_types_scatter_commonjs2_highcharts_Series_types_scatter_root_Highcharts_Series_types_scatter_default()).prototype.markerAttribs,
+    pointAttribs: (highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_default()).prototype.pointAttribs,
     pointClass: Tilemap_TilemapPoint
 });
 highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default().registerSeriesType('tilemap', TilemapSeries);

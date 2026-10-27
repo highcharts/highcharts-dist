@@ -12,9 +12,14 @@
  *
  * */
 'use strict';
-import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-const { sankey: { prototype: { pointClass: SankeyPoint } } } = SeriesRegistry.seriesTypes;
+import SankeySeries from '../Sankey/SankeySeries.js';
 import { pInt, wrap } from '../../Shared/Utilities.js';
+/* *
+ *
+ *  Constants
+ *
+ * */
+const SankeyPoint = SankeySeries.prototype.pointClass;
 /* *
  *
  *  Class

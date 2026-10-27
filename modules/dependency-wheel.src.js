@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-26)
+ * @license Highcharts JS v13.1.1-modified (2026-10-27)
  * @module highcharts/modules/dependency-wheel
  * @requires highcharts
  * @requires highcharts/modules/sankey
@@ -15,14 +15,14 @@
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(root["_Highcharts"]["SVGElement"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
+		module.exports = factory(root["_Highcharts"]["SVGElement"], root["_Highcharts"]["Series"]["types"]["pie"], root["_Highcharts"]["Series"]["types"]["sankey"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
 	else if(typeof define === 'function' && define.amd)
-		define("highcharts/modules/dependency-wheel", ["highcharts/highcharts"], function (amd1) {return factory(amd1["SVGElement"],amd1["SeriesRegistry"],amd1);});
+		define("highcharts/modules/dependency-wheel", ["highcharts/highcharts"], function (amd1) {return factory(amd1["SVGElement"],amd1["Series"]["types"]["pie"],amd1["Series"]["types"]["sankey"],amd1["SeriesRegistry"],amd1);});
 	else if(typeof exports === 'object')
-		exports["highcharts/modules/dependency-wheel"] = factory(root["_Highcharts"]["SVGElement"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
+		exports["highcharts/modules/dependency-wheel"] = factory(root["_Highcharts"]["SVGElement"], root["_Highcharts"]["Series"]["types"]["pie"], root["_Highcharts"]["Series"]["types"]["sankey"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
 	else
-		root["Highcharts"] = factory(root["Highcharts"]["SVGElement"], root["Highcharts"]["SeriesRegistry"], root["Highcharts"]);
-})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__28__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__944__) => {
+		root["Highcharts"] = factory(root["Highcharts"]["SVGElement"], root["Highcharts"]["Series"]["types"]["pie"], root["Highcharts"]["Series"]["types"]["sankey"], root["Highcharts"]["SeriesRegistry"], root["Highcharts"]);
+})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__28__, __WEBPACK_EXTERNAL_MODULE__20__, __WEBPACK_EXTERNAL_MODULE__36__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__944__) => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
@@ -31,6 +31,20 @@ return /******/ (() => { // webpackBootstrap
 (module) {
 
 module.exports = __WEBPACK_EXTERNAL_MODULE__28__;
+
+/***/ },
+
+/***/ 20
+(module) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__20__;
+
+/***/ },
+
+/***/ 36
+(module) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__36__;
 
 /***/ },
 
@@ -504,9 +518,9 @@ function roundedRect(x, y, width, height, options = {}) {
 */
 (''); // Keeps doclets above in JS file
 
-// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","SeriesRegistry"],"commonjs":["highcharts","SeriesRegistry"],"commonjs2":["highcharts","SeriesRegistry"],"root":["Highcharts","SeriesRegistry"]}
-var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_ = __webpack_require__(512);
-var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_);
+// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Series","types","sankey"],"commonjs":["highcharts","Series","types","sankey"],"commonjs2":["highcharts","Series","types","sankey"],"root":["Highcharts","Series","types","sankey"]}
+var highcharts_Series_types_sankey_commonjs_highcharts_Series_types_sankey_commonjs2_highcharts_Series_types_sankey_root_Highcharts_Series_types_sankey_ = __webpack_require__(36);
+var highcharts_Series_types_sankey_commonjs_highcharts_Series_types_sankey_commonjs2_highcharts_Series_types_sankey_root_Highcharts_Series_types_sankey_default = /*#__PURE__*/__webpack_require__.n(highcharts_Series_types_sankey_commonjs_highcharts_Series_types_sankey_commonjs2_highcharts_Series_types_sankey_root_Highcharts_Series_types_sankey_);
 ;// ./code/es-modules/Series/DependencyWheel/DependencyWheelPoint.js
 /* *
  *
@@ -523,8 +537,13 @@ var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highc
  * */
 
 
-const { sankey: { prototype: { pointClass: SankeyPoint } } } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
 
+/* *
+ *
+ *  Constants
+ *
+ * */
+const SankeyPoint = (highcharts_Series_types_sankey_commonjs_highcharts_Series_types_sankey_commonjs2_highcharts_Series_types_sankey_root_Highcharts_Series_types_sankey_default()).prototype.pointClass;
 /* *
  *
  *  Class
@@ -1059,6 +1078,12 @@ var SankeyColumnComposition;
  * */
 /* harmony default export */ const Sankey_SankeyColumnComposition = (SankeyColumnComposition);
 
+// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Series","types","pie"],"commonjs":["highcharts","Series","types","pie"],"commonjs2":["highcharts","Series","types","pie"],"root":["Highcharts","Series","types","pie"]}
+var highcharts_Series_types_pie_commonjs_highcharts_Series_types_pie_commonjs2_highcharts_Series_types_pie_root_Highcharts_Series_types_pie_ = __webpack_require__(20);
+var highcharts_Series_types_pie_commonjs_highcharts_Series_types_pie_commonjs2_highcharts_Series_types_pie_root_Highcharts_Series_types_pie_default = /*#__PURE__*/__webpack_require__.n(highcharts_Series_types_pie_commonjs_highcharts_Series_types_pie_commonjs2_highcharts_Series_types_pie_root_Highcharts_Series_types_pie_);
+// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","SeriesRegistry"],"commonjs":["highcharts","SeriesRegistry"],"commonjs2":["highcharts","SeriesRegistry"],"root":["Highcharts","SeriesRegistry"]}
+var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_ = __webpack_require__(512);
+var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_);
 // EXTERNAL MODULE: external {"amd":["highcharts/highcharts","SVGElement"],"commonjs":["highcharts","SVGElement"],"commonjs2":["highcharts","SVGElement"],"root":["Highcharts","SVGElement"]}
 var highcharts_SVGElement_commonjs_highcharts_SVGElement_commonjs2_highcharts_SVGElement_root_Highcharts_SVGElement_ = __webpack_require__(28);
 var highcharts_SVGElement_commonjs_highcharts_SVGElement_commonjs2_highcharts_SVGElement_root_Highcharts_SVGElement_default = /*#__PURE__*/__webpack_require__.n(highcharts_SVGElement_commonjs_highcharts_SVGElement_commonjs2_highcharts_SVGElement_root_Highcharts_SVGElement_);
@@ -1358,7 +1383,8 @@ function composeTextPath(SVGElementClass) {
 const { deg2rad: DependencyWheelSeries_deg2rad } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 
 
-const { pie: PieSeries, sankey: SankeySeries } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
+
+
 
 
 
@@ -1374,7 +1400,7 @@ composeTextPath((highcharts_SVGElement_commonjs_highcharts_SVGElement_commonjs2_
  *
  * @augments Highcharts.seriesTypes.sankey
  */
-class DependencyWheelSeries extends SankeySeries {
+class DependencyWheelSeries extends (highcharts_Series_types_sankey_commonjs_highcharts_Series_types_sankey_commonjs2_highcharts_Series_types_sankey_root_Highcharts_Series_types_sankey_default()) {
     /* *
      *
      *  Functions
@@ -1601,11 +1627,11 @@ class DependencyWheelSeries extends SankeySeries {
  *
  * */
 /** @internal */
-DependencyWheelSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(SankeySeries.defaultOptions, DependencyWheel_DependencyWheelSeriesDefaults);
+DependencyWheelSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)((highcharts_Series_types_sankey_commonjs_highcharts_Series_types_sankey_commonjs2_highcharts_Series_types_sankey_root_Highcharts_Series_types_sankey_default()).defaultOptions, DependencyWheel_DependencyWheelSeriesDefaults);
 (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.extend)(DependencyWheelSeries.prototype, {
     orderNodes: false,
     pointArrayMap: ['from', 'to', 'weight', 'weightTo'],
-    getCenter: PieSeries.prototype.getCenter,
+    getCenter: (highcharts_Series_types_pie_commonjs_highcharts_Series_types_pie_commonjs2_highcharts_Series_types_pie_root_Highcharts_Series_types_pie_default()).prototype.getCenter,
     useCircularLayout: false
 });
 DependencyWheelSeries.prototype.pointClass = DependencyWheel_DependencyWheelPoint;

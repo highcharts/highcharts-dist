@@ -14,8 +14,10 @@ import BubbleLegendComposition from './BubbleLegendComposition.js';
 import BubblePoint from './BubblePoint.js';
 import H from '../../Core/Globals.js';
 const { composed, noop } = H;
+import ColumnSeries from '../Column/ColumnSeries.js';
+import ScatterSeries from '../Scatter/ScatterSeries.js';
+import Series from '../../Core/Series/Series.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-const { series: Series, seriesTypes: { column: { prototype: columnProto }, scatter: ScatterSeries } } = SeriesRegistry;
 import { addEvent, arrayMax, arrayMin, clamp, correctFloat, defined, extend, isNumber, merge, pushUnique } from '../../Shared/Utilities.js';
 /* *
  *
@@ -700,7 +702,7 @@ BubbleSeries.defaultOptions = merge(ScatterSeries.defaultOptions, {
     zoneAxis: 'z'
 });
 extend(BubbleSeries.prototype, {
-    alignDataLabel: columnProto.alignDataLabel,
+    alignDataLabel: ColumnSeries.prototype.alignDataLabel,
     applyZones: noop,
     bubblePadding: true,
     isBubble: true,

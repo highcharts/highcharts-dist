@@ -12,8 +12,8 @@
  *
  * */
 'use strict';
+import AreaSplineSeries from '../AreaSpline/AreaSplineSeries.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-const { areaspline: AreaSplineSeries } = SeriesRegistry.seriesTypes;
 import StreamgraphSeriesDefaults from './StreamgraphSeriesDefaults.js';
 import { addEvent, extend, merge } from '../../Shared/Utilities.js';
 /**

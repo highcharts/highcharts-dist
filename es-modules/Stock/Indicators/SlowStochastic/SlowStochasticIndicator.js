@@ -7,8 +7,9 @@
  *
  * */
 'use strict';
+import SMAIndicator from '../SMA/SMAIndicator.js';
+import StochasticIndicator from '../Stochastic/StochasticIndicator.js';
 import SeriesRegistry from '../../../Core/Series/SeriesRegistry.js';
-const { sma: SMAIndicator, stochastic: StochasticIndicator } = SeriesRegistry.seriesTypes;
 import { extend, merge } from '../../../Shared/Utilities.js';
 /* *
  *

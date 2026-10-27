@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-26)
+ * @license Highcharts JS v13.1.1-modified (2026-10-27)
  * @module highcharts/modules/pyramid3d
  * @requires highcharts
  * @requires highcharts/highcharts-3d
@@ -17,17 +17,24 @@
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
+		module.exports = factory(root["_Highcharts"]["Series"]["types"]["funnel3d"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
 	else if(typeof define === 'function' && define.amd)
-		define("highcharts/modules/pyramid3d", ["highcharts/highcharts"], function (amd1) {return factory(amd1["SeriesRegistry"],amd1);});
+		define("highcharts/modules/pyramid3d", ["highcharts/highcharts"], function (amd1) {return factory(amd1["Series"]["types"]["funnel3d"],amd1["SeriesRegistry"],amd1);});
 	else if(typeof exports === 'object')
-		exports["highcharts/modules/pyramid3d"] = factory(root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
+		exports["highcharts/modules/pyramid3d"] = factory(root["_Highcharts"]["Series"]["types"]["funnel3d"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
 	else
-		root["Highcharts"] = factory(root["Highcharts"]["SeriesRegistry"], root["Highcharts"]);
-})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__944__) => {
+		root["Highcharts"] = factory(root["Highcharts"]["Series"]["types"]["funnel3d"], root["Highcharts"]["SeriesRegistry"], root["Highcharts"]);
+})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__68__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__944__) => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
+
+/***/ 68
+(module) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__68__;
+
+/***/ },
 
 /***/ 512
 (module) {
@@ -231,6 +238,9 @@ const Pyramid3DSeriesDefaults = {
  * */
 /* harmony default export */ const Pyramid3D_Pyramid3DSeriesDefaults = (Pyramid3DSeriesDefaults);
 
+// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Series","types","funnel3d"],"commonjs":["highcharts","Series","types","funnel3d"],"commonjs2":["highcharts","Series","types","funnel3d"],"root":["Highcharts","Series","types","funnel3d"]}
+var highcharts_Series_types_funnel3d_commonjs_highcharts_Series_types_funnel3d_commonjs2_highcharts_Series_types_funnel3d_root_Highcharts_Series_types_funnel3d_ = __webpack_require__(68);
+var highcharts_Series_types_funnel3d_commonjs_highcharts_Series_types_funnel3d_commonjs2_highcharts_Series_types_funnel3d_root_Highcharts_Series_types_funnel3d_default = /*#__PURE__*/__webpack_require__.n(highcharts_Series_types_funnel3d_commonjs_highcharts_Series_types_funnel3d_commonjs2_highcharts_Series_types_funnel3d_root_Highcharts_Series_types_funnel3d_);
 // EXTERNAL MODULE: external {"amd":["highcharts/highcharts","SeriesRegistry"],"commonjs":["highcharts","SeriesRegistry"],"commonjs2":["highcharts","SeriesRegistry"],"root":["Highcharts","SeriesRegistry"]}
 var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_ = __webpack_require__(512);
 var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_);
@@ -252,7 +262,7 @@ var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highc
 
 
 
-const { funnel3d: Funnel3DSeries } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
+
 /* *
  *
  *  Class
@@ -270,7 +280,7 @@ const { funnel3d: Funnel3DSeries } = (highcharts_SeriesRegistry_commonjs_highcha
  * @requires modules/funnel3d
  * @requires modules/pyramid3d
  */
-class Pyramid3DSeries extends Funnel3DSeries {
+class Pyramid3DSeries extends (highcharts_Series_types_funnel3d_commonjs_highcharts_Series_types_funnel3d_commonjs2_highcharts_Series_types_funnel3d_root_Highcharts_Series_types_funnel3d_default()) {
 }
 /* *
  *
@@ -278,7 +288,7 @@ class Pyramid3DSeries extends Funnel3DSeries {
  *
  * */
 /** @internal */
-Pyramid3DSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(Funnel3DSeries.defaultOptions, Pyramid3D_Pyramid3DSeriesDefaults);
+Pyramid3DSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)((highcharts_Series_types_funnel3d_commonjs_highcharts_Series_types_funnel3d_commonjs2_highcharts_Series_types_funnel3d_root_Highcharts_Series_types_funnel3d_default()).defaultOptions, Pyramid3D_Pyramid3DSeriesDefaults);
 highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default().registerSeriesType('pyramid3d', Pyramid3DSeries);
 /* *
  *

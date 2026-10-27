@@ -6,10 +6,11 @@
  *
  * */
 'use strict';
+import ColumnSeries from '../../../Series/Column/ColumnSeries.js';
 import H from '../../../Core/Globals.js';
 const { noop } = H;
+import SMAIndicator from '../SMA/SMAIndicator.js';
 import SeriesRegistry from '../../../Core/Series/SeriesRegistry.js';
-const { column: { prototype: columnProto }, sma: SMAIndicator } = SeriesRegistry.seriesTypes;
 import { correctFloat, extend, isArray, merge } from '../../../Shared/Utilities.js';
 /* *
  *
@@ -164,10 +165,10 @@ extend(AOIndicator.prototype, {
     nameComponents: void 0,
     // Columns support:
     markerAttribs: noop,
-    getColumnMetrics: columnProto.getColumnMetrics,
-    crispCol: columnProto.crispCol,
-    translate: columnProto.translate,
-    drawPoints: columnProto.drawPoints
+    getColumnMetrics: ColumnSeries.prototype.getColumnMetrics,
+    crispCol: ColumnSeries.prototype.crispCol,
+    translate: ColumnSeries.prototype.translate,
+    drawPoints: ColumnSeries.prototype.drawPoints
 });
 SeriesRegistry.registerSeriesType('ao', AOIndicator);
 /* *

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-26)
+ * @license Highcharts JS v13.1.1-modified (2026-10-27)
  * @module highcharts/modules/flowmap
  * @requires highcharts
  * @requires highcharts/modules/map
@@ -11,6 +11,8 @@
  * see www.highcharts.com/license
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
+import "./map.src.js";
+import * as __WEBPACK_EXTERNAL_MODULE__map_src_js_a3a01721__ from "./map.src.js";
 /******/ // The require scope
 /******/ const __webpack_require__ = {};
 /******/ 
@@ -43,9 +45,11 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 ;// external ["../highcharts.src.js","default"]
 const external_highcharts_src_js_default_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"];
 var external_highcharts_src_js_default_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_namespaceObject);
-;// external ["../highcharts.src.js","default","SeriesRegistry"]
-const external_highcharts_src_js_default_SeriesRegistry_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].SeriesRegistry;
-var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_SeriesRegistry_namespaceObject);
+;// external "./map.src.js"
+
+;// external ["./map.src.js","default","Series","types","mapline"]
+const external_map_src_js_default_Series_types_mapline_namespaceObject = __WEBPACK_EXTERNAL_MODULE__map_src_js_a3a01721__["default"].Series.types.mapline;
+var external_map_src_js_default_Series_types_mapline_default = /*#__PURE__*/__webpack_require__.n(external_map_src_js_default_Series_types_mapline_namespaceObject);
 ;// ./code/es-modules/Series/FlowMap/FlowMapPoint.js
 /* *
  *
@@ -60,8 +64,13 @@ var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__w
  * */
 
 
-const { mapline: { prototype: { pointClass: MapLinePoint } } } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
 
+/* *
+ *
+ *  Constants
+ *
+ * */
+const MapLinePoint = (external_map_src_js_default_Series_types_mapline_default()).prototype.pointClass;
 /* *
  *
  *  Class
@@ -94,6 +103,18 @@ class FlowMapPoint extends MapLinePoint {
  * */
 /* harmony default export */ const FlowMap_FlowMapPoint = (FlowMapPoint);
 
+;// external ["../highcharts.src.js","default","Series","types","column"]
+const external_highcharts_src_js_default_Series_types_column_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].Series.types.column;
+var external_highcharts_src_js_default_Series_types_column_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_Series_types_column_namespaceObject);
+;// external ["./map.src.js","default","Series","types","map"]
+const external_map_src_js_default_Series_types_map_namespaceObject = __WEBPACK_EXTERNAL_MODULE__map_src_js_a3a01721__["default"].Series.types.map;
+var external_map_src_js_default_Series_types_map_default = /*#__PURE__*/__webpack_require__.n(external_map_src_js_default_Series_types_map_namespaceObject);
+;// external ["../highcharts.src.js","default","Series"]
+const external_highcharts_src_js_default_Series_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].Series;
+var external_highcharts_src_js_default_Series_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_Series_namespaceObject);
+;// external ["../highcharts.src.js","default","SeriesRegistry"]
+const external_highcharts_src_js_default_SeriesRegistry_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].SeriesRegistry;
+var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_SeriesRegistry_namespaceObject);
 ;// ./code/es-modules/Series/FlowMap/FlowMapSeriesDefaults.js
 /* *
  *
@@ -294,9 +315,18 @@ const FlowMapSeriesDefaults = {
 
 
 
-const { series: { prototype: { pointClass: Point } }, seriesTypes: { column: ColumnSeries, map: MapSeries, mapline: MapLineSeries } } = (external_highcharts_src_js_default_SeriesRegistry_default());
 
 
+
+
+
+
+/* *
+ *
+ *  Constants
+ *
+ * */
+const Point = (external_highcharts_src_js_default_Series_default()).prototype.pointClass;
 /**
  * The flowmap series type
  *
@@ -305,7 +335,7 @@ const { series: { prototype: { pointClass: Point } }, seriesTypes: { column: Col
  *
  * @augments Highcharts.Series
  */
-class FlowMapSeries extends MapLineSeries {
+class FlowMapSeries extends (external_map_src_js_default_Series_types_mapline_default()) {
     /* *
      *
      *  Static Function
@@ -463,7 +493,7 @@ class FlowMapSeries extends MapLineSeries {
      * @internal
      */
     pointAttribs(point, state) {
-        const attrs = MapSeries.prototype.pointAttribs.call(this, point, state);
+        const attrs = external_map_src_js_default_Series_types_map_default().prototype.pointAttribs.call(this, point, state);
         attrs.fill =
             point.options.fillColor ??
                 point.options.color ??
@@ -695,12 +725,12 @@ class FlowMapSeries extends MapLineSeries {
  *
  * */
 /** @internal */
-FlowMapSeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(MapLineSeries.defaultOptions, FlowMap_FlowMapSeriesDefaults);
+FlowMapSeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)((external_map_src_js_default_Series_types_mapline_default()).defaultOptions, FlowMap_FlowMapSeriesDefaults);
 (0,external_highcharts_src_js_default_namespaceObject.extend)(FlowMapSeries.prototype, {
     pointClass: FlowMap_FlowMapPoint,
     pointArrayMap: ['from', 'to', 'weight'],
-    drawPoints: ColumnSeries.prototype.drawPoints,
-    getDataColumnKeys: ColumnSeries.prototype.getDataColumnKeys,
+    drawPoints: (external_highcharts_src_js_default_Series_types_column_default()).prototype.drawPoints,
+    getDataColumnKeys: (external_highcharts_src_js_default_Series_types_column_default()).prototype.getDataColumnKeys,
     // Make it work on zoom or pan.
     useMapGeometry: true
 });
@@ -893,6 +923,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
 ''; // Adds doclets above to transpiled file
 
 ;// ./code/es-modules/masters/modules/flowmap.src.js
+
 
 
 

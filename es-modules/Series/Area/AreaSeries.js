@@ -11,8 +11,8 @@
  * */
 'use strict';
 import AreaSeriesDefaults from './AreaSeriesDefaults.js';
+import LineSeries from '../Line/LineSeries.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-const { seriesTypes: { line: LineSeries } } = SeriesRegistry;
 import { defined, extend, merge, objectEach } from '../../Shared/Utilities.js';
 /* *
  *

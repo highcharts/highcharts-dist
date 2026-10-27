@@ -11,9 +11,14 @@
  *
  * */
 'use strict';
-import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
+import MapSeries from '../Map/MapSeries.js';
 import { isNumber } from '../../Shared/Utilities.js';
-const { map: { prototype: { pointClass: MapPoint } } } = SeriesRegistry.seriesTypes;
+/* *
+ *
+ *  Constants
+ *
+ * */
+const MapPoint = MapSeries.prototype.pointClass;
 /* *
  *
  *  Class

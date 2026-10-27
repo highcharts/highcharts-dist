@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-26)
+ * @license Highcharts JS v13.1.1-modified (2026-10-27)
  * @module highcharts/i18n/fr-FR
  * @requires highcharts
  *

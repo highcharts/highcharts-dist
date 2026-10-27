@@ -10,12 +10,11 @@
  *
  * */
 'use strict';
+import BubbleSeries from './Bubble/BubbleSeries.js';
 import DataTableCore from '../Data/DataTableCore.js';
 import H from '../Core/Globals.js';
 const { composed } = H;
 import Point from '../Core/Series/Point.js';
-import SeriesRegistry from '../Core/Series/SeriesRegistry.js';
-const { bubble } = SeriesRegistry.seriesTypes;
 import SVGRenderer from '../Core/Renderer/SVG/SVGRenderer.js';
 import { addEvent, defined, find, isNumber, pushUnique } from '../Shared/Utilities.js';
 /* *
@@ -84,23 +83,23 @@ var SeriesOnPointComposition;
             /**
              * @ignore
              */
-            this.getColumn = bubble.prototype.getColumn;
+            this.getColumn = BubbleSeries.prototype.getColumn;
             /**
              * @ignore
              */
-            this.getRadii = bubble.prototype.getRadii;
+            this.getRadii = BubbleSeries.prototype.getRadii;
             /**
              * @ignore
              */
-            this.getRadius = bubble.prototype.getRadius;
+            this.getRadius = BubbleSeries.prototype.getRadius;
             /**
              * @ignore
              */
-            this.getPxExtremes = bubble.prototype.getPxExtremes;
+            this.getPxExtremes = BubbleSeries.prototype.getPxExtremes;
             /**
              * @ignore
              */
-            this.getZExtremes = bubble.prototype.getZExtremes;
+            this.getZExtremes = BubbleSeries.prototype.getZExtremes;
             this.chart = series.chart;
             this.series = series;
             this.options = series.options.onPoint;

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-26)
+ * @license Highcharts JS v13.1.1-modified (2026-10-27)
  * @module highcharts/modules/bullet
  * @requires highcharts
  *
@@ -16,7 +16,7 @@
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory(root["_Highcharts"]["Series"]["types"]["column"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
 	else if(typeof define === 'function' && define.amd)
-		define("highcharts/modules/bullet", ["highcharts/highcharts"], function (amd1) {return factory(amd1["Series"],["types"],["column"],amd1["SeriesRegistry"],amd1);});
+		define("highcharts/modules/bullet", ["highcharts/highcharts"], function (amd1) {return factory(amd1["Series"]["types"]["column"],amd1["SeriesRegistry"],amd1);});
 	else if(typeof exports === 'object')
 		exports["highcharts/modules/bullet"] = factory(root["_Highcharts"]["Series"]["types"]["column"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
 	else

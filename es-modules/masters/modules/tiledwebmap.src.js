@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-26)
+ * @license Highcharts JS v13.1.1-modified (2026-10-27)
  * @module highcharts/modules/tiledwebmap
  * @requires highcharts
+ * @requires highcharts/modules/map
  *
  * (c) 2009-2026
  *
@@ -11,9 +12,10 @@
  */
 'use strict';
 import Highcharts from '../../Core/Globals.js';
+import MapView from '../../Maps/MapView.js';
 import TilesProviderRegistry from '../../Maps/TilesProviders/TilesProviderRegistry.js';
 import TiledWebMapSeries from '../../Series/TiledWebMap/TiledWebMapSeries.js';
 const G = Highcharts;
 G.TilesProviderRegistry = G.TilesProviderRegistry || TilesProviderRegistry;
-TiledWebMapSeries.compose(G.MapView);
+TiledWebMapSeries.compose(MapView);
 export default Highcharts;

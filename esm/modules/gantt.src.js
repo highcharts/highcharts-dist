@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Gantt JS v13.1.1-modified (2026-10-26)
+ * @license Highcharts Gantt JS v13.1.1-modified (2026-10-27)
  * @module highcharts/modules/gantt
  * @requires highcharts
  *
@@ -16,6 +16,7 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 import "./pathfinder.src.js";
 import "./static-scale.src.js";
 import "./xrange.src.js";
+import * as __WEBPACK_EXTERNAL_MODULE__xrange_src_js_9610b67c__ from "./xrange.src.js";
 /******/ // The require scope
 /******/ const __webpack_require__ = {};
 /******/ 
@@ -7889,6 +7890,9 @@ class RangeSelector {
 
 ;// external "./xrange.src.js"
 
+;// external ["./xrange.src.js","default","Series","types","xrange"]
+const external_xrange_src_js_default_Series_types_xrange_namespaceObject = __WEBPACK_EXTERNAL_MODULE__xrange_src_js_9610b67c__["default"].Series.types.xrange;
+var external_xrange_src_js_default_Series_types_xrange_default = /*#__PURE__*/__webpack_require__.n(external_xrange_src_js_default_Series_types_xrange_namespaceObject);
 ;// ./code/es-modules/Series/Gantt/GanttPoint.js
 /* *
  *
@@ -7904,7 +7908,12 @@ class RangeSelector {
  * */
 
 
-const { xrange: { prototype: { pointClass: XRangePoint } } } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
+/* *
+ *
+ *  Constants
+ *
+ * */
+const XRangePoint = (external_xrange_src_js_default_Series_types_xrange_default()).prototype.pointClass;
 /* *
  *
  *  Class
@@ -10028,6 +10037,9 @@ Pathfinder.prototype.algorithms = PathfinderAlgorithms;
  */
 ''; // Keeps doclets above in JS file
 
+;// external ["../highcharts.src.js","default","Series"]
+const external_highcharts_src_js_default_Series_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].Series;
+var external_highcharts_src_js_default_Series_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_Series_namespaceObject);
 ;// ./code/es-modules/Extensions/StaticScale.js
 /* *
  *
@@ -13188,7 +13200,8 @@ class TreeGridAxisAdditions {
 
 
 
-const { series: Series, seriesTypes: { xrange: XRangeSeries } } = (external_highcharts_src_js_default_SeriesRegistry_default());
+
+
 
 
 
@@ -13203,7 +13216,7 @@ const { series: Series, seriesTypes: { xrange: XRangeSeries } } = (external_high
  *
  * @augments Highcharts.Series
  */
-class GanttSeries extends XRangeSeries {
+class GanttSeries extends (external_xrange_src_js_default_Series_types_xrange_default()) {
     /* *
      *
      *  Static Functions
@@ -13211,7 +13224,7 @@ class GanttSeries extends XRangeSeries {
      * */
     /** @internal */
     static compose(AxisClass, ChartClass, SeriesClass, TickClass) {
-        XRangeSeries.compose(AxisClass);
+        external_xrange_src_js_default_Series_types_xrange_default().compose(AxisClass);
         if (!ChartClass) {
             return;
         }
@@ -13317,11 +13330,11 @@ class GanttSeries extends XRangeSeries {
  *
  * */
 /** @internal */
-GanttSeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(XRangeSeries.defaultOptions, Gantt_GanttSeriesDefaults);
+GanttSeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)((external_xrange_src_js_default_Series_types_xrange_default()).defaultOptions, Gantt_GanttSeriesDefaults);
 (0,external_highcharts_src_js_default_namespaceObject.extend)(GanttSeries.prototype, {
     pointArrayMap: ['start', 'end', 'y'],
     pointClass: Gantt_GanttPoint,
-    setData: Series.prototype.setData
+    setData: (external_highcharts_src_js_default_Series_default()).prototype.setData
 });
 external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('gantt', GanttSeries);
 /* *

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-26)
+ * @license Highcharts JS v13.1.1-modified (2026-10-27)
  * @module highcharts/modules/pareto
  * @requires highcharts
  *
@@ -14,17 +14,24 @@
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(root["_Highcharts"]["Series"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
+		module.exports = factory(root["_Highcharts"]["Series"]["types"]["line"], root["_Highcharts"]["Series"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
 	else if(typeof define === 'function' && define.amd)
-		define("highcharts/modules/pareto", ["highcharts/highcharts"], function (amd1) {return factory(amd1["Series"],amd1["SeriesRegistry"],amd1);});
+		define("highcharts/modules/pareto", ["highcharts/highcharts"], function (amd1) {return factory(amd1["Series"]["types"]["line"],amd1["Series"],amd1["SeriesRegistry"],amd1);});
 	else if(typeof exports === 'object')
-		exports["highcharts/modules/pareto"] = factory(root["_Highcharts"]["Series"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
+		exports["highcharts/modules/pareto"] = factory(root["_Highcharts"]["Series"]["types"]["line"], root["_Highcharts"]["Series"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
 	else
-		root["Highcharts"] = factory(root["Highcharts"]["Series"], root["Highcharts"]["SeriesRegistry"], root["Highcharts"]);
-})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__820__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__944__) => {
+		root["Highcharts"] = factory(root["Highcharts"]["Series"]["types"]["line"], root["Highcharts"]["Series"], root["Highcharts"]["SeriesRegistry"], root["Highcharts"]);
+})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__176__, __WEBPACK_EXTERNAL_MODULE__820__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__944__) => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
+
+/***/ 176
+(module) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__176__;
+
+/***/ },
 
 /***/ 820
 (module) {
@@ -326,6 +333,9 @@ const ParetoSeriesDefaults = {
  * */
 /* harmony default export */ const ParetoSeries_ParetoSeriesDefaults = (ParetoSeriesDefaults);
 
+// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Series","types","line"],"commonjs":["highcharts","Series","types","line"],"commonjs2":["highcharts","Series","types","line"],"root":["Highcharts","Series","types","line"]}
+var highcharts_Series_types_line_commonjs_highcharts_Series_types_line_commonjs2_highcharts_Series_types_line_root_Highcharts_Series_types_line_ = __webpack_require__(176);
+var highcharts_Series_types_line_commonjs_highcharts_Series_types_line_commonjs2_highcharts_Series_types_line_root_Highcharts_Series_types_line_default = /*#__PURE__*/__webpack_require__.n(highcharts_Series_types_line_commonjs_highcharts_Series_types_line_commonjs2_highcharts_Series_types_line_root_Highcharts_Series_types_line_);
 // EXTERNAL MODULE: external {"amd":["highcharts/highcharts","SeriesRegistry"],"commonjs":["highcharts","SeriesRegistry"],"commonjs2":["highcharts","SeriesRegistry"],"root":["Highcharts","SeriesRegistry"]}
 var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_ = __webpack_require__(512);
 var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_);
@@ -345,7 +355,7 @@ var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highc
 
 
 
-const { line: LineSeries } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
+
 
 /* *
  *
@@ -360,7 +370,7 @@ const { line: LineSeries } = (highcharts_SeriesRegistry_commonjs_highcharts_Seri
  *
  * @augments Highcharts.Series
  */
-class ParetoSeries extends LineSeries {
+class ParetoSeries extends (highcharts_Series_types_line_commonjs_highcharts_Series_types_line_commonjs2_highcharts_Series_types_line_root_Highcharts_Series_types_line_default()) {
     /* *
      *
      *  Functions
@@ -428,7 +438,7 @@ class ParetoSeries extends LineSeries {
  *
  * */
 /** @internal */
-ParetoSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(LineSeries.defaultOptions, ParetoSeries_ParetoSeriesDefaults);
+ParetoSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)((highcharts_Series_types_line_commonjs_highcharts_Series_types_line_commonjs2_highcharts_Series_types_line_root_Highcharts_Series_types_line_default()).defaultOptions, ParetoSeries_ParetoSeriesDefaults);
 (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.extend)(ParetoSeries.prototype, {
     hasDerivedData: Series_DerivedComposition.hasDerivedData
 });

@@ -10,10 +10,13 @@
  *
  * */
 'use strict';
-import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-const { candlestick: { prototype: { pointClass: CandlestickPoint } }, hlc: { prototype: { 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-pointClass: HLCPoint } } } = SeriesRegistry.seriesTypes;
+import CandlestickSeries from '../Candlestick/CandlestickSeries.js';
+/* *
+ *
+ *  Constants
+ *
+ * */
+const CandlestickPoint = CandlestickSeries.prototype.pointClass;
 /* *
  *
  *  Class

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-26)
+ * @license Highcharts JS v13.1.1-modified (2026-10-27)
  * @module highcharts/modules/item-series
  * @requires highcharts
  *
@@ -14,17 +14,31 @@
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
+		module.exports = factory(root["_Highcharts"]["Series"]["types"]["pie"], root["_Highcharts"]["Series"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
 	else if(typeof define === 'function' && define.amd)
-		define("highcharts/modules/item-series", ["highcharts/highcharts"], function (amd1) {return factory(amd1["SeriesRegistry"],amd1);});
+		define("highcharts/modules/item-series", ["highcharts/highcharts"], function (amd1) {return factory(amd1["Series"]["types"]["pie"],amd1["Series"],amd1["SeriesRegistry"],amd1);});
 	else if(typeof exports === 'object')
-		exports["highcharts/modules/item-series"] = factory(root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
+		exports["highcharts/modules/item-series"] = factory(root["_Highcharts"]["Series"]["types"]["pie"], root["_Highcharts"]["Series"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
 	else
-		root["Highcharts"] = factory(root["Highcharts"]["SeriesRegistry"], root["Highcharts"]);
-})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__944__) => {
+		root["Highcharts"] = factory(root["Highcharts"]["Series"]["types"]["pie"], root["Highcharts"]["Series"], root["Highcharts"]["SeriesRegistry"], root["Highcharts"]);
+})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__20__, __WEBPACK_EXTERNAL_MODULE__820__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__944__) => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
+
+/***/ 20
+(module) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__20__;
+
+/***/ },
+
+/***/ 820
+(module) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__820__;
+
+/***/ },
 
 /***/ 512
 (module) {
@@ -101,9 +115,12 @@ __webpack_require__.d(__webpack_exports__, {
 // EXTERNAL MODULE: external {"amd":["highcharts/highcharts"],"commonjs":["highcharts"],"commonjs2":["highcharts"],"root":["Highcharts"]}
 var highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_ = __webpack_require__(944);
 var highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default = /*#__PURE__*/__webpack_require__.n(highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_);
-// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","SeriesRegistry"],"commonjs":["highcharts","SeriesRegistry"],"commonjs2":["highcharts","SeriesRegistry"],"root":["Highcharts","SeriesRegistry"]}
-var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_ = __webpack_require__(512);
-var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_);
+// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Series","types","pie"],"commonjs":["highcharts","Series","types","pie"],"commonjs2":["highcharts","Series","types","pie"],"root":["Highcharts","Series","types","pie"]}
+var highcharts_Series_types_pie_commonjs_highcharts_Series_types_pie_commonjs2_highcharts_Series_types_pie_root_Highcharts_Series_types_pie_ = __webpack_require__(20);
+var highcharts_Series_types_pie_commonjs_highcharts_Series_types_pie_commonjs2_highcharts_Series_types_pie_root_Highcharts_Series_types_pie_default = /*#__PURE__*/__webpack_require__.n(highcharts_Series_types_pie_commonjs_highcharts_Series_types_pie_commonjs2_highcharts_Series_types_pie_root_Highcharts_Series_types_pie_);
+// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Series"],"commonjs":["highcharts","Series"],"commonjs2":["highcharts","Series"],"root":["Highcharts","Series"]}
+var highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_ = __webpack_require__(820);
+var highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_default = /*#__PURE__*/__webpack_require__.n(highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_);
 ;// ./code/es-modules/Series/Item/ItemPoint.js
 /* *
  *
@@ -121,7 +138,14 @@ var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highc
 
 
 
-const { series: { prototype: { pointClass: Point } }, seriesTypes: { pie: { prototype: { pointClass: PiePoint } } } } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default());
+
+/* *
+ *
+ *  Constants
+ *
+ * */
+const PiePoint = (highcharts_Series_types_pie_commonjs_highcharts_Series_types_pie_commonjs2_highcharts_Series_types_pie_root_Highcharts_Series_types_pie_default()).prototype.pointClass;
+const Point = (highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_default()).prototype.pointClass;
 /* *
  *
  *  Class
@@ -2028,12 +2052,12 @@ const seriesDefaults = {
          * @apioption plotOptions.series.dataLabels.position
          */
         /**
-         * Text rotation in degrees. Note that due to a more complex
-         * structure, backgrounds, borders and padding will be lost on a
-         * rotated data label.
+         * Text rotation in degrees.
          *
          * @sample {highcharts} highcharts/plotoptions/series-datalabels-rotation/
          *         Vertical labels
+         * @sample {highcharts} highcharts/plotoptions/pie-datalabels-rotationmode-plugin
+         *         Perpendicular rotation in pie series via plugin
          *
          * @type      {number}
          * @default   0
@@ -2841,6 +2865,9 @@ const ItemSeriesDefaults = {
  * */
 /* harmony default export */ const Item_ItemSeriesDefaults = (ItemSeriesDefaults);
 
+// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","SeriesRegistry"],"commonjs":["highcharts","SeriesRegistry"],"commonjs2":["highcharts","SeriesRegistry"],"root":["Highcharts","SeriesRegistry"]}
+var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_ = __webpack_require__(512);
+var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_);
 ;// ./code/es-modules/Series/Item/ItemSeries.js
 /* *
  *
@@ -2859,7 +2886,7 @@ const ItemSeriesDefaults = {
 
 
 
-const { pie: PieSeries } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
+
 
 /* *
  *
@@ -2878,7 +2905,7 @@ const { pie: PieSeries } = (highcharts_SeriesRegistry_commonjs_highcharts_Series
  *
  * @augments Highcharts.seriesTypes.pie
  */
-class ItemSeries extends PieSeries {
+class ItemSeries extends (highcharts_Series_types_pie_commonjs_highcharts_Series_types_pie_commonjs2_highcharts_Series_types_pie_root_Highcharts_Series_types_pie_default()) {
     /* *
      *
      *  Functions
@@ -3180,7 +3207,7 @@ class ItemSeries extends PieSeries {
  *
  * */
 /** @internal */
-ItemSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(PieSeries.defaultOptions, Item_ItemSeriesDefaults);
+ItemSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)((highcharts_Series_types_pie_commonjs_highcharts_Series_types_pie_commonjs2_highcharts_Series_types_pie_root_Highcharts_Series_types_pie_default()).defaultOptions, Item_ItemSeriesDefaults);
 (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.extend)(ItemSeries.prototype, {
     markerAttribs: void 0,
     pointClass: Item_ItemPoint

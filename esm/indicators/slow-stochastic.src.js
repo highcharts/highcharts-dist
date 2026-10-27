@@ -1,9 +1,11 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.1.1-modified (2026-10-26)
- * @module highcharts/indicators/indicators
+ * @license Highstock JS v13.1.1-modified (2026-10-27)
+ * @module highcharts/indicators/slow-stochastic
  * @requires highcharts
  * @requires highcharts/modules/stock
+ * @requires highcharts/indicators/indicators
+ * @requires highcharts/indicators/stochastic
  *
  * Slow Stochastic series type for Highcharts Stock
  *
@@ -14,6 +16,11 @@
  * see www.highcharts.com/license
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
+import "../modules/stock.src.js";
+import "./indicators.src.js";
+import "./stochastic.src.js";
+import * as __WEBPACK_EXTERNAL_MODULE__indicators_src_js_eb4ee23f__ from "./indicators.src.js";
+import * as __WEBPACK_EXTERNAL_MODULE__stochastic_src_js_e83721be__ from "./stochastic.src.js";
 /******/ // The require scope
 /******/ const __webpack_require__ = {};
 /******/ 
@@ -46,6 +53,18 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 ;// external ["../highcharts.src.js","default"]
 const external_highcharts_src_js_default_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"];
 var external_highcharts_src_js_default_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_namespaceObject);
+;// external "../modules/stock.src.js"
+
+;// external "./indicators.src.js"
+
+;// external "./stochastic.src.js"
+
+;// external ["./indicators.src.js","default","Series","types","sma"]
+const external_indicators_src_js_default_Series_types_sma_namespaceObject = __WEBPACK_EXTERNAL_MODULE__indicators_src_js_eb4ee23f__["default"].Series.types.sma;
+var external_indicators_src_js_default_Series_types_sma_default = /*#__PURE__*/__webpack_require__.n(external_indicators_src_js_default_Series_types_sma_namespaceObject);
+;// external ["./stochastic.src.js","default","Series","types","stochastic"]
+const external_stochastic_src_js_default_Series_types_stochastic_namespaceObject = __WEBPACK_EXTERNAL_MODULE__stochastic_src_js_e83721be__["default"].Series.types.stochastic;
+var external_stochastic_src_js_default_Series_types_stochastic_default = /*#__PURE__*/__webpack_require__.n(external_stochastic_src_js_default_Series_types_stochastic_namespaceObject);
 ;// external ["../highcharts.src.js","default","SeriesRegistry"]
 const external_highcharts_src_js_default_SeriesRegistry_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].SeriesRegistry;
 var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_SeriesRegistry_namespaceObject);
@@ -60,7 +79,8 @@ var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__w
  * */
 
 
-const { sma: SMAIndicator, stochastic: StochasticIndicator } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
+
+
 
 /* *
  *
@@ -75,7 +95,7 @@ const { sma: SMAIndicator, stochastic: StochasticIndicator } = (external_highcha
  *
  * @augments Highcharts.Series
  */
-class SlowStochasticIndicator extends StochasticIndicator {
+class SlowStochasticIndicator extends (external_stochastic_src_js_default_Series_types_stochastic_default()) {
     /* *
      *
      *  Functions
@@ -94,7 +114,7 @@ class SlowStochasticIndicator extends StochasticIndicator {
         slowValues.xData = fastValues.xData.slice(periods[1] - 1);
         const fastYData = fastValues.yData.slice(periods[1] - 1);
         // Get SMA(%D)
-        const smoothedValues = SMAIndicator.prototype.getValues.call(this, {
+        const smoothedValues = external_indicators_src_js_default_Series_types_sma_default().prototype.getValues.call(this, {
             xData: slowValues.xData,
             yData: fastYData
         }, {
@@ -141,7 +161,7 @@ class SlowStochasticIndicator extends StochasticIndicator {
  * @optionparent plotOptions.slowstochastic
  * @internal
  */
-SlowStochasticIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(StochasticIndicator.defaultOptions, {
+SlowStochasticIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)((external_stochastic_src_js_default_Series_types_stochastic_default()).defaultOptions, {
     params: {
         /**
          * Periods for Slow Stochastic oscillator: [%K, %D, SMA(%D)].
@@ -182,6 +202,9 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
 ''; // To include the above in the js output
 
 ;// ./code/es-modules/masters/indicators/slow-stochastic.src.js
+
+
+
 
 
 

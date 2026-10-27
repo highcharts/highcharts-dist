@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highmaps JS v13.1.1-modified (2026-10-26)
+ * @license Highmaps JS v13.1.1-modified (2026-10-27)
  * @module highcharts/modules/tilemap
  * @requires highcharts
  * @requires highcharts/modules/map
@@ -13,6 +13,8 @@
  * see www.highcharts.com/license
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
+import "./map.src.js";
+import * as __WEBPACK_EXTERNAL_MODULE__map_src_js_a3a01721__ from "./map.src.js";
 /******/ // The require scope
 /******/ const __webpack_require__ = {};
 /******/ 
@@ -45,6 +47,17 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 ;// external ["../highcharts.src.js","default"]
 const external_highcharts_src_js_default_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"];
 var external_highcharts_src_js_default_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_namespaceObject);
+;// external "./map.src.js"
+
+;// external ["../highcharts.src.js","default","Series","types","column"]
+const external_highcharts_src_js_default_Series_types_column_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].Series.types.column;
+var external_highcharts_src_js_default_Series_types_column_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_Series_types_column_namespaceObject);
+;// external ["./map.src.js","default","Series","types","heatmap"]
+const external_map_src_js_default_Series_types_heatmap_namespaceObject = __WEBPACK_EXTERNAL_MODULE__map_src_js_a3a01721__["default"].Series.types.heatmap;
+var external_map_src_js_default_Series_types_heatmap_default = /*#__PURE__*/__webpack_require__.n(external_map_src_js_default_Series_types_heatmap_namespaceObject);
+;// external ["../highcharts.src.js","default","Series","types","scatter"]
+const external_highcharts_src_js_default_Series_types_scatter_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].Series.types.scatter;
+var external_highcharts_src_js_default_Series_types_scatter_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_Series_types_scatter_namespaceObject);
 ;// external ["../highcharts.src.js","default","SeriesRegistry"]
 const external_highcharts_src_js_default_SeriesRegistry_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].SeriesRegistry;
 var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_SeriesRegistry_namespaceObject);
@@ -315,6 +328,9 @@ var ColorAxisComposition;
  * */
 /* harmony default export */ const Color_ColorAxisComposition = (ColorAxisComposition);
 
+;// external ["../highcharts.src.js","default","Series"]
+const external_highcharts_src_js_default_Series_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].Series;
+var external_highcharts_src_js_default_Series_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_Series_namespaceObject);
 ;// ./code/es-modules/Series/Tilemap/TilemapPoint.js
 /* *
  *
@@ -333,7 +349,14 @@ var ColorAxisComposition;
 
 
 
-const { series: { prototype: { pointClass: Point } }, seriesTypes: { heatmap: { prototype: { pointClass: HeatmapPoint } } } } = (external_highcharts_src_js_default_SeriesRegistry_default());
+
+/* *
+ *
+ *  Constants
+ *
+ * */
+const Point = (external_highcharts_src_js_default_Series_default()).prototype.pointClass;
+const HeatmapPoint = (external_map_src_js_default_Series_types_heatmap_default()).prototype.pointClass;
 /* *
  *
  *  Class
@@ -628,7 +651,7 @@ const TilemapSeriesDefaults = {
 
 const { noop } = (external_highcharts_src_js_default_default());
 
-const { heatmap: HeatmapSeries, scatter: ScatterSeries } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
+
 
 /* *
  *
@@ -658,7 +681,7 @@ function tilePaddingFromTileSize(series, xDiv, yDiv) {
 const TilemapShapes = {
     // Hexagon shape type.
     hexagon: {
-        alignDataLabel: ScatterSeries.prototype.alignDataLabel,
+        alignDataLabel: (external_highcharts_src_js_default_Series_types_scatter_default()).prototype.alignDataLabel,
         getSeriesPadding: function (series) {
             return tilePaddingFromTileSize(series, 3, 2);
         },
@@ -737,7 +760,7 @@ const TilemapShapes = {
     },
     // Diamond shape type.
     diamond: {
-        alignDataLabel: ScatterSeries.prototype.alignDataLabel,
+        alignDataLabel: (external_highcharts_src_js_default_Series_types_scatter_default()).prototype.alignDataLabel,
         getSeriesPadding: function (series) {
             return tilePaddingFromTileSize(series, 2, 2);
         },
@@ -807,12 +830,12 @@ const TilemapShapes = {
     },
     // Circle shape type.
     circle: {
-        alignDataLabel: ScatterSeries.prototype.alignDataLabel,
+        alignDataLabel: (external_highcharts_src_js_default_Series_types_scatter_default()).prototype.alignDataLabel,
         getSeriesPadding: function (series) {
             return tilePaddingFromTileSize(series, 2, 2);
         },
         haloPath: function (size) {
-            return ScatterSeries.prototype.pointClass.prototype.haloPath
+            return external_highcharts_src_js_default_Series_types_scatter_default().prototype.pointClass.prototype.haloPath
                 .call(this, size + (size && this.radius));
         },
         translate: function () {
@@ -885,10 +908,10 @@ const TilemapShapes = {
     },
     // Square shape type.
     square: {
-        alignDataLabel: HeatmapSeries.prototype.alignDataLabel,
-        translate: HeatmapSeries.prototype.translate,
+        alignDataLabel: (external_map_src_js_default_Series_types_heatmap_default()).prototype.alignDataLabel,
+        translate: (external_map_src_js_default_Series_types_heatmap_default()).prototype.translate,
         getSeriesPadding: noop,
-        haloPath: HeatmapSeries.prototype.pointClass.prototype.haloPath
+        haloPath: (external_map_src_js_default_Series_types_heatmap_default()).prototype.pointClass.prototype.haloPath
     }
 };
 /* *
@@ -916,7 +939,9 @@ const TilemapShapes = {
 
 const { composed, noop: TilemapSeries_noop } = (external_highcharts_src_js_default_default());
 
-const { column: ColumnSeries, heatmap: TilemapSeries_HeatmapSeries, scatter: TilemapSeries_ScatterSeries } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
+
+
+
 
 
 
@@ -974,7 +999,7 @@ function onAxisAfterSetAxisTranslation() {
  *
  * @augments Highcharts.Series
  */
-class TilemapSeries extends TilemapSeries_HeatmapSeries {
+class TilemapSeries extends (external_map_src_js_default_Series_types_heatmap_default()) {
     /* *
      *
      *  Static Functions
@@ -1002,7 +1027,7 @@ class TilemapSeries extends TilemapSeries_HeatmapSeries {
     drawPoints() {
         // In styled mode, use CSS, otherwise the fill used in the style
         // sheet will take precedence over the fill attribute.
-        ColumnSeries.prototype.drawPoints.call(this);
+        external_highcharts_src_js_default_Series_types_column_default().prototype.drawPoints.call(this);
         for (const point of this.points) {
             if (point.graphic) {
                 point.graphic[this.chart.styledMode ? 'css' : 'animate'](this.colorAttribs(point));
@@ -1065,7 +1090,7 @@ class TilemapSeries extends TilemapSeries_HeatmapSeries {
  *
  * */
 /** @internal */
-TilemapSeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(TilemapSeries_HeatmapSeries.defaultOptions, Tilemap_TilemapSeriesDefaults);
+TilemapSeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)((external_map_src_js_default_Series_types_heatmap_default()).defaultOptions, Tilemap_TilemapSeriesDefaults);
 (0,external_highcharts_src_js_default_namespaceObject.extend)(TilemapSeries.prototype, {
     // Revert the noop on getSymbol.
     getSymbol: TilemapSeries_noop,
@@ -1073,8 +1098,8 @@ TilemapSeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceOb
     // heatmap implementation.
     // TODO: Consider standardizing heatmap and tilemap into more
     // consistent form.
-    markerAttribs: TilemapSeries_ScatterSeries.prototype.markerAttribs,
-    pointAttribs: ColumnSeries.prototype.pointAttribs,
+    markerAttribs: (external_highcharts_src_js_default_Series_types_scatter_default()).prototype.markerAttribs,
+    pointAttribs: (external_highcharts_src_js_default_Series_types_column_default()).prototype.pointAttribs,
     pointClass: Tilemap_TilemapPoint
 });
 external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('tilemap', TilemapSeries);
@@ -1095,6 +1120,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
 ''; // Keeps doclets above in JS file
 
 ;// ./code/es-modules/masters/modules/tilemap.src.js
+
 
 
 

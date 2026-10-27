@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-26)
+ * @license Highcharts JS v13.1.1-modified (2026-10-27)
  * @module highcharts/modules/venn
  * @requires highcharts
  *
@@ -12,14 +12,14 @@
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(root["_Highcharts"]["Color"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
+		module.exports = factory(root["_Highcharts"]["Color"], root["_Highcharts"]["Series"]["types"]["scatter"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
 	else if(typeof define === 'function' && define.amd)
-		define("highcharts/modules/venn", ["highcharts/highcharts"], function (amd1) {return factory(amd1["Color"],amd1["SeriesRegistry"],amd1);});
+		define("highcharts/modules/venn", ["highcharts/highcharts"], function (amd1) {return factory(amd1["Color"],amd1["Series"]["types"]["scatter"],amd1["SeriesRegistry"],amd1);});
 	else if(typeof exports === 'object')
-		exports["highcharts/modules/venn"] = factory(root["_Highcharts"]["Color"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
+		exports["highcharts/modules/venn"] = factory(root["_Highcharts"]["Color"], root["_Highcharts"]["Series"]["types"]["scatter"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
 	else
-		root["Highcharts"] = factory(root["Highcharts"]["Color"], root["Highcharts"]["SeriesRegistry"], root["Highcharts"]);
-})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__620__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__944__) => {
+		root["Highcharts"] = factory(root["Highcharts"]["Color"], root["Highcharts"]["Series"]["types"]["scatter"], root["Highcharts"]["SeriesRegistry"], root["Highcharts"]);
+})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__620__, __WEBPACK_EXTERNAL_MODULE__632__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__944__) => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
@@ -28,6 +28,13 @@ return /******/ (() => { // webpackBootstrap
 (module) {
 
 module.exports = __WEBPACK_EXTERNAL_MODULE__620__;
+
+/***/ },
+
+/***/ 632
+(module) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__632__;
 
 /***/ },
 
@@ -695,6 +702,9 @@ const DrawPointUtilities = {
 /** @internal */
 /* harmony default export */ const Series_DrawPointUtilities = (DrawPointUtilities);
 
+// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Series","types","scatter"],"commonjs":["highcharts","Series","types","scatter"],"commonjs2":["highcharts","Series","types","scatter"],"root":["Highcharts","Series","types","scatter"]}
+var highcharts_Series_types_scatter_commonjs_highcharts_Series_types_scatter_commonjs2_highcharts_Series_types_scatter_root_Highcharts_Series_types_scatter_ = __webpack_require__(632);
+var highcharts_Series_types_scatter_commonjs_highcharts_Series_types_scatter_commonjs2_highcharts_Series_types_scatter_root_Highcharts_Series_types_scatter_default = /*#__PURE__*/__webpack_require__.n(highcharts_Series_types_scatter_commonjs_highcharts_Series_types_scatter_commonjs2_highcharts_Series_types_scatter_root_Highcharts_Series_types_scatter_);
 // EXTERNAL MODULE: external {"amd":["highcharts/highcharts","SeriesRegistry"],"commonjs":["highcharts","SeriesRegistry"],"commonjs2":["highcharts","SeriesRegistry"],"root":["Highcharts","SeriesRegistry"]}
 var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_ = __webpack_require__(512);
 var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_);
@@ -719,7 +729,12 @@ var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highc
 
 
 
-const { scatter: { prototype: { pointClass: ScatterPoint } } } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
+/* *
+ *
+ *  Constants
+ *
+ * */
+const ScatterPoint = (highcharts_Series_types_scatter_commonjs_highcharts_Series_types_scatter_commonjs2_highcharts_Series_types_scatter_root_Highcharts_Series_types_scatter_default()).prototype.pointClass;
 /* *
  *
  *  Class
@@ -1618,7 +1633,7 @@ const { getAreaOfIntersectionBetweenCircles, getCirclesIntersectionPolygon, isCi
 
 const { getCenterOfPoints: VennSeries_getCenterOfPoints } = Geometry_GeometryUtilities;
 
-const { scatter: ScatterSeries } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
+
 
 
 
@@ -1635,7 +1650,7 @@ const { scatter: ScatterSeries } = (highcharts_SeriesRegistry_commonjs_highchart
  *
  * @augments Highcharts.Series
  */
-class VennSeries extends ScatterSeries {
+class VennSeries extends (highcharts_Series_types_scatter_commonjs_highcharts_Series_types_scatter_commonjs2_highcharts_Series_types_scatter_root_Highcharts_Series_types_scatter_default()) {
     /* *
      *
      *  Static Functions
@@ -1909,7 +1924,7 @@ class VennSeries extends ScatterSeries {
     }
     /** @internal */
     init() {
-        ScatterSeries.prototype.init.apply(this, arguments);
+        highcharts_Series_types_scatter_commonjs_highcharts_Series_types_scatter_commonjs2_highcharts_Series_types_scatter_root_Highcharts_Series_types_scatter_default().prototype.init.apply(this, arguments);
         // Venn's opacity is a different option from other series
         delete this.opacity;
     }
@@ -2023,7 +2038,7 @@ class VennSeries extends ScatterSeries {
  * */
 VennSeries.splitter = 'highcharts-split';
 /** @internal */
-VennSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(ScatterSeries.defaultOptions, Venn_VennSeriesDefaults);
+VennSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)((highcharts_Series_types_scatter_commonjs_highcharts_Series_types_scatter_commonjs2_highcharts_Series_types_scatter_root_Highcharts_Series_types_scatter_default()).defaultOptions, Venn_VennSeriesDefaults);
 (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.extend)(VennSeries.prototype, {
     axisTypes: [],
     directTouch: true,

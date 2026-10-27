@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-26)
+ * @license Highcharts JS v13.1.1-modified (2026-10-27)
  * @module highcharts/modules/pyramid3d
  * @requires highcharts
  * @requires highcharts/highcharts-3d
@@ -16,6 +16,10 @@
  * see www.highcharts.com/license
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
+import "../highcharts-3d.src.js";
+import "./cylinder.src.js";
+import "./funnel3d.src.js";
+import * as __WEBPACK_EXTERNAL_MODULE__funnel3d_src_js_945ef2a3__ from "./funnel3d.src.js";
 /******/ // The require scope
 /******/ const __webpack_require__ = {};
 /******/ 
@@ -48,6 +52,12 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 ;// external ["../highcharts.src.js","default"]
 const external_highcharts_src_js_default_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"];
 var external_highcharts_src_js_default_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_namespaceObject);
+;// external "../highcharts-3d.src.js"
+
+;// external "./cylinder.src.js"
+
+;// external "./funnel3d.src.js"
+
 ;// ./code/es-modules/Series/Pyramid3D/Pyramid3DSeriesDefaults.js
 /* *
  *
@@ -175,6 +185,9 @@ const Pyramid3DSeriesDefaults = {
  * */
 /* harmony default export */ const Pyramid3D_Pyramid3DSeriesDefaults = (Pyramid3DSeriesDefaults);
 
+;// external ["./funnel3d.src.js","default","Series","types","funnel3d"]
+const external_funnel3d_src_js_default_Series_types_funnel3d_namespaceObject = __WEBPACK_EXTERNAL_MODULE__funnel3d_src_js_945ef2a3__["default"].Series.types.funnel3d;
+var external_funnel3d_src_js_default_Series_types_funnel3d_default = /*#__PURE__*/__webpack_require__.n(external_funnel3d_src_js_default_Series_types_funnel3d_namespaceObject);
 ;// external ["../highcharts.src.js","default","SeriesRegistry"]
 const external_highcharts_src_js_default_SeriesRegistry_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].SeriesRegistry;
 var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_SeriesRegistry_namespaceObject);
@@ -196,7 +209,7 @@ var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__w
 
 
 
-const { funnel3d: Funnel3DSeries } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
+
 /* *
  *
  *  Class
@@ -214,7 +227,7 @@ const { funnel3d: Funnel3DSeries } = (external_highcharts_src_js_default_SeriesR
  * @requires modules/funnel3d
  * @requires modules/pyramid3d
  */
-class Pyramid3DSeries extends Funnel3DSeries {
+class Pyramid3DSeries extends (external_funnel3d_src_js_default_Series_types_funnel3d_default()) {
 }
 /* *
  *
@@ -222,7 +235,7 @@ class Pyramid3DSeries extends Funnel3DSeries {
  *
  * */
 /** @internal */
-Pyramid3DSeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(Funnel3DSeries.defaultOptions, Pyramid3D_Pyramid3DSeriesDefaults);
+Pyramid3DSeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)((external_funnel3d_src_js_default_Series_types_funnel3d_default()).defaultOptions, Pyramid3D_Pyramid3DSeriesDefaults);
 external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('pyramid3d', Pyramid3DSeries);
 /* *
  *
@@ -232,6 +245,9 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
 /* harmony default export */ const Pyramid3D_Pyramid3DSeries = ((/* unused pure expression or super */ null && (Pyramid3DSeries)));
 
 ;// ./code/es-modules/masters/modules/pyramid3d.src.js
+
+
+
 
 
 

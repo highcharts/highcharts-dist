@@ -1,5 +1,5 @@
 /**
- * Highcharts JS v13.1.1-modified (2026-10-26)
+ * Highcharts JS v13.1.1-modified (2026-10-27)
  * @module highcharts/modules/pyramid3d
  * @requires highcharts
  * @requires highcharts/highcharts-3d
@@ -13,4 +13,4 @@
  *
  * A commercial license may be required depending on use,
  * see www.highcharts.com/license
- */import*as e from"../highcharts.js";let t={};t.n=e=>{let r=e&&e.__esModule?()=>e.default:()=>e;return t.d(r,{a:r}),r},t.d=(e,r)=>{for(var a in r)t.o(r,a)&&!t.o(e,a)&&Object.defineProperty(e,a,{enumerable:!0,get:r[a]})},t.o=(e,t)=>Object.prototype.hasOwnProperty.call(e,t);let r=e.default;var a=t.n(r);let s=e.default.SeriesRegistry;var l=t.n(s);let{funnel3d:d}=l().seriesTypes;class i extends d{}i.defaultOptions=(0,r.merge)(d.defaultOptions,{reversed:!0,neckHeight:0,neckWidth:0,dataLabels:{verticalAlign:"top"}}),l().registerSeriesType("pyramid3d",i);let n=a();export{n as default};
+ */import*as e from"../highcharts.js";import"../highcharts-3d.js";import"./cylinder.js";import*as r from"./funnel3d.js";let t={};t.n=e=>{let r=e&&e.__esModule?()=>e.default:()=>e;return t.d(r,{a:r}),r},t.d=(e,r)=>{for(var s in r)t.o(r,s)&&!t.o(e,s)&&Object.defineProperty(e,s,{enumerable:!0,get:r[s]})},t.o=(e,r)=>Object.prototype.hasOwnProperty.call(e,r);let s=e.default;var a=t.n(s);let l=r.default.Series.types.funnel3d;var d=t.n(l);let i=e.default.SeriesRegistry;var n=t.n(i);class o extends d(){}o.defaultOptions=(0,s.merge)(d().defaultOptions,{reversed:!0,neckHeight:0,neckWidth:0,dataLabels:{verticalAlign:"top"}}),n().registerSeriesType("pyramid3d",o);let p=a();export{p as default};

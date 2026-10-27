@@ -10,9 +10,14 @@
  *
  * */
 'use strict';
-import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-const { area: { prototype: { pointClass: AreaPoint, pointClass: { prototype: areaProto } } } } = SeriesRegistry.seriesTypes;
+import AreaSeries from '../Area/AreaSeries.js';
 import { defined, isNumber } from '../../Shared/Utilities.js';
+/* *
+ *
+ *  Constants
+ *
+ * */
+const AreaPoint = AreaSeries.prototype.pointClass;
 /* *
  *
  *  Class
@@ -46,7 +51,7 @@ class AreaRangePoint extends AreaPoint {
             this.plotX = this.plotHighX;
         }
         // Top state:
-        areaProto.setState.apply(this, arguments);
+        super.setState.apply(this, arguments);
         this.state = prevState;
         // Now restore defaults
         this.plotY = this.plotLow;
@@ -61,7 +66,7 @@ class AreaRangePoint extends AreaPoint {
         series.lowerStateMarkerGraphic = void 0;
         const originalSettings = series.modifyMarkerSettings();
         // Bottom state
-        areaProto.setState.apply(this, arguments);
+        super.setState.apply(this, arguments);
         // Restore previous state
         series.restoreMarkerSettings(originalSettings);
     }
@@ -75,7 +80,7 @@ class AreaRangePoint extends AreaPoint {
             this.plotX = this.plotLowX;
         }
         if (this.isInside) {
-            path = areaProto.haloPath.apply(this, arguments);
+            path = super.haloPath.apply(this, arguments);
         }
         // Top halo
         this.plotY = this.plotHigh;
@@ -83,7 +88,7 @@ class AreaRangePoint extends AreaPoint {
             this.plotX = this.plotHighX;
         }
         if (this.isTopInside) {
-            path = path.concat(areaProto.haloPath.apply(this, arguments));
+            path = path.concat(super.haloPath.apply(this, arguments));
         }
         return path;
     }

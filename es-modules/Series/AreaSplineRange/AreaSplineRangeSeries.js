@@ -11,8 +11,8 @@
  * */
 'use strict';
 import AreaRangeSeries from '../AreaRange/AreaRangeSeries.js';
+import SplineSeries from '../Spline/SplineSeries.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-const { spline: { prototype: splineProto } } = SeriesRegistry.seriesTypes;
 import { extend, merge } from '../../Shared/Utilities.js';
 /* *
  *
@@ -37,7 +37,7 @@ class AreaSplineRangeSeries extends AreaRangeSeries {
 /** @internal */
 AreaSplineRangeSeries.defaultOptions = merge(AreaRangeSeries.defaultOptions);
 extend(AreaSplineRangeSeries.prototype, {
-    getPointSpline: splineProto.getPointSpline
+    getPointSpline: SplineSeries.prototype.getPointSpline
 });
 SeriesRegistry.registerSeriesType('areasplinerange', AreaSplineRangeSeries);
 /* *

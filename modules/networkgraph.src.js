@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-26)
+ * @license Highcharts JS v13.1.1-modified (2026-10-27)
  * @module highcharts/modules/networkgraph
  * @requires highcharts
  *
@@ -14,22 +14,50 @@
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(root["_Highcharts"]["SVGElement"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
+		module.exports = factory(root["_Highcharts"]["Point"], root["_Highcharts"]["SVGElement"], root["_Highcharts"]["Series"]["types"]["column"], root["_Highcharts"]["Series"]["types"]["line"], root["_Highcharts"]["Series"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
 	else if(typeof define === 'function' && define.amd)
-		define("highcharts/modules/networkgraph", ["highcharts/highcharts"], function (amd1) {return factory(amd1["SVGElement"],amd1["SeriesRegistry"],amd1);});
+		define("highcharts/modules/networkgraph", ["highcharts/highcharts"], function (amd1) {return factory(amd1["Point"],amd1["SVGElement"],amd1["Series"]["types"]["column"],amd1["Series"]["types"]["line"],amd1["Series"],amd1["SeriesRegistry"],amd1);});
 	else if(typeof exports === 'object')
-		exports["highcharts/modules/networkgraph"] = factory(root["_Highcharts"]["SVGElement"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
+		exports["highcharts/modules/networkgraph"] = factory(root["_Highcharts"]["Point"], root["_Highcharts"]["SVGElement"], root["_Highcharts"]["Series"]["types"]["column"], root["_Highcharts"]["Series"]["types"]["line"], root["_Highcharts"]["Series"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
 	else
-		root["Highcharts"] = factory(root["Highcharts"]["SVGElement"], root["Highcharts"]["SeriesRegistry"], root["Highcharts"]);
-})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__28__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__563__) => {
+		root["Highcharts"] = factory(root["Highcharts"]["Point"], root["Highcharts"]["SVGElement"], root["Highcharts"]["Series"]["types"]["column"], root["Highcharts"]["Series"]["types"]["line"], root["Highcharts"]["Series"], root["Highcharts"]["SeriesRegistry"], root["Highcharts"]);
+})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__260__, __WEBPACK_EXTERNAL_MODULE__28__, __WEBPACK_EXTERNAL_MODULE__448__, __WEBPACK_EXTERNAL_MODULE__176__, __WEBPACK_EXTERNAL_MODULE__820__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__563__) => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
+
+/***/ 260
+(module) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__260__;
+
+/***/ },
 
 /***/ 28
 (module) {
 
 module.exports = __WEBPACK_EXTERNAL_MODULE__28__;
+
+/***/ },
+
+/***/ 448
+(module) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__448__;
+
+/***/ },
+
+/***/ 176
+(module) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__176__;
+
+/***/ },
+
+/***/ 820
+(module) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__820__;
 
 /***/ },
 
@@ -423,9 +451,12 @@ const GraphLayoutComposition = {
 };
 /* harmony default export */ const Series_GraphLayoutComposition = (GraphLayoutComposition);
 
-// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","SeriesRegistry"],"commonjs":["highcharts","SeriesRegistry"],"commonjs2":["highcharts","SeriesRegistry"],"root":["Highcharts","SeriesRegistry"]}
-var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_ = __webpack_require__(512);
-var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_);
+// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Point"],"commonjs":["highcharts","Point"],"commonjs2":["highcharts","Point"],"root":["Highcharts","Point"]}
+var highcharts_Point_commonjs_highcharts_Point_commonjs2_highcharts_Point_root_Highcharts_Point_ = __webpack_require__(260);
+var highcharts_Point_commonjs_highcharts_Point_commonjs2_highcharts_Point_root_Highcharts_Point_default = /*#__PURE__*/__webpack_require__.n(highcharts_Point_commonjs_highcharts_Point_commonjs2_highcharts_Point_root_Highcharts_Point_);
+// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Series"],"commonjs":["highcharts","Series"],"commonjs2":["highcharts","Series"],"root":["Highcharts","Series"]}
+var highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_ = __webpack_require__(820);
+var highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_default = /*#__PURE__*/__webpack_require__.n(highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_);
 ;// ./code/es-modules/Series/NodesComposition.js
 /* *
  *
@@ -433,7 +464,7 @@ var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highc
  * */
 
 
-const { series: { prototype: seriesProto, prototype: { pointClass: { prototype: pointProto } } } } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default());
+
 
 /* *
  *
@@ -556,7 +587,7 @@ var NodesComposition;
         // Nodes must also be destroyed (#8682, #9300)
         this.data = []
             .concat(this.points || [], this.nodes);
-        return seriesProto.destroy.apply(this, arguments);
+        return highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_default().prototype.destroy.apply(this, arguments);
     }
     NodesComposition.destroy = destroy;
     /**
@@ -566,7 +597,7 @@ var NodesComposition;
      */
     function generatePoints() {
         const chart = this.chart, nodeLookup = {};
-        seriesProto.generatePoints.call(this);
+        highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_default().prototype.generatePoints.call(this);
         if (!this.nodes) {
             this.nodes = []; // List of Point-like node items
         }
@@ -620,7 +651,7 @@ var NodesComposition;
             });
             this.nodes.length = 0;
         }
-        seriesProto.setData.apply(this, arguments);
+        highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_default().prototype.setData.apply(this, arguments);
     }
     /**
      * When hovering node, highlight all connected links. When hovering a link,
@@ -633,19 +664,19 @@ var NodesComposition;
         if (state !== 'select') {
             others.forEach((linkOrNode) => {
                 if (linkOrNode && linkOrNode.series) {
-                    pointProto.setState.apply(linkOrNode, args);
+                    highcharts_Point_commonjs_highcharts_Point_commonjs2_highcharts_Point_root_Highcharts_Point_default().prototype.setState.apply(linkOrNode, args);
                     if (!linkOrNode.isNode) {
                         if (linkOrNode.fromNode.graphic) {
-                            pointProto.setState.apply(linkOrNode.fromNode, args);
+                            highcharts_Point_commonjs_highcharts_Point_commonjs2_highcharts_Point_root_Highcharts_Point_default().prototype.setState.apply(linkOrNode.fromNode, args);
                         }
                         if (linkOrNode.toNode && linkOrNode.toNode.graphic) {
-                            pointProto.setState.apply(linkOrNode.toNode, args);
+                            highcharts_Point_commonjs_highcharts_Point_commonjs2_highcharts_Point_root_Highcharts_Point_default().prototype.setState.apply(linkOrNode.toNode, args);
                         }
                     }
                 }
             });
         }
-        pointProto.setState.apply(this, args);
+        highcharts_Point_commonjs_highcharts_Point_commonjs2_highcharts_Point_root_Highcharts_Point_default().prototype.setState.apply(this, args);
     }
     NodesComposition.setNodeState = setNodeState;
     /**
@@ -655,7 +686,7 @@ var NodesComposition;
      */
     function updateNode(options, redraw, animation, runEvent) {
         const nodes = this.series.options.nodes, data = this.series.options.data, dataLength = data?.length || 0, linkConfig = data?.[this.index];
-        pointProto.update.call(this, options, this.isNode ? false : redraw, // Hold the redraw for nodes
+        highcharts_Point_commonjs_highcharts_Point_commonjs2_highcharts_Point_root_Highcharts_Point_default().prototype.update.call(this, options, this.isNode ? false : redraw, // Hold the redraw for nodes
         animation, runEvent);
         if (this.isNode) {
             // `this.index` refers to `series.nodes`, not `options.nodes` array
@@ -718,8 +749,13 @@ var NodesComposition;
 
 
 
-const { series: { prototype: NetworkgraphPoint_seriesProto, prototype: { pointClass: Point } } } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default());
 
+/* *
+ *
+ *  Constants
+ *
+ * */
+const Point = (highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_default()).prototype.pointClass;
 /* *
  *
  *  Class
@@ -912,7 +948,7 @@ class NetworkgraphPoint extends Point {
                     linkFromTo.toNode.linksTo.splice(index, 1);
                 }
                 // Remove link from data/points collections
-                NetworkgraphPoint_seriesProto.removePoint.call(series, series.data.indexOf(linkFromTo), false, false);
+                highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_default().prototype.removePoint.call(series, series.data.indexOf(linkFromTo), false, false);
             });
             // Restore points array, after links are removed
             series.points = series.data.slice();
@@ -2893,6 +2929,15 @@ class ReingoldFruchtermanLayout {
  * */
 /* harmony default export */ const Networkgraph_ReingoldFruchtermanLayout = (ReingoldFruchtermanLayout);
 
+// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Series","types","column"],"commonjs":["highcharts","Series","types","column"],"commonjs2":["highcharts","Series","types","column"],"root":["Highcharts","Series","types","column"]}
+var highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_ = __webpack_require__(448);
+var highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_default = /*#__PURE__*/__webpack_require__.n(highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_);
+// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Series","types","line"],"commonjs":["highcharts","Series","types","line"],"commonjs2":["highcharts","Series","types","line"],"root":["Highcharts","Series","types","line"]}
+var highcharts_Series_types_line_commonjs_highcharts_Series_types_line_commonjs2_highcharts_Series_types_line_root_Highcharts_Series_types_line_ = __webpack_require__(176);
+var highcharts_Series_types_line_commonjs_highcharts_Series_types_line_commonjs2_highcharts_Series_types_line_root_Highcharts_Series_types_line_default = /*#__PURE__*/__webpack_require__.n(highcharts_Series_types_line_commonjs_highcharts_Series_types_line_commonjs2_highcharts_Series_types_line_root_Highcharts_Series_types_line_);
+// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","SeriesRegistry"],"commonjs":["highcharts","SeriesRegistry"],"commonjs2":["highcharts","SeriesRegistry"],"root":["Highcharts","SeriesRegistry"]}
+var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_ = __webpack_require__(512);
+var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_);
 ;// ./code/es-modules/Series/SimulationSeriesUtilities.js
 /* *
  *
@@ -3266,7 +3311,9 @@ const { noop } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highc
 
 
 
-const { series: Series, seriesTypes: { column: { prototype: columnProto }, line: { prototype: lineProto } } } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default());
+
+
+
 
 const { initDataLabels: NetworkgraphSeries_initDataLabels, initDataLabelsDefer: NetworkgraphSeries_initDataLabelsDefer } = SimulationSeriesUtilities;
 
@@ -3284,7 +3331,7 @@ composeTextPath((highcharts_SVGElement_commonjs_highcharts_SVGElement_commonjs2_
  *
  * @extends Highcharts.Series
  */
-class NetworkgraphSeries extends Series {
+class NetworkgraphSeries extends (highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_default()) {
     constructor() {
         /* *
          *
@@ -3374,13 +3421,13 @@ class NetworkgraphSeries extends Series {
             textPath = dlOptions.textPath;
         }
         // Render node labels:
-        Series.prototype.drawDataLabels.call(this, this.nodes);
+        highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_default().prototype.drawDataLabels.call(this, this.nodes);
         // Render link labels:
         if (dlOptions?.linkTextPath) {
             // If linkTextPath is set, render link labels with linkTextPath
             dlOptions.textPath = dlOptions.linkTextPath;
         }
-        Series.prototype.drawDataLabels.call(this, this.data);
+        highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_default().prototype.drawDataLabels.call(this, this.data);
         // Go back to textPath for nodes
         if (dlOptions?.textPath) {
             dlOptions.textPath = textPath;
@@ -3477,7 +3524,7 @@ class NetworkgraphSeries extends Series {
      * @private
      */
     markerAttribs(point, state) {
-        const attribs = Series.prototype.markerAttribs.call(this, point, state);
+        const attribs = highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_default().prototype.markerAttribs.call(this, point, state);
         // Series.render() is called before initial positions are set:
         if (!(0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.defined)(point.plotY)) {
             attribs.y = 0;
@@ -3492,7 +3539,7 @@ class NetworkgraphSeries extends Series {
     pointAttribs(point, state) {
         // By default, only `selected` state is passed on
         const pointState = state || point && point.state || 'normal', stateOptions = this.options.states?.[pointState];
-        let attribs = Series.prototype.pointAttribs.call(this, point, pointState);
+        let attribs = highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_default().prototype.pointAttribs.call(this, point, pointState);
         if (point && !point.isNode) {
             attribs = point.getLinkAttributes();
             // For link, get nested names:
@@ -3521,7 +3568,7 @@ class NetworkgraphSeries extends Series {
         const series = this, points = series.points, hoverPoint = series.chart.hoverPoint, dataLabels = [];
         // Render markers:
         series.points = series.nodes;
-        lineProto.render.call(this);
+        highcharts_Series_types_line_commonjs_highcharts_Series_types_line_commonjs2_highcharts_Series_types_line_root_Highcharts_Series_types_line_default().prototype.render.call(this);
         series.points = points;
         points.forEach(function (point) {
             if (point.fromNode && point.toNode) {
@@ -3550,11 +3597,11 @@ class NetworkgraphSeries extends Series {
     setState(state, inherit) {
         if (inherit) {
             this.points = this.nodes.concat(this.data);
-            Series.prototype.setState.apply(this, arguments);
+            highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_default().prototype.setState.apply(this, arguments);
             this.points = this.data;
         }
         else {
-            Series.prototype.setState.apply(this, arguments);
+            highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_default().prototype.setState.apply(this, arguments);
         }
         // If simulation is done, re-render points with new states:
         if (!this.layout.simulation && !state) {
@@ -3579,7 +3626,7 @@ class NetworkgraphSeries extends Series {
         });
     }
 }
-NetworkgraphSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(Series.defaultOptions, Networkgraph_NetworkgraphSeriesDefaults);
+NetworkgraphSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)((highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_default()).defaultOptions, Networkgraph_NetworkgraphSeriesDefaults);
 (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.extend)(NetworkgraphSeries.prototype, {
     pointClass: Networkgraph_NetworkgraphPoint,
     animate: void 0, // Animation is run in `series.simulation`
@@ -3595,7 +3642,7 @@ NetworkgraphSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_
     initDataLabels: NetworkgraphSeries_initDataLabels,
     buildKDTree: noop,
     createNode: Series_NodesComposition.createNode,
-    drawTracker: columnProto.drawTracker,
+    drawTracker: (highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_default()).prototype.drawTracker,
     onMouseDown: Series_DragNodesComposition.onMouseDown,
     onMouseMove: Series_DragNodesComposition.onMouseMove,
     onMouseUp: Series_DragNodesComposition.onMouseUp,

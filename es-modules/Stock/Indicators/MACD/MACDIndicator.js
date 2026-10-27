@@ -7,10 +7,11 @@
  *
  * */
 'use strict';
+import ColumnSeries from '../../../Series/Column/ColumnSeries.js';
 import H from '../../../Core/Globals.js';
 const { noop } = H;
+import SMAIndicator from '../SMA/SMAIndicator.js';
 import SeriesRegistry from '../../../Core/Series/SeriesRegistry.js';
-const { sma: SMAIndicator } = SeriesRegistry.seriesTypes;
 import { correctFloat, defined, extend, merge } from '../../../Shared/Utilities.js';
 /* *
  *
@@ -347,9 +348,9 @@ extend(MACDIndicator.prototype, {
     pointValKey: 'y',
     // Columns support:
     markerAttribs: noop,
-    getColumnMetrics: H.seriesTypes.column.prototype.getColumnMetrics,
-    crispCol: H.seriesTypes.column.prototype.crispCol,
-    drawPoints: H.seriesTypes.column.prototype.drawPoints
+    getColumnMetrics: ColumnSeries.prototype.getColumnMetrics,
+    crispCol: ColumnSeries.prototype.crispCol,
+    drawPoints: ColumnSeries.prototype.drawPoints
 });
 SeriesRegistry.registerSeriesType('macd', MACDIndicator);
 /* *

@@ -10,8 +10,7 @@
  *
  * */
 'use strict';
-import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-const { series: { prototype: { pointClass: Point } } } = SeriesRegistry;
+import Point from '../../Core/Series/Point.js';
 /* *
  *
  *  Class

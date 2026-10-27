@@ -1,5 +1,6 @@
+// SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highmaps JS v13.1.1-modified (2026-10-26)
+ * @license Highmaps JS v13.1.1-modified (2026-10-27)
  * @module highcharts/modules/contour
  * @requires highcharts
  * @requires highcharts/modules/coloraxis
@@ -10,14 +11,14 @@
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(root["_Highcharts"]["Axis"], root["_Highcharts"]["Color"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
+		module.exports = factory(root["_Highcharts"]["Axis"], root["_Highcharts"]["Color"], root["_Highcharts"]["Series"]["types"]["scatter"], root["_Highcharts"]["Series"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
 	else if(typeof define === 'function' && define.amd)
-		define("highcharts/modules/contour", ["highcharts/highcharts"], function (amd1) {return factory(amd1["Axis"],amd1["Color"],amd1["SeriesRegistry"],amd1);});
+		define("highcharts/modules/contour", ["highcharts/highcharts"], function (amd1) {return factory(amd1["Axis"],amd1["Color"],amd1["Series"]["types"]["scatter"],amd1["Series"],amd1["SeriesRegistry"],amd1);});
 	else if(typeof exports === 'object')
-		exports["highcharts/modules/contour"] = factory(root["_Highcharts"]["Axis"], root["_Highcharts"]["Color"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
+		exports["highcharts/modules/contour"] = factory(root["_Highcharts"]["Axis"], root["_Highcharts"]["Color"], root["_Highcharts"]["Series"]["types"]["scatter"], root["_Highcharts"]["Series"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
 	else
-		root["Highcharts"] = factory(root["Highcharts"]["Axis"], root["Highcharts"]["Color"], root["Highcharts"]["SeriesRegistry"], root["Highcharts"]);
-})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__532__, __WEBPACK_EXTERNAL_MODULE__620__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__944__) => {
+		root["Highcharts"] = factory(root["Highcharts"]["Axis"], root["Highcharts"]["Color"], root["Highcharts"]["Series"]["types"]["scatter"], root["Highcharts"]["Series"], root["Highcharts"]["SeriesRegistry"], root["Highcharts"]);
+})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__532__, __WEBPACK_EXTERNAL_MODULE__620__, __WEBPACK_EXTERNAL_MODULE__632__, __WEBPACK_EXTERNAL_MODULE__820__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__944__) => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
@@ -33,6 +34,20 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__532__;
 (module) {
 
 module.exports = __WEBPACK_EXTERNAL_MODULE__620__;
+
+/***/ },
+
+/***/ 632
+(module) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__632__;
+
+/***/ },
+
+/***/ 820
+(module) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__820__;
 
 /***/ },
 
@@ -1051,9 +1066,9 @@ const colorAxisDefaults = {
  * */
 /* harmony default export */ const ColorAxisDefaults = (colorAxisDefaults);
 
-// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","SeriesRegistry"],"commonjs":["highcharts","SeriesRegistry"],"commonjs2":["highcharts","SeriesRegistry"],"root":["Highcharts","SeriesRegistry"]}
-var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_ = __webpack_require__(512);
-var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_);
+// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Series"],"commonjs":["highcharts","Series"],"commonjs2":["highcharts","Series"],"root":["Highcharts","Series"]}
+var highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_ = __webpack_require__(820);
+var highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_default = /*#__PURE__*/__webpack_require__.n(highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_);
 ;// ./code/es-modules/Core/Axis/Color/ColorAxis.js
 /* *
  *
@@ -1074,7 +1089,6 @@ var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highc
 
 const { defaultOptions } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 
-const { series: Series } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default());
 
 defaultOptions.colorAxis = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(defaultOptions.xAxis, ColorAxisDefaults);
 /* *
@@ -1427,7 +1441,7 @@ class ColorAxis extends (highcharts_Axis_commonjs_highcharts_Axis_commonjs2_high
                 cSeries.maxColorValue = cSeries[colorKey + 'Max'];
             }
             else {
-                const cExtremes = Series.prototype.getExtremes.call(cSeries, colorValArray);
+                const cExtremes = highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_default().prototype.getExtremes.call(cSeries, colorValArray);
                 cSeries.minColorValue = cExtremes.dataMin;
                 cSeries.maxColorValue = cExtremes.dataMax;
             }
@@ -1439,7 +1453,7 @@ class ColorAxis extends (highcharts_Axis_commonjs_highcharts_Axis_commonjs2_high
                     Math.max(this.dataMax, cSeries.maxColorValue);
             }
             if (!calculatedExtremes) {
-                Series.prototype.applyExtremes.call(cSeries);
+                highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_default().prototype.applyExtremes.call(cSeries);
             }
         }
     }
@@ -1632,7 +1646,7 @@ class ColorAxis extends (highcharts_Axis_commonjs_highcharts_Axis_commonjs2_high
                     chart,
                     name,
                     options: {},
-                    drawLegendSymbol: Series.prototype.drawLegendSymbol,
+                    drawLegendSymbol: (highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_default()).prototype.drawLegendSymbol,
                     visible: true,
                     isDataClass: true,
                     // Override setState to set either normal or inactive
@@ -1712,7 +1726,7 @@ ColorAxis.defaultLegendLength = 200;
 /* unused harmony import specifier */ var Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-26)
+ * @license Highcharts JS v13.1.1-modified (2026-10-27)
  * @module highcharts/modules/color-axis
  * @requires highcharts
  *
@@ -1732,6 +1746,9 @@ G.ColorAxis = G.ColorAxis || Color_ColorAxis;
 G.ColorAxis.compose(G.Chart, G.Fx, G.Legend, G.Series);
 /* harmony default export */ const coloraxis_src = ((/* unused pure expression or super */ null && (Highcharts)));
 
+// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Series","types","scatter"],"commonjs":["highcharts","Series","types","scatter"],"commonjs2":["highcharts","Series","types","scatter"],"root":["Highcharts","Series","types","scatter"]}
+var highcharts_Series_types_scatter_commonjs_highcharts_Series_types_scatter_commonjs2_highcharts_Series_types_scatter_root_Highcharts_Series_types_scatter_ = __webpack_require__(632);
+var highcharts_Series_types_scatter_commonjs_highcharts_Series_types_scatter_commonjs2_highcharts_Series_types_scatter_root_Highcharts_Series_types_scatter_default = /*#__PURE__*/__webpack_require__.n(highcharts_Series_types_scatter_commonjs_highcharts_Series_types_scatter_commonjs2_highcharts_Series_types_scatter_root_Highcharts_Series_types_scatter_);
 ;// ./code/es-modules/Series/Contour/ContourPoint.js
 /* *
  *
@@ -1751,7 +1768,12 @@ G.ColorAxis.compose(G.Chart, G.Fx, G.Legend, G.Series);
  *
  * */
 
-const { scatter: { prototype: { pointClass: ScatterPoint } } } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
+/* *
+ *
+ *  Constants
+ *
+ * */
+const ScatterPoint = (highcharts_Series_types_scatter_commonjs_highcharts_Series_types_scatter_commonjs2_highcharts_Series_types_scatter_root_Highcharts_Series_types_scatter_default()).prototype.pointClass;
 /* *
  *
  *  Class
@@ -2551,6 +2573,9 @@ class Delaunay {
  * */
 /* harmony default export */ const Core_Delaunay = (Delaunay);
 
+// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","SeriesRegistry"],"commonjs":["highcharts","SeriesRegistry"],"commonjs2":["highcharts","SeriesRegistry"],"root":["Highcharts","SeriesRegistry"]}
+var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_ = __webpack_require__(512);
+var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_);
 ;// ./code/es-modules/Series/Contour/ContourSeries.js
 /* *
  *
@@ -2573,13 +2598,13 @@ class Delaunay {
 
 
 
-const { seriesTypes: { scatter: ScatterSeries } } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default());
+
 /* *
  *
  *  Class
  *
  * */
-class ContourSeries extends ScatterSeries {
+class ContourSeries extends (highcharts_Series_types_scatter_commonjs_highcharts_Series_types_scatter_commonjs2_highcharts_Series_types_scatter_root_Highcharts_Series_types_scatter_default()) {
     /** @internal */
     static compose(SVGRendererClass) {
         Series_CrossSymbol.compose(SVGRendererClass);
@@ -3160,7 +3185,7 @@ class ContourSeries extends ScatterSeries {
  *
  * */
 /** @internal */
-ContourSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(ScatterSeries.defaultOptions, Contour_ContourSeriesDefaults);
+ContourSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)((highcharts_Series_types_scatter_commonjs_highcharts_Series_types_scatter_commonjs2_highcharts_Series_types_scatter_root_Highcharts_Series_types_scatter_default()).defaultOptions, Contour_ContourSeriesDefaults);
 /* harmony default export */ const Contour_ContourSeries = (ContourSeries);
 (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.extend)(ContourSeries.prototype, {
     pointClass: Contour_ContourPoint,

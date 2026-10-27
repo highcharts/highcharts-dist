@@ -5,10 +5,5 @@
  *!*/
 import * as globals from "../globals";
 import * as _Highcharts from "../highcharts";
-declare module "../highcharts" {
-    interface Point {
-        high?: number;
-        low?: number;
-    }
-}
+declare module "../highcharts" {}
 export default _Highcharts;

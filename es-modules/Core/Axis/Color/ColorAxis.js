@@ -16,8 +16,7 @@ import ColorAxisComposition from './ColorAxisComposition.js';
 import ColorAxisDefaults from './ColorAxisDefaults.js';
 import D from '../../Defaults.js';
 const { defaultOptions } = D;
-import SeriesRegistry from '../../Series/SeriesRegistry.js';
-const { series: Series } = SeriesRegistry;
+import Series from '../../Series/Series.js';
 import { defined, extend, fireEvent, isArray, isNumber, merge, relativeLength } from '../../../Shared/Utilities.js';
 defaultOptions.colorAxis = merge(defaultOptions.xAxis, ColorAxisDefaults);
 /* *

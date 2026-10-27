@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-26)
+ * @license Highcharts JS v13.1.1-modified (2026-10-27)
  * @module highcharts/modules/vector
  * @requires highcharts
  *
@@ -45,6 +45,12 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 ;// external ["../highcharts.src.js","default"]
 const external_highcharts_src_js_default_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"];
 var external_highcharts_src_js_default_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_namespaceObject);
+;// external ["../highcharts.src.js","default","Series","types","scatter"]
+const external_highcharts_src_js_default_Series_types_scatter_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].Series.types.scatter;
+var external_highcharts_src_js_default_Series_types_scatter_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_Series_types_scatter_namespaceObject);
+;// external ["../highcharts.src.js","default","Series"]
+const external_highcharts_src_js_default_Series_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].Series;
+var external_highcharts_src_js_default_Series_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_Series_namespaceObject);
 ;// external ["../highcharts.src.js","default","SeriesRegistry"]
 const external_highcharts_src_js_default_SeriesRegistry_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].SeriesRegistry;
 var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_SeriesRegistry_namespaceObject);
@@ -225,7 +231,8 @@ const VectorSeriesDefaults = {
 
 
 
-const { series: Series, seriesTypes: { scatter: ScatterSeries } } = (external_highcharts_src_js_default_SeriesRegistry_default());
+
+
 
 
 /* *
@@ -242,7 +249,7 @@ const { series: Series, seriesTypes: { scatter: ScatterSeries } } = (external_hi
  *
  * @augments Highcharts.seriesTypes.scatter
  */
-class VectorSeries extends ScatterSeries {
+class VectorSeries extends (external_highcharts_src_js_default_Series_types_scatter_default()) {
     /* *
      *
      *  Functions
@@ -367,7 +374,7 @@ class VectorSeries extends ScatterSeries {
      * @private
      */
     translate() {
-        Series.prototype.translate.call(this);
+        external_highcharts_src_js_default_Series_default().prototype.translate.call(this);
         this.lengthMax = (0,external_highcharts_src_js_default_namespaceObject.arrayMax)(this.getColumn('length'));
     }
 }
@@ -377,7 +384,7 @@ class VectorSeries extends ScatterSeries {
  *
  * */
 /** @internal */
-VectorSeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(ScatterSeries.defaultOptions, Vector_VectorSeriesDefaults);
+VectorSeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)((external_highcharts_src_js_default_Series_types_scatter_default()).defaultOptions, Vector_VectorSeriesDefaults);
 (0,external_highcharts_src_js_default_namespaceObject.extend)(VectorSeries.prototype, {
     /**
      * @internal

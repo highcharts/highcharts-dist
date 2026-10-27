@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.1.1-modified (2026-10-26)
+ * @license Highstock JS v13.1.1-modified (2026-10-27)
  * @module highcharts/indicators/volume-by-price
  * @requires highcharts
  * @requires highcharts/modules/stock
+ * @requires highcharts/indicators/indicators
  *
  * Indicator series type for Highcharts Stock
  *
@@ -14,6 +15,9 @@
  * see www.highcharts.com/license
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
+import "../modules/stock.src.js";
+import "./indicators.src.js";
+import * as __WEBPACK_EXTERNAL_MODULE__indicators_src_js_eb4ee23f__ from "./indicators.src.js";
 /******/ // The require scope
 /******/ const __webpack_require__ = {};
 /******/ 
@@ -46,9 +50,13 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 ;// external ["../highcharts.src.js","default"]
 const external_highcharts_src_js_default_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"];
 var external_highcharts_src_js_default_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_namespaceObject);
-;// external ["../highcharts.src.js","default","SeriesRegistry"]
-const external_highcharts_src_js_default_SeriesRegistry_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].SeriesRegistry;
-var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_SeriesRegistry_namespaceObject);
+;// external "../modules/stock.src.js"
+
+;// external "./indicators.src.js"
+
+;// external ["./indicators.src.js","default","Series","types","sma"]
+const external_indicators_src_js_default_Series_types_sma_namespaceObject = __WEBPACK_EXTERNAL_MODULE__indicators_src_js_eb4ee23f__["default"].Series.types.sma;
+var external_indicators_src_js_default_Series_types_sma_default = /*#__PURE__*/__webpack_require__.n(external_indicators_src_js_default_Series_types_sma_namespaceObject);
 ;// ./code/es-modules/Stock/Indicators/VBP/VBPPoint.js
 /* *
  *
@@ -65,7 +73,12 @@ var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__w
  *
  * */
 
-const { sma: { prototype: { pointClass: SMAPoint } } } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
+/* *
+ *
+ *  Constants
+ *
+ * */
+const SMAPoint = (external_indicators_src_js_default_Series_types_sma_default()).prototype.pointClass;
 /* *
  *
  *  Class
@@ -89,6 +102,12 @@ class VBPPoint extends SMAPoint {
  * */
 /* harmony default export */ const VBP_VBPPoint = (VBPPoint);
 
+;// external ["../highcharts.src.js","default","Series","types","column"]
+const external_highcharts_src_js_default_Series_types_column_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].Series.types.column;
+var external_highcharts_src_js_default_Series_types_column_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_Series_types_column_namespaceObject);
+;// external ["../highcharts.src.js","default","SeriesRegistry"]
+const external_highcharts_src_js_default_SeriesRegistry_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].SeriesRegistry;
+var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_SeriesRegistry_namespaceObject);
 ;// ./code/es-modules/Stock/Indicators/VBP/VBPIndicator.js
 /* *
  *
@@ -107,9 +126,10 @@ class VBPPoint extends SMAPoint {
 
 
 
+
 const { noop } = (external_highcharts_src_js_default_default());
 
-const { column: { prototype: columnProto }, sma: SMAIndicator } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
+
 
 
 /* *
@@ -159,7 +179,7 @@ function arrayExtremesOHLC(data) {
  *
  * @augments Highcharts.Series
  */
-class VBPIndicator extends SMAIndicator {
+class VBPIndicator extends (external_indicators_src_js_default_Series_types_sma_default()) {
     /* *
      *
      *  Functions
@@ -243,10 +263,10 @@ class VBPIndicator extends SMAIndicator {
         const indicator = this;
         if (indicator.options.volumeDivision.enabled) {
             indicator.posNegVolume(true, true);
-            columnProto.drawPoints.apply(indicator, arguments);
+            external_highcharts_src_js_default_Series_types_column_default().prototype.drawPoints.apply(indicator, arguments);
             indicator.posNegVolume(false, false);
         }
-        columnProto.drawPoints.apply(indicator, arguments);
+        external_highcharts_src_js_default_Series_types_column_default().prototype.drawPoints.apply(indicator, arguments);
     }
     // Function responsible for dividing volume into positive and negative
     /** @internal */
@@ -295,7 +315,7 @@ class VBPIndicator extends SMAIndicator {
     translate() {
         const indicator = this, options = indicator.options, chart = indicator.chart, yAxis = indicator.yAxis, yAxisMin = yAxis.min, zoneLinesOptions = indicator.options.zoneLines, priceZones = (indicator.priceZones);
         let yBarOffset = 0, volumeDataArray, maxVolume, primalBarWidth, barHeight, barHeightP, oldBarHeight, barWidth, pointPadding, chartPlotTop, barX, barY;
-        columnProto.translate.apply(indicator);
+        external_highcharts_src_js_default_Series_types_column_default().prototype.translate.apply(indicator);
         const indicatorPoints = indicator.points;
         // Do translate operation when points exist
         if (indicatorPoints.length) {
@@ -575,7 +595,7 @@ class VBPIndicator extends SMAIndicator {
  * @optionparent plotOptions.vbp
  * @internal
  */
-VBPIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(SMAIndicator.defaultOptions, {
+VBPIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)((external_indicators_src_js_default_Series_types_sma_default()).defaultOptions, {
     /**
      * @excluding index, period
      */
@@ -672,8 +692,8 @@ VBPIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObj
     pointClass: VBP_VBPPoint,
     markerAttribs: noop,
     drawGraph: noop,
-    getColumnMetrics: columnProto.getColumnMetrics,
-    crispCol: columnProto.crispCol
+    getColumnMetrics: (external_highcharts_src_js_default_Series_types_column_default()).prototype.getColumnMetrics,
+    crispCol: (external_highcharts_src_js_default_Series_types_column_default()).prototype.crispCol
 });
 external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('vbp', VBPIndicator);
 /* *
@@ -702,6 +722,8 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
 ''; // To include the above in the js output
 
 ;// ./code/es-modules/masters/indicators/volume-by-price.src.js
+
+
 
 
 

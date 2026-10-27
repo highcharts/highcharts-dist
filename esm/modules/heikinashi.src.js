@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.1.1-modified (2026-10-26)
+ * @license Highstock JS v13.1.1-modified (2026-10-27)
  * @module highcharts/modules/heikinashi
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -14,6 +14,8 @@
  * see www.highcharts.com/license
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
+import "./stock.src.js";
+import * as __WEBPACK_EXTERNAL_MODULE__stock_src_js_3de69a45__ from "./stock.src.js";
 /******/ // The require scope
 /******/ const __webpack_require__ = {};
 /******/ 
@@ -46,9 +48,11 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 ;// external ["../highcharts.src.js","default"]
 const external_highcharts_src_js_default_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"];
 var external_highcharts_src_js_default_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_namespaceObject);
-;// external ["../highcharts.src.js","default","SeriesRegistry"]
-const external_highcharts_src_js_default_SeriesRegistry_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].SeriesRegistry;
-var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_SeriesRegistry_namespaceObject);
+;// external "./stock.src.js"
+
+;// external ["./stock.src.js","default","Series","types","candlestick"]
+const external_stock_src_js_default_Series_types_candlestick_namespaceObject = __WEBPACK_EXTERNAL_MODULE__stock_src_js_3de69a45__["default"].Series.types.candlestick;
+var external_stock_src_js_default_Series_types_candlestick_default = /*#__PURE__*/__webpack_require__.n(external_stock_src_js_default_Series_types_candlestick_namespaceObject);
 ;// ./code/es-modules/Series/HeikinAshi/HeikinAshiPoint.js
 /* *
  *
@@ -63,9 +67,12 @@ var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__w
  * */
 
 
-const { candlestick: { prototype: { pointClass: CandlestickPoint } }, hlc: { prototype: { 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-pointClass: HLCPoint } } } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
+/* *
+ *
+ *  Constants
+ *
+ * */
+const CandlestickPoint = (external_stock_src_js_default_Series_types_candlestick_default()).prototype.pointClass;
 /* *
  *
  *  Class
@@ -187,6 +194,9 @@ const HeikinAshiDefaults = {
  * */
 /* harmony default export */ const HeikinAshiSeriesDefaults = (HeikinAshiDefaults);
 
+;// external ["../highcharts.src.js","default","SeriesRegistry"]
+const external_highcharts_src_js_default_SeriesRegistry_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].SeriesRegistry;
+var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_SeriesRegistry_namespaceObject);
 ;// ./code/es-modules/Series/HeikinAshi/HeikinAshiSeries.js
 /* *
  *
@@ -205,7 +215,7 @@ const { composed } = (external_highcharts_src_js_default_default());
 
 
 
-const { candlestick: CandlestickSeries } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
+
 
 /* *
  *
@@ -263,7 +273,7 @@ function onHeikinAshiSeriesUpdatedData() {
  * @class
  * @name Highcharts.seriesTypes.heikinashi
  */
-class HeikinAshiSeries extends CandlestickSeries {
+class HeikinAshiSeries extends (external_stock_src_js_default_Series_types_candlestick_default()) {
     constructor() {
         /* *
          *
@@ -281,7 +291,7 @@ class HeikinAshiSeries extends CandlestickSeries {
      * */
     /** @internal */
     static compose(SeriesClass, AxisClass) {
-        CandlestickSeries.compose(SeriesClass);
+        external_stock_src_js_default_Series_types_candlestick_default().compose(SeriesClass);
         if ((0,external_highcharts_src_js_default_namespaceObject.pushUnique)(composed, 'HeikinAshi')) {
             (0,external_highcharts_src_js_default_namespaceObject.addEvent)(AxisClass, 'postProcessData', onAxisPostProcessData);
             (0,external_highcharts_src_js_default_namespaceObject.addEvent)(HeikinAshiSeries, 'afterTranslate', onHeikinAshiSeriesAfterTranslate);
@@ -345,7 +355,7 @@ class HeikinAshiSeries extends CandlestickSeries {
     }
 }
 /** @internal */
-HeikinAshiSeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(CandlestickSeries.defaultOptions, HeikinAshiSeriesDefaults);
+HeikinAshiSeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)((external_stock_src_js_default_Series_types_candlestick_default()).defaultOptions, HeikinAshiSeriesDefaults);
 /* *
  *
  *  Class Prototype
@@ -361,6 +371,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
 /* harmony default export */ const HeikinAshi_HeikinAshiSeries = (HeikinAshiSeries);
 
 ;// ./code/es-modules/masters/modules/heikinashi.src.js
+
 
 
 

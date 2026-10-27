@@ -12,8 +12,8 @@
 'use strict';
 import DerivedComposition from '../DerivedComposition.js';
 import HistogramSeriesDefaults from './HistogramSeriesDefaults.js';
+import ColumnSeries from '../Column/ColumnSeries.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-const { column: ColumnSeries } = SeriesRegistry.seriesTypes;
 import { arrayMax, arrayMin, correctFloat, isNumber, merge } from '../../Shared/Utilities.js';
 /* ************************************************************************** *
  *  HISTOGRAM

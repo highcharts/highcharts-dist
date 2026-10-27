@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-26)
+ * @license Highcharts JS v13.1.1-modified (2026-10-27)
  * Organization chart series type
  * @module highcharts/modules/organization
  * @requires highcharts
@@ -13,6 +13,8 @@
  * see www.highcharts.com/license
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
+import "./sankey.src.js";
+import * as __WEBPACK_EXTERNAL_MODULE__sankey_src_js_3bb2850a__ from "./sankey.src.js";
 /******/ // The require scope
 /******/ const __webpack_require__ = {};
 /******/ 
@@ -45,9 +47,11 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 ;// external ["../highcharts.src.js","default"]
 const external_highcharts_src_js_default_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"];
 var external_highcharts_src_js_default_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_namespaceObject);
-;// external ["../highcharts.src.js","default","SeriesRegistry"]
-const external_highcharts_src_js_default_SeriesRegistry_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].SeriesRegistry;
-var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_SeriesRegistry_namespaceObject);
+;// external "./sankey.src.js"
+
+;// external ["./sankey.src.js","default","Series","types","sankey"]
+const external_sankey_src_js_default_Series_types_sankey_namespaceObject = __WEBPACK_EXTERNAL_MODULE__sankey_src_js_3bb2850a__["default"].Series.types.sankey;
+var external_sankey_src_js_default_Series_types_sankey_default = /*#__PURE__*/__webpack_require__.n(external_sankey_src_js_default_Series_types_sankey_namespaceObject);
 ;// ./code/es-modules/Series/Organization/OrganizationPoint.js
 /* *
  *
@@ -64,8 +68,13 @@ var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__w
  * */
 
 
-const { sankey: { prototype: { pointClass: SankeyPointClass } } } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
 
+/* *
+ *
+ *  Constants
+ *
+ * */
+const SankeyPointClass = (external_sankey_src_js_default_Series_types_sankey_default()).prototype.pointClass;
 /* *
  *
  *  Functions
@@ -654,6 +663,9 @@ const OrganizationSeriesDefaults = {
  * */
 /* harmony default export */ const Organization_OrganizationSeriesDefaults = (OrganizationSeriesDefaults);
 
+;// external ["../highcharts.src.js","default","SeriesRegistry"]
+const external_highcharts_src_js_default_SeriesRegistry_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].SeriesRegistry;
+var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_SeriesRegistry_namespaceObject);
 ;// ./code/es-modules/Series/PathUtilities.js
 /* *
  *
@@ -1094,7 +1106,7 @@ function composeTextPath(SVGElementClass) {
 
 
 
-const { sankey: SankeySeries } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
+
 
 
 
@@ -1111,7 +1123,7 @@ composeTextPath((external_highcharts_src_js_default_SVGElement_default()));
  *
  * @augments Highcharts.seriesTypes.sankey
  */
-class OrganizationSeries extends SankeySeries {
+class OrganizationSeries extends (external_sankey_src_js_default_Series_types_sankey_default()) {
     /* *
      *
      *  Functions
@@ -1168,7 +1180,7 @@ class OrganizationSeries extends SankeySeries {
     }
     /** @internal */
     pointAttribs(point, state) {
-        const series = this, attribs = SankeySeries.prototype.pointAttribs.call(series, point, state), level = point.isNode ? point.level : point.fromNode.level, levelOptions = series.mapOptionsToLevel[level || 0] || {}, options = point.options, stateOptions = levelOptions.states?.[state || 'normal'] || {}, borderRadius = (stateOptions.borderRadius ??
+        const series = this, attribs = external_sankey_src_js_default_Series_types_sankey_default().prototype.pointAttribs.call(series, point, state), level = point.isNode ? point.level : point.fromNode.level, levelOptions = series.mapOptionsToLevel[level || 0] || {}, options = point.options, stateOptions = levelOptions.states?.[state || 'normal'] || {}, borderRadius = (stateOptions.borderRadius ??
             options.borderRadius ??
             levelOptions.borderRadius ??
             series.options.borderRadius), linkColor = (stateOptions.linkColor ??
@@ -1360,7 +1372,7 @@ class OrganizationSeries extends SankeySeries {
  *  Static Properties
  *
  * */
-OrganizationSeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(SankeySeries.defaultOptions, Organization_OrganizationSeriesDefaults);
+OrganizationSeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)((external_sankey_src_js_default_Series_types_sankey_default()).defaultOptions, Organization_OrganizationSeriesDefaults);
 (0,external_highcharts_src_js_default_namespaceObject.extend)(OrganizationSeries.prototype, {
     pointClass: Organization_OrganizationPoint,
     useCircularLayout: false
@@ -1394,6 +1406,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
 ''; // Detach doclets above
 
 ;// ./code/es-modules/masters/modules/organization.src.js
+
 
 
 

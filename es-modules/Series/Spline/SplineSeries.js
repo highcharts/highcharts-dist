@@ -10,8 +10,8 @@
  *
  * */
 'use strict';
+import LineSeries from '../Line/LineSeries.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-const { line: LineSeries } = SeriesRegistry.seriesTypes;
 import { merge } from '../../Shared/Utilities.js';
 /* *
  *

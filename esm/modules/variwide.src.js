@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-26)
+ * @license Highcharts JS v13.1.1-modified (2026-10-27)
  * @module highcharts/modules/variwide
  * @requires highcharts
  *
@@ -45,6 +45,9 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 ;// external ["../highcharts.src.js","default"]
 const external_highcharts_src_js_default_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"];
 var external_highcharts_src_js_default_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_namespaceObject);
+;// external ["../highcharts.src.js","default","Series","types","column"]
+const external_highcharts_src_js_default_Series_types_column_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].Series.types.column;
+var external_highcharts_src_js_default_Series_types_column_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_Series_types_column_namespaceObject);
 ;// external ["../highcharts.src.js","default","SeriesRegistry"]
 const external_highcharts_src_js_default_SeriesRegistry_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].SeriesRegistry;
 var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_SeriesRegistry_namespaceObject);
@@ -185,7 +188,12 @@ const VariwideComposition = {
 
 
 
-const { column: { prototype: { pointClass: ColumnPoint } } } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
+/* *
+ *
+ *  Constants
+ *
+ * */
+const ColumnPoint = (external_highcharts_src_js_default_Series_types_column_default()).prototype.pointClass;
 /* *
  *
  *  Class
@@ -359,7 +367,7 @@ const VariwideSeriesDefaults = {
  * */
 
 
-const { column: ColumnSeries } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
+
 
 
 
@@ -376,7 +384,7 @@ const { column: ColumnSeries } = (external_highcharts_src_js_default_SeriesRegis
  *
  * @augments Highcharts.Series
  */
-class VariwideSeries extends ColumnSeries {
+class VariwideSeries extends (external_highcharts_src_js_default_Series_types_column_default()) {
     /* *
      *
      * Functions
@@ -484,7 +492,7 @@ class VariwideSeries extends ColumnSeries {
  * */
 VariwideSeries.compose = Variwide_VariwideComposition.compose;
 /** @internal */
-VariwideSeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(ColumnSeries.defaultOptions, Variwide_VariwideSeriesDefaults);
+VariwideSeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)((external_highcharts_src_js_default_Series_types_column_default()).defaultOptions, Variwide_VariwideSeriesDefaults);
 // Extend translation by distorting X position based on Z.
 (0,external_highcharts_src_js_default_namespaceObject.addEvent)(VariwideSeries, 'afterColumnTranslate', function () {
     // Temporarily disable crisping when computing original shapeArgs

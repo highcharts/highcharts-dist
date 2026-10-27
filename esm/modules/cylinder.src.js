@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-26)
+ * @license Highcharts JS v13.1.1-modified (2026-10-27)
  * @module highcharts/modules/cylinder
  * @requires highcharts
  * @requires highcharts/highcharts-3d
@@ -14,6 +14,7 @@
  * see www.highcharts.com/license
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
+import "../highcharts-3d.src.js";
 /******/ // The require scope
 /******/ const __webpack_require__ = {};
 /******/ 
@@ -849,9 +850,9 @@ const CylinderComposition = {
 /** @internal */
 /* harmony default export */ const Cylinder_CylinderComposition = (CylinderComposition);
 
-;// external ["../highcharts.src.js","default","SeriesRegistry"]
-const external_highcharts_src_js_default_SeriesRegistry_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].SeriesRegistry;
-var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_SeriesRegistry_namespaceObject);
+;// external ["../highcharts.src.js","default","Series","types","column"]
+const external_highcharts_src_js_default_Series_types_column_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].Series.types.column;
+var external_highcharts_src_js_default_Series_types_column_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_Series_types_column_namespaceObject);
 ;// ./code/es-modules/Series/Cylinder/CylinderPoint.js
 /* *
  *
@@ -870,7 +871,12 @@ var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__w
 
 
 
-const { column: { prototype: { pointClass: ColumnPoint } } } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
+/* *
+ *
+ *  Constants
+ *
+ * */
+const ColumnPoint = (external_highcharts_src_js_default_Series_types_column_default()).prototype.pointClass;
 /* *
  *
  *  Class
@@ -1008,6 +1014,9 @@ const CylinderSeriesDefaults = {};
  * */
 /* harmony default export */ const Cylinder_CylinderSeriesDefaults = (CylinderSeriesDefaults);
 
+;// external ["../highcharts.src.js","default","SeriesRegistry"]
+const external_highcharts_src_js_default_SeriesRegistry_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].SeriesRegistry;
+var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_SeriesRegistry_namespaceObject);
 ;// ./code/es-modules/Series/Cylinder/CylinderSeries.js
 /* *
  *
@@ -1028,7 +1037,7 @@ const CylinderSeriesDefaults = {};
 
 
 
-const { column: ColumnSeries } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
+
 
 /* *
  *
@@ -1046,7 +1055,7 @@ const { column: ColumnSeries } = (external_highcharts_src_js_default_SeriesRegis
  *
  * @augments Highcharts.Series
  */
-class CylinderSeries extends ColumnSeries {
+class CylinderSeries extends (external_highcharts_src_js_default_Series_types_column_default()) {
 }
 /* *
  *
@@ -1056,7 +1065,7 @@ class CylinderSeries extends ColumnSeries {
 /** @internal */
 CylinderSeries.compose = Cylinder_CylinderComposition.compose;
 /** @internal */
-CylinderSeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(ColumnSeries.defaultOptions, Cylinder_CylinderSeriesDefaults);
+CylinderSeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)((external_highcharts_src_js_default_Series_types_column_default()).defaultOptions, Cylinder_CylinderSeriesDefaults);
 (0,external_highcharts_src_js_default_namespaceObject.extend)(CylinderSeries.prototype, {
     pointClass: Cylinder_CylinderPoint
 });
@@ -1068,7 +1077,10 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  * */
 /* harmony default export */ const Cylinder_CylinderSeries = (CylinderSeries);
 
+;// external "../highcharts-3d.src.js"
+
 ;// ./code/es-modules/masters/modules/cylinder.src.js
+
 
 
 

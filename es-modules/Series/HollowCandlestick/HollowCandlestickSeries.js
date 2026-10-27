@@ -16,10 +16,10 @@
  *
  * */
 import HollowCandlestickPoint from './HollowCandlestickPoint.js';
+import CandlestickSeries from '../Candlestick/CandlestickSeries.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 import Axis from '../../Core/Axis/Axis.js';
 import { addEvent, merge } from '../../Shared/Utilities.js';
-const { seriesTypes: { candlestick: CandlestickSeries } } = SeriesRegistry;
 /* *
  *
  *  Code

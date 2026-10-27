@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.1.1-modified (2026-10-26)
+ * @license Highstock JS v13.1.1-modified (2026-10-27)
  * @module highcharts/modules/stock
  * @requires highcharts
  *
@@ -16,7 +16,7 @@
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory(root["_Highcharts"]["Axis"], root["_Highcharts"]["Chart"], root["_Highcharts"]["Point"], root["_Highcharts"]["SVGElement"], root["_Highcharts"]["SVGRenderer"], root["_Highcharts"]["Series"]["types"]["column"], root["_Highcharts"]["Series"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]["StackItem"], root["_Highcharts"]["Templating"], root["_Highcharts"]);
 	else if(typeof define === 'function' && define.amd)
-		define("highcharts/modules/stock", ["highcharts/highcharts"], function (amd1) {return factory(amd1["Axis"],amd1["Chart"],amd1["Point"],amd1["SVGElement"],amd1["SVGRenderer"],amd1["Series"],["types"],["column"],amd1["Series"],amd1["SeriesRegistry"],amd1["StackItem"],amd1["Templating"],amd1);});
+		define("highcharts/modules/stock", ["highcharts/highcharts"], function (amd1) {return factory(amd1["Axis"],amd1["Chart"],amd1["Point"],amd1["SVGElement"],amd1["SVGRenderer"],amd1["Series"]["types"]["column"],amd1["Series"],amd1["SeriesRegistry"],amd1["StackItem"],amd1["Templating"],amd1);});
 	else if(typeof exports === 'object')
 		exports["highcharts/modules/stock"] = factory(root["_Highcharts"]["Axis"], root["_Highcharts"]["Chart"], root["_Highcharts"]["Point"], root["_Highcharts"]["SVGElement"], root["_Highcharts"]["SVGRenderer"], root["_Highcharts"]["Series"]["types"]["column"], root["_Highcharts"]["Series"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]["StackItem"], root["_Highcharts"]["Templating"], root["_Highcharts"]);
 	else
@@ -9960,6 +9960,9 @@ class StockChart extends (highcharts_Chart_commonjs_highcharts_Chart_commonjs2_h
  * */
 /* harmony default export */ const Chart_StockChart = (StockChart);
 
+// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Series","types","column"],"commonjs":["highcharts","Series","types","column"],"commonjs2":["highcharts","Series","types","column"],"root":["Highcharts","Series","types","column"]}
+var highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_ = __webpack_require__(448);
+var highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_default = /*#__PURE__*/__webpack_require__.n(highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_);
 ;// ./code/es-modules/Series/HLC/HLCPoint.js
 /* *
  *
@@ -9974,7 +9977,12 @@ class StockChart extends (highcharts_Chart_commonjs_highcharts_Chart_commonjs2_h
  * */
 
 
-const { column: { prototype: { pointClass: ColumnPoint } } } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
+/* *
+ *
+ *  Constants
+ *
+ * */
+const ColumnPoint = (highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_default()).prototype.pointClass;
 /* *
  *
  *  Class
@@ -10335,7 +10343,7 @@ var FinancialSymbols;
 
 
 
-const { column: ColumnSeries } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
+
 
 
 
@@ -10351,7 +10359,7 @@ const { defaultOptions: HLCSeries_defaultOptions } = (highcharts_commonjs_highch
  * @class
  * @name Highcharts.seriesTypes.hlc
  */
-class HLCSeries extends ColumnSeries {
+class HLCSeries extends (highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_default()) {
     /* *
      *
      *  Static Properties
@@ -10476,7 +10484,7 @@ class HLCSeries extends ColumnSeries {
     }
 }
 /** @internal */
-HLCSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(ColumnSeries.defaultOptions, HLC_HLCSeriesDefaults);
+HLCSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)((highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_default()).defaultOptions, HLC_HLCSeriesDefaults);
 (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.extend)(HLCSeries.prototype, {
     pointClass: HLC_HLCPoint,
     animate: null, // Disable animation
@@ -10519,13 +10527,12 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * */
 
 
-const { seriesTypes: { hlc: OHLCPoint_HLCSeries } } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default());
 /* *
  *
  *  Class
  *
  * */
-class OHLCPoint extends OHLCPoint_HLCSeries.prototype.pointClass {
+class OHLCPoint extends HLC_HLCSeries.prototype.pointClass {
     /* *
      *
      *  Functions
@@ -10787,7 +10794,7 @@ const { composed: OHLCSeries_composed } = (highcharts_commonjs_highcharts_common
 
 
 
-const { hlc: OHLCSeries_HLCSeries } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
+
 
 /* *
  *
@@ -10837,7 +10844,7 @@ function onSeriesInit(eventOptions) {
  *
  * @augments Highcharts.Series
  */
-class OHLCSeries extends OHLCSeries_HLCSeries {
+class OHLCSeries extends HLC_HLCSeries {
     /* *
      *
      *  Static Functions
@@ -10925,7 +10932,7 @@ class OHLCSeries extends OHLCSeries_HLCSeries {
  *
  * */
 /** @internal */
-OHLCSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(OHLCSeries_HLCSeries.defaultOptions, OHLC_OHLCSeriesDefaults);
+OHLCSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(HLC_HLCSeries.defaultOptions, OHLC_OHLCSeriesDefaults);
 (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.extend)(OHLCSeries.prototype, {
     pointClass: OHLC_OHLCPoint,
     pointArrayMap: ['open', 'high', 'low', 'close']
@@ -11144,7 +11151,8 @@ const CandlestickSeriesDefaults = {
 
 
 
-const { column: CandlestickSeries_ColumnSeries, ohlc: CandlestickSeries_OHLCSeries } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
+
+
 
 /* *
  *
@@ -11159,7 +11167,7 @@ const { column: CandlestickSeries_ColumnSeries, ohlc: CandlestickSeries_OHLCSeri
  *
  * @augments Highcharts.seriesTypes.ohlc
  */
-class CandlestickSeries extends CandlestickSeries_OHLCSeries {
+class CandlestickSeries extends OHLC_OHLCSeries {
     /* *
      *
      *  Functions
@@ -11187,7 +11195,7 @@ class CandlestickSeries extends CandlestickSeries_OHLCSeries {
      * @function Highcharts.seriesTypes.candlestick#pointAttribs
      */
     pointAttribs(point, state) {
-        const attribs = CandlestickSeries_ColumnSeries.prototype.pointAttribs.call(this, point, state), options = this.options, isUp = (point?.open || 0) < (point?.close || 0), stroke = options.lineColor || this.color, color = point?.color || this.color; // (#14826)
+        const attribs = highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_default().prototype.pointAttribs.call(this, point, state), options = this.options, isUp = (point?.open || 0) < (point?.close || 0), stroke = options.lineColor || this.color, color = point?.color || this.color; // (#14826)
         attribs['stroke-width'] = options.lineWidth;
         attribs.fill = point?.options.color ||
             (isUp ? (options.upColor || color) : color);
@@ -11253,7 +11261,7 @@ class CandlestickSeries extends CandlestickSeries_OHLCSeries {
  *
  * */
 /** @internal */
-CandlestickSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(CandlestickSeries_OHLCSeries.defaultOptions, { tooltip: CandlestickSeries_OHLCSeries.defaultOptions.tooltip }, Candlestick_CandlestickSeriesDefaults);
+CandlestickSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(OHLC_OHLCSeries.defaultOptions, { tooltip: OHLC_OHLCSeries.defaultOptions.tooltip }, Candlestick_CandlestickSeriesDefaults);
 highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default().registerSeriesType('candlestick', CandlestickSeries);
 /* *
  *
@@ -11277,7 +11285,12 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
 
 
 
-const { column: { prototype: { pointClass: FlagsPoint_ColumnPoint } } } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
+/* *
+ *
+ *  Constants
+ *
+ * */
+const FlagsPoint_ColumnPoint = (highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_default()).prototype.pointClass;
 /* *
  *
  *  Class
@@ -11755,9 +11768,6 @@ var FlagsSymbols;
 /** @internal */
 /* harmony default export */ const Flags_FlagsSymbols = (FlagsSymbols);
 
-// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Series","types","column"],"commonjs":["highcharts","Series","types","column"],"commonjs2":["highcharts","Series","types","column"],"root":["Highcharts","Series","types","column"]}
-var highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_ = __webpack_require__(448);
-var highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_default = /*#__PURE__*/__webpack_require__.n(highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_);
 ;// ./code/es-modules/Series/OnSeriesComposition.js
 /* *
  *
@@ -11995,7 +12005,8 @@ const { noop: FlagsSeries_noop } = (highcharts_commonjs_highcharts_commonjs2_hig
 
 const { distribute } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 
-const { series: Series, seriesTypes: { column: FlagsSeries_ColumnSeries } } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default());
+
+
 
 
 /* *
@@ -12011,7 +12022,7 @@ const { series: Series, seriesTypes: { column: FlagsSeries_ColumnSeries } } = (h
  *
  * @augments Highcharts.Series
  */
-class FlagsSeries extends FlagsSeries_ColumnSeries {
+class FlagsSeries extends (highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_default()) {
     /* *
      *
      *  Functions
@@ -12233,7 +12244,7 @@ class FlagsSeries extends FlagsSeries_ColumnSeries {
      * @internal
      */
     setClip() {
-        Series.prototype.setClip.apply(this, arguments);
+        highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_default().prototype.setClip.apply(this, arguments);
         if (this.options.clip !== false &&
             this.sharedClipKey &&
             this.markerGroup) {
@@ -12249,7 +12260,7 @@ class FlagsSeries extends FlagsSeries_ColumnSeries {
 /** @internal */
 FlagsSeries.compose = Flags_FlagsSymbols.compose;
 /** @internal */
-FlagsSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(FlagsSeries_ColumnSeries.defaultOptions, Flags_FlagsSeriesDefaults);
+FlagsSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)((highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_default()).defaultOptions, Flags_FlagsSeriesDefaults);
 Series_OnSeriesComposition.compose(FlagsSeries);
 (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.extend)(FlagsSeries.prototype, {
     allowDG: false,
@@ -12265,7 +12276,7 @@ Series_OnSeriesComposition.compose(FlagsSeries);
      * Inherit the initialization from base Series.
      * @internal
      */
-    init: Series.prototype.init
+    init: (highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_default()).prototype.init
 });
 highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default().registerSeriesType('flags', FlagsSeries);
 /* *
@@ -12905,7 +12916,7 @@ var BrokenAxis;
 /* unused harmony import specifier */ var Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-26)
+ * @license Highcharts JS v13.1.1-modified (2026-10-27)
  * @module highcharts/modules/broken-axis
  * @requires highcharts
  *
@@ -13626,7 +13637,6 @@ var DateTimeAxis;
 
 
 
-const { series: { prototype: DataGroupingSeriesComposition_seriesProto } } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default());
 
 
 /* *
@@ -13634,7 +13644,7 @@ const { series: { prototype: DataGroupingSeriesComposition_seriesProto } } = (hi
  *  Constants
  *
  * */
-const baseGeneratePoints = DataGroupingSeriesComposition_seriesProto.generatePoints;
+const baseGeneratePoints = (highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_default()).prototype.generatePoints;
 /* *
  *
  *  Functions
@@ -13781,7 +13791,7 @@ function DataGroupingSeriesComposition_applyGrouping(hasExtremesChanged) {
         if (rightShoulder) {
             groupPositions.push(lastStart);
         }
-        const groupedData = DataGroupingSeriesComposition_seriesProto.groupData.call(series, table, groupPositions, dataGroupingOptions.approximation);
+        const groupedData = highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_default().prototype.groupData.call(series, table, groupPositions, dataGroupingOptions.approximation);
         let modified = groupedData.modified, groupedXData = modified.getColumn('x', true), gapSize = 0;
         // The smoothed option is deprecated, instead, there is a fallback
         // to the new anchoring mechanism. #12455.
@@ -14583,7 +14593,7 @@ const DataGroupingComposition = {
 /* unused harmony import specifier */ var datagrouping_src_Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.1.1-modified (2026-10-26)
+ * @license Highstock JS v13.1.1-modified (2026-10-27)
  * @module highcharts/modules/datagrouping
  * @requires highcharts
  *
@@ -14948,7 +14958,7 @@ const MouseWheelZoomComposition = {
 /* unused harmony import specifier */ var mouse_wheel_zoom_src_Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-26)
+ * @license Highcharts JS v13.1.1-modified (2026-10-27)
  * @module highcharts/modules/mouse-wheel-zoom
  * @requires highcharts
  *

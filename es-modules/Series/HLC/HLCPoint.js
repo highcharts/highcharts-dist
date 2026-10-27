@@ -10,8 +10,13 @@
  *
  * */
 'use strict';
-import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-const { column: { prototype: { pointClass: ColumnPoint } } } = SeriesRegistry.seriesTypes;
+import ColumnSeries from '../Column/ColumnSeries.js';
+/* *
+ *
+ *  Constants
+ *
+ * */
+const ColumnPoint = ColumnSeries.prototype.pointClass;
 /* *
  *
  *  Class

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highmaps JS v13.1.1-modified (2026-10-26)
+ * @license Highmaps JS v13.1.1-modified (2026-10-27)
  * @module highcharts/modules/map
  * @requires highcharts
  *
@@ -796,9 +796,9 @@ class MapNavigation {
 /** @internal */
 /* harmony default export */ const Maps_MapNavigation = (MapNavigation);
 
-;// external ["../highcharts.src.js","default","SeriesRegistry"]
-const external_highcharts_src_js_default_SeriesRegistry_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].SeriesRegistry;
-var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_SeriesRegistry_namespaceObject);
+;// external ["../highcharts.src.js","default","Series","types","column"]
+const external_highcharts_src_js_default_Series_types_column_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].Series.types.column;
+var external_highcharts_src_js_default_Series_types_column_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_Series_types_column_namespaceObject);
 ;// external ["../highcharts.src.js","default","SVGElement"]
 const external_highcharts_src_js_default_SVGElement_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].SVGElement;
 var external_highcharts_src_js_default_SVGElement_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_SVGElement_namespaceObject);
@@ -816,7 +816,6 @@ var external_highcharts_src_js_default_SVGElement_default = /*#__PURE__*/__webpa
  * */
 
 
-const { column: { prototype: columnProto } } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
 
 
 /* *
@@ -845,7 +844,7 @@ var ColorMapComposition;
         pointArrayMap: ['value'],
         trackerGroups: ['group', 'markerGroup', 'dataLabelsGroup'],
         colorAttribs: seriesColorAttribs,
-        pointAttribs: columnProto.pointAttribs
+        pointAttribs: (external_highcharts_src_js_default_Series_types_column_default()).prototype.pointAttribs
     };
     /* *
      *
@@ -1902,6 +1901,9 @@ const MapUtilities = {
 /** @internal */
 /* harmony default export */ const Maps_MapUtilities = (MapUtilities);
 
+;// external ["../highcharts.src.js","default","Series","types","scatter"]
+const external_highcharts_src_js_default_Series_types_scatter_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].Series.types.scatter;
+var external_highcharts_src_js_default_Series_types_scatter_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_Series_types_scatter_namespaceObject);
 ;// ./code/es-modules/Series/Map/MapPoint.js
 /* *
  *
@@ -1919,7 +1921,7 @@ const MapUtilities = {
 
 const { boundsFromPath: MapPoint_boundsFromPath } = Maps_MapUtilities;
 
-const ScatterPoint = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes.scatter.prototype.pointClass;
+const ScatterPoint = (external_highcharts_src_js_default_Series_types_scatter_default()).prototype.pointClass;
 
 /* *
  *
@@ -6013,6 +6015,9 @@ class MapViewInset extends MapView {
  */
 ''; // Keeps doclets above in JS file
 
+;// external ["../highcharts.src.js","default","SeriesRegistry"]
+const external_highcharts_src_js_default_SeriesRegistry_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].SeriesRegistry;
+var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_SeriesRegistry_namespaceObject);
 ;// ./code/es-modules/Series/Map/MapSeries.js
 /* *
  *
@@ -6038,9 +6043,8 @@ const { splitPath } = Chart_MapChart;
 
 
 
-const { 
-// Indirect dependency to keep product size low
-column: ColumnSeries, scatter: ScatterSeries } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
+
+
 
 /* *
  *
@@ -6054,7 +6058,7 @@ column: ColumnSeries, scatter: ScatterSeries } = (external_highcharts_src_js_def
  *
  * @augments Highcharts.Series
  */
-class MapSeries extends ScatterSeries {
+class MapSeries extends (external_highcharts_src_js_default_Series_types_scatter_default()) {
     constructor() {
         /* *
          *
@@ -6161,7 +6165,7 @@ class MapSeries extends ScatterSeries {
                 }
             });
             // Draw the points
-            ColumnSeries.prototype.drawPoints.apply(this);
+            external_highcharts_src_js_default_Series_types_column_default().prototype.drawPoints.apply(this);
             // Add class names
             this.points.forEach((point) => {
                 const graphic = point.graphic;
@@ -6388,7 +6392,7 @@ class MapSeries extends ScatterSeries {
         const { mapView, styledMode } = (point?.series || this).chart;
         const attr = styledMode && point ?
             this.colorAttribs(point) :
-            ColumnSeries.prototype.pointAttribs.call(this, point, state);
+            external_highcharts_src_js_default_Series_types_column_default().prototype.pointAttribs.call(this, point, state);
         // Individual stroke width
         let pointStrokeWidth = this.getStrokeWidth(point?.options || {});
         // Handle state specific border or line width
@@ -6645,7 +6649,7 @@ class MapSeries extends ScatterSeries {
         super.update.apply(this, arguments);
     }
 }
-MapSeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(ScatterSeries.defaultOptions, Map_MapSeriesDefaults);
+MapSeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)((external_highcharts_src_js_default_Series_types_scatter_default()).defaultOptions, Map_MapSeriesDefaults);
 (0,external_highcharts_src_js_default_namespaceObject.extend)(MapSeries.prototype, {
     type: 'map',
     axisTypes: Series_ColorMapComposition.seriesMembers.axisTypes,
@@ -6910,13 +6914,12 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
 
 
 
-const { scatter: MapPointPoint_ScatterSeries } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
 /* *
  *
  *  Class
  *
  * */
-class MapPointPoint extends MapPointPoint_ScatterSeries.prototype.pointClass {
+class MapPointPoint extends (external_highcharts_src_js_default_Series_types_scatter_default()).prototype.pointClass {
     /* *
      *
      *  Functions
@@ -7147,12 +7150,6 @@ const MapPointSeriesDefaults = {
  */
 (''); // Keeps doclets above in JS file
 
-;// external ["../highcharts.src.js","default","Series","types","scatter"]
-const x = (y) => {
-	const x = {}; __webpack_require__.d(x, y); return x
-} 
-const y = (x) => (() => (x))
-const external_highcharts_src_js_default_Series_types_scatter_namespaceObject = x({  });
 ;// ./code/es-modules/Series/MapPoint/MapPointSeries.js
 /* *
  *
@@ -7171,7 +7168,8 @@ const { noop: MapPointSeries_noop } = (external_highcharts_src_js_default_defaul
 
 
 
-const { map: MapPointSeries_MapSeries, scatter: MapPointSeries_ScatterSeries } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
+
+
 
 
 
@@ -7188,7 +7186,7 @@ const { map: MapPointSeries_MapSeries, scatter: MapPointSeries_ScatterSeries } =
  *
  * @augments Highcharts.Series
  */
-class MapPointSeries extends MapPointSeries_ScatterSeries {
+class MapPointSeries extends (external_highcharts_src_js_default_Series_types_scatter_default()) {
     constructor() {
         /* *
          *
@@ -7196,7 +7194,7 @@ class MapPointSeries extends MapPointSeries_ScatterSeries {
          *
          * */
         super(...arguments);
-        this.clearBounds = MapPointSeries_MapSeries.prototype.clearBounds;
+        this.clearBounds = Map_MapSeries.prototype.clearBounds;
     }
     /* *
      *
@@ -7294,7 +7292,7 @@ class MapPointSeries extends MapPointSeries_ScatterSeries {
     }
 }
 /** @internal */
-MapPointSeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(MapPointSeries_ScatterSeries.defaultOptions, MapPoint_MapPointSeriesDefaults);
+MapPointSeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)((external_highcharts_src_js_default_Series_types_scatter_default()).defaultOptions, MapPoint_MapPointSeriesDefaults);
 /* *
  *
  * Extra
@@ -7357,7 +7355,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *  Default Export
  *
  * */
-/* harmony default export */ const MapPoint_MapPointSeries = ((/* unused pure expression or super */ null && (MapPointSeries)));
+/* harmony default export */ const MapPoint_MapPointSeries = (MapPointSeries);
 /* *
  *
  *  API Options
@@ -8368,7 +8366,12 @@ var external_highcharts_src_js_default_Point_default = /*#__PURE__*/__webpack_re
 
 
 
-const { seriesTypes: { scatter: { prototype: { pointClass: BubblePoint_ScatterPoint } } } } = (external_highcharts_src_js_default_SeriesRegistry_default());
+/* *
+ *
+ *  Constants
+ *
+ * */
+const BubblePoint_ScatterPoint = (external_highcharts_src_js_default_Series_types_scatter_default()).prototype.pointClass;
 /* *
  *
  *  Class
@@ -8412,6 +8415,9 @@ class BubblePoint extends BubblePoint_ScatterPoint {
  * */
 /* harmony default export */ const Bubble_BubblePoint = (BubblePoint);
 
+;// external ["../highcharts.src.js","default","Series"]
+const external_highcharts_src_js_default_Series_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].Series;
+var external_highcharts_src_js_default_Series_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_Series_namespaceObject);
 ;// ./code/es-modules/Series/Bubble/BubbleSeries.js
 /* *
  *
@@ -8430,7 +8436,9 @@ class BubblePoint extends BubblePoint_ScatterPoint {
 
 const { composed: BubbleSeries_composed, noop: BubbleSeries_noop } = (external_highcharts_src_js_default_default());
 
-const { series: Series, seriesTypes: { column: { prototype: BubbleSeries_columnProto }, scatter: BubbleSeries_ScatterSeries } } = (external_highcharts_src_js_default_SeriesRegistry_default());
+
+
+
 
 /* *
  *
@@ -8598,7 +8606,7 @@ function onAxisAfterRender() {
  * */
 /**
  */
-class BubbleSeries extends BubbleSeries_ScatterSeries {
+class BubbleSeries extends (external_highcharts_src_js_default_Series_types_scatter_default()) {
     /* *
      *
      *  Static Functions
@@ -8747,7 +8755,7 @@ class BubbleSeries extends BubbleSeries_ScatterSeries {
      * @internal
      */
     pointAttribs(point, state) {
-        const markerOptions = this.options.marker, fillOpacity = markerOptions?.fillOpacity, attr = Series.prototype.pointAttribs.call(this, point, state);
+        const markerOptions = this.options.marker, fillOpacity = markerOptions?.fillOpacity, attr = external_highcharts_src_js_default_Series_default().prototype.pointAttribs.call(this, point, state);
         attr['fill-opacity'] = fillOpacity ?? 1;
         return attr;
     }
@@ -8879,7 +8887,7 @@ class BubbleSeries extends BubbleSeries_ScatterSeries {
  * @optionparent plotOptions.bubble
  * @internal
  */
-BubbleSeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(BubbleSeries_ScatterSeries.defaultOptions, {
+BubbleSeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)((external_highcharts_src_js_default_Series_types_scatter_default()).defaultOptions, {
     dataLabels: {
         formatter: function () {
             const { numberFormatter } = this.series.chart;
@@ -9115,7 +9123,7 @@ BubbleSeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceObj
     zoneAxis: 'z'
 });
 (0,external_highcharts_src_js_default_namespaceObject.extend)(BubbleSeries.prototype, {
-    alignDataLabel: BubbleSeries_columnProto.alignDataLabel,
+    alignDataLabel: (external_highcharts_src_js_default_Series_types_column_default()).prototype.alignDataLabel,
     applyZones: BubbleSeries_noop,
     bubblePadding: true,
     isBubble: true,
@@ -9271,7 +9279,12 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
 
 
 
-const { seriesTypes: { map: { prototype: { pointClass: { prototype: mapPointProto } } } } } = (external_highcharts_src_js_default_SeriesRegistry_default());
+/* *
+ *
+ *  Constants
+ *
+ * */
+const MapBubblePoint_MapPoint = Map_MapSeries.prototype.pointClass;
 /* *
  *
  *  Class
@@ -9289,8 +9302,8 @@ class MapBubblePoint extends Bubble_BubblePoint {
     }
 }
 ;(0,external_highcharts_src_js_default_namespaceObject.extend)(MapBubblePoint.prototype, {
-    applyOptions: mapPointProto.applyOptions,
-    getProjectedBounds: mapPointProto.getProjectedBounds
+    applyOptions: MapBubblePoint_MapPoint.prototype.applyOptions,
+    getProjectedBounds: MapBubblePoint_MapPoint.prototype.getProjectedBounds
 });
 /* *
  *
@@ -9315,7 +9328,8 @@ class MapBubblePoint extends Bubble_BubblePoint {
 
 
 
-const { seriesTypes: { map: { prototype: mapProto }, mappoint: { prototype: MapBubbleSeries_mapPointProto } } } = (external_highcharts_src_js_default_SeriesRegistry_default());
+
+
 
 /* *
  *
@@ -9340,7 +9354,7 @@ class MapBubbleSeries extends Bubble_BubbleSeries {
          *
          * */
         super(...arguments);
-        this.clearBounds = mapProto.clearBounds;
+        this.clearBounds = Map_MapSeries.prototype.clearBounds;
     }
     /** @internal */
     searchPoint(e, compareX) {
@@ -9351,7 +9365,7 @@ class MapBubbleSeries extends Bubble_BubbleSeries {
     }
     /** @internal */
     translate() {
-        MapBubbleSeries_mapPointProto.translate.call(this);
+        MapPoint_MapPointSeries.prototype.translate.call(this);
         this.getRadii();
         this.translateBubble();
     }
@@ -9538,16 +9552,16 @@ MapBubbleSeries.defaultOptions = (0,external_highcharts_src_js_default_namespace
 (0,external_highcharts_src_js_default_namespaceObject.extend)(MapBubbleSeries.prototype, {
     type: 'mapbubble',
     axisTypes: ['colorAxis'],
-    getProjectedBounds: mapProto.getProjectedBounds,
+    getProjectedBounds: Map_MapSeries.prototype.getProjectedBounds,
     isCartesian: false,
     // If one single value is passed, it is interpreted as z
     pointArrayMap: ['z'],
     pointClass: MapBubble_MapBubblePoint,
-    processData: mapProto.processData,
-    projectPoint: MapBubbleSeries_mapPointProto.projectPoint,
+    processData: Map_MapSeries.prototype.processData,
+    projectPoint: MapPoint_MapPointSeries.prototype.projectPoint,
     kdAxisArray: ['plotX', 'plotY'],
-    setData: mapProto.setData,
-    setOptions: mapProto.setOptions,
+    setData: Map_MapSeries.prototype.setData,
+    setOptions: Map_MapSeries.prototype.setOptions,
     useMapGeometry: true,
     xyFromShape: true
 });
@@ -9644,8 +9658,13 @@ var external_highcharts_src_js_default_Color_default = /*#__PURE__*/__webpack_re
  * */
 
 
-const { scatter: { prototype: { pointClass: HeatmapPoint_ScatterPoint } } } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
 
+/* *
+ *
+ *  Constants
+ *
+ * */
+const HeatmapPoint_ScatterPoint = (external_highcharts_src_js_default_Series_types_scatter_default()).prototype.pointClass;
 /* *
  *
  *  Class
@@ -10481,7 +10500,9 @@ const InterpolationUtilities = {
 
 
 
-const { series: HeatmapSeries_Series, seriesTypes: { column: HeatmapSeries_ColumnSeries, scatter: HeatmapSeries_ScatterSeries } } = (external_highcharts_src_js_default_SeriesRegistry_default());
+
+
+
 
 const { prototype: { symbols: HeatmapSeries_symbols } } = (external_highcharts_src_js_default_SVGRenderer_default());
 
@@ -10498,7 +10519,7 @@ const { colorFromPoint: HeatmapSeries_colorFromPoint, getContext: HeatmapSeries_
  *
  * @augments Highcharts.Series
  */
-class HeatmapSeries extends HeatmapSeries_ScatterSeries {
+class HeatmapSeries extends (external_highcharts_src_js_default_Series_types_scatter_default()) {
     constructor() {
         /* *
          *
@@ -10562,7 +10583,7 @@ class HeatmapSeries extends HeatmapSeries_ScatterSeries {
             }
         }
         else if (seriesMarkerOptions.enabled || series._hasPointMarkers) {
-            HeatmapSeries_Series.prototype.drawPoints.call(series);
+            external_highcharts_src_js_default_Series_default().prototype.drawPoints.call(series);
             series.points.forEach((point) => {
                 if (point.graphic) {
                     // In styled mode, use CSS, otherwise the fill used in
@@ -10588,7 +10609,7 @@ class HeatmapSeries extends HeatmapSeries_ScatterSeries {
      */
     getExtremes() {
         // Get the extremes from the value data
-        const { dataMin, dataMax } = HeatmapSeries_Series.prototype.getExtremes
+        const { dataMin, dataMax } = external_highcharts_src_js_default_Series_default().prototype.getExtremes
             .call(this, this.getColumn('value'));
         if ((0,external_highcharts_src_js_default_namespaceObject.isNumber)(dataMin)) {
             this.valueMin = dataMin;
@@ -10597,7 +10618,7 @@ class HeatmapSeries extends HeatmapSeries_ScatterSeries {
             this.valueMax = dataMax;
         }
         // Get the extremes from the y data
-        return HeatmapSeries_Series.prototype.getExtremes.call(this);
+        return external_highcharts_src_js_default_Series_default().prototype.getExtremes.call(this);
     }
     /**
      * Override to also allow null points, used when building the k-d-tree for
@@ -10605,7 +10626,7 @@ class HeatmapSeries extends HeatmapSeries_ScatterSeries {
      * @internal
      */
     getValidPoints(points, insideOnly) {
-        return HeatmapSeries_Series.prototype.getValidPoints.call(this, points, insideOnly, true);
+        return external_highcharts_src_js_default_Series_default().prototype.getValidPoints.call(this, points, insideOnly, true);
     }
     /**
      * Define hasData function for non-cartesian series. Returns true if the
@@ -10683,7 +10704,7 @@ class HeatmapSeries extends HeatmapSeries_ScatterSeries {
      * @internal
      */
     pointAttribs(point, state) {
-        const series = this, attr = HeatmapSeries_Series.prototype.pointAttribs.call(series, point, state), seriesOptions = series.options || {}, plotOptions = series.chart.options.plotOptions || {}, seriesPlotOptions = plotOptions.series || {}, heatmapPlotOptions = plotOptions.heatmap || {}, 
+        const series = this, attr = external_highcharts_src_js_default_Series_default().prototype.pointAttribs.call(series, point, state), seriesOptions = series.options || {}, plotOptions = series.chart.options.plotOptions || {}, seriesPlotOptions = plotOptions.series || {}, heatmapPlotOptions = plotOptions.heatmap || {}, 
         // Get old properties in order to keep backward compatibility
         borderColor = point?.options.borderColor ||
             seriesOptions.borderColor ||
@@ -10743,7 +10764,7 @@ class HeatmapSeries extends HeatmapSeries_ScatterSeries {
     }
 }
 /** @internal */
-HeatmapSeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(HeatmapSeries_ScatterSeries.defaultOptions, Heatmap_HeatmapSeriesDefaults);
+HeatmapSeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)((external_highcharts_src_js_default_Series_types_scatter_default()).defaultOptions, Heatmap_HeatmapSeriesDefaults);
 (0,external_highcharts_src_js_default_namespaceObject.addEvent)(HeatmapSeries, 'afterDataClassLegendClick', function () {
     this.isDirtyCanvas = true;
     this.drawPoints();
@@ -10765,7 +10786,7 @@ HeatmapSeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceOb
     /**
      * @internal
      */
-    alignDataLabel: HeatmapSeries_ColumnSeries.prototype.alignDataLabel,
+    alignDataLabel: (external_highcharts_src_js_default_Series_types_column_default()).prototype.alignDataLabel,
     colorAttribs: Series_ColorMapComposition.seriesMembers.colorAttribs
 });
 Series_ColorMapComposition.compose(HeatmapSeries);

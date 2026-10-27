@@ -13,9 +13,14 @@
  * */
 'use strict';
 import NodesComposition from '../NodesComposition.js';
-import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-const { series: { prototype: seriesProto, prototype: { pointClass: Point } } } = SeriesRegistry;
+import Series from '../../Core/Series/Series.js';
 import { addEvent, css, defined, extend } from '../../Shared/Utilities.js';
+/* *
+ *
+ *  Constants
+ *
+ * */
+const Point = Series.prototype.pointClass;
 /* *
  *
  *  Class
@@ -208,7 +213,7 @@ class NetworkgraphPoint extends Point {
                     linkFromTo.toNode.linksTo.splice(index, 1);
                 }
                 // Remove link from data/points collections
-                seriesProto.removePoint.call(series, series.data.indexOf(linkFromTo), false, false);
+                Series.prototype.removePoint.call(series, series.data.indexOf(linkFromTo), false, false);
             });
             // Restore points array, after links are removed
             series.points = series.data.slice();

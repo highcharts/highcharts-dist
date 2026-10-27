@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.1.1-modified (2026-10-26)
+ * @license Highstock JS v13.1.1-modified (2026-10-27)
  * @module highcharts/indicators/chaikin
  * @requires highcharts
  * @requires highcharts/modules/stock
+ * @requires highcharts/indicators/indicators
  *
  * Indicator series type for Highcharts Stock
  *
@@ -15,17 +16,31 @@
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
+		module.exports = factory(root["_Highcharts"]["Series"]["types"]["ema"], root["_Highcharts"]["Series"]["types"]["sma"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
 	else if(typeof define === 'function' && define.amd)
-		define("highcharts/indicators/chaikin", ["highcharts/highcharts"], function (amd1) {return factory(amd1["SeriesRegistry"],amd1);});
+		define("highcharts/indicators/chaikin", ["highcharts/highcharts"], function (amd1) {return factory(amd1["Series"]["types"]["ema"],amd1["Series"]["types"]["sma"],amd1["SeriesRegistry"],amd1);});
 	else if(typeof exports === 'object')
-		exports["highcharts/indicators/chaikin"] = factory(root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
+		exports["highcharts/indicators/chaikin"] = factory(root["_Highcharts"]["Series"]["types"]["ema"], root["_Highcharts"]["Series"]["types"]["sma"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
 	else
-		root["Highcharts"] = factory(root["Highcharts"]["SeriesRegistry"], root["Highcharts"]);
-})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__944__) => {
+		root["Highcharts"] = factory(root["Highcharts"]["Series"]["types"]["ema"], root["Highcharts"]["Series"]["types"]["sma"], root["Highcharts"]["SeriesRegistry"], root["Highcharts"]);
+})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__563__, __WEBPACK_EXTERNAL_MODULE__80__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__944__) => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
+
+/***/ 563
+(module) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__563__;
+
+/***/ },
+
+/***/ 80
+(module) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__80__;
+
+/***/ },
 
 /***/ 512
 (module) {
@@ -102,6 +117,9 @@ __webpack_require__.d(__webpack_exports__, {
 // EXTERNAL MODULE: external {"amd":["highcharts/highcharts"],"commonjs":["highcharts"],"commonjs2":["highcharts"],"root":["Highcharts"]}
 var highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_ = __webpack_require__(944);
 var highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default = /*#__PURE__*/__webpack_require__.n(highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_);
+// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Series","types","sma"],"commonjs":["highcharts","Series","types","sma"],"commonjs2":["highcharts","Series","types","sma"],"root":["Highcharts","Series","types","sma"]}
+var highcharts_Series_types_sma_commonjs_highcharts_Series_types_sma_commonjs2_highcharts_Series_types_sma_root_Highcharts_Series_types_sma_ = __webpack_require__(80);
+var highcharts_Series_types_sma_commonjs_highcharts_Series_types_sma_commonjs2_highcharts_Series_types_sma_root_Highcharts_Series_types_sma_default = /*#__PURE__*/__webpack_require__.n(highcharts_Series_types_sma_commonjs_highcharts_Series_types_sma_commonjs2_highcharts_Series_types_sma_root_Highcharts_Series_types_sma_);
 // EXTERNAL MODULE: external {"amd":["highcharts/highcharts","SeriesRegistry"],"commonjs":["highcharts","SeriesRegistry"],"commonjs2":["highcharts","SeriesRegistry"],"root":["Highcharts","SeriesRegistry"]}
 var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_ = __webpack_require__(512);
 var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_);
@@ -115,7 +133,7 @@ var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highc
  * */
 
 
-const { sma: SMAIndicator } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
+
 
 
 /* *
@@ -131,7 +149,7 @@ const { sma: SMAIndicator } = (highcharts_SeriesRegistry_commonjs_highcharts_Ser
  *
  * @augments Highcharts.Series
  */
-class ADIndicator extends SMAIndicator {
+class ADIndicator extends (highcharts_Series_types_sma_commonjs_highcharts_Series_types_sma_commonjs2_highcharts_Series_types_sma_root_Highcharts_Series_types_sma_default()) {
     /* *
      *
      *  Static Functions
@@ -205,7 +223,7 @@ class ADIndicator extends SMAIndicator {
  * @optionparent plotOptions.ad
  * @internal
  */
-ADIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(SMAIndicator.defaultOptions, {
+ADIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)((highcharts_Series_types_sma_commonjs_highcharts_Series_types_sma_commonjs2_highcharts_Series_types_sma_root_Highcharts_Series_types_sma_default()).defaultOptions, {
     /**
      * @excluding index
      */
@@ -250,6 +268,9 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  */
 ''; // Add doclet above to transpiled file
 
+// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Series","types","ema"],"commonjs":["highcharts","Series","types","ema"],"commonjs2":["highcharts","Series","types","ema"],"root":["Highcharts","Series","types","ema"]}
+var highcharts_Series_types_ema_commonjs_highcharts_Series_types_ema_commonjs2_highcharts_Series_types_ema_root_Highcharts_Series_types_ema_ = __webpack_require__(563);
+var highcharts_Series_types_ema_commonjs_highcharts_Series_types_ema_commonjs2_highcharts_Series_types_ema_root_Highcharts_Series_types_ema_default = /*#__PURE__*/__webpack_require__.n(highcharts_Series_types_ema_commonjs_highcharts_Series_types_ema_commonjs2_highcharts_Series_types_ema_root_Highcharts_Series_types_ema_);
 ;// ./code/es-modules/Stock/Indicators/Chaikin/ChaikinIndicator.js
 /* *
  *
@@ -262,7 +283,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
 
  // For historic reasons, AD is built into Chaikin
 
-const { ema: EMAIndicator } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
+
 
 
 /* *
@@ -278,7 +299,7 @@ const { ema: EMAIndicator } = (highcharts_SeriesRegistry_commonjs_highcharts_Ser
  *
  * @augments Highcharts.Series
  */
-class ChaikinIndicator extends EMAIndicator {
+class ChaikinIndicator extends (highcharts_Series_types_ema_commonjs_highcharts_Series_types_ema_commonjs2_highcharts_Series_types_ema_root_Highcharts_Series_types_ema_default()) {
     /* *
      *
      *  Functions
@@ -355,7 +376,7 @@ class ChaikinIndicator extends EMAIndicator {
  * @optionparent plotOptions.chaikin
  * @internal
  */
-ChaikinIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(EMAIndicator.defaultOptions, {
+ChaikinIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)((highcharts_Series_types_ema_commonjs_highcharts_Series_types_ema_commonjs2_highcharts_Series_types_ema_root_Highcharts_Series_types_ema_default()).defaultOptions, {
     /**
      * Parameters used in calculation of Chaikin Oscillator
      * series points.

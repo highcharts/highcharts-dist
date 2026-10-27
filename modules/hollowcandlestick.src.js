@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.1.1-modified (2026-10-26)
+ * @license Highstock JS v13.1.1-modified (2026-10-27)
  * @module highcharts/modules/hollowcandlestick
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -15,14 +15,14 @@
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(root["_Highcharts"]["Axis"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
+		module.exports = factory(root["_Highcharts"]["Axis"], root["_Highcharts"]["Series"]["types"]["candlestick"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
 	else if(typeof define === 'function' && define.amd)
-		define("highcharts/modules/hollowcandlestick", ["highcharts/highcharts"], function (amd1) {return factory(amd1["Axis"],amd1["SeriesRegistry"],amd1);});
+		define("highcharts/modules/hollowcandlestick", ["highcharts/highcharts"], function (amd1) {return factory(amd1["Axis"],amd1["Series"]["types"]["candlestick"],amd1["SeriesRegistry"],amd1);});
 	else if(typeof exports === 'object')
-		exports["highcharts/modules/hollowcandlestick"] = factory(root["_Highcharts"]["Axis"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
+		exports["highcharts/modules/hollowcandlestick"] = factory(root["_Highcharts"]["Axis"], root["_Highcharts"]["Series"]["types"]["candlestick"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
 	else
-		root["Highcharts"] = factory(root["Highcharts"]["Axis"], root["Highcharts"]["SeriesRegistry"], root["Highcharts"]);
-})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__532__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__944__) => {
+		root["Highcharts"] = factory(root["Highcharts"]["Axis"], root["Highcharts"]["Series"]["types"]["candlestick"], root["Highcharts"]["SeriesRegistry"], root["Highcharts"]);
+})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__532__, __WEBPACK_EXTERNAL_MODULE__696__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__944__) => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
@@ -31,6 +31,13 @@ return /******/ (() => { // webpackBootstrap
 (module) {
 
 module.exports = __WEBPACK_EXTERNAL_MODULE__532__;
+
+/***/ },
+
+/***/ 696
+(module) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__696__;
 
 /***/ },
 
@@ -109,9 +116,9 @@ __webpack_require__.d(__webpack_exports__, {
 // EXTERNAL MODULE: external {"amd":["highcharts/highcharts"],"commonjs":["highcharts"],"commonjs2":["highcharts"],"root":["Highcharts"]}
 var highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_ = __webpack_require__(944);
 var highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default = /*#__PURE__*/__webpack_require__.n(highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_);
-// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","SeriesRegistry"],"commonjs":["highcharts","SeriesRegistry"],"commonjs2":["highcharts","SeriesRegistry"],"root":["Highcharts","SeriesRegistry"]}
-var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_ = __webpack_require__(512);
-var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_);
+// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Series","types","candlestick"],"commonjs":["highcharts","Series","types","candlestick"],"commonjs2":["highcharts","Series","types","candlestick"],"root":["Highcharts","Series","types","candlestick"]}
+var highcharts_Series_types_candlestick_commonjs_highcharts_Series_types_candlestick_commonjs2_highcharts_Series_types_candlestick_root_Highcharts_Series_types_candlestick_ = __webpack_require__(696);
+var highcharts_Series_types_candlestick_commonjs_highcharts_Series_types_candlestick_commonjs2_highcharts_Series_types_candlestick_root_Highcharts_Series_types_candlestick_default = /*#__PURE__*/__webpack_require__.n(highcharts_Series_types_candlestick_commonjs_highcharts_Series_types_candlestick_commonjs2_highcharts_Series_types_candlestick_root_Highcharts_Series_types_candlestick_);
 ;// ./code/es-modules/Series/HollowCandlestick/HollowCandlestickPoint.js
 /* *
  *
@@ -131,13 +138,12 @@ var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highc
  *
  * */
 
-const { seriesTypes: { candlestick: CandlestickSeries } } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default());
 /* *
  *
  *  Class
  *
  * */
-class HollowCandlestickPoint extends CandlestickSeries.prototype.pointClass {
+class HollowCandlestickPoint extends (highcharts_Series_types_candlestick_commonjs_highcharts_Series_types_candlestick_commonjs2_highcharts_Series_types_candlestick_root_Highcharts_Series_types_candlestick_default()).prototype.pointClass {
     /* *
      *
      *  Functions
@@ -164,6 +170,9 @@ class HollowCandlestickPoint extends CandlestickSeries.prototype.pointClass {
  * */
 /* harmony default export */ const HollowCandlestick_HollowCandlestickPoint = (HollowCandlestickPoint);
 
+// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","SeriesRegistry"],"commonjs":["highcharts","SeriesRegistry"],"commonjs2":["highcharts","SeriesRegistry"],"root":["Highcharts","SeriesRegistry"]}
+var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_ = __webpack_require__(512);
+var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_);
 // EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Axis"],"commonjs":["highcharts","Axis"],"commonjs2":["highcharts","Axis"],"root":["Highcharts","Axis"]}
 var highcharts_Axis_commonjs_highcharts_Axis_commonjs2_highcharts_Axis_root_Highcharts_Axis_ = __webpack_require__(532);
 var highcharts_Axis_commonjs_highcharts_Axis_commonjs2_highcharts_Axis_root_Highcharts_Axis_default = /*#__PURE__*/__webpack_require__.n(highcharts_Axis_commonjs_highcharts_Axis_commonjs2_highcharts_Axis_root_Highcharts_Axis_);
@@ -189,7 +198,7 @@ var highcharts_Axis_commonjs_highcharts_Axis_commonjs2_highcharts_Axis_root_High
 
 
 
-const { seriesTypes: { candlestick: HollowCandlestickSeries_CandlestickSeries } } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default());
+
 /* *
  *
  *  Code
@@ -201,7 +210,7 @@ const { seriesTypes: { candlestick: HollowCandlestickSeries_CandlestickSeries } 
  * @class
  * @name Highcharts.seriesTypes.hollowcandlestick
  */
-class HollowCandlestickSeries extends HollowCandlestickSeries_CandlestickSeries {
+class HollowCandlestickSeries extends (highcharts_Series_types_candlestick_commonjs_highcharts_Series_types_candlestick_commonjs2_highcharts_Series_types_candlestick_root_Highcharts_Series_types_candlestick_default()) {
     constructor() {
         /* *
          *
@@ -363,7 +372,7 @@ class HollowCandlestickSeries extends HollowCandlestickSeries_CandlestickSeries 
  * @requires     modules/hollowcandlestick
  * @optionparent plotOptions.hollowcandlestick
  */
-HollowCandlestickSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(HollowCandlestickSeries_CandlestickSeries.defaultOptions, {
+HollowCandlestickSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)((highcharts_Series_types_candlestick_commonjs_highcharts_Series_types_candlestick_commonjs2_highcharts_Series_types_candlestick_root_Highcharts_Series_types_candlestick_default()).defaultOptions, {
     /**
      * The fill color of the candlestick when the current
      * close is lower than the previous one.

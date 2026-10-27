@@ -31,6 +31,7 @@
  *               linecap, shadow, stacking, step, boostBlending
  * @since        6.0.0
  * @product      highcharts highstock
+ * @requires     modules/datagrouping
  * @requires     modules/windbarb
  * @optionparent plotOptions.windbarb
  */
@@ -130,6 +131,7 @@ const WindbarbSeriesDefaults = {
  * @extends   series,plotOptions.windbarb
  * @excluding boostThreshold, boostBlending
  * @product   highcharts highstock
+ * @requires  modules/datagrouping
  * @requires  modules/windbarb
  * @apioption series.windbarb
  */

@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.1.1-modified (2026-10-26)
+ * @license Highstock JS v13.1.1-modified (2026-10-27)
  * @module highcharts/indicators/regressions
  * @requires highcharts
  * @requires highcharts/modules/stock
+ * @requires highcharts/indicators/indicators
  *
  * Indicator series type for Highcharts Stock
  *
@@ -15,17 +16,24 @@
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
+		module.exports = factory(root["_Highcharts"]["Series"]["types"]["sma"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
 	else if(typeof define === 'function' && define.amd)
-		define("highcharts/indicators/regressions", ["highcharts/highcharts"], function (amd1) {return factory(amd1["SeriesRegistry"],amd1);});
+		define("highcharts/indicators/regressions", ["highcharts/highcharts"], function (amd1) {return factory(amd1["Series"]["types"]["sma"],amd1["SeriesRegistry"],amd1);});
 	else if(typeof exports === 'object')
-		exports["highcharts/indicators/regressions"] = factory(root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
+		exports["highcharts/indicators/regressions"] = factory(root["_Highcharts"]["Series"]["types"]["sma"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
 	else
-		root["Highcharts"] = factory(root["Highcharts"]["SeriesRegistry"], root["Highcharts"]);
-})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__944__) => {
+		root["Highcharts"] = factory(root["Highcharts"]["Series"]["types"]["sma"], root["Highcharts"]["SeriesRegistry"], root["Highcharts"]);
+})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__80__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__944__) => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
+
+/***/ 80
+(module) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__80__;
+
+/***/ },
 
 /***/ 512
 (module) {
@@ -102,6 +110,9 @@ __webpack_require__.d(__webpack_exports__, {
 // EXTERNAL MODULE: external {"amd":["highcharts/highcharts"],"commonjs":["highcharts"],"commonjs2":["highcharts"],"root":["Highcharts"]}
 var highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_ = __webpack_require__(944);
 var highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default = /*#__PURE__*/__webpack_require__.n(highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_);
+// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Series","types","sma"],"commonjs":["highcharts","Series","types","sma"],"commonjs2":["highcharts","Series","types","sma"],"root":["Highcharts","Series","types","sma"]}
+var highcharts_Series_types_sma_commonjs_highcharts_Series_types_sma_commonjs2_highcharts_Series_types_sma_root_Highcharts_Series_types_sma_ = __webpack_require__(80);
+var highcharts_Series_types_sma_commonjs_highcharts_Series_types_sma_commonjs2_highcharts_Series_types_sma_root_Highcharts_Series_types_sma_default = /*#__PURE__*/__webpack_require__.n(highcharts_Series_types_sma_commonjs_highcharts_Series_types_sma_commonjs2_highcharts_Series_types_sma_root_Highcharts_Series_types_sma_);
 // EXTERNAL MODULE: external {"amd":["highcharts/highcharts","SeriesRegistry"],"commonjs":["highcharts","SeriesRegistry"],"commonjs2":["highcharts","SeriesRegistry"],"root":["Highcharts","SeriesRegistry"]}
 var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_ = __webpack_require__(512);
 var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_);
@@ -119,7 +130,7 @@ var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highc
  * */
 
 
-const { sma: SMAIndicator } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
+
 
 /* *
  *
@@ -134,7 +145,7 @@ const { sma: SMAIndicator } = (highcharts_SeriesRegistry_commonjs_highcharts_Ser
  *
  * @augments Highcharts.Series
  */
-class LinearRegressionIndicator extends SMAIndicator {
+class LinearRegressionIndicator extends (highcharts_Series_types_sma_commonjs_highcharts_Series_types_sma_commonjs2_highcharts_Series_types_sma_root_Highcharts_Series_types_sma_default()) {
     /* *
      *
      *  Functions
@@ -295,7 +306,7 @@ class LinearRegressionIndicator extends SMAIndicator {
  * @optionparent plotOptions.linearregression
  * @internal
  */
-LinearRegressionIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(SMAIndicator.defaultOptions, {
+LinearRegressionIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)((highcharts_Series_types_sma_commonjs_highcharts_Series_types_sma_commonjs2_highcharts_Series_types_sma_root_Highcharts_Series_types_sma_default()).defaultOptions, {
     params: {
         /**
          * Unit (in milliseconds) for the x axis distances used to
@@ -362,7 +373,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *  Default Export
  *
  * */
-/* harmony default export */ const LinearRegression_LinearRegressionIndicator = ((/* unused pure expression or super */ null && (LinearRegressionIndicator)));
+/* harmony default export */ const LinearRegression_LinearRegressionIndicator = (LinearRegressionIndicator);
 /* *
  *
  *  API Options
@@ -396,7 +407,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * */
 
 
-const { linearregression: LinearRegressionSlopesIndicator_LinearRegressionIndicator } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
+
 
 /* *
  *
@@ -411,7 +422,7 @@ const { linearregression: LinearRegressionSlopesIndicator_LinearRegressionIndica
  *
  * @augments Highcharts.Series
  */
-class LinearRegressionSlopesIndicator extends LinearRegressionSlopesIndicator_LinearRegressionIndicator {
+class LinearRegressionSlopesIndicator extends LinearRegression_LinearRegressionIndicator {
     /* *
      *
      *  Functions
@@ -442,7 +453,7 @@ class LinearRegressionSlopesIndicator extends LinearRegressionSlopesIndicator_Li
  * @optionparent plotOptions.linearregressionslope
  * @internal
  */
-LinearRegressionSlopesIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(LinearRegressionSlopesIndicator_LinearRegressionIndicator.defaultOptions);
+LinearRegressionSlopesIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(LinearRegression_LinearRegressionIndicator.defaultOptions);
 (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.extend)(LinearRegressionSlopesIndicator.prototype, {
     nameBase: 'Linear Regression Slope Indicator'
 });
@@ -488,7 +499,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * */
 
 
-const { linearregression: LinearRegressionInterceptIndicator_LinearRegressionIndicator } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
+
 
 /* *
  *
@@ -503,7 +514,7 @@ const { linearregression: LinearRegressionInterceptIndicator_LinearRegressionInd
  *
  * @augments Highcharts.Series
  */
-class LinearRegressionInterceptIndicator extends LinearRegressionInterceptIndicator_LinearRegressionIndicator {
+class LinearRegressionInterceptIndicator extends LinearRegression_LinearRegressionIndicator {
     /* *
      *
      *  Functions
@@ -534,7 +545,7 @@ class LinearRegressionInterceptIndicator extends LinearRegressionInterceptIndica
  * @optionparent plotOptions.linearregressionintercept
  * @internal
  */
-LinearRegressionInterceptIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(LinearRegressionInterceptIndicator_LinearRegressionIndicator.defaultOptions);
+LinearRegressionInterceptIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(LinearRegression_LinearRegressionIndicator.defaultOptions);
 (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.extend)(LinearRegressionInterceptIndicator.prototype, {
     nameBase: 'Linear Regression Intercept Indicator'
 });
@@ -580,7 +591,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * */
 
 
-const { linearregression: LinearRegressionAngleIndicator_LinearRegressionIndicator } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
+
 
 /* *
  *
@@ -595,7 +606,7 @@ const { linearregression: LinearRegressionAngleIndicator_LinearRegressionIndicat
  *
  * @augments Highcharts.Series
  */
-class LinearRegressionAngleIndicator extends LinearRegressionAngleIndicator_LinearRegressionIndicator {
+class LinearRegressionAngleIndicator extends LinearRegression_LinearRegressionIndicator {
     /* *
      *
      *  Functions
@@ -636,7 +647,7 @@ class LinearRegressionAngleIndicator extends LinearRegressionAngleIndicator_Line
  * @optionparent plotOptions.linearregressionangle
  * @internal
  */
-LinearRegressionAngleIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(LinearRegressionAngleIndicator_LinearRegressionIndicator.defaultOptions, {
+LinearRegressionAngleIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(LinearRegression_LinearRegressionIndicator.defaultOptions, {
     tooltip: {
         pointFormat: '<span style="color:{point.color}">\u25CF</span>' +
             '{series.name}: <b>{point.y}°</b><br/>'

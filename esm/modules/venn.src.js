@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-26)
+ * @license Highcharts JS v13.1.1-modified (2026-10-27)
  * @module highcharts/modules/venn
  * @requires highcharts
  *
@@ -632,6 +632,9 @@ const DrawPointUtilities = {
 /** @internal */
 /* harmony default export */ const Series_DrawPointUtilities = (DrawPointUtilities);
 
+;// external ["../highcharts.src.js","default","Series","types","scatter"]
+const external_highcharts_src_js_default_Series_types_scatter_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].Series.types.scatter;
+var external_highcharts_src_js_default_Series_types_scatter_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_Series_types_scatter_namespaceObject);
 ;// external ["../highcharts.src.js","default","SeriesRegistry"]
 const external_highcharts_src_js_default_SeriesRegistry_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].SeriesRegistry;
 var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_SeriesRegistry_namespaceObject);
@@ -656,7 +659,12 @@ var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__w
 
 
 
-const { scatter: { prototype: { pointClass: ScatterPoint } } } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
+/* *
+ *
+ *  Constants
+ *
+ * */
+const ScatterPoint = (external_highcharts_src_js_default_Series_types_scatter_default()).prototype.pointClass;
 /* *
  *
  *  Class
@@ -1555,7 +1563,7 @@ const { getAreaOfIntersectionBetweenCircles, getCirclesIntersectionPolygon, isCi
 
 const { getCenterOfPoints: VennSeries_getCenterOfPoints } = Geometry_GeometryUtilities;
 
-const { scatter: ScatterSeries } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
+
 
 
 
@@ -1572,7 +1580,7 @@ const { scatter: ScatterSeries } = (external_highcharts_src_js_default_SeriesReg
  *
  * @augments Highcharts.Series
  */
-class VennSeries extends ScatterSeries {
+class VennSeries extends (external_highcharts_src_js_default_Series_types_scatter_default()) {
     /* *
      *
      *  Static Functions
@@ -1846,7 +1854,7 @@ class VennSeries extends ScatterSeries {
     }
     /** @internal */
     init() {
-        ScatterSeries.prototype.init.apply(this, arguments);
+        external_highcharts_src_js_default_Series_types_scatter_default().prototype.init.apply(this, arguments);
         // Venn's opacity is a different option from other series
         delete this.opacity;
     }
@@ -1960,7 +1968,7 @@ class VennSeries extends ScatterSeries {
  * */
 VennSeries.splitter = 'highcharts-split';
 /** @internal */
-VennSeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(ScatterSeries.defaultOptions, Venn_VennSeriesDefaults);
+VennSeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)((external_highcharts_src_js_default_Series_types_scatter_default()).defaultOptions, Venn_VennSeriesDefaults);
 (0,external_highcharts_src_js_default_namespaceObject.extend)(VennSeries.prototype, {
     axisTypes: [],
     directTouch: true,

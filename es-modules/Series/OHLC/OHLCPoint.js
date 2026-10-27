@@ -10,8 +10,7 @@
  *
  * */
 'use strict';
-import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-const { seriesTypes: { hlc: HLCSeries } } = SeriesRegistry;
+import HLCSeries from '../HLC/HLCSeries.js';
 /* *
  *
  *  Class

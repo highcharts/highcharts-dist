@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-26)
+ * @license Highcharts JS v13.1.1-modified (2026-10-27)
  * @module highcharts/modules/dependency-wheel
  * @requires highcharts
  * @requires highcharts/modules/sankey
@@ -14,6 +14,8 @@
  * see www.highcharts.com/license
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
+import "./sankey.src.js";
+import * as __WEBPACK_EXTERNAL_MODULE__sankey_src_js_3bb2850a__ from "./sankey.src.js";
 /******/ // The require scope
 /******/ const __webpack_require__ = {};
 /******/ 
@@ -46,6 +48,8 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 ;// external ["../highcharts.src.js","default"]
 const external_highcharts_src_js_default_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"];
 var external_highcharts_src_js_default_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_namespaceObject);
+;// external "./sankey.src.js"
+
 ;// ./code/es-modules/Extensions/BorderRadius.js
 /* unused harmony import specifier */ var relativeLength;
 /* unused harmony import specifier */ var isObject;
@@ -441,9 +445,9 @@ function roundedRect(x, y, width, height, options = {}) {
 */
 (''); // Keeps doclets above in JS file
 
-;// external ["../highcharts.src.js","default","SeriesRegistry"]
-const external_highcharts_src_js_default_SeriesRegistry_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].SeriesRegistry;
-var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_SeriesRegistry_namespaceObject);
+;// external ["./sankey.src.js","default","Series","types","sankey"]
+const external_sankey_src_js_default_Series_types_sankey_namespaceObject = __WEBPACK_EXTERNAL_MODULE__sankey_src_js_3bb2850a__["default"].Series.types.sankey;
+var external_sankey_src_js_default_Series_types_sankey_default = /*#__PURE__*/__webpack_require__.n(external_sankey_src_js_default_Series_types_sankey_namespaceObject);
 ;// ./code/es-modules/Series/DependencyWheel/DependencyWheelPoint.js
 /* *
  *
@@ -460,8 +464,13 @@ var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__w
  * */
 
 
-const { sankey: { prototype: { pointClass: SankeyPoint } } } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
 
+/* *
+ *
+ *  Constants
+ *
+ * */
+const SankeyPoint = (external_sankey_src_js_default_Series_types_sankey_default()).prototype.pointClass;
 /* *
  *
  *  Class
@@ -996,6 +1005,12 @@ var SankeyColumnComposition;
  * */
 /* harmony default export */ const Sankey_SankeyColumnComposition = (SankeyColumnComposition);
 
+;// external ["../highcharts.src.js","default","Series","types","pie"]
+const external_highcharts_src_js_default_Series_types_pie_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].Series.types.pie;
+var external_highcharts_src_js_default_Series_types_pie_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_Series_types_pie_namespaceObject);
+;// external ["../highcharts.src.js","default","SeriesRegistry"]
+const external_highcharts_src_js_default_SeriesRegistry_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].SeriesRegistry;
+var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_SeriesRegistry_namespaceObject);
 ;// external ["../highcharts.src.js","default","SVGElement"]
 const external_highcharts_src_js_default_SVGElement_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].SVGElement;
 var external_highcharts_src_js_default_SVGElement_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_SVGElement_namespaceObject);
@@ -1295,7 +1310,8 @@ function composeTextPath(SVGElementClass) {
 const { deg2rad: DependencyWheelSeries_deg2rad } = (external_highcharts_src_js_default_default());
 
 
-const { pie: PieSeries, sankey: SankeySeries } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
+
+
 
 
 
@@ -1311,7 +1327,7 @@ composeTextPath((external_highcharts_src_js_default_SVGElement_default()));
  *
  * @augments Highcharts.seriesTypes.sankey
  */
-class DependencyWheelSeries extends SankeySeries {
+class DependencyWheelSeries extends (external_sankey_src_js_default_Series_types_sankey_default()) {
     /* *
      *
      *  Functions
@@ -1538,11 +1554,11 @@ class DependencyWheelSeries extends SankeySeries {
  *
  * */
 /** @internal */
-DependencyWheelSeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(SankeySeries.defaultOptions, DependencyWheel_DependencyWheelSeriesDefaults);
+DependencyWheelSeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)((external_sankey_src_js_default_Series_types_sankey_default()).defaultOptions, DependencyWheel_DependencyWheelSeriesDefaults);
 (0,external_highcharts_src_js_default_namespaceObject.extend)(DependencyWheelSeries.prototype, {
     orderNodes: false,
     pointArrayMap: ['from', 'to', 'weight', 'weightTo'],
-    getCenter: PieSeries.prototype.getCenter,
+    getCenter: (external_highcharts_src_js_default_Series_types_pie_default()).prototype.getCenter,
     useCircularLayout: false
 });
 DependencyWheelSeries.prototype.pointClass = DependencyWheel_DependencyWheelPoint;
@@ -1555,6 +1571,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
 /* harmony default export */ const DependencyWheel_DependencyWheelSeries = ((/* unused pure expression or super */ null && (DependencyWheelSeries)));
 
 ;// ./code/es-modules/masters/modules/dependency-wheel.src.js
+
 
 
 

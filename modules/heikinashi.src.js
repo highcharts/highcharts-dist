@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.1.1-modified (2026-10-26)
+ * @license Highstock JS v13.1.1-modified (2026-10-27)
  * @module highcharts/modules/heikinashi
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -15,17 +15,24 @@
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
+		module.exports = factory(root["_Highcharts"]["Series"]["types"]["candlestick"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
 	else if(typeof define === 'function' && define.amd)
-		define("highcharts/modules/heikinashi", ["highcharts/highcharts"], function (amd1) {return factory(amd1["SeriesRegistry"],amd1);});
+		define("highcharts/modules/heikinashi", ["highcharts/highcharts"], function (amd1) {return factory(amd1["Series"]["types"]["candlestick"],amd1["SeriesRegistry"],amd1);});
 	else if(typeof exports === 'object')
-		exports["highcharts/modules/heikinashi"] = factory(root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
+		exports["highcharts/modules/heikinashi"] = factory(root["_Highcharts"]["Series"]["types"]["candlestick"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
 	else
-		root["Highcharts"] = factory(root["Highcharts"]["SeriesRegistry"], root["Highcharts"]);
-})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__944__) => {
+		root["Highcharts"] = factory(root["Highcharts"]["Series"]["types"]["candlestick"], root["Highcharts"]["SeriesRegistry"], root["Highcharts"]);
+})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__696__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__944__) => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
+
+/***/ 696
+(module) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__696__;
+
+/***/ },
 
 /***/ 512
 (module) {
@@ -102,9 +109,9 @@ __webpack_require__.d(__webpack_exports__, {
 // EXTERNAL MODULE: external {"amd":["highcharts/highcharts"],"commonjs":["highcharts"],"commonjs2":["highcharts"],"root":["Highcharts"]}
 var highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_ = __webpack_require__(944);
 var highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default = /*#__PURE__*/__webpack_require__.n(highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_);
-// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","SeriesRegistry"],"commonjs":["highcharts","SeriesRegistry"],"commonjs2":["highcharts","SeriesRegistry"],"root":["Highcharts","SeriesRegistry"]}
-var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_ = __webpack_require__(512);
-var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_);
+// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Series","types","candlestick"],"commonjs":["highcharts","Series","types","candlestick"],"commonjs2":["highcharts","Series","types","candlestick"],"root":["Highcharts","Series","types","candlestick"]}
+var highcharts_Series_types_candlestick_commonjs_highcharts_Series_types_candlestick_commonjs2_highcharts_Series_types_candlestick_root_Highcharts_Series_types_candlestick_ = __webpack_require__(696);
+var highcharts_Series_types_candlestick_commonjs_highcharts_Series_types_candlestick_commonjs2_highcharts_Series_types_candlestick_root_Highcharts_Series_types_candlestick_default = /*#__PURE__*/__webpack_require__.n(highcharts_Series_types_candlestick_commonjs_highcharts_Series_types_candlestick_commonjs2_highcharts_Series_types_candlestick_root_Highcharts_Series_types_candlestick_);
 ;// ./code/es-modules/Series/HeikinAshi/HeikinAshiPoint.js
 /* *
  *
@@ -119,9 +126,12 @@ var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highc
  * */
 
 
-const { candlestick: { prototype: { pointClass: CandlestickPoint } }, hlc: { prototype: { 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-pointClass: HLCPoint } } } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
+/* *
+ *
+ *  Constants
+ *
+ * */
+const CandlestickPoint = (highcharts_Series_types_candlestick_commonjs_highcharts_Series_types_candlestick_commonjs2_highcharts_Series_types_candlestick_root_Highcharts_Series_types_candlestick_default()).prototype.pointClass;
 /* *
  *
  *  Class
@@ -243,6 +253,9 @@ const HeikinAshiDefaults = {
  * */
 /* harmony default export */ const HeikinAshiSeriesDefaults = (HeikinAshiDefaults);
 
+// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","SeriesRegistry"],"commonjs":["highcharts","SeriesRegistry"],"commonjs2":["highcharts","SeriesRegistry"],"root":["Highcharts","SeriesRegistry"]}
+var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_ = __webpack_require__(512);
+var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_);
 ;// ./code/es-modules/Series/HeikinAshi/HeikinAshiSeries.js
 /* *
  *
@@ -261,7 +274,7 @@ const { composed } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_H
 
 
 
-const { candlestick: CandlestickSeries } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
+
 
 /* *
  *
@@ -319,7 +332,7 @@ function onHeikinAshiSeriesUpdatedData() {
  * @class
  * @name Highcharts.seriesTypes.heikinashi
  */
-class HeikinAshiSeries extends CandlestickSeries {
+class HeikinAshiSeries extends (highcharts_Series_types_candlestick_commonjs_highcharts_Series_types_candlestick_commonjs2_highcharts_Series_types_candlestick_root_Highcharts_Series_types_candlestick_default()) {
     constructor() {
         /* *
          *
@@ -337,7 +350,7 @@ class HeikinAshiSeries extends CandlestickSeries {
      * */
     /** @internal */
     static compose(SeriesClass, AxisClass) {
-        CandlestickSeries.compose(SeriesClass);
+        highcharts_Series_types_candlestick_commonjs_highcharts_Series_types_candlestick_commonjs2_highcharts_Series_types_candlestick_root_Highcharts_Series_types_candlestick_default().compose(SeriesClass);
         if ((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pushUnique)(composed, 'HeikinAshi')) {
             (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.addEvent)(AxisClass, 'postProcessData', onAxisPostProcessData);
             (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.addEvent)(HeikinAshiSeries, 'afterTranslate', onHeikinAshiSeriesAfterTranslate);
@@ -401,7 +414,7 @@ class HeikinAshiSeries extends CandlestickSeries {
     }
 }
 /** @internal */
-HeikinAshiSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(CandlestickSeries.defaultOptions, HeikinAshiSeriesDefaults);
+HeikinAshiSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)((highcharts_Series_types_candlestick_commonjs_highcharts_Series_types_candlestick_commonjs2_highcharts_Series_types_candlestick_root_Highcharts_Series_types_candlestick_default()).defaultOptions, HeikinAshiSeriesDefaults);
 /* *
  *
  *  Class Prototype

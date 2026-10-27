@@ -1,5 +1,5 @@
 /**
- * Highcharts JS v13.1.1-modified (2026-10-26)
+ * Highcharts JS v13.1.1-modified (2026-10-27)
  * @module highcharts/themes/grid-light
  * @requires highcharts
  *

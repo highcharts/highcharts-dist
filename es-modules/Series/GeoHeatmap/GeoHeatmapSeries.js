@@ -18,8 +18,8 @@ import H from '../../Core/Globals.js';
 const { noop } = H;
 import IU from '../InterpolationUtilities.js';
 const { colorFromPoint, getContext } = IU;
+import MapSeries from '../Map/MapSeries.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-const { seriesTypes: { map: MapSeries } } = SeriesRegistry;
 import { addEvent, extend, isNumber, isObject, merge } from '../../Shared/Utilities.js';
 import { error } from '../../Core/Utilities.js';
 /**

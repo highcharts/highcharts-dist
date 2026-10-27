@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-26)
+ * @license Highcharts JS v13.1.1-modified (2026-10-27)
  * @module highcharts/modules/funnel
  * @requires highcharts
  *
@@ -657,6 +657,15 @@ function roundedRect(x, y, width, height, options = {}) {
 */
 (''); // Keeps doclets above in JS file
 
+;// external ["../highcharts.src.js","default","Series","types","column"]
+const external_highcharts_src_js_default_Series_types_column_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].Series.types.column;
+var external_highcharts_src_js_default_Series_types_column_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_Series_types_column_namespaceObject);
+;// external ["../highcharts.src.js","default","Series","types","pie"]
+const external_highcharts_src_js_default_Series_types_pie_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].Series.types.pie;
+var external_highcharts_src_js_default_Series_types_pie_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_Series_types_pie_namespaceObject);
+;// external ["../highcharts.src.js","default","Series"]
+const external_highcharts_src_js_default_Series_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].Series;
+var external_highcharts_src_js_default_Series_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_Series_namespaceObject);
 ;// external ["../highcharts.src.js","default","SeriesRegistry"]
 const external_highcharts_src_js_default_SeriesRegistry_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].SeriesRegistry;
 var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_SeriesRegistry_namespaceObject);
@@ -680,14 +689,16 @@ var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__w
 const { composed, noop: FunnelSeries_noop } = (external_highcharts_src_js_default_default());
 
 
-const { column: ColumnSeries, pie: PieSeries } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
+
+
+
 
 /* *
  *
  *  Constants
  *
  * */
-const baseAlignDataLabel = (external_highcharts_src_js_default_SeriesRegistry_default()).series.prototype.alignDataLabel;
+const baseAlignDataLabel = (external_highcharts_src_js_default_Series_default()).prototype.alignDataLabel;
 /* *
  *
  *  Functions
@@ -722,7 +733,7 @@ function getLength(length, relativeTo) {
  *
  * @augments Highcharts.Series
  */
-class FunnelSeries extends PieSeries {
+class FunnelSeries extends (external_highcharts_src_js_default_Series_types_pie_default()) {
     /* *
      *
      *  Functions
@@ -792,8 +803,8 @@ class FunnelSeries extends PieSeries {
      */
     drawDataLabels() {
         ((0,external_highcharts_src_js_default_namespaceObject.splat)(this.options.dataLabels || {})[0].inside ?
-            ColumnSeries :
-            PieSeries).prototype.drawDataLabels.call(this);
+            (external_highcharts_src_js_default_Series_types_column_default()) :
+            (external_highcharts_src_js_default_Series_types_pie_default())).prototype.drawDataLabels.call(this);
     }
     /**
      * Override pie-specific functionality not supported in funnel.
@@ -1095,7 +1106,7 @@ class FunnelSeries extends PieSeries {
  *
  * */
 /** @internal */
-FunnelSeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(PieSeries.defaultOptions, Funnel_FunnelSeriesDefaults);
+FunnelSeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)((external_highcharts_src_js_default_Series_types_pie_default()).defaultOptions, Funnel_FunnelSeriesDefaults);
 (0,external_highcharts_src_js_default_namespaceObject.extend)(FunnelSeries.prototype, {
     animate: FunnelSeries_noop
 });

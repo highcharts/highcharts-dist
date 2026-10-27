@@ -7,8 +7,9 @@
  *
  * */
 'use strict';
+import ATRIndicator from '../ATR/ATRIndicator.js';
+import SMAIndicator from '../SMA/SMAIndicator.js';
 import SeriesRegistry from '../../../Core/Series/SeriesRegistry.js';
-const { atr: ATRIndicator, sma: SMAIndicator } = SeriesRegistry.seriesTypes;
 import { addEvent, correctFloat, extend, isArray, isNumber, merge, objectEach } from '../../../Shared/Utilities.js';
 /* *
  *
@@ -366,6 +367,7 @@ class SupertrendIndicator extends SMAIndicator {
  *               pointPlacement, pointRange, pointStart, showInNavigator,
  *               stacking, threshold
  * @requires     indicators/indicators
+ * @requires     indicators/atr
  * @requires     indicators/supertrend
  * @optionparent plotOptions.supertrend
  * @internal
@@ -470,6 +472,7 @@ export default SupertrendIndicator;
  *            pointIntervalUnit, pointPlacement, pointRange, pointStart,
  *            showInNavigator, stacking, threshold
  * @requires  indicators/indicators
+ * @requires  indicators/atr
  * @requires  indicators/supertrend
  * @apioption series.supertrend
  */

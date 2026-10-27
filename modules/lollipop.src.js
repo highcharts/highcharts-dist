@@ -1,8 +1,10 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-26)
+ * @license Highcharts JS v13.1.1-modified (2026-10-27)
  * @module highcharts/modules/lollipop
  * @requires highcharts
+ * @requires highcharts/highcharts-more
+ * @requires highcharts/modules/dumbbell
  *
  * (c) 2009-2026 Highsoft AS
  * Author: Sebastian Bochan, Rafał Sebestjański
@@ -12,17 +14,38 @@
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(root["_Highcharts"]["Series"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
+		module.exports = factory(root["_Highcharts"]["Series"]["types"]["column"], root["_Highcharts"]["Series"]["types"]["dumbbell"], root["_Highcharts"]["Series"]["types"]["scatter"], root["_Highcharts"]["Series"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
 	else if(typeof define === 'function' && define.amd)
-		define("highcharts/modules/lollipop", ["highcharts/highcharts"], function (amd1) {return factory(amd1["Series"],amd1["SeriesRegistry"],amd1);});
+		define("highcharts/modules/lollipop", ["highcharts/highcharts"], function (amd1) {return factory(amd1["Series"]["types"]["column"],amd1["Series"]["types"]["dumbbell"],amd1["Series"]["types"]["scatter"],amd1["Series"],amd1["SeriesRegistry"],amd1);});
 	else if(typeof exports === 'object')
-		exports["highcharts/modules/lollipop"] = factory(root["_Highcharts"]["Series"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
+		exports["highcharts/modules/lollipop"] = factory(root["_Highcharts"]["Series"]["types"]["column"], root["_Highcharts"]["Series"]["types"]["dumbbell"], root["_Highcharts"]["Series"]["types"]["scatter"], root["_Highcharts"]["Series"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
 	else
-		root["Highcharts"] = factory(root["Highcharts"]["Series"], root["Highcharts"]["SeriesRegistry"], root["Highcharts"]);
-})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__820__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__944__) => {
+		root["Highcharts"] = factory(root["Highcharts"]["Series"]["types"]["column"], root["Highcharts"]["Series"]["types"]["dumbbell"], root["Highcharts"]["Series"]["types"]["scatter"], root["Highcharts"]["Series"], root["Highcharts"]["SeriesRegistry"], root["Highcharts"]);
+})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__448__, __WEBPACK_EXTERNAL_MODULE__72__, __WEBPACK_EXTERNAL_MODULE__632__, __WEBPACK_EXTERNAL_MODULE__820__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__944__) => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
+
+/***/ 448
+(module) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__448__;
+
+/***/ },
+
+/***/ 72
+(module) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__72__;
+
+/***/ },
+
+/***/ 632
+(module) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__632__;
+
+/***/ },
 
 /***/ 820
 (module) {
@@ -106,9 +129,15 @@ __webpack_require__.d(__webpack_exports__, {
 // EXTERNAL MODULE: external {"amd":["highcharts/highcharts"],"commonjs":["highcharts"],"commonjs2":["highcharts"],"root":["Highcharts"]}
 var highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_ = __webpack_require__(944);
 var highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default = /*#__PURE__*/__webpack_require__.n(highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_);
-// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","SeriesRegistry"],"commonjs":["highcharts","SeriesRegistry"],"commonjs2":["highcharts","SeriesRegistry"],"root":["Highcharts","SeriesRegistry"]}
-var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_ = __webpack_require__(512);
-var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_);
+// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Series","types","dumbbell"],"commonjs":["highcharts","Series","types","dumbbell"],"commonjs2":["highcharts","Series","types","dumbbell"],"root":["Highcharts","Series","types","dumbbell"]}
+var highcharts_Series_types_dumbbell_commonjs_highcharts_Series_types_dumbbell_commonjs2_highcharts_Series_types_dumbbell_root_Highcharts_Series_types_dumbbell_ = __webpack_require__(72);
+var highcharts_Series_types_dumbbell_commonjs_highcharts_Series_types_dumbbell_commonjs2_highcharts_Series_types_dumbbell_root_Highcharts_Series_types_dumbbell_default = /*#__PURE__*/__webpack_require__.n(highcharts_Series_types_dumbbell_commonjs_highcharts_Series_types_dumbbell_commonjs2_highcharts_Series_types_dumbbell_root_Highcharts_Series_types_dumbbell_);
+// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Series","types","scatter"],"commonjs":["highcharts","Series","types","scatter"],"commonjs2":["highcharts","Series","types","scatter"],"root":["Highcharts","Series","types","scatter"]}
+var highcharts_Series_types_scatter_commonjs_highcharts_Series_types_scatter_commonjs2_highcharts_Series_types_scatter_root_Highcharts_Series_types_scatter_ = __webpack_require__(632);
+var highcharts_Series_types_scatter_commonjs_highcharts_Series_types_scatter_commonjs2_highcharts_Series_types_scatter_root_Highcharts_Series_types_scatter_default = /*#__PURE__*/__webpack_require__.n(highcharts_Series_types_scatter_commonjs_highcharts_Series_types_scatter_commonjs2_highcharts_Series_types_scatter_root_Highcharts_Series_types_scatter_);
+// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Series"],"commonjs":["highcharts","Series"],"commonjs2":["highcharts","Series"],"root":["Highcharts","Series"]}
+var highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_ = __webpack_require__(820);
+var highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_default = /*#__PURE__*/__webpack_require__.n(highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_);
 ;// ./code/es-modules/Series/Lollipop/LollipopPoint.js
 /* *
  *
@@ -124,7 +153,16 @@ var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highc
 
 
 
-const { series: { prototype: { pointClass: Point } }, seriesTypes: { scatter: { prototype: { pointClass: ScatterPoint } }, dumbbell: { prototype: { pointClass: DumbbellPoint } } } } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default());
+
+
+/* *
+ *
+ *  Constants
+ *
+ * */
+const Point = (highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_default()).prototype.pointClass;
+const ScatterPoint = (highcharts_Series_types_scatter_commonjs_highcharts_Series_types_scatter_commonjs2_highcharts_Series_types_scatter_root_Highcharts_Series_types_scatter_default()).prototype.pointClass;
+const DumbbellPoint = (highcharts_Series_types_dumbbell_commonjs_highcharts_Series_types_dumbbell_commonjs2_highcharts_Series_types_dumbbell_root_Highcharts_Series_types_dumbbell_default()).prototype.pointClass;
 /* *
  *
  *  Class
@@ -144,9 +182,12 @@ class LollipopPoint extends Point {
  * */
 /* harmony default export */ const Lollipop_LollipopPoint = (LollipopPoint);
 
-// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Series"],"commonjs":["highcharts","Series"],"commonjs2":["highcharts","Series"],"root":["Highcharts","Series"]}
-var highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_ = __webpack_require__(820);
-var highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_default = /*#__PURE__*/__webpack_require__.n(highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_);
+// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Series","types","column"],"commonjs":["highcharts","Series","types","column"],"commonjs2":["highcharts","Series","types","column"],"root":["Highcharts","Series","types","column"]}
+var highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_ = __webpack_require__(448);
+var highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_default = /*#__PURE__*/__webpack_require__.n(highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_);
+// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","SeriesRegistry"],"commonjs":["highcharts","SeriesRegistry"],"commonjs2":["highcharts","SeriesRegistry"],"root":["Highcharts","SeriesRegistry"]}
+var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_ = __webpack_require__(512);
+var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_);
 ;// ./code/es-modules/Series/Lollipop/LollipopSeries.js
 /* *
  *
@@ -163,9 +204,8 @@ var highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_roo
 
 
 
-const { seriesTypes: { column: { prototype: colProto }, dumbbell: { prototype: dumbbellProto }, 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-scatter: ScatterSeries } } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default());
+
+
 
 /* *
  *
@@ -210,7 +250,7 @@ class LollipopSeries extends (highcharts_Series_commonjs_highcharts_Series_commo
      */
     translate() {
         const series = this;
-        colProto.translate.apply(series, arguments);
+        highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_default().prototype.translate.apply(series, arguments);
         // Correct x position
         for (const point of series.points) {
             const { pointWidth, shapeArgs } = point;
@@ -289,12 +329,12 @@ LollipopSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_high
     pointRange: 1
 });
 (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.extend)(LollipopSeries.prototype, {
-    alignDataLabel: colProto.alignDataLabel,
-    crispCol: colProto.crispCol,
-    drawConnector: dumbbellProto.drawConnector,
-    drawDataLabels: colProto.drawDataLabels,
-    getColumnMetrics: colProto.getColumnMetrics,
-    getConnectorAttribs: dumbbellProto.getConnectorAttribs,
+    alignDataLabel: (highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_default()).prototype.alignDataLabel,
+    crispCol: (highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_default()).prototype.crispCol,
+    drawConnector: (highcharts_Series_types_dumbbell_commonjs_highcharts_Series_types_dumbbell_commonjs2_highcharts_Series_types_dumbbell_root_Highcharts_Series_types_dumbbell_default()).prototype.drawConnector,
+    drawDataLabels: (highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_default()).prototype.drawDataLabels,
+    getColumnMetrics: (highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_default()).prototype.getColumnMetrics,
+    getConnectorAttribs: (highcharts_Series_types_dumbbell_commonjs_highcharts_Series_types_dumbbell_commonjs2_highcharts_Series_types_dumbbell_root_Highcharts_Series_types_dumbbell_default()).prototype.getConnectorAttribs,
     pointClass: Lollipop_LollipopPoint
 });
 highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default().registerSeriesType('lollipop', LollipopSeries);

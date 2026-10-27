@@ -11,9 +11,14 @@
  * */
 'use strict';
 import Point from '../../Core/Series/Point.js';
-import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-const { seriesTypes: { treemap: { prototype: { pointClass: TreemapPoint } } } } = SeriesRegistry;
+import TreemapSeries from '../Treemap/TreemapSeries.js';
 import { addEvent, fireEvent, merge } from '../../Shared/Utilities.js';
+/* *
+ *
+ *  Constants
+ *
+ * */
+const TreemapPoint = TreemapSeries.prototype.pointClass;
 /* *
  *
  *  Class

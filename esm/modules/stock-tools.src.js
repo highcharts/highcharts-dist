@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.1.1-modified (2026-10-26)
+ * @license Highstock JS v13.1.1-modified (2026-10-27)
  * @module highcharts/modules/stock-tools
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -14,6 +14,7 @@
  * see www.highcharts.com/license
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
+import "./stock.src.js";
 /******/ // The require scope
 /******/ const __webpack_require__ = {};
 /******/ 
@@ -6653,7 +6654,10 @@ const StockToolsGui = {
 /** @internal */
 /* harmony default export */ const StockTools_StockToolsGui = (StockToolsGui);
 
+;// external "./stock.src.js"
+
 ;// ./code/es-modules/masters/modules/stock-tools.src.js
+
 
 
 

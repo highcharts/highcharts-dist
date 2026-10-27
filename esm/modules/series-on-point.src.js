@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-26)
+ * @license Highcharts JS v13.1.1-modified (2026-10-27)
  * @module highcharts/modules/series-on-point
  * @requires highcharts
  *
@@ -13,6 +13,7 @@
  * see www.highcharts.com/license
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
+import * as __WEBPACK_EXTERNAL_MODULE__highcharts_more_src_js_48e0d456__ from "../highcharts-more.src.js";
 /******/ // The require scope
 /******/ const __webpack_require__ = {};
 /******/ 
@@ -45,6 +46,9 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 ;// external ["../highcharts.src.js","default"]
 const external_highcharts_src_js_default_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"];
 var external_highcharts_src_js_default_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_namespaceObject);
+;// external ["../highcharts-more.src.js","default","Series","types","bubble"]
+const external_highcharts_more_src_js_default_Series_types_bubble_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_more_src_js_48e0d456__["default"].Series.types.bubble;
+var external_highcharts_more_src_js_default_Series_types_bubble_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_more_src_js_default_Series_types_bubble_namespaceObject);
 ;// ./code/es-modules/Data/ColumnUtils.js
 /* *
  *
@@ -585,9 +589,6 @@ class DataTableCore {
 ;// external ["../highcharts.src.js","default","Point"]
 const external_highcharts_src_js_default_Point_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].Point;
 var external_highcharts_src_js_default_Point_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_Point_namespaceObject);
-;// external ["../highcharts.src.js","default","SeriesRegistry"]
-const external_highcharts_src_js_default_SeriesRegistry_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].SeriesRegistry;
-var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_SeriesRegistry_namespaceObject);
 ;// external ["../highcharts.src.js","default","SVGRenderer"]
 const external_highcharts_src_js_default_SVGRenderer_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].SVGRenderer;
 var external_highcharts_src_js_default_SVGRenderer_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_SVGRenderer_namespaceObject);
@@ -606,10 +607,9 @@ var external_highcharts_src_js_default_SVGRenderer_default = /*#__PURE__*/__webp
 
 
 
+
 const { composed } = (external_highcharts_src_js_default_default());
 
-
-const { bubble } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
 
 
 /* *
@@ -678,23 +678,23 @@ var SeriesOnPointComposition;
             /**
              * @ignore
              */
-            this.getColumn = bubble.prototype.getColumn;
+            this.getColumn = (external_highcharts_more_src_js_default_Series_types_bubble_default()).prototype.getColumn;
             /**
              * @ignore
              */
-            this.getRadii = bubble.prototype.getRadii;
+            this.getRadii = (external_highcharts_more_src_js_default_Series_types_bubble_default()).prototype.getRadii;
             /**
              * @ignore
              */
-            this.getRadius = bubble.prototype.getRadius;
+            this.getRadius = (external_highcharts_more_src_js_default_Series_types_bubble_default()).prototype.getRadius;
             /**
              * @ignore
              */
-            this.getPxExtremes = bubble.prototype.getPxExtremes;
+            this.getPxExtremes = (external_highcharts_more_src_js_default_Series_types_bubble_default()).prototype.getPxExtremes;
             /**
              * @ignore
              */
-            this.getZExtremes = bubble.prototype.getZExtremes;
+            this.getZExtremes = (external_highcharts_more_src_js_default_Series_types_bubble_default()).prototype.getZExtremes;
             this.chart = series.chart;
             this.series = series;
             this.options = series.options.onPoint;

@@ -10,12 +10,14 @@
  *
  * */
 'use strict';
+import AreaRangeSeries from '../AreaRange/AreaRangeSeries.js';
+import ColumnRangeSeries from '../ColumnRange/ColumnRangeSeries.js';
+import ColumnSeries from '../Column/ColumnSeries.js';
 import DumbbellPoint from './DumbbellPoint.js';
 import DumbbellSeriesDefaults from './DumbbellSeriesDefaults.js';
 import H from '../../Core/Globals.js';
 const { noop } = H;
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-const { arearange: AreaRangeSeries, column: ColumnSeries, columnrange: ColumnRangeSeries } = SeriesRegistry.seriesTypes;
 import SVGRenderer from '../../Core/Renderer/SVG/SVGRenderer.js';
 import { extend, merge } from '../../Shared/Utilities.js';
 /* *

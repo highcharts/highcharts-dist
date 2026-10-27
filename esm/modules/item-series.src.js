@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-26)
+ * @license Highcharts JS v13.1.1-modified (2026-10-27)
  * @module highcharts/modules/item-series
  * @requires highcharts
  *
@@ -45,9 +45,12 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 ;// external ["../highcharts.src.js","default"]
 const external_highcharts_src_js_default_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"];
 var external_highcharts_src_js_default_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_namespaceObject);
-;// external ["../highcharts.src.js","default","SeriesRegistry"]
-const external_highcharts_src_js_default_SeriesRegistry_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].SeriesRegistry;
-var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_SeriesRegistry_namespaceObject);
+;// external ["../highcharts.src.js","default","Series","types","pie"]
+const external_highcharts_src_js_default_Series_types_pie_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].Series.types.pie;
+var external_highcharts_src_js_default_Series_types_pie_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_Series_types_pie_namespaceObject);
+;// external ["../highcharts.src.js","default","Series"]
+const external_highcharts_src_js_default_Series_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].Series;
+var external_highcharts_src_js_default_Series_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_Series_namespaceObject);
 ;// ./code/es-modules/Series/Item/ItemPoint.js
 /* *
  *
@@ -65,7 +68,14 @@ var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__w
 
 
 
-const { series: { prototype: { pointClass: Point } }, seriesTypes: { pie: { prototype: { pointClass: PiePoint } } } } = (external_highcharts_src_js_default_SeriesRegistry_default());
+
+/* *
+ *
+ *  Constants
+ *
+ * */
+const PiePoint = (external_highcharts_src_js_default_Series_types_pie_default()).prototype.pointClass;
+const Point = (external_highcharts_src_js_default_Series_default()).prototype.pointClass;
 /* *
  *
  *  Class
@@ -1972,12 +1982,12 @@ const seriesDefaults = {
          * @apioption plotOptions.series.dataLabels.position
          */
         /**
-         * Text rotation in degrees. Note that due to a more complex
-         * structure, backgrounds, borders and padding will be lost on a
-         * rotated data label.
+         * Text rotation in degrees.
          *
          * @sample {highcharts} highcharts/plotoptions/series-datalabels-rotation/
          *         Vertical labels
+         * @sample {highcharts} highcharts/plotoptions/pie-datalabels-rotationmode-plugin
+         *         Perpendicular rotation in pie series via plugin
          *
          * @type      {number}
          * @default   0
@@ -2785,6 +2795,9 @@ const ItemSeriesDefaults = {
  * */
 /* harmony default export */ const Item_ItemSeriesDefaults = (ItemSeriesDefaults);
 
+;// external ["../highcharts.src.js","default","SeriesRegistry"]
+const external_highcharts_src_js_default_SeriesRegistry_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].SeriesRegistry;
+var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_SeriesRegistry_namespaceObject);
 ;// ./code/es-modules/Series/Item/ItemSeries.js
 /* *
  *
@@ -2803,7 +2816,7 @@ const ItemSeriesDefaults = {
 
 
 
-const { pie: PieSeries } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
+
 
 /* *
  *
@@ -2822,7 +2835,7 @@ const { pie: PieSeries } = (external_highcharts_src_js_default_SeriesRegistry_de
  *
  * @augments Highcharts.seriesTypes.pie
  */
-class ItemSeries extends PieSeries {
+class ItemSeries extends (external_highcharts_src_js_default_Series_types_pie_default()) {
     /* *
      *
      *  Functions
@@ -3124,7 +3137,7 @@ class ItemSeries extends PieSeries {
  *
  * */
 /** @internal */
-ItemSeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(PieSeries.defaultOptions, Item_ItemSeriesDefaults);
+ItemSeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)((external_highcharts_src_js_default_Series_types_pie_default()).defaultOptions, Item_ItemSeriesDefaults);
 (0,external_highcharts_src_js_default_namespaceObject.extend)(ItemSeries.prototype, {
     markerAttribs: void 0,
     pointClass: Item_ItemPoint

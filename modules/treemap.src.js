@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-26)
+ * @license Highcharts JS v13.1.1-modified (2026-10-27)
  * @module highcharts/modules/treemap
  * @requires highcharts
  *
@@ -12,14 +12,14 @@
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(root["_Highcharts"]["Color"], root["_Highcharts"]["SVGElement"], root["_Highcharts"]["Series"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]["Templating"], root["_Highcharts"]);
+		module.exports = factory(root["_Highcharts"]["Color"], root["_Highcharts"]["SVGElement"], root["_Highcharts"]["Series"]["types"]["column"], root["_Highcharts"]["Series"]["types"]["pie"], root["_Highcharts"]["Series"]["types"]["scatter"], root["_Highcharts"]["Series"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]["Templating"], root["_Highcharts"]);
 	else if(typeof define === 'function' && define.amd)
-		define("highcharts/modules/treemap", ["highcharts/highcharts"], function (amd1) {return factory(amd1["Color"],amd1["SVGElement"],amd1["Series"],amd1["SeriesRegistry"],amd1["Templating"],amd1);});
+		define("highcharts/modules/treemap", ["highcharts/highcharts"], function (amd1) {return factory(amd1["Color"],amd1["SVGElement"],amd1["Series"]["types"]["column"],amd1["Series"]["types"]["pie"],amd1["Series"]["types"]["scatter"],amd1["Series"],amd1["SeriesRegistry"],amd1["Templating"],amd1);});
 	else if(typeof exports === 'object')
-		exports["highcharts/modules/treemap"] = factory(root["_Highcharts"]["Color"], root["_Highcharts"]["SVGElement"], root["_Highcharts"]["Series"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]["Templating"], root["_Highcharts"]);
+		exports["highcharts/modules/treemap"] = factory(root["_Highcharts"]["Color"], root["_Highcharts"]["SVGElement"], root["_Highcharts"]["Series"]["types"]["column"], root["_Highcharts"]["Series"]["types"]["pie"], root["_Highcharts"]["Series"]["types"]["scatter"], root["_Highcharts"]["Series"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]["Templating"], root["_Highcharts"]);
 	else
-		root["Highcharts"] = factory(root["Highcharts"]["Color"], root["Highcharts"]["SVGElement"], root["Highcharts"]["Series"], root["Highcharts"]["SeriesRegistry"], root["Highcharts"]["Templating"], root["Highcharts"]);
-})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__620__, __WEBPACK_EXTERNAL_MODULE__28__, __WEBPACK_EXTERNAL_MODULE__820__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__984__, __WEBPACK_EXTERNAL_MODULE__944__) => {
+		root["Highcharts"] = factory(root["Highcharts"]["Color"], root["Highcharts"]["SVGElement"], root["Highcharts"]["Series"]["types"]["column"], root["Highcharts"]["Series"]["types"]["pie"], root["Highcharts"]["Series"]["types"]["scatter"], root["Highcharts"]["Series"], root["Highcharts"]["SeriesRegistry"], root["Highcharts"]["Templating"], root["Highcharts"]);
+})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__620__, __WEBPACK_EXTERNAL_MODULE__28__, __WEBPACK_EXTERNAL_MODULE__448__, __WEBPACK_EXTERNAL_MODULE__20__, __WEBPACK_EXTERNAL_MODULE__632__, __WEBPACK_EXTERNAL_MODULE__820__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__984__, __WEBPACK_EXTERNAL_MODULE__944__) => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
@@ -35,6 +35,27 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__620__;
 (module) {
 
 module.exports = __WEBPACK_EXTERNAL_MODULE__28__;
+
+/***/ },
+
+/***/ 448
+(module) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__448__;
+
+/***/ },
+
+/***/ 20
+(module) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__20__;
+
+/***/ },
+
+/***/ 632
+(module) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__632__;
 
 /***/ },
 
@@ -1019,9 +1040,9 @@ Breadcrumbs.defaultOptions = Breadcrumbs_BreadcrumbsDefaults.options;
 // EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Color"],"commonjs":["highcharts","Color"],"commonjs2":["highcharts","Color"],"root":["Highcharts","Color"]}
 var highcharts_Color_commonjs_highcharts_Color_commonjs2_highcharts_Color_root_Highcharts_Color_ = __webpack_require__(620);
 var highcharts_Color_commonjs_highcharts_Color_commonjs2_highcharts_Color_root_Highcharts_Color_default = /*#__PURE__*/__webpack_require__.n(highcharts_Color_commonjs_highcharts_Color_commonjs2_highcharts_Color_root_Highcharts_Color_);
-// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","SeriesRegistry"],"commonjs":["highcharts","SeriesRegistry"],"commonjs2":["highcharts","SeriesRegistry"],"root":["Highcharts","SeriesRegistry"]}
-var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_ = __webpack_require__(512);
-var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_);
+// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Series","types","column"],"commonjs":["highcharts","Series","types","column"],"commonjs2":["highcharts","Series","types","column"],"root":["Highcharts","Series","types","column"]}
+var highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_ = __webpack_require__(448);
+var highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_default = /*#__PURE__*/__webpack_require__.n(highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_);
 // EXTERNAL MODULE: external {"amd":["highcharts/highcharts","SVGElement"],"commonjs":["highcharts","SVGElement"],"commonjs2":["highcharts","SVGElement"],"root":["Highcharts","SVGElement"]}
 var highcharts_SVGElement_commonjs_highcharts_SVGElement_commonjs2_highcharts_SVGElement_root_Highcharts_SVGElement_ = __webpack_require__(28);
 var highcharts_SVGElement_commonjs_highcharts_SVGElement_commonjs2_highcharts_SVGElement_root_Highcharts_SVGElement_default = /*#__PURE__*/__webpack_require__.n(highcharts_SVGElement_commonjs_highcharts_SVGElement_commonjs2_highcharts_SVGElement_root_Highcharts_SVGElement_);
@@ -1039,7 +1060,6 @@ var highcharts_SVGElement_commonjs_highcharts_SVGElement_commonjs2_highcharts_SV
  * */
 
 
-const { column: { prototype: columnProto } } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
 
 
 /* *
@@ -1068,7 +1088,7 @@ var ColorMapComposition;
         pointArrayMap: ['value'],
         trackerGroups: ['group', 'markerGroup', 'dataLabelsGroup'],
         colorAttribs: seriesColorAttribs,
-        pointAttribs: columnProto.pointAttribs
+        pointAttribs: (highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_default()).prototype.pointAttribs
     };
     /* *
      *
@@ -1160,6 +1180,12 @@ var ColorMapComposition;
 // EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Series"],"commonjs":["highcharts","Series"],"commonjs2":["highcharts","Series"],"root":["Highcharts","Series"]}
 var highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_ = __webpack_require__(820);
 var highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_default = /*#__PURE__*/__webpack_require__.n(highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_);
+// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Series","types","scatter"],"commonjs":["highcharts","Series","types","scatter"],"commonjs2":["highcharts","Series","types","scatter"],"root":["Highcharts","Series","types","scatter"]}
+var highcharts_Series_types_scatter_commonjs_highcharts_Series_types_scatter_commonjs2_highcharts_Series_types_scatter_root_Highcharts_Series_types_scatter_ = __webpack_require__(632);
+var highcharts_Series_types_scatter_commonjs_highcharts_Series_types_scatter_commonjs2_highcharts_Series_types_scatter_root_Highcharts_Series_types_scatter_default = /*#__PURE__*/__webpack_require__.n(highcharts_Series_types_scatter_commonjs_highcharts_Series_types_scatter_commonjs2_highcharts_Series_types_scatter_root_Highcharts_Series_types_scatter_);
+// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","SeriesRegistry"],"commonjs":["highcharts","SeriesRegistry"],"commonjs2":["highcharts","SeriesRegistry"],"root":["Highcharts","SeriesRegistry"]}
+var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_ = __webpack_require__(512);
+var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_);
 ;// ./code/es-modules/Series/Treemap/TreemapAlgorithmGroup.js
 /* *
  *
@@ -1389,6 +1415,9 @@ const DrawPointUtilities = {
 /** @internal */
 /* harmony default export */ const Series_DrawPointUtilities = (DrawPointUtilities);
 
+// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Series","types","pie"],"commonjs":["highcharts","Series","types","pie"],"commonjs2":["highcharts","Series","types","pie"],"root":["Highcharts","Series","types","pie"]}
+var highcharts_Series_types_pie_commonjs_highcharts_Series_types_pie_commonjs2_highcharts_Series_types_pie_root_Highcharts_Series_types_pie_ = __webpack_require__(20);
+var highcharts_Series_types_pie_commonjs_highcharts_Series_types_pie_commonjs2_highcharts_Series_types_pie_root_Highcharts_Series_types_pie_default = /*#__PURE__*/__webpack_require__.n(highcharts_Series_types_pie_commonjs_highcharts_Series_types_pie_commonjs2_highcharts_Series_types_pie_root_Highcharts_Series_types_pie_);
 ;// ./code/es-modules/Series/Treemap/TreemapPoint.js
 /* *
  *
@@ -1405,8 +1434,15 @@ const DrawPointUtilities = {
 
 
 
-const { pie: { prototype: { pointClass: PiePoint } }, scatter: { prototype: { pointClass: ScatterPoint } } } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
 
+
+/* *
+ *
+ *  Constants
+ *
+ * */
+const PiePoint = (highcharts_Series_types_pie_commonjs_highcharts_Series_types_pie_commonjs2_highcharts_Series_types_pie_root_Highcharts_Series_types_pie_default()).prototype.pointClass;
+const ScatterPoint = (highcharts_Series_types_scatter_commonjs_highcharts_Series_types_scatter_commonjs2_highcharts_Series_types_scatter_root_Highcharts_Series_types_scatter_default()).prototype.pointClass;
 /* *
  *
  *  Class
@@ -2537,7 +2573,8 @@ const { parse: color } = (highcharts_Color_commonjs_highcharts_Color_commonjs2_h
 const { composed: TreemapSeries_composed, noop } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 
 
-const { column: ColumnSeries, scatter: ScatterSeries } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
+
+
 
 
 
@@ -2613,7 +2650,7 @@ function onSeriesAfterBindAxes() {
  *
  * @augments Highcharts.Series
  */
-class TreemapSeries extends ScatterSeries {
+class TreemapSeries extends (highcharts_Series_types_scatter_commonjs_highcharts_Series_types_scatter_commonjs2_highcharts_Series_types_scatter_root_Highcharts_Series_types_scatter_default()) {
     constructor() {
         /* *
          *
@@ -2767,7 +2804,7 @@ class TreemapSeries extends ScatterSeries {
     dataLabel, 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     labelOptions) {
-        ColumnSeries.prototype.alignDataLabel.apply(this, arguments);
+        highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_default().prototype.alignDataLabel.apply(this, arguments);
         if (point.dataLabel) {
             // `point.node.zIndex` could be undefined (#6956)
             point.dataLabel.attr({ zIndex: (point.node.zIndex || 0) + 1 });
@@ -3754,7 +3791,7 @@ class TreemapSeries extends ScatterSeries {
     }
 }
 /** @internal */
-TreemapSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(ScatterSeries.defaultOptions, Treemap_TreemapSeriesDefaults);
+TreemapSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)((highcharts_Series_types_scatter_commonjs_highcharts_Series_types_scatter_commonjs2_highcharts_Series_types_scatter_root_Highcharts_Series_types_scatter_default()).defaultOptions, Treemap_TreemapSeriesDefaults);
 (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.extend)(TreemapSeries.prototype, {
     buildKDTree: noop,
     colorAttribs: Series_ColorMapComposition.seriesMembers.colorAttribs,

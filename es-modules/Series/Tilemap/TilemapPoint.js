@@ -13,9 +13,16 @@
  * */
 'use strict';
 import ColorAxisComposition from '../../Core/Axis/Color/ColorAxisComposition.js';
-import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
+import HeatmapSeries from '../Heatmap/HeatmapSeries.js';
+import Series from '../../Core/Series/Series.js';
 import { extend } from '../../Shared/Utilities.js';
-const { series: { prototype: { pointClass: Point } }, seriesTypes: { heatmap: { prototype: { pointClass: HeatmapPoint } } } } = SeriesRegistry;
+/* *
+ *
+ *  Constants
+ *
+ * */
+const Point = Series.prototype.pointClass;
+const HeatmapPoint = HeatmapSeries.prototype.pointClass;
 /* *
  *
  *  Class

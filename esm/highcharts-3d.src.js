@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-26)
+ * @license Highcharts JS v13.1.1-modified (2026-10-27)
  * @module highcharts/highcharts-3d
  * @requires highcharts
  *
@@ -1956,9 +1956,9 @@ var Chart3D;
  */
 ''; // Keeps doclets above in JS file
 
-;// external ["./highcharts.src.js","default","SeriesRegistry"]
-const external_highcharts_src_js_default_SeriesRegistry_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_c57973fa__["default"].SeriesRegistry;
-var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_SeriesRegistry_namespaceObject);
+;// external ["./highcharts.src.js","default","Series","types","line"]
+const external_highcharts_src_js_default_Series_types_line_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_c57973fa__["default"].Series.types.line;
+var external_highcharts_src_js_default_Series_types_line_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_Series_types_line_namespaceObject);
 ;// ./code/es-modules/Series/Area3D/Area3DSeries.js
 /* *
  *
@@ -1976,7 +1976,6 @@ var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__w
 const { composed } = (external_highcharts_src_js_default_default());
 
 
-const { line: { prototype: lineProto } } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
 
 /* *
  *
@@ -2002,7 +2001,7 @@ function wrapAreaSeriesGetGraphPath(proceed) {
     if (!series.chart.is3d()) {
         return svgPath;
     }
-    const getGraphPath = lineProto.getGraphPath, options = series.options, translatedThreshold = Math.round(// #10909
+    const getGraphPath = (external_highcharts_src_js_default_Series_types_line_default()).prototype.getGraphPath, options = series.options, translatedThreshold = Math.round(// #10909
     series.yAxis.getThreshold(options.threshold));
     let bottomPoints = [];
     if (series.rawPointsX) {
@@ -4501,6 +4500,9 @@ const Column3DComposition = {
  */
 ''; // Keeps doclets above in transpiled file
 
+;// external ["./highcharts.src.js","default","Series","types","pie"]
+const external_highcharts_src_js_default_Series_types_pie_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_c57973fa__["default"].Series.types.pie;
+var external_highcharts_src_js_default_Series_types_pie_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_Series_types_pie_namespaceObject);
 ;// ./code/es-modules/Series/Pie3D/Pie3DPoint.js
 /* *
  *
@@ -4517,7 +4519,12 @@ const Column3DComposition = {
  * */
 
 
-const { pie: { prototype: { pointClass: PiePoint } } } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
+/* *
+ *
+ *  Constants
+ *
+ * */
+const PiePoint = (external_highcharts_src_js_default_Series_types_pie_default()).prototype.pointClass;
 /* *
  *
  *  Class
@@ -4563,14 +4570,13 @@ class Pie3DPoint extends PiePoint {
 const { composed: Pie3DSeries_composed, deg2rad: Pie3DSeries_deg2rad } = (external_highcharts_src_js_default_default());
 
 
-const { pie: PieSeries } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
 
 /* *
  *
  *  Class
  *
  * */
-class Pie3DSeries extends PieSeries {
+class Pie3DSeries extends (external_highcharts_src_js_default_Series_types_pie_default()) {
     /* *
      *
      *  Static Functions
@@ -4931,6 +4937,9 @@ const Scatter3DSeriesDefaults = {
  * */
 /* harmony default export */ const Scatter3D_Scatter3DSeriesDefaults = (Scatter3DSeriesDefaults);
 
+;// external ["./highcharts.src.js","default","SeriesRegistry"]
+const external_highcharts_src_js_default_SeriesRegistry_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_c57973fa__["default"].SeriesRegistry;
+var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_SeriesRegistry_namespaceObject);
 ;// ./code/es-modules/Series/Scatter3D/Scatter3DSeries.js
 /* *
  *

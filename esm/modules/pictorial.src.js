@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-26)
+ * @license Highcharts JS v13.1.1-modified (2026-10-27)
  * @module highcharts/modules/pictorial
  * @requires highcharts
  *
@@ -46,11 +46,8 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 const external_highcharts_src_js_default_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"];
 var external_highcharts_src_js_default_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_namespaceObject);
 ;// external ["../highcharts.src.js","default","Series","types","column"]
-const x = (y) => {
-	const x = {}; __webpack_require__.d(x, y); return x
-} 
-const y = (x) => (() => (x))
-const external_highcharts_src_js_default_Series_types_column_namespaceObject = x({  });
+const external_highcharts_src_js_default_Series_types_column_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].Series.types.column;
+var external_highcharts_src_js_default_Series_types_column_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_Series_types_column_namespaceObject);
 ;// ./code/es-modules/Extensions/PatternFill.js
 /* *
  *
@@ -822,9 +819,6 @@ function onPatternScaleCorrection() {
 ;// external ["../highcharts.src.js","default","Chart"]
 const external_highcharts_src_js_default_Chart_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].Chart;
 var external_highcharts_src_js_default_Chart_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_Chart_namespaceObject);
-;// external ["../highcharts.src.js","default","SeriesRegistry"]
-const external_highcharts_src_js_default_SeriesRegistry_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].SeriesRegistry;
-var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_SeriesRegistry_namespaceObject);
 ;// ./code/es-modules/Series/Pictorial/PictorialUtilities.js
 /* *
  *
@@ -910,7 +904,7 @@ function invertShadowGroup(shadowGroup, yAxis) {
  * */
 
 
-const ColumnPoint = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes.column.prototype.pointClass;
+const ColumnPoint = (external_highcharts_src_js_default_Series_types_column_default()).prototype.pointClass;
 const { rescalePatternFill: PictorialPoint_rescalePatternFill, getStackMetrics: PictorialPoint_getStackMetrics } = PictorialUtilities;
 /* *
  *
@@ -992,6 +986,9 @@ const PictorialSeriesDefaults = {
 ;// external ["../highcharts.src.js","default","Series"]
 const external_highcharts_src_js_default_Series_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].Series;
 var external_highcharts_src_js_default_Series_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_Series_namespaceObject);
+;// external ["../highcharts.src.js","default","SeriesRegistry"]
+const external_highcharts_src_js_default_SeriesRegistry_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].SeriesRegistry;
+var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_SeriesRegistry_namespaceObject);
 ;// external ["../highcharts.src.js","default","StackItem"]
 const external_highcharts_src_js_default_StackItem_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].StackItem;
 var external_highcharts_src_js_default_StackItem_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_StackItem_namespaceObject);
@@ -1028,6 +1025,7 @@ var external_highcharts_src_js_default_SVGRenderer_default = /*#__PURE__*/__webp
 
 
 
+
 /* *
  *
  *  Composition
@@ -1039,7 +1037,6 @@ composePatternFill((external_highcharts_src_js_default_Chart_default()), (extern
  *  Constants
  *
  * */
-const ColumnSeries = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes.column;
 const { getStackMetrics: PictorialSeries_getStackMetrics, invertShadowGroup: PictorialSeries_invertShadowGroup, rescalePatternFill: PictorialSeries_rescalePatternFill } = PictorialUtilities;
 /* *
  *
@@ -1055,7 +1052,7 @@ const { getStackMetrics: PictorialSeries_getStackMetrics, invertShadowGroup: Pic
  *
  * @augments Highcharts.Series
  */
-class PictorialSeries extends ColumnSeries {
+class PictorialSeries extends (external_highcharts_src_js_default_Series_types_column_default()) {
     /* *
      *
      * Functions
@@ -1165,7 +1162,7 @@ class PictorialSeries extends ColumnSeries {
  *
  * */
 /** @internal */
-PictorialSeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(ColumnSeries.defaultOptions, Pictorial_PictorialSeriesDefaults);
+PictorialSeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)((external_highcharts_src_js_default_Series_types_column_default()).defaultOptions, Pictorial_PictorialSeriesDefaults);
 /* *
  *
  *  Events

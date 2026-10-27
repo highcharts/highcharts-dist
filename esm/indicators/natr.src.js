@@ -1,9 +1,11 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.1.1-modified (2026-10-26)
+ * @license Highstock JS v13.1.1-modified (2026-10-27)
  * @module highcharts/indicators/natr
  * @requires highcharts
  * @requires highcharts/modules/stock
+ * @requires highcharts/indicators/indicators
+ * @requires highcharts/indicators/atr
  *
  * Indicator series type for Highcharts Stock
  *
@@ -14,6 +16,10 @@
  * see www.highcharts.com/license
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
+import "../modules/stock.src.js";
+import "./indicators.src.js";
+import "./atr.src.js";
+import * as __WEBPACK_EXTERNAL_MODULE__atr_src_js_5996ba2a__ from "./atr.src.js";
 /******/ // The require scope
 /******/ const __webpack_require__ = {};
 /******/ 
@@ -46,6 +52,15 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 ;// external ["../highcharts.src.js","default"]
 const external_highcharts_src_js_default_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"];
 var external_highcharts_src_js_default_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_namespaceObject);
+;// external "../modules/stock.src.js"
+
+;// external "./indicators.src.js"
+
+;// external "./atr.src.js"
+
+;// external ["./atr.src.js","default","Series","types","atr"]
+const external_atr_src_js_default_Series_types_atr_namespaceObject = __WEBPACK_EXTERNAL_MODULE__atr_src_js_5996ba2a__["default"].Series.types.atr;
+var external_atr_src_js_default_Series_types_atr_default = /*#__PURE__*/__webpack_require__.n(external_atr_src_js_default_Series_types_atr_namespaceObject);
 ;// external ["../highcharts.src.js","default","SeriesRegistry"]
 const external_highcharts_src_js_default_SeriesRegistry_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].SeriesRegistry;
 var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_SeriesRegistry_namespaceObject);
@@ -61,7 +76,7 @@ var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__w
 
 
 
-const { atr: ATRIndicator } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
+
 /* *
  *
  *  Class
@@ -75,7 +90,7 @@ const { atr: ATRIndicator } = (external_highcharts_src_js_default_SeriesRegistry
  *
  * @augments Highcharts.Series
  */
-class NATRIndicator extends ATRIndicator {
+class NATRIndicator extends (external_atr_src_js_default_Series_types_atr_default()) {
     /* *
      *
      *  Functions
@@ -118,7 +133,7 @@ class NATRIndicator extends ATRIndicator {
  * @optionparent plotOptions.natr
  * @internal
  */
-NATRIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(ATRIndicator.defaultOptions, {
+NATRIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)((external_atr_src_js_default_Series_types_atr_default()).defaultOptions, {
     tooltip: {
         valueSuffix: '%'
     }
@@ -150,6 +165,9 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
 ''; // To include the above in the js output
 
 ;// ./code/es-modules/masters/indicators/natr.src.js
+
+
+
 
 
 

@@ -1200,11 +1200,11 @@ class Series {
         if (this.hasBoundDataTableEvents) {
             return;
         }
-        const { chart, eventsToUnbind } = this, queueRedraw = () => {
+        const { chart } = this, queueRedraw = () => {
             clearTimeout(chart.redrawTimeout);
             chart.redrawTimeout = setTimeout(() => chart.renderer && chart.redraw(), 0);
         };
-        eventsToUnbind.push(addEvent(dataTable, 'afterSetRows', (e) => {
+        addEvent(dataTable, 'afterSetRows', (e) => {
             const rowIndex = e.rowIndex;
             if (isNumber(rowIndex)) {
                 const row = DataTableCore.prototype.getRowObject.call({ columns }, rowIndex), point = this.data[rowIndex];
@@ -1225,8 +1225,8 @@ class Series {
                     }
                 }
             }
-        }));
-        eventsToUnbind.push(addEvent(dataTable, 'afterDeleteRows', (e) => {
+        });
+        addEvent(dataTable, 'afterDeleteRows', (e) => {
             const { rowCount, rowIndex } = e;
             if (isNumber(rowIndex)) {
                 for (let i = rowIndex + rowCount - 1; i >= rowIndex; i--) {
@@ -1234,10 +1234,10 @@ class Series {
                 }
                 queueRedraw();
             }
-        }));
-        eventsToUnbind.push(addEvent(dataTable, 'afterSetColumns', (e) => {
+        });
+        addEvent(dataTable, 'afterSetColumns', (e) => {
             this.setData(e.target);
-        }));
+        });
         this.hasBoundDataTableEvents = true;
     }
     /**
@@ -3207,7 +3207,7 @@ class Series {
         }
         fireEvent(this, 'afterUpdate');
         if (redraw ?? true) {
-            chart.redraw(keepPoints ? void 0 : false);
+            chart.redraw();
         }
     }
     /**
@@ -3580,6 +3580,7 @@ Series.registerType = SeriesRegistry.registerSeriesType;
 Series.keepProps = [
     'colorIndex',
     'eventOptions',
+    'hasBoundDataTableEvents',
     'navigatorSeries',
     'symbolIndex',
     'baseSeries'

@@ -12,9 +12,16 @@
  *
  * */
 'use strict';
-import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
+import PieSeries from '../Pie/PieSeries.js';
+import Series from '../../Core/Series/Series.js';
 import { extend } from '../../Shared/Utilities.js';
-const { series: { prototype: { pointClass: Point } }, seriesTypes: { pie: { prototype: { pointClass: PiePoint } } } } = SeriesRegistry;
+/* *
+ *
+ *  Constants
+ *
+ * */
+const PiePoint = PieSeries.prototype.pointClass;
+const Point = Series.prototype.pointClass;
 /* *
  *
  *  Class

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-26)
+ * @license Highcharts JS v13.1.1-modified (2026-10-27)
  * @module highcharts/modules/timeline
  * @requires highcharts
  *
@@ -45,12 +45,21 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 ;// external ["../highcharts.src.js","default"]
 const external_highcharts_src_js_default_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"];
 var external_highcharts_src_js_default_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_namespaceObject);
+;// external ["../highcharts.src.js","default","Series","types","column"]
+const external_highcharts_src_js_default_Series_types_column_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].Series.types.column;
+var external_highcharts_src_js_default_Series_types_column_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_Series_types_column_namespaceObject);
+;// external ["../highcharts.src.js","default","Series","types","line"]
+const external_highcharts_src_js_default_Series_types_line_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].Series.types.line;
+var external_highcharts_src_js_default_Series_types_line_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_Series_types_line_namespaceObject);
 ;// external ["../highcharts.src.js","default","SeriesRegistry"]
 const external_highcharts_src_js_default_SeriesRegistry_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].SeriesRegistry;
 var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_SeriesRegistry_namespaceObject);
 ;// external ["../highcharts.src.js","default","Point"]
 const external_highcharts_src_js_default_Point_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].Point;
 var external_highcharts_src_js_default_Point_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_Point_namespaceObject);
+;// external ["../highcharts.src.js","default","Series","types","pie"]
+const external_highcharts_src_js_default_Series_types_pie_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].Series.types.pie;
+var external_highcharts_src_js_default_Series_types_pie_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_Series_types_pie_namespaceObject);
 ;// ./code/es-modules/Series/Timeline/TimelinePoint.js
 /* *
  *
@@ -69,8 +78,15 @@ var external_highcharts_src_js_default_Point_default = /*#__PURE__*/__webpack_re
 
 
 
-const { line: { prototype: { pointClass: LinePoint } }, pie: { prototype: { pointClass: PiePoint } } } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
 
+
+/* *
+ *
+ *  Constants
+ *
+ * */
+const LinePoint = (external_highcharts_src_js_default_Series_types_line_default()).prototype.pointClass;
+const PiePoint = (external_highcharts_src_js_default_Series_types_pie_default()).prototype.pointClass;
 /* *
  *
  *  Class
@@ -496,7 +512,8 @@ const TimelineSeriesDefaults = {
  * */
 
 
-const { column: ColumnSeries, line: LineSeries } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
+
+
 
 
 
@@ -514,7 +531,7 @@ const { column: ColumnSeries, line: LineSeries } = (external_highcharts_src_js_d
  *
  * @augments Highcharts.Series
  */
-class TimelineSeries extends LineSeries {
+class TimelineSeries extends (external_highcharts_src_js_default_Series_types_line_default()) {
     /* *
      *
      *  Functions
@@ -731,7 +748,7 @@ class TimelineSeries extends LineSeries {
  *
  * */
 /** @internal */
-TimelineSeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(LineSeries.defaultOptions, Timeline_TimelineSeriesDefaults);
+TimelineSeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)((external_highcharts_src_js_default_Series_types_line_default()).defaultOptions, Timeline_TimelineSeriesDefaults);
 // Add series-specific properties after data is already processed, #17890
 (0,external_highcharts_src_js_default_namespaceObject.addEvent)(TimelineSeries, 'afterProcessData', function () {
     const series = this, yData = series.getColumn('y');
@@ -752,7 +769,7 @@ TimelineSeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceO
 });
 (0,external_highcharts_src_js_default_namespaceObject.extend)(TimelineSeries.prototype, {
     // Use a group of trackers from TrackerMixin
-    drawTracker: ColumnSeries.prototype.drawTracker,
+    drawTracker: (external_highcharts_src_js_default_Series_types_column_default()).prototype.drawTracker,
     pointClass: Timeline_TimelinePoint,
     trackerGroups: ['markerGroup', 'dataLabelsGroup']
 });

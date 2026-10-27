@@ -16,15 +16,17 @@ import FunnelSeriesDefaults from './FunnelSeriesDefaults.js';
 import H from '../../Core/Globals.js';
 const { composed, noop } = H;
 import { borderRadiusObject } from '../../Extensions/BorderRadius.js';
+import ColumnSeries from '../Column/ColumnSeries.js';
+import PieSeries from '../Pie/PieSeries.js';
+import Series from '../../Core/Series/Series.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-const { column: ColumnSeries, pie: PieSeries } = SeriesRegistry.seriesTypes;
 import { addEvent, correctFloat, extend, fireEvent, isArray, merge, pushUnique, relativeLength, splat } from '../../Shared/Utilities.js';
 /* *
  *
  *  Constants
  *
  * */
-const baseAlignDataLabel = SeriesRegistry.series.prototype.alignDataLabel;
+const baseAlignDataLabel = Series.prototype.alignDataLabel;
 /* *
  *
  *  Functions

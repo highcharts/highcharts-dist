@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highmaps JS v13.1.1-modified (2026-10-26)
+ * @license Highmaps JS v13.1.1-modified (2026-10-27)
  * @module highcharts/modules/map
  * @requires highcharts
  *
@@ -14,14 +14,14 @@
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(root["_Highcharts"]["Axis"], root["_Highcharts"]["Chart"], root["_Highcharts"]["Color"], root["_Highcharts"]["Point"], root["_Highcharts"]["SVGElement"], root["_Highcharts"]["SVGRenderer"], root["_Highcharts"]["Series"]["types"]["scatter"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]["Templating"], root["_Highcharts"]);
+		module.exports = factory(root["_Highcharts"]["Axis"], root["_Highcharts"]["Chart"], root["_Highcharts"]["Color"], root["_Highcharts"]["Point"], root["_Highcharts"]["SVGElement"], root["_Highcharts"]["SVGRenderer"], root["_Highcharts"]["Series"]["types"]["column"], root["_Highcharts"]["Series"]["types"]["scatter"], root["_Highcharts"]["Series"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]["Templating"], root["_Highcharts"]);
 	else if(typeof define === 'function' && define.amd)
-		define("highcharts/modules/map", ["highcharts/highcharts"], function (amd1) {return factory(amd1["Axis"],amd1["Chart"],amd1["Color"],amd1["Point"],amd1["SVGElement"],amd1["SVGRenderer"],amd1["Series"],["types"],["scatter"],amd1["SeriesRegistry"],amd1["Templating"],amd1);});
+		define("highcharts/modules/map", ["highcharts/highcharts"], function (amd1) {return factory(amd1["Axis"],amd1["Chart"],amd1["Color"],amd1["Point"],amd1["SVGElement"],amd1["SVGRenderer"],amd1["Series"]["types"]["column"],amd1["Series"]["types"]["scatter"],amd1["Series"],amd1["SeriesRegistry"],amd1["Templating"],amd1);});
 	else if(typeof exports === 'object')
-		exports["highcharts/modules/map"] = factory(root["_Highcharts"]["Axis"], root["_Highcharts"]["Chart"], root["_Highcharts"]["Color"], root["_Highcharts"]["Point"], root["_Highcharts"]["SVGElement"], root["_Highcharts"]["SVGRenderer"], root["_Highcharts"]["Series"]["types"]["scatter"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]["Templating"], root["_Highcharts"]);
+		exports["highcharts/modules/map"] = factory(root["_Highcharts"]["Axis"], root["_Highcharts"]["Chart"], root["_Highcharts"]["Color"], root["_Highcharts"]["Point"], root["_Highcharts"]["SVGElement"], root["_Highcharts"]["SVGRenderer"], root["_Highcharts"]["Series"]["types"]["column"], root["_Highcharts"]["Series"]["types"]["scatter"], root["_Highcharts"]["Series"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]["Templating"], root["_Highcharts"]);
 	else
-		root["Highcharts"] = factory(root["Highcharts"]["Axis"], root["Highcharts"]["Chart"], root["Highcharts"]["Color"], root["Highcharts"]["Point"], root["Highcharts"]["SVGElement"], root["Highcharts"]["SVGRenderer"], root["Highcharts"]["Series"]["types"]["scatter"], root["Highcharts"]["SeriesRegistry"], root["Highcharts"]["Templating"], root["Highcharts"]);
-})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__532__, __WEBPACK_EXTERNAL_MODULE__960__, __WEBPACK_EXTERNAL_MODULE__620__, __WEBPACK_EXTERNAL_MODULE__260__, __WEBPACK_EXTERNAL_MODULE__28__, __WEBPACK_EXTERNAL_MODULE__540__, __WEBPACK_EXTERNAL_MODULE__632__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__984__, __WEBPACK_EXTERNAL_MODULE__944__) => {
+		root["Highcharts"] = factory(root["Highcharts"]["Axis"], root["Highcharts"]["Chart"], root["Highcharts"]["Color"], root["Highcharts"]["Point"], root["Highcharts"]["SVGElement"], root["Highcharts"]["SVGRenderer"], root["Highcharts"]["Series"]["types"]["column"], root["Highcharts"]["Series"]["types"]["scatter"], root["Highcharts"]["Series"], root["Highcharts"]["SeriesRegistry"], root["Highcharts"]["Templating"], root["Highcharts"]);
+})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__532__, __WEBPACK_EXTERNAL_MODULE__960__, __WEBPACK_EXTERNAL_MODULE__620__, __WEBPACK_EXTERNAL_MODULE__260__, __WEBPACK_EXTERNAL_MODULE__28__, __WEBPACK_EXTERNAL_MODULE__540__, __WEBPACK_EXTERNAL_MODULE__448__, __WEBPACK_EXTERNAL_MODULE__632__, __WEBPACK_EXTERNAL_MODULE__820__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__984__, __WEBPACK_EXTERNAL_MODULE__944__) => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
@@ -68,10 +68,24 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__540__;
 
 /***/ },
 
+/***/ 448
+(module) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__448__;
+
+/***/ },
+
 /***/ 632
 (module) {
 
 module.exports = __WEBPACK_EXTERNAL_MODULE__632__;
+
+/***/ },
+
+/***/ 820
+(module) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__820__;
 
 /***/ },
 
@@ -1097,9 +1111,9 @@ const colorAxisDefaults = {
  * */
 /* harmony default export */ const ColorAxisDefaults = (colorAxisDefaults);
 
-// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","SeriesRegistry"],"commonjs":["highcharts","SeriesRegistry"],"commonjs2":["highcharts","SeriesRegistry"],"root":["Highcharts","SeriesRegistry"]}
-var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_ = __webpack_require__(512);
-var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_);
+// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Series"],"commonjs":["highcharts","Series"],"commonjs2":["highcharts","Series"],"root":["Highcharts","Series"]}
+var highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_ = __webpack_require__(820);
+var highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_default = /*#__PURE__*/__webpack_require__.n(highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_);
 ;// ./code/es-modules/Core/Axis/Color/ColorAxis.js
 /* *
  *
@@ -1120,7 +1134,6 @@ var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highc
 
 const { defaultOptions } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 
-const { series: Series } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default());
 
 defaultOptions.colorAxis = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(defaultOptions.xAxis, ColorAxisDefaults);
 /* *
@@ -1473,7 +1486,7 @@ class ColorAxis extends (highcharts_Axis_commonjs_highcharts_Axis_commonjs2_high
                 cSeries.maxColorValue = cSeries[colorKey + 'Max'];
             }
             else {
-                const cExtremes = Series.prototype.getExtremes.call(cSeries, colorValArray);
+                const cExtremes = highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_default().prototype.getExtremes.call(cSeries, colorValArray);
                 cSeries.minColorValue = cExtremes.dataMin;
                 cSeries.maxColorValue = cExtremes.dataMax;
             }
@@ -1485,7 +1498,7 @@ class ColorAxis extends (highcharts_Axis_commonjs_highcharts_Axis_commonjs2_high
                     Math.max(this.dataMax, cSeries.maxColorValue);
             }
             if (!calculatedExtremes) {
-                Series.prototype.applyExtremes.call(cSeries);
+                highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_default().prototype.applyExtremes.call(cSeries);
             }
         }
     }
@@ -1678,7 +1691,7 @@ class ColorAxis extends (highcharts_Axis_commonjs_highcharts_Axis_commonjs2_high
                     chart,
                     name,
                     options: {},
-                    drawLegendSymbol: Series.prototype.drawLegendSymbol,
+                    drawLegendSymbol: (highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_default()).prototype.drawLegendSymbol,
                     visible: true,
                     isDataClass: true,
                     // Override setState to set either normal or inactive
@@ -1758,7 +1771,7 @@ ColorAxis.defaultLegendLength = 200;
 /* unused harmony import specifier */ var Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-26)
+ * @license Highcharts JS v13.1.1-modified (2026-10-27)
  * @module highcharts/modules/color-axis
  * @requires highcharts
  *
@@ -2526,6 +2539,9 @@ class MapNavigation {
 /** @internal */
 /* harmony default export */ const Maps_MapNavigation = (MapNavigation);
 
+// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Series","types","column"],"commonjs":["highcharts","Series","types","column"],"commonjs2":["highcharts","Series","types","column"],"root":["Highcharts","Series","types","column"]}
+var highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_ = __webpack_require__(448);
+var highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_default = /*#__PURE__*/__webpack_require__.n(highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_);
 // EXTERNAL MODULE: external {"amd":["highcharts/highcharts","SVGElement"],"commonjs":["highcharts","SVGElement"],"commonjs2":["highcharts","SVGElement"],"root":["Highcharts","SVGElement"]}
 var highcharts_SVGElement_commonjs_highcharts_SVGElement_commonjs2_highcharts_SVGElement_root_Highcharts_SVGElement_ = __webpack_require__(28);
 var highcharts_SVGElement_commonjs_highcharts_SVGElement_commonjs2_highcharts_SVGElement_root_Highcharts_SVGElement_default = /*#__PURE__*/__webpack_require__.n(highcharts_SVGElement_commonjs_highcharts_SVGElement_commonjs2_highcharts_SVGElement_root_Highcharts_SVGElement_);
@@ -2543,7 +2559,6 @@ var highcharts_SVGElement_commonjs_highcharts_SVGElement_commonjs2_highcharts_SV
  * */
 
 
-const { column: { prototype: columnProto } } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
 
 
 /* *
@@ -2572,7 +2587,7 @@ var ColorMapComposition;
         pointArrayMap: ['value'],
         trackerGroups: ['group', 'markerGroup', 'dataLabelsGroup'],
         colorAttribs: seriesColorAttribs,
-        pointAttribs: columnProto.pointAttribs
+        pointAttribs: (highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_default()).prototype.pointAttribs
     };
     /* *
      *
@@ -3629,6 +3644,9 @@ const MapUtilities = {
 /** @internal */
 /* harmony default export */ const Maps_MapUtilities = (MapUtilities);
 
+// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Series","types","scatter"],"commonjs":["highcharts","Series","types","scatter"],"commonjs2":["highcharts","Series","types","scatter"],"root":["Highcharts","Series","types","scatter"]}
+var highcharts_Series_types_scatter_commonjs_highcharts_Series_types_scatter_commonjs2_highcharts_Series_types_scatter_root_Highcharts_Series_types_scatter_ = __webpack_require__(632);
+var highcharts_Series_types_scatter_commonjs_highcharts_Series_types_scatter_commonjs2_highcharts_Series_types_scatter_root_Highcharts_Series_types_scatter_default = /*#__PURE__*/__webpack_require__.n(highcharts_Series_types_scatter_commonjs_highcharts_Series_types_scatter_commonjs2_highcharts_Series_types_scatter_root_Highcharts_Series_types_scatter_);
 ;// ./code/es-modules/Series/Map/MapPoint.js
 /* *
  *
@@ -3646,7 +3664,7 @@ const MapUtilities = {
 
 const { boundsFromPath: MapPoint_boundsFromPath } = Maps_MapUtilities;
 
-const ScatterPoint = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes.scatter.prototype.pointClass;
+const ScatterPoint = (highcharts_Series_types_scatter_commonjs_highcharts_Series_types_scatter_commonjs2_highcharts_Series_types_scatter_root_Highcharts_Series_types_scatter_default()).prototype.pointClass;
 
 /* *
  *
@@ -7740,6 +7758,9 @@ class MapViewInset extends MapView {
  */
 ''; // Keeps doclets above in JS file
 
+// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","SeriesRegistry"],"commonjs":["highcharts","SeriesRegistry"],"commonjs2":["highcharts","SeriesRegistry"],"root":["Highcharts","SeriesRegistry"]}
+var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_ = __webpack_require__(512);
+var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_);
 ;// ./code/es-modules/Series/Map/MapSeries.js
 /* *
  *
@@ -7765,9 +7786,8 @@ const { splitPath } = Chart_MapChart;
 
 
 
-const { 
-// Indirect dependency to keep product size low
-column: ColumnSeries, scatter: ScatterSeries } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
+
+
 
 /* *
  *
@@ -7781,7 +7801,7 @@ column: ColumnSeries, scatter: ScatterSeries } = (highcharts_SeriesRegistry_comm
  *
  * @augments Highcharts.Series
  */
-class MapSeries extends ScatterSeries {
+class MapSeries extends (highcharts_Series_types_scatter_commonjs_highcharts_Series_types_scatter_commonjs2_highcharts_Series_types_scatter_root_Highcharts_Series_types_scatter_default()) {
     constructor() {
         /* *
          *
@@ -7888,7 +7908,7 @@ class MapSeries extends ScatterSeries {
                 }
             });
             // Draw the points
-            ColumnSeries.prototype.drawPoints.apply(this);
+            highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_default().prototype.drawPoints.apply(this);
             // Add class names
             this.points.forEach((point) => {
                 const graphic = point.graphic;
@@ -8115,7 +8135,7 @@ class MapSeries extends ScatterSeries {
         const { mapView, styledMode } = (point?.series || this).chart;
         const attr = styledMode && point ?
             this.colorAttribs(point) :
-            ColumnSeries.prototype.pointAttribs.call(this, point, state);
+            highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_default().prototype.pointAttribs.call(this, point, state);
         // Individual stroke width
         let pointStrokeWidth = this.getStrokeWidth(point?.options || {});
         // Handle state specific border or line width
@@ -8372,7 +8392,7 @@ class MapSeries extends ScatterSeries {
         super.update.apply(this, arguments);
     }
 }
-MapSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(ScatterSeries.defaultOptions, Map_MapSeriesDefaults);
+MapSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)((highcharts_Series_types_scatter_commonjs_highcharts_Series_types_scatter_commonjs2_highcharts_Series_types_scatter_root_Highcharts_Series_types_scatter_default()).defaultOptions, Map_MapSeriesDefaults);
 (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.extend)(MapSeries.prototype, {
     type: 'map',
     axisTypes: Series_ColorMapComposition.seriesMembers.axisTypes,
@@ -8637,13 +8657,12 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
 
 
 
-const { scatter: MapPointPoint_ScatterSeries } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
 /* *
  *
  *  Class
  *
  * */
-class MapPointPoint extends MapPointPoint_ScatterSeries.prototype.pointClass {
+class MapPointPoint extends (highcharts_Series_types_scatter_commonjs_highcharts_Series_types_scatter_commonjs2_highcharts_Series_types_scatter_root_Highcharts_Series_types_scatter_default()).prototype.pointClass {
     /* *
      *
      *  Functions
@@ -8874,8 +8893,6 @@ const MapPointSeriesDefaults = {
  */
 (''); // Keeps doclets above in JS file
 
-// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Series","types","scatter"],"commonjs":["highcharts","Series","types","scatter"],"commonjs2":["highcharts","Series","types","scatter"],"root":["Highcharts","Series","types","scatter"]}
-var highcharts_Series_types_scatter_commonjs_highcharts_Series_types_scatter_commonjs2_highcharts_Series_types_scatter_root_Highcharts_Series_types_scatter_ = __webpack_require__(632);
 ;// ./code/es-modules/Series/MapPoint/MapPointSeries.js
 /* *
  *
@@ -8894,7 +8911,8 @@ const { noop: MapPointSeries_noop } = (highcharts_commonjs_highcharts_commonjs2_
 
 
 
-const { map: MapPointSeries_MapSeries, scatter: MapPointSeries_ScatterSeries } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
+
+
 
 
 
@@ -8911,7 +8929,7 @@ const { map: MapPointSeries_MapSeries, scatter: MapPointSeries_ScatterSeries } =
  *
  * @augments Highcharts.Series
  */
-class MapPointSeries extends MapPointSeries_ScatterSeries {
+class MapPointSeries extends (highcharts_Series_types_scatter_commonjs_highcharts_Series_types_scatter_commonjs2_highcharts_Series_types_scatter_root_Highcharts_Series_types_scatter_default()) {
     constructor() {
         /* *
          *
@@ -8919,7 +8937,7 @@ class MapPointSeries extends MapPointSeries_ScatterSeries {
          *
          * */
         super(...arguments);
-        this.clearBounds = MapPointSeries_MapSeries.prototype.clearBounds;
+        this.clearBounds = Map_MapSeries.prototype.clearBounds;
     }
     /* *
      *
@@ -9017,7 +9035,7 @@ class MapPointSeries extends MapPointSeries_ScatterSeries {
     }
 }
 /** @internal */
-MapPointSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(MapPointSeries_ScatterSeries.defaultOptions, MapPoint_MapPointSeriesDefaults);
+MapPointSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)((highcharts_Series_types_scatter_commonjs_highcharts_Series_types_scatter_commonjs2_highcharts_Series_types_scatter_root_Highcharts_Series_types_scatter_default()).defaultOptions, MapPoint_MapPointSeriesDefaults);
 /* *
  *
  * Extra
@@ -9080,7 +9098,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *  Default Export
  *
  * */
-/* harmony default export */ const MapPoint_MapPointSeries = ((/* unused pure expression or super */ null && (MapPointSeries)));
+/* harmony default export */ const MapPoint_MapPointSeries = (MapPointSeries);
 /* *
  *
  *  API Options
@@ -10091,7 +10109,12 @@ var highcharts_Point_commonjs_highcharts_Point_commonjs2_highcharts_Point_root_H
 
 
 
-const { seriesTypes: { scatter: { prototype: { pointClass: BubblePoint_ScatterPoint } } } } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default());
+/* *
+ *
+ *  Constants
+ *
+ * */
+const BubblePoint_ScatterPoint = (highcharts_Series_types_scatter_commonjs_highcharts_Series_types_scatter_commonjs2_highcharts_Series_types_scatter_root_Highcharts_Series_types_scatter_default()).prototype.pointClass;
 /* *
  *
  *  Class
@@ -10153,7 +10176,9 @@ class BubblePoint extends BubblePoint_ScatterPoint {
 
 const { composed: BubbleSeries_composed, noop: BubbleSeries_noop } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 
-const { series: BubbleSeries_Series, seriesTypes: { column: { prototype: BubbleSeries_columnProto }, scatter: BubbleSeries_ScatterSeries } } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default());
+
+
+
 
 /* *
  *
@@ -10321,7 +10346,7 @@ function onAxisAfterRender() {
  * */
 /**
  */
-class BubbleSeries extends BubbleSeries_ScatterSeries {
+class BubbleSeries extends (highcharts_Series_types_scatter_commonjs_highcharts_Series_types_scatter_commonjs2_highcharts_Series_types_scatter_root_Highcharts_Series_types_scatter_default()) {
     /* *
      *
      *  Static Functions
@@ -10470,7 +10495,7 @@ class BubbleSeries extends BubbleSeries_ScatterSeries {
      * @internal
      */
     pointAttribs(point, state) {
-        const markerOptions = this.options.marker, fillOpacity = markerOptions?.fillOpacity, attr = BubbleSeries_Series.prototype.pointAttribs.call(this, point, state);
+        const markerOptions = this.options.marker, fillOpacity = markerOptions?.fillOpacity, attr = highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_default().prototype.pointAttribs.call(this, point, state);
         attr['fill-opacity'] = fillOpacity ?? 1;
         return attr;
     }
@@ -10602,7 +10627,7 @@ class BubbleSeries extends BubbleSeries_ScatterSeries {
  * @optionparent plotOptions.bubble
  * @internal
  */
-BubbleSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(BubbleSeries_ScatterSeries.defaultOptions, {
+BubbleSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)((highcharts_Series_types_scatter_commonjs_highcharts_Series_types_scatter_commonjs2_highcharts_Series_types_scatter_root_Highcharts_Series_types_scatter_default()).defaultOptions, {
     dataLabels: {
         formatter: function () {
             const { numberFormatter } = this.series.chart;
@@ -10838,7 +10863,7 @@ BubbleSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highch
     zoneAxis: 'z'
 });
 (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.extend)(BubbleSeries.prototype, {
-    alignDataLabel: BubbleSeries_columnProto.alignDataLabel,
+    alignDataLabel: (highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_default()).prototype.alignDataLabel,
     applyZones: BubbleSeries_noop,
     bubblePadding: true,
     isBubble: true,
@@ -10994,7 +11019,12 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
 
 
 
-const { seriesTypes: { map: { prototype: { pointClass: { prototype: mapPointProto } } } } } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default());
+/* *
+ *
+ *  Constants
+ *
+ * */
+const MapBubblePoint_MapPoint = Map_MapSeries.prototype.pointClass;
 /* *
  *
  *  Class
@@ -11012,8 +11042,8 @@ class MapBubblePoint extends Bubble_BubblePoint {
     }
 }
 ;(0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.extend)(MapBubblePoint.prototype, {
-    applyOptions: mapPointProto.applyOptions,
-    getProjectedBounds: mapPointProto.getProjectedBounds
+    applyOptions: MapBubblePoint_MapPoint.prototype.applyOptions,
+    getProjectedBounds: MapBubblePoint_MapPoint.prototype.getProjectedBounds
 });
 /* *
  *
@@ -11038,7 +11068,8 @@ class MapBubblePoint extends Bubble_BubblePoint {
 
 
 
-const { seriesTypes: { map: { prototype: mapProto }, mappoint: { prototype: MapBubbleSeries_mapPointProto } } } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default());
+
+
 
 /* *
  *
@@ -11063,7 +11094,7 @@ class MapBubbleSeries extends Bubble_BubbleSeries {
          *
          * */
         super(...arguments);
-        this.clearBounds = mapProto.clearBounds;
+        this.clearBounds = Map_MapSeries.prototype.clearBounds;
     }
     /** @internal */
     searchPoint(e, compareX) {
@@ -11074,7 +11105,7 @@ class MapBubbleSeries extends Bubble_BubbleSeries {
     }
     /** @internal */
     translate() {
-        MapBubbleSeries_mapPointProto.translate.call(this);
+        MapPoint_MapPointSeries.prototype.translate.call(this);
         this.getRadii();
         this.translateBubble();
     }
@@ -11261,16 +11292,16 @@ MapBubbleSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_hig
 (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.extend)(MapBubbleSeries.prototype, {
     type: 'mapbubble',
     axisTypes: ['colorAxis'],
-    getProjectedBounds: mapProto.getProjectedBounds,
+    getProjectedBounds: Map_MapSeries.prototype.getProjectedBounds,
     isCartesian: false,
     // If one single value is passed, it is interpreted as z
     pointArrayMap: ['z'],
     pointClass: MapBubble_MapBubblePoint,
-    processData: mapProto.processData,
-    projectPoint: MapBubbleSeries_mapPointProto.projectPoint,
+    processData: Map_MapSeries.prototype.processData,
+    projectPoint: MapPoint_MapPointSeries.prototype.projectPoint,
     kdAxisArray: ['plotX', 'plotY'],
-    setData: mapProto.setData,
-    setOptions: mapProto.setOptions,
+    setData: Map_MapSeries.prototype.setData,
+    setOptions: Map_MapSeries.prototype.setOptions,
     useMapGeometry: true,
     xyFromShape: true
 });
@@ -11364,8 +11395,13 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * */
 
 
-const { scatter: { prototype: { pointClass: HeatmapPoint_ScatterPoint } } } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
 
+/* *
+ *
+ *  Constants
+ *
+ * */
+const HeatmapPoint_ScatterPoint = (highcharts_Series_types_scatter_commonjs_highcharts_Series_types_scatter_commonjs2_highcharts_Series_types_scatter_root_Highcharts_Series_types_scatter_default()).prototype.pointClass;
 /* *
  *
  *  Class
@@ -12201,7 +12237,9 @@ const InterpolationUtilities = {
 
 
 
-const { series: HeatmapSeries_Series, seriesTypes: { column: HeatmapSeries_ColumnSeries, scatter: HeatmapSeries_ScatterSeries } } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default());
+
+
+
 
 const { prototype: { symbols: HeatmapSeries_symbols } } = (highcharts_SVGRenderer_commonjs_highcharts_SVGRenderer_commonjs2_highcharts_SVGRenderer_root_Highcharts_SVGRenderer_default());
 
@@ -12218,7 +12256,7 @@ const { colorFromPoint: HeatmapSeries_colorFromPoint, getContext: HeatmapSeries_
  *
  * @augments Highcharts.Series
  */
-class HeatmapSeries extends HeatmapSeries_ScatterSeries {
+class HeatmapSeries extends (highcharts_Series_types_scatter_commonjs_highcharts_Series_types_scatter_commonjs2_highcharts_Series_types_scatter_root_Highcharts_Series_types_scatter_default()) {
     constructor() {
         /* *
          *
@@ -12282,7 +12320,7 @@ class HeatmapSeries extends HeatmapSeries_ScatterSeries {
             }
         }
         else if (seriesMarkerOptions.enabled || series._hasPointMarkers) {
-            HeatmapSeries_Series.prototype.drawPoints.call(series);
+            highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_default().prototype.drawPoints.call(series);
             series.points.forEach((point) => {
                 if (point.graphic) {
                     // In styled mode, use CSS, otherwise the fill used in
@@ -12308,7 +12346,7 @@ class HeatmapSeries extends HeatmapSeries_ScatterSeries {
      */
     getExtremes() {
         // Get the extremes from the value data
-        const { dataMin, dataMax } = HeatmapSeries_Series.prototype.getExtremes
+        const { dataMin, dataMax } = highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_default().prototype.getExtremes
             .call(this, this.getColumn('value'));
         if ((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.isNumber)(dataMin)) {
             this.valueMin = dataMin;
@@ -12317,7 +12355,7 @@ class HeatmapSeries extends HeatmapSeries_ScatterSeries {
             this.valueMax = dataMax;
         }
         // Get the extremes from the y data
-        return HeatmapSeries_Series.prototype.getExtremes.call(this);
+        return highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_default().prototype.getExtremes.call(this);
     }
     /**
      * Override to also allow null points, used when building the k-d-tree for
@@ -12325,7 +12363,7 @@ class HeatmapSeries extends HeatmapSeries_ScatterSeries {
      * @internal
      */
     getValidPoints(points, insideOnly) {
-        return HeatmapSeries_Series.prototype.getValidPoints.call(this, points, insideOnly, true);
+        return highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_default().prototype.getValidPoints.call(this, points, insideOnly, true);
     }
     /**
      * Define hasData function for non-cartesian series. Returns true if the
@@ -12403,7 +12441,7 @@ class HeatmapSeries extends HeatmapSeries_ScatterSeries {
      * @internal
      */
     pointAttribs(point, state) {
-        const series = this, attr = HeatmapSeries_Series.prototype.pointAttribs.call(series, point, state), seriesOptions = series.options || {}, plotOptions = series.chart.options.plotOptions || {}, seriesPlotOptions = plotOptions.series || {}, heatmapPlotOptions = plotOptions.heatmap || {}, 
+        const series = this, attr = highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_default().prototype.pointAttribs.call(series, point, state), seriesOptions = series.options || {}, plotOptions = series.chart.options.plotOptions || {}, seriesPlotOptions = plotOptions.series || {}, heatmapPlotOptions = plotOptions.heatmap || {}, 
         // Get old properties in order to keep backward compatibility
         borderColor = point?.options.borderColor ||
             seriesOptions.borderColor ||
@@ -12463,7 +12501,7 @@ class HeatmapSeries extends HeatmapSeries_ScatterSeries {
     }
 }
 /** @internal */
-HeatmapSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(HeatmapSeries_ScatterSeries.defaultOptions, Heatmap_HeatmapSeriesDefaults);
+HeatmapSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)((highcharts_Series_types_scatter_commonjs_highcharts_Series_types_scatter_commonjs2_highcharts_Series_types_scatter_root_Highcharts_Series_types_scatter_default()).defaultOptions, Heatmap_HeatmapSeriesDefaults);
 (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.addEvent)(HeatmapSeries, 'afterDataClassLegendClick', function () {
     this.isDirtyCanvas = true;
     this.drawPoints();
@@ -12485,7 +12523,7 @@ HeatmapSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highc
     /**
      * @internal
      */
-    alignDataLabel: HeatmapSeries_ColumnSeries.prototype.alignDataLabel,
+    alignDataLabel: (highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_default()).prototype.alignDataLabel,
     colorAttribs: Series_ColorMapComposition.seriesMembers.colorAttribs
 });
 Series_ColorMapComposition.compose(HeatmapSeries);

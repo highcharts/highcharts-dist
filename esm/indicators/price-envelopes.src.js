@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.1.1-modified (2026-10-26)
+ * @license Highstock JS v13.1.1-modified (2026-10-27)
  * @module highcharts/indicators/price-envelopes
  * @requires highcharts
  * @requires highcharts/modules/stock
+ * @requires highcharts/indicators/indicators
  *
  * Indicator series type for Highcharts Stock
  *
@@ -14,6 +15,9 @@
  * see www.highcharts.com/license
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
+import "../modules/stock.src.js";
+import "./indicators.src.js";
+import * as __WEBPACK_EXTERNAL_MODULE__indicators_src_js_eb4ee23f__ from "./indicators.src.js";
 /******/ // The require scope
 /******/ const __webpack_require__ = {};
 /******/ 
@@ -46,9 +50,13 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 ;// external ["../highcharts.src.js","default"]
 const external_highcharts_src_js_default_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"];
 var external_highcharts_src_js_default_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_namespaceObject);
-;// external ["../highcharts.src.js","default","SeriesRegistry"]
-const external_highcharts_src_js_default_SeriesRegistry_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].SeriesRegistry;
-var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_SeriesRegistry_namespaceObject);
+;// external "../modules/stock.src.js"
+
+;// external "./indicators.src.js"
+
+;// external ["./indicators.src.js","default","Series","types","sma"]
+const external_indicators_src_js_default_Series_types_sma_namespaceObject = __WEBPACK_EXTERNAL_MODULE__indicators_src_js_eb4ee23f__["default"].Series.types.sma;
+var external_indicators_src_js_default_Series_types_sma_default = /*#__PURE__*/__webpack_require__.n(external_indicators_src_js_default_Series_types_sma_namespaceObject);
 ;// ./code/es-modules/Stock/Indicators/MultipleLinesComposition.js
 /* *
  *
@@ -63,7 +71,6 @@ var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__w
  * */
 
 
-const { sma: { prototype: smaProto } } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
 
 
 /* *
@@ -223,7 +230,7 @@ var MultipleLinesComposition;
             indicator.options = (0,external_highcharts_src_js_default_namespaceObject.merge)(mainLinePoints, gappedExtend);
             indicator.graph = indicator.area;
             indicator.fillGraph = true;
-            smaProto.drawGraph.call(indicator);
+            external_indicators_src_js_default_Series_types_sma_default().prototype.drawGraph.call(indicator);
             indicator.area = indicator.graph;
             // Clean temporary properties:
             delete indicator.nextPoints;
@@ -243,7 +250,7 @@ var MultipleLinesComposition;
                         ' are consistent with your DOCS line names."');
                 }
                 indicator.graph = indicator['graph' + lineName];
-                smaProto.drawGraph.call(indicator);
+                external_indicators_src_js_default_Series_types_sma_default().prototype.drawGraph.call(indicator);
                 // Now save lines:
                 indicator['graph' + lineName] = indicator.graph;
             }
@@ -257,7 +264,7 @@ var MultipleLinesComposition;
         indicator.points = mainLinePoints;
         indicator.options = mainLineOptions;
         indicator.graph = mainLinePath;
-        smaProto.drawGraph.call(indicator);
+        external_indicators_src_js_default_Series_types_sma_default().prototype.drawGraph.call(indicator);
     }
     /**
      * Create the path based on points provided as argument.
@@ -271,10 +278,10 @@ var MultipleLinesComposition;
         points = points || this.points;
         // Render Span
         if (this.fillGraph && this.nextPoints) {
-            areaPath = smaProto.getGraphPath.call(this, this.nextPoints);
+            areaPath = external_indicators_src_js_default_Series_types_sma_default().prototype.getGraphPath.call(this, this.nextPoints);
             if (areaPath && areaPath.length) {
                 areaPath[0][0] = 'L';
-                path = smaProto.getGraphPath.call(this, points);
+                path = external_indicators_src_js_default_Series_types_sma_default().prototype.getGraphPath.call(this, points);
                 higherAreaPath = areaPath.slice(0, path.length);
                 // Reverse points, so that the areaFill will start from the end:
                 for (let i = higherAreaPath.length - 1; i >= 0; i--) {
@@ -283,7 +290,7 @@ var MultipleLinesComposition;
             }
         }
         else {
-            path = smaProto.getGraphPath.apply(this, arguments);
+            path = external_indicators_src_js_default_Series_types_sma_default().prototype.getGraphPath.apply(this, arguments);
         }
         return path;
     }
@@ -310,7 +317,7 @@ var MultipleLinesComposition;
         const pointArrayMap = this.pointArrayMap;
         let LinesNames = [], value;
         LinesNames = getTranslatedLinesNames(this);
-        smaProto.translate.apply(this, arguments);
+        external_indicators_src_js_default_Series_types_sma_default().prototype.translate.apply(this, arguments);
         this.points.forEach((point) => {
             pointArrayMap.forEach((propertyName, i) => {
                 value = point[propertyName];
@@ -333,6 +340,9 @@ var MultipleLinesComposition;
  * */
 /* harmony default export */ const Indicators_MultipleLinesComposition = (MultipleLinesComposition);
 
+;// external ["../highcharts.src.js","default","SeriesRegistry"]
+const external_highcharts_src_js_default_SeriesRegistry_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].SeriesRegistry;
+var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_SeriesRegistry_namespaceObject);
 ;// ./code/es-modules/Stock/Indicators/PriceEnvelopes/PriceEnvelopesIndicator.js
 /* *
  *
@@ -345,7 +355,7 @@ var MultipleLinesComposition;
 
 
 
-const { sma: SMAIndicator } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
+
 
 /* *
  *
@@ -360,7 +370,7 @@ const { sma: SMAIndicator } = (external_highcharts_src_js_default_SeriesRegistry
  *
  * @augments Highcharts.Series
  */
-class PriceEnvelopesIndicator extends SMAIndicator {
+class PriceEnvelopesIndicator extends (external_indicators_src_js_default_Series_types_sma_default()) {
     /* *
      *
      *  Functions
@@ -440,7 +450,7 @@ class PriceEnvelopesIndicator extends SMAIndicator {
  * @optionparent plotOptions.priceenvelopes
  * @internal
  */
-PriceEnvelopesIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(SMAIndicator.defaultOptions, {
+PriceEnvelopesIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)((external_indicators_src_js_default_Series_types_sma_default()).defaultOptions, {
     marker: {
         enabled: false
     },
@@ -540,6 +550,8 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
 ''; // To include the above in the js output
 
 ;// ./code/es-modules/masters/indicators/price-envelopes.src.js
+
+
 
 
 

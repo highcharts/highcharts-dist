@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-26)
+ * @license Highcharts JS v13.1.1-modified (2026-10-27)
  * @module highcharts/modules/variable-pie
  * @requires highcharts
  *
@@ -14,17 +14,24 @@
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
+		module.exports = factory(root["_Highcharts"]["Series"]["types"]["pie"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
 	else if(typeof define === 'function' && define.amd)
-		define("highcharts/modules/variable-pie", ["highcharts/highcharts"], function (amd1) {return factory(amd1["SeriesRegistry"],amd1);});
+		define("highcharts/modules/variable-pie", ["highcharts/highcharts"], function (amd1) {return factory(amd1["Series"]["types"]["pie"],amd1["SeriesRegistry"],amd1);});
 	else if(typeof exports === 'object')
-		exports["highcharts/modules/variable-pie"] = factory(root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
+		exports["highcharts/modules/variable-pie"] = factory(root["_Highcharts"]["Series"]["types"]["pie"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
 	else
-		root["Highcharts"] = factory(root["Highcharts"]["SeriesRegistry"], root["Highcharts"]);
-})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__944__) => {
+		root["Highcharts"] = factory(root["Highcharts"]["Series"]["types"]["pie"], root["Highcharts"]["SeriesRegistry"], root["Highcharts"]);
+})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__20__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__944__) => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
+
+/***/ 20
+(module) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__20__;
+
+/***/ },
 
 /***/ 512
 (module) {
@@ -101,6 +108,9 @@ __webpack_require__.d(__webpack_exports__, {
 // EXTERNAL MODULE: external {"amd":["highcharts/highcharts"],"commonjs":["highcharts"],"commonjs2":["highcharts"],"root":["Highcharts"]}
 var highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_ = __webpack_require__(944);
 var highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default = /*#__PURE__*/__webpack_require__.n(highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_);
+// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Series","types","pie"],"commonjs":["highcharts","Series","types","pie"],"commonjs2":["highcharts","Series","types","pie"],"root":["Highcharts","Series","types","pie"]}
+var highcharts_Series_types_pie_commonjs_highcharts_Series_types_pie_commonjs2_highcharts_Series_types_pie_root_Highcharts_Series_types_pie_ = __webpack_require__(20);
+var highcharts_Series_types_pie_commonjs_highcharts_Series_types_pie_commonjs2_highcharts_Series_types_pie_root_Highcharts_Series_types_pie_default = /*#__PURE__*/__webpack_require__.n(highcharts_Series_types_pie_commonjs_highcharts_Series_types_pie_commonjs2_highcharts_Series_types_pie_root_Highcharts_Series_types_pie_);
 // EXTERNAL MODULE: external {"amd":["highcharts/highcharts","SeriesRegistry"],"commonjs":["highcharts","SeriesRegistry"],"commonjs2":["highcharts","SeriesRegistry"],"root":["Highcharts","SeriesRegistry"]}
 var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_ = __webpack_require__(512);
 var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_);
@@ -302,7 +312,7 @@ const VariablePieSeriesDefaults = {
  * */
 
 
-const { pie: PieSeries } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
+
 
 
 /* *
@@ -319,7 +329,7 @@ const { pie: PieSeries } = (highcharts_SeriesRegistry_commonjs_highcharts_Series
  *
  * @augments Highcharts.Series
  */
-class VariablePieSeries extends PieSeries {
+class VariablePieSeries extends (highcharts_Series_types_pie_commonjs_highcharts_Series_types_pie_commonjs2_highcharts_Series_types_pie_root_Highcharts_Series_types_pie_default()) {
     /* *
      *
      *  Functions
@@ -536,7 +546,7 @@ class VariablePieSeries extends PieSeries {
  *
  * */
 /** @internal */
-VariablePieSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(PieSeries.defaultOptions, VariablePie_VariablePieSeriesDefaults);
+VariablePieSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)((highcharts_Series_types_pie_commonjs_highcharts_Series_types_pie_commonjs2_highcharts_Series_types_pie_root_Highcharts_Series_types_pie_default()).defaultOptions, VariablePie_VariablePieSeriesDefaults);
 (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.extend)(VariablePieSeries.prototype, {
     pointArrayMap: ['y', 'z'],
     parallelArrays: ['x', 'y', 'z']

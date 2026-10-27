@@ -10,8 +10,7 @@
  *
  * */
 'use strict';
-import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-const { sma: { prototype: smaProto } } = SeriesRegistry.seriesTypes;
+import SMAIndicator from './SMA/SMAIndicator.js';
 import { defined, merge } from '../../Shared/Utilities.js';
 import { error } from '../../Core/Utilities.js';
 /* *
@@ -171,7 +170,7 @@ var MultipleLinesComposition;
             indicator.options = merge(mainLinePoints, gappedExtend);
             indicator.graph = indicator.area;
             indicator.fillGraph = true;
-            smaProto.drawGraph.call(indicator);
+            SMAIndicator.prototype.drawGraph.call(indicator);
             indicator.area = indicator.graph;
             // Clean temporary properties:
             delete indicator.nextPoints;
@@ -191,7 +190,7 @@ var MultipleLinesComposition;
                         ' are consistent with your DOCS line names."');
                 }
                 indicator.graph = indicator['graph' + lineName];
-                smaProto.drawGraph.call(indicator);
+                SMAIndicator.prototype.drawGraph.call(indicator);
                 // Now save lines:
                 indicator['graph' + lineName] = indicator.graph;
             }
@@ -205,7 +204,7 @@ var MultipleLinesComposition;
         indicator.points = mainLinePoints;
         indicator.options = mainLineOptions;
         indicator.graph = mainLinePath;
-        smaProto.drawGraph.call(indicator);
+        SMAIndicator.prototype.drawGraph.call(indicator);
     }
     /**
      * Create the path based on points provided as argument.
@@ -219,10 +218,10 @@ var MultipleLinesComposition;
         points = points || this.points;
         // Render Span
         if (this.fillGraph && this.nextPoints) {
-            areaPath = smaProto.getGraphPath.call(this, this.nextPoints);
+            areaPath = SMAIndicator.prototype.getGraphPath.call(this, this.nextPoints);
             if (areaPath && areaPath.length) {
                 areaPath[0][0] = 'L';
-                path = smaProto.getGraphPath.call(this, points);
+                path = SMAIndicator.prototype.getGraphPath.call(this, points);
                 higherAreaPath = areaPath.slice(0, path.length);
                 // Reverse points, so that the areaFill will start from the end:
                 for (let i = higherAreaPath.length - 1; i >= 0; i--) {
@@ -231,7 +230,7 @@ var MultipleLinesComposition;
             }
         }
         else {
-            path = smaProto.getGraphPath.apply(this, arguments);
+            path = SMAIndicator.prototype.getGraphPath.apply(this, arguments);
         }
         return path;
     }
@@ -258,7 +257,7 @@ var MultipleLinesComposition;
         const pointArrayMap = this.pointArrayMap;
         let LinesNames = [], value;
         LinesNames = getTranslatedLinesNames(this);
-        smaProto.translate.apply(this, arguments);
+        SMAIndicator.prototype.translate.apply(this, arguments);
         this.points.forEach((point) => {
             pointArrayMap.forEach((propertyName, i) => {
                 value = point[propertyName];

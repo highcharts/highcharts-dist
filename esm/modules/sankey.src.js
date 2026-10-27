@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-26)
+ * @license Highcharts JS v13.1.1-modified (2026-10-27)
  * @module highcharts/modules/sankey
  * @requires highcharts
  *
@@ -45,9 +45,12 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 ;// external ["../highcharts.src.js","default"]
 const external_highcharts_src_js_default_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"];
 var external_highcharts_src_js_default_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_namespaceObject);
-;// external ["../highcharts.src.js","default","SeriesRegistry"]
-const external_highcharts_src_js_default_SeriesRegistry_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].SeriesRegistry;
-var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_SeriesRegistry_namespaceObject);
+;// external ["../highcharts.src.js","default","Point"]
+const external_highcharts_src_js_default_Point_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].Point;
+var external_highcharts_src_js_default_Point_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_Point_namespaceObject);
+;// external ["../highcharts.src.js","default","Series"]
+const external_highcharts_src_js_default_Series_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].Series;
+var external_highcharts_src_js_default_Series_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_Series_namespaceObject);
 ;// ./code/es-modules/Series/NodesComposition.js
 /* *
  *
@@ -55,7 +58,7 @@ var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__w
  * */
 
 
-const { series: { prototype: seriesProto, prototype: { pointClass: { prototype: pointProto } } } } = (external_highcharts_src_js_default_SeriesRegistry_default());
+
 
 /* *
  *
@@ -178,7 +181,7 @@ var NodesComposition;
         // Nodes must also be destroyed (#8682, #9300)
         this.data = []
             .concat(this.points || [], this.nodes);
-        return seriesProto.destroy.apply(this, arguments);
+        return external_highcharts_src_js_default_Series_default().prototype.destroy.apply(this, arguments);
     }
     NodesComposition.destroy = destroy;
     /**
@@ -188,7 +191,7 @@ var NodesComposition;
      */
     function generatePoints() {
         const chart = this.chart, nodeLookup = {};
-        seriesProto.generatePoints.call(this);
+        external_highcharts_src_js_default_Series_default().prototype.generatePoints.call(this);
         if (!this.nodes) {
             this.nodes = []; // List of Point-like node items
         }
@@ -242,7 +245,7 @@ var NodesComposition;
             });
             this.nodes.length = 0;
         }
-        seriesProto.setData.apply(this, arguments);
+        external_highcharts_src_js_default_Series_default().prototype.setData.apply(this, arguments);
     }
     /**
      * When hovering node, highlight all connected links. When hovering a link,
@@ -255,19 +258,19 @@ var NodesComposition;
         if (state !== 'select') {
             others.forEach((linkOrNode) => {
                 if (linkOrNode && linkOrNode.series) {
-                    pointProto.setState.apply(linkOrNode, args);
+                    external_highcharts_src_js_default_Point_default().prototype.setState.apply(linkOrNode, args);
                     if (!linkOrNode.isNode) {
                         if (linkOrNode.fromNode.graphic) {
-                            pointProto.setState.apply(linkOrNode.fromNode, args);
+                            external_highcharts_src_js_default_Point_default().prototype.setState.apply(linkOrNode.fromNode, args);
                         }
                         if (linkOrNode.toNode && linkOrNode.toNode.graphic) {
-                            pointProto.setState.apply(linkOrNode.toNode, args);
+                            external_highcharts_src_js_default_Point_default().prototype.setState.apply(linkOrNode.toNode, args);
                         }
                     }
                 }
             });
         }
-        pointProto.setState.apply(this, args);
+        external_highcharts_src_js_default_Point_default().prototype.setState.apply(this, args);
     }
     NodesComposition.setNodeState = setNodeState;
     /**
@@ -277,7 +280,7 @@ var NodesComposition;
      */
     function updateNode(options, redraw, animation, runEvent) {
         const nodes = this.series.options.nodes, data = this.series.options.data, dataLength = data?.length || 0, linkConfig = data?.[this.index];
-        pointProto.update.call(this, options, this.isNode ? false : redraw, // Hold the redraw for nodes
+        external_highcharts_src_js_default_Point_default().prototype.update.call(this, options, this.isNode ? false : redraw, // Hold the redraw for nodes
         animation, runEvent);
         if (this.isNode) {
             // `this.index` refers to `series.nodes`, not `options.nodes` array
@@ -323,9 +326,9 @@ var NodesComposition;
  * */
 /* harmony default export */ const Series_NodesComposition = (NodesComposition);
 
-;// external ["../highcharts.src.js","default","Point"]
-const external_highcharts_src_js_default_Point_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].Point;
-var external_highcharts_src_js_default_Point_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_Point_namespaceObject);
+;// external ["../highcharts.src.js","default","Series","types","column"]
+const external_highcharts_src_js_default_Series_types_column_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].Series.types.column;
+var external_highcharts_src_js_default_Series_types_column_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_Series_types_column_namespaceObject);
 ;// ./code/es-modules/Series/Sankey/SankeyPoint.js
 /* *
  *
@@ -344,13 +347,12 @@ var external_highcharts_src_js_default_Point_default = /*#__PURE__*/__webpack_re
 
 
 
-const { column: ColumnSeries } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
 /* *
  *
  *  Class
  *
  * */
-class SankeyPoint extends ColumnSeries.prototype.pointClass {
+class SankeyPoint extends (external_highcharts_src_js_default_Series_types_column_default()).prototype.pointClass {
     /* *
      *
      *  Functions
@@ -1034,6 +1036,12 @@ const SankeySeriesDefaults = {
  * */
 /* harmony default export */ const Sankey_SankeySeriesDefaults = (SankeySeriesDefaults);
 
+;// external ["../highcharts.src.js","default","Series","types","line"]
+const external_highcharts_src_js_default_Series_types_line_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].Series.types.line;
+var external_highcharts_src_js_default_Series_types_line_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_Series_types_line_namespaceObject);
+;// external ["../highcharts.src.js","default","SeriesRegistry"]
+const external_highcharts_src_js_default_SeriesRegistry_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].SeriesRegistry;
+var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_SeriesRegistry_namespaceObject);
 ;// ./code/es-modules/Series/Sankey/SankeyColumnComposition.js
 /* *
  *
@@ -1795,7 +1803,8 @@ function composeTextPath(SVGElementClass) {
 
 
 
-const { column: SankeySeries_ColumnSeries, line: LineSeries } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
+
+
 
 const { parse: color } = (external_highcharts_src_js_default_Color_default());
 
@@ -1816,7 +1825,7 @@ composeTextPath((external_highcharts_src_js_default_SVGElement_default()));
  *
  * @augments Highcharts.Series
  */
-class SankeySeries extends SankeySeries_ColumnSeries {
+class SankeySeries extends (external_highcharts_src_js_default_Series_types_column_default()) {
     constructor() {
         /* *
          *
@@ -2009,18 +2018,18 @@ class SankeySeries extends SankeySeries_ColumnSeries {
     }
     /** @internal */
     drawTracker() {
-        SankeySeries_ColumnSeries.prototype.drawTracker.call(this, this.points);
-        SankeySeries_ColumnSeries.prototype.drawTracker.call(this, this.nodes);
+        external_highcharts_src_js_default_Series_types_column_default().prototype.drawTracker.call(this, this.points);
+        external_highcharts_src_js_default_Series_types_column_default().prototype.drawTracker.call(this, this.nodes);
     }
     /** @internal */
     drawPoints() {
-        SankeySeries_ColumnSeries.prototype.drawPoints.call(this, this.points);
-        SankeySeries_ColumnSeries.prototype.drawPoints.call(this, this.nodes);
+        external_highcharts_src_js_default_Series_types_column_default().prototype.drawPoints.call(this, this.points);
+        external_highcharts_src_js_default_Series_types_column_default().prototype.drawPoints.call(this, this.nodes);
     }
     /** @internal */
     drawDataLabels() {
-        SankeySeries_ColumnSeries.prototype.drawDataLabels.call(this, this.points);
-        SankeySeries_ColumnSeries.prototype.drawDataLabels.call(this, this.nodes);
+        external_highcharts_src_js_default_Series_types_column_default().prototype.drawDataLabels.call(this, this.points);
+        external_highcharts_src_js_default_Series_types_column_default().prototype.drawDataLabels.call(this, this.nodes);
     }
     /**
      * Mark links that would close a directed cycle, which are then left out
@@ -2638,7 +2647,7 @@ class SankeySeries extends SankeySeries_ColumnSeries {
         }
     }
 }
-SankeySeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(SankeySeries_ColumnSeries.defaultOptions, Sankey_SankeySeriesDefaults);
+SankeySeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)((external_highcharts_src_js_default_Series_types_column_default()).defaultOptions, Sankey_SankeySeriesDefaults);
 /**
  * Largest fraction of either plot axis circular geometry may claim.
  * @internal
@@ -2646,7 +2655,7 @@ SankeySeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceObj
 SankeySeries.CIRCULAR_MAX_FACTOR = 0.6;
 Series_NodesComposition.compose(Sankey_SankeyPoint, SankeySeries);
 (0,external_highcharts_src_js_default_namespaceObject.extend)(SankeySeries.prototype, {
-    animate: LineSeries.prototype.animate,
+    animate: (external_highcharts_src_js_default_Series_types_line_default()).prototype.animate,
     // Create a single node that holds information on incoming and outgoing
     // links.
     createNode: Series_NodesComposition.createNode,

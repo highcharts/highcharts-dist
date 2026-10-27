@@ -11,11 +11,11 @@
  * */
 'use strict';
 import AreaRangePoint from './AreaRangePoint.js';
+import AreaSeries from '../Area/AreaSeries.js';
 import H from '../../Core/Globals.js';
 const { noop } = H;
 import RangeDataLabel from '../RangeDataLabel.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-const { area: AreaSeries, area: { prototype: areaProto } } = SeriesRegistry.seriesTypes;
 import { addEvent, defined, extend, isArray, isNumber, merge } from '../../Shared/Utilities.js';
 /* *
  *
@@ -251,7 +251,7 @@ class AreaRangeSeries extends AreaSeries {
      * @internal
      */
     getGraphPath(points) {
-        const highPoints = [], highAreaPoints = [], getGraphPath = areaProto.getGraphPath, options = this.options, polar = this.chart.polar, connectEnds = polar && options.connectEnds !== false, connectNulls = options.connectNulls;
+        const highPoints = [], highAreaPoints = [], getGraphPath = AreaSeries.prototype.getGraphPath, options = this.options, polar = this.chart.polar, connectEnds = polar && options.connectEnds !== false, connectNulls = options.connectNulls;
         let i, point, pointShim, step = options.step;
         points = points || this.points;
         // Create the top line and the top part of the area fill. The area fill
@@ -339,9 +339,9 @@ class AreaRangeSeries extends AreaSeries {
             // Resolve value references like `{y}` against the aligned key
             rangeOptions.forEach(RangeDataLabel.applyAlignToKeyValue);
             series.options.dataLabels = rangeOptions;
-            if (areaProto.drawDataLabels) {
+            if (AreaSeries.prototype.drawDataLabels) {
                 // #1209
-                areaProto.drawDataLabels.call(series);
+                AreaSeries.prototype.drawDataLabels.call(series);
             }
             series.options.dataLabels = dataLabelOptions;
             for (const point of series.points) {
@@ -380,7 +380,7 @@ class AreaRangeSeries extends AreaSeries {
         let i, point;
         const originalSettings = series.modifyMarkerSettings();
         // Draw bottom points
-        areaProto.drawPoints.apply(series, arguments);
+        AreaSeries.prototype.drawPoints.apply(series, arguments);
         // Restore previous state
         series.restoreMarkerSettings(originalSettings);
         // Prepare drawing top points
@@ -421,7 +421,7 @@ class AreaRangeSeries extends AreaSeries {
             i++;
         }
         // Draw top points
-        areaProto.drawPoints.apply(series, arguments);
+        AreaSeries.prototype.drawPoints.apply(series, arguments);
         // Reset top points preliminary modifications
         i = 0;
         while (i < pointLength) {

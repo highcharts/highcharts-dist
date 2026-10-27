@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-26)
+ * @license Highcharts JS v13.1.1-modified (2026-10-27)
  * @module highcharts/modules/funnel
  * @requires highcharts
  *
@@ -14,17 +14,38 @@
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
+		module.exports = factory(root["_Highcharts"]["Series"]["types"]["column"], root["_Highcharts"]["Series"]["types"]["pie"], root["_Highcharts"]["Series"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
 	else if(typeof define === 'function' && define.amd)
-		define("highcharts/modules/funnel", ["highcharts/highcharts"], function (amd1) {return factory(amd1["SeriesRegistry"],amd1);});
+		define("highcharts/modules/funnel", ["highcharts/highcharts"], function (amd1) {return factory(amd1["Series"]["types"]["column"],amd1["Series"]["types"]["pie"],amd1["Series"],amd1["SeriesRegistry"],amd1);});
 	else if(typeof exports === 'object')
-		exports["highcharts/modules/funnel"] = factory(root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
+		exports["highcharts/modules/funnel"] = factory(root["_Highcharts"]["Series"]["types"]["column"], root["_Highcharts"]["Series"]["types"]["pie"], root["_Highcharts"]["Series"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
 	else
-		root["Highcharts"] = factory(root["Highcharts"]["SeriesRegistry"], root["Highcharts"]);
-})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__944__) => {
+		root["Highcharts"] = factory(root["Highcharts"]["Series"]["types"]["column"], root["Highcharts"]["Series"]["types"]["pie"], root["Highcharts"]["Series"], root["Highcharts"]["SeriesRegistry"], root["Highcharts"]);
+})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__448__, __WEBPACK_EXTERNAL_MODULE__20__, __WEBPACK_EXTERNAL_MODULE__820__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__944__) => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
+
+/***/ 448
+(module) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__448__;
+
+/***/ },
+
+/***/ 20
+(module) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__20__;
+
+/***/ },
+
+/***/ 820
+(module) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__820__;
+
+/***/ },
 
 /***/ 512
 (module) {
@@ -713,6 +734,15 @@ function roundedRect(x, y, width, height, options = {}) {
 */
 (''); // Keeps doclets above in JS file
 
+// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Series","types","column"],"commonjs":["highcharts","Series","types","column"],"commonjs2":["highcharts","Series","types","column"],"root":["Highcharts","Series","types","column"]}
+var highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_ = __webpack_require__(448);
+var highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_default = /*#__PURE__*/__webpack_require__.n(highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_);
+// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Series","types","pie"],"commonjs":["highcharts","Series","types","pie"],"commonjs2":["highcharts","Series","types","pie"],"root":["Highcharts","Series","types","pie"]}
+var highcharts_Series_types_pie_commonjs_highcharts_Series_types_pie_commonjs2_highcharts_Series_types_pie_root_Highcharts_Series_types_pie_ = __webpack_require__(20);
+var highcharts_Series_types_pie_commonjs_highcharts_Series_types_pie_commonjs2_highcharts_Series_types_pie_root_Highcharts_Series_types_pie_default = /*#__PURE__*/__webpack_require__.n(highcharts_Series_types_pie_commonjs_highcharts_Series_types_pie_commonjs2_highcharts_Series_types_pie_root_Highcharts_Series_types_pie_);
+// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Series"],"commonjs":["highcharts","Series"],"commonjs2":["highcharts","Series"],"root":["Highcharts","Series"]}
+var highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_ = __webpack_require__(820);
+var highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_default = /*#__PURE__*/__webpack_require__.n(highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_);
 // EXTERNAL MODULE: external {"amd":["highcharts/highcharts","SeriesRegistry"],"commonjs":["highcharts","SeriesRegistry"],"commonjs2":["highcharts","SeriesRegistry"],"root":["Highcharts","SeriesRegistry"]}
 var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_ = __webpack_require__(512);
 var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_);
@@ -736,14 +766,16 @@ var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highc
 const { composed, noop: FunnelSeries_noop } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 
 
-const { column: ColumnSeries, pie: PieSeries } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
+
+
+
 
 /* *
  *
  *  Constants
  *
  * */
-const baseAlignDataLabel = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).series.prototype.alignDataLabel;
+const baseAlignDataLabel = (highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_default()).prototype.alignDataLabel;
 /* *
  *
  *  Functions
@@ -778,7 +810,7 @@ function getLength(length, relativeTo) {
  *
  * @augments Highcharts.Series
  */
-class FunnelSeries extends PieSeries {
+class FunnelSeries extends (highcharts_Series_types_pie_commonjs_highcharts_Series_types_pie_commonjs2_highcharts_Series_types_pie_root_Highcharts_Series_types_pie_default()) {
     /* *
      *
      *  Functions
@@ -848,8 +880,8 @@ class FunnelSeries extends PieSeries {
      */
     drawDataLabels() {
         ((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.splat)(this.options.dataLabels || {})[0].inside ?
-            ColumnSeries :
-            PieSeries).prototype.drawDataLabels.call(this);
+            (highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_default()) :
+            (highcharts_Series_types_pie_commonjs_highcharts_Series_types_pie_commonjs2_highcharts_Series_types_pie_root_Highcharts_Series_types_pie_default())).prototype.drawDataLabels.call(this);
     }
     /**
      * Override pie-specific functionality not supported in funnel.
@@ -1151,7 +1183,7 @@ class FunnelSeries extends PieSeries {
  *
  * */
 /** @internal */
-FunnelSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(PieSeries.defaultOptions, Funnel_FunnelSeriesDefaults);
+FunnelSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)((highcharts_Series_types_pie_commonjs_highcharts_Series_types_pie_commonjs2_highcharts_Series_types_pie_root_Highcharts_Series_types_pie_default()).defaultOptions, Funnel_FunnelSeriesDefaults);
 (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.extend)(FunnelSeries.prototype, {
     animate: FunnelSeries_noop
 });

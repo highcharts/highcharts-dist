@@ -10,12 +10,13 @@
  *
  * */
 'use strict';
+import ColumnSeries from '../Column/ColumnSeries.js';
 import GaugePoint from './GaugePoint.js';
 import GaugeSeriesDefaults from './GaugeSeriesDefaults.js';
 import H from '../../Core/Globals.js';
 const { noop } = H;
+import Series from '../../Core/Series/Series.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-const { series: Series, seriesTypes: { column: ColumnSeries } } = SeriesRegistry;
 import { clamp, defined, extend, isNumber, merge, relativeLength } from '../../Shared/Utilities.js';
 /* *
  *

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-26)
+ * @license Highcharts JS v13.1.1-modified (2026-10-27)
  * @module modules/arc-diagram
  * @requires highcharts/modules/sankey
  *
@@ -13,6 +13,8 @@
  * see www.highcharts.com/license
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
+import "./sankey.src.js";
+import * as __WEBPACK_EXTERNAL_MODULE__sankey_src_js_3bb2850a__ from "./sankey.src.js";
 /******/ // The require scope
 /******/ const __webpack_require__ = {};
 /******/ 
@@ -45,9 +47,14 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 ;// external ["../highcharts.src.js","default"]
 const external_highcharts_src_js_default_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"];
 var external_highcharts_src_js_default_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_namespaceObject);
-;// external ["../highcharts.src.js","default","SeriesRegistry"]
-const external_highcharts_src_js_default_SeriesRegistry_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].SeriesRegistry;
-var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_SeriesRegistry_namespaceObject);
+;// external "./sankey.src.js"
+
+;// external ["../highcharts.src.js","default","Point"]
+const external_highcharts_src_js_default_Point_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].Point;
+var external_highcharts_src_js_default_Point_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_Point_namespaceObject);
+;// external ["../highcharts.src.js","default","Series"]
+const external_highcharts_src_js_default_Series_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].Series;
+var external_highcharts_src_js_default_Series_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_Series_namespaceObject);
 ;// ./code/es-modules/Series/NodesComposition.js
 /* *
  *
@@ -55,7 +62,7 @@ var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__w
  * */
 
 
-const { series: { prototype: seriesProto, prototype: { pointClass: { prototype: pointProto } } } } = (external_highcharts_src_js_default_SeriesRegistry_default());
+
 
 /* *
  *
@@ -178,7 +185,7 @@ var NodesComposition;
         // Nodes must also be destroyed (#8682, #9300)
         this.data = []
             .concat(this.points || [], this.nodes);
-        return seriesProto.destroy.apply(this, arguments);
+        return external_highcharts_src_js_default_Series_default().prototype.destroy.apply(this, arguments);
     }
     NodesComposition.destroy = destroy;
     /**
@@ -188,7 +195,7 @@ var NodesComposition;
      */
     function generatePoints() {
         const chart = this.chart, nodeLookup = {};
-        seriesProto.generatePoints.call(this);
+        external_highcharts_src_js_default_Series_default().prototype.generatePoints.call(this);
         if (!this.nodes) {
             this.nodes = []; // List of Point-like node items
         }
@@ -242,7 +249,7 @@ var NodesComposition;
             });
             this.nodes.length = 0;
         }
-        seriesProto.setData.apply(this, arguments);
+        external_highcharts_src_js_default_Series_default().prototype.setData.apply(this, arguments);
     }
     /**
      * When hovering node, highlight all connected links. When hovering a link,
@@ -255,19 +262,19 @@ var NodesComposition;
         if (state !== 'select') {
             others.forEach((linkOrNode) => {
                 if (linkOrNode && linkOrNode.series) {
-                    pointProto.setState.apply(linkOrNode, args);
+                    external_highcharts_src_js_default_Point_default().prototype.setState.apply(linkOrNode, args);
                     if (!linkOrNode.isNode) {
                         if (linkOrNode.fromNode.graphic) {
-                            pointProto.setState.apply(linkOrNode.fromNode, args);
+                            external_highcharts_src_js_default_Point_default().prototype.setState.apply(linkOrNode.fromNode, args);
                         }
                         if (linkOrNode.toNode && linkOrNode.toNode.graphic) {
-                            pointProto.setState.apply(linkOrNode.toNode, args);
+                            external_highcharts_src_js_default_Point_default().prototype.setState.apply(linkOrNode.toNode, args);
                         }
                     }
                 }
             });
         }
-        pointProto.setState.apply(this, args);
+        external_highcharts_src_js_default_Point_default().prototype.setState.apply(this, args);
     }
     NodesComposition.setNodeState = setNodeState;
     /**
@@ -277,7 +284,7 @@ var NodesComposition;
      */
     function updateNode(options, redraw, animation, runEvent) {
         const nodes = this.series.options.nodes, data = this.series.options.data, dataLength = data?.length || 0, linkConfig = data?.[this.index];
-        pointProto.update.call(this, options, this.isNode ? false : redraw, // Hold the redraw for nodes
+        external_highcharts_src_js_default_Point_default().prototype.update.call(this, options, this.isNode ? false : redraw, // Hold the redraw for nodes
         animation, runEvent);
         if (this.isNode) {
             // `this.index` refers to `series.nodes`, not `options.nodes` array
@@ -323,6 +330,9 @@ var NodesComposition;
  * */
 /* harmony default export */ const Series_NodesComposition = (NodesComposition);
 
+;// external ["./sankey.src.js","default","Series","types","sankey"]
+const external_sankey_src_js_default_Series_types_sankey_namespaceObject = __WEBPACK_EXTERNAL_MODULE__sankey_src_js_3bb2850a__["default"].Series.types.sankey;
+var external_sankey_src_js_default_Series_types_sankey_default = /*#__PURE__*/__webpack_require__.n(external_sankey_src_js_default_Series_types_sankey_namespaceObject);
 ;// ./code/es-modules/Series/ArcDiagram/ArcDiagramPoint.js
 /* *
  *
@@ -341,7 +351,12 @@ var NodesComposition;
 
 
 
-const { seriesTypes: { sankey: { prototype: { pointClass: SankeyPoint } } } } = (external_highcharts_src_js_default_SeriesRegistry_default());
+/* *
+ *
+ *  Constants
+ *
+ * */
+const SankeyPoint = (external_sankey_src_js_default_Series_types_sankey_default()).prototype.pointClass;
 /* *
  *
  *  Class
@@ -878,9 +893,12 @@ var SankeyColumnComposition;
  * */
 /* harmony default export */ const Sankey_SankeyColumnComposition = (SankeyColumnComposition);
 
-;// external ["../highcharts.src.js","default","Series"]
-const external_highcharts_src_js_default_Series_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].Series;
-var external_highcharts_src_js_default_Series_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_Series_namespaceObject);
+;// external ["../highcharts.src.js","default","Series","types","column"]
+const external_highcharts_src_js_default_Series_types_column_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].Series.types.column;
+var external_highcharts_src_js_default_Series_types_column_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_Series_types_column_namespaceObject);
+;// external ["../highcharts.src.js","default","SeriesRegistry"]
+const external_highcharts_src_js_default_SeriesRegistry_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].SeriesRegistry;
+var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_SeriesRegistry_namespaceObject);
 ;// external ["../highcharts.src.js","default","SVGRenderer"]
 const external_highcharts_src_js_default_SVGRenderer_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].SVGRenderer;
 var external_highcharts_src_js_default_SVGRenderer_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_SVGRenderer_namespaceObject);
@@ -1184,9 +1202,10 @@ function composeTextPath(SVGElementClass) {
 
 
 
+
+
 composeTextPath((external_highcharts_src_js_default_SVGElement_default()));
 const { prototype: { symbols } } = (external_highcharts_src_js_default_SVGRenderer_default());
-const { seriesTypes: { column: ColumnSeries, sankey: SankeySeries } } = (external_highcharts_src_js_default_SeriesRegistry_default());
 /* *
  *
  *  Class
@@ -1198,7 +1217,7 @@ const { seriesTypes: { column: ColumnSeries, sankey: SankeySeries } } = (externa
  *
  * @augments Highcharts.seriesTypes.sankey
  */
-class ArcDiagramSeries extends SankeySeries {
+class ArcDiagramSeries extends (external_sankey_src_js_default_Series_types_sankey_default()) {
     /* *
      *
      *  Functions
@@ -1413,7 +1432,7 @@ class ArcDiagramSeries extends SankeySeries {
             if (this.mapOptionsToLevel) {
                 // Calculate data label options for the point
                 node.dlOptions = {
-                    ...SankeySeries.getDLOptions({
+                    ...external_sankey_src_js_default_Series_types_sankey_default().getDLOptions({
                         level: this.mapOptionsToLevel[node.level],
                         optionsPoint: node.options
                     }),
@@ -1459,11 +1478,11 @@ class ArcDiagramSeries extends SankeySeries {
         if (this.options.dataLabels) {
             const textPath = this.options.dataLabels.textPath;
             // Render node labels:
-            ColumnSeries.prototype.drawDataLabels.call(this, this.nodes);
+            external_highcharts_src_js_default_Series_types_column_default().prototype.drawDataLabels.call(this, this.nodes);
             // Render link labels:
             this.options.dataLabels.textPath =
                 this.options.dataLabels.linkTextPath;
-            ColumnSeries.prototype.drawDataLabels.call(this, this.data);
+            external_highcharts_src_js_default_Series_types_column_default().prototype.drawDataLabels.call(this, this.data);
             // Restore nodes
             this.options.dataLabels.textPath = textPath;
         }
@@ -1493,7 +1512,7 @@ class ArcDiagramSeries extends SankeySeries {
  *
  * */
 /** @internal */
-ArcDiagramSeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(SankeySeries.defaultOptions, ArcDiagram_ArcDiagramSeriesDefaults);
+ArcDiagramSeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)((external_sankey_src_js_default_Series_types_sankey_default()).defaultOptions, ArcDiagram_ArcDiagramSeriesDefaults);
 (0,external_highcharts_src_js_default_namespaceObject.extend)(ArcDiagramSeries.prototype, {
     orderNodes: false,
     useCircularLayout: false
@@ -1508,6 +1527,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
 /* harmony default export */ const ArcDiagram_ArcDiagramSeries = ((/* unused pure expression or super */ null && (ArcDiagramSeries)));
 
 ;// ./code/es-modules/masters/modules/arc-diagram.src.js
+
 
 
 

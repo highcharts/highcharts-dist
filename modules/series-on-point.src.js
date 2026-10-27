@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-26)
+ * @license Highcharts JS v13.1.1-modified (2026-10-27)
  * @module highcharts/modules/series-on-point
  * @requires highcharts
  *
@@ -14,14 +14,14 @@
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(root["_Highcharts"]["Point"], root["_Highcharts"]["SVGRenderer"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
+		module.exports = factory(root["_Highcharts"]["Point"], root["_Highcharts"]["SVGRenderer"], root["_Highcharts"]["Series"]["types"]["bubble"], root["_Highcharts"]);
 	else if(typeof define === 'function' && define.amd)
-		define("highcharts/modules/series-on-point", ["highcharts/highcharts"], function (amd1) {return factory(amd1["Point"],amd1["SVGRenderer"],amd1["SeriesRegistry"],amd1);});
+		define("highcharts/modules/series-on-point", ["highcharts/highcharts"], function (amd1) {return factory(amd1["Point"],amd1["SVGRenderer"],amd1["Series"]["types"]["bubble"],amd1);});
 	else if(typeof exports === 'object')
-		exports["highcharts/modules/series-on-point"] = factory(root["_Highcharts"]["Point"], root["_Highcharts"]["SVGRenderer"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
+		exports["highcharts/modules/series-on-point"] = factory(root["_Highcharts"]["Point"], root["_Highcharts"]["SVGRenderer"], root["_Highcharts"]["Series"]["types"]["bubble"], root["_Highcharts"]);
 	else
-		root["Highcharts"] = factory(root["Highcharts"]["Point"], root["Highcharts"]["SVGRenderer"], root["Highcharts"]["SeriesRegistry"], root["Highcharts"]);
-})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__260__, __WEBPACK_EXTERNAL_MODULE__540__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__944__) => {
+		root["Highcharts"] = factory(root["Highcharts"]["Point"], root["Highcharts"]["SVGRenderer"], root["Highcharts"]["Series"]["types"]["bubble"], root["Highcharts"]);
+})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__260__, __WEBPACK_EXTERNAL_MODULE__540__, __WEBPACK_EXTERNAL_MODULE__992__, __WEBPACK_EXTERNAL_MODULE__944__) => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
@@ -40,10 +40,10 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__540__;
 
 /***/ },
 
-/***/ 512
+/***/ 992
 (module) {
 
-module.exports = __WEBPACK_EXTERNAL_MODULE__512__;
+module.exports = __WEBPACK_EXTERNAL_MODULE__992__;
 
 /***/ },
 
@@ -115,6 +115,9 @@ __webpack_require__.d(__webpack_exports__, {
 // EXTERNAL MODULE: external {"amd":["highcharts/highcharts"],"commonjs":["highcharts"],"commonjs2":["highcharts"],"root":["Highcharts"]}
 var highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_ = __webpack_require__(944);
 var highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default = /*#__PURE__*/__webpack_require__.n(highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_);
+// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Series","types","bubble"],"commonjs":["highcharts","Series","types","bubble"],"commonjs2":["highcharts","Series","types","bubble"],"root":["Highcharts","Series","types","bubble"]}
+var highcharts_Series_types_bubble_commonjs_highcharts_Series_types_bubble_commonjs2_highcharts_Series_types_bubble_root_Highcharts_Series_types_bubble_ = __webpack_require__(992);
+var highcharts_Series_types_bubble_commonjs_highcharts_Series_types_bubble_commonjs2_highcharts_Series_types_bubble_root_Highcharts_Series_types_bubble_default = /*#__PURE__*/__webpack_require__.n(highcharts_Series_types_bubble_commonjs_highcharts_Series_types_bubble_commonjs2_highcharts_Series_types_bubble_root_Highcharts_Series_types_bubble_);
 ;// ./code/es-modules/Data/ColumnUtils.js
 /* *
  *
@@ -655,9 +658,6 @@ class DataTableCore {
 // EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Point"],"commonjs":["highcharts","Point"],"commonjs2":["highcharts","Point"],"root":["Highcharts","Point"]}
 var highcharts_Point_commonjs_highcharts_Point_commonjs2_highcharts_Point_root_Highcharts_Point_ = __webpack_require__(260);
 var highcharts_Point_commonjs_highcharts_Point_commonjs2_highcharts_Point_root_Highcharts_Point_default = /*#__PURE__*/__webpack_require__.n(highcharts_Point_commonjs_highcharts_Point_commonjs2_highcharts_Point_root_Highcharts_Point_);
-// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","SeriesRegistry"],"commonjs":["highcharts","SeriesRegistry"],"commonjs2":["highcharts","SeriesRegistry"],"root":["Highcharts","SeriesRegistry"]}
-var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_ = __webpack_require__(512);
-var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_);
 // EXTERNAL MODULE: external {"amd":["highcharts/highcharts","SVGRenderer"],"commonjs":["highcharts","SVGRenderer"],"commonjs2":["highcharts","SVGRenderer"],"root":["Highcharts","SVGRenderer"]}
 var highcharts_SVGRenderer_commonjs_highcharts_SVGRenderer_commonjs2_highcharts_SVGRenderer_root_Highcharts_SVGRenderer_ = __webpack_require__(540);
 var highcharts_SVGRenderer_commonjs_highcharts_SVGRenderer_commonjs2_highcharts_SVGRenderer_root_Highcharts_SVGRenderer_default = /*#__PURE__*/__webpack_require__.n(highcharts_SVGRenderer_commonjs_highcharts_SVGRenderer_commonjs2_highcharts_SVGRenderer_root_Highcharts_SVGRenderer_);
@@ -676,10 +676,9 @@ var highcharts_SVGRenderer_commonjs_highcharts_SVGRenderer_commonjs2_highcharts_
 
 
 
+
 const { composed } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 
-
-const { bubble } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
 
 
 /* *
@@ -748,23 +747,23 @@ var SeriesOnPointComposition;
             /**
              * @ignore
              */
-            this.getColumn = bubble.prototype.getColumn;
+            this.getColumn = (highcharts_Series_types_bubble_commonjs_highcharts_Series_types_bubble_commonjs2_highcharts_Series_types_bubble_root_Highcharts_Series_types_bubble_default()).prototype.getColumn;
             /**
              * @ignore
              */
-            this.getRadii = bubble.prototype.getRadii;
+            this.getRadii = (highcharts_Series_types_bubble_commonjs_highcharts_Series_types_bubble_commonjs2_highcharts_Series_types_bubble_root_Highcharts_Series_types_bubble_default()).prototype.getRadii;
             /**
              * @ignore
              */
-            this.getRadius = bubble.prototype.getRadius;
+            this.getRadius = (highcharts_Series_types_bubble_commonjs_highcharts_Series_types_bubble_commonjs2_highcharts_Series_types_bubble_root_Highcharts_Series_types_bubble_default()).prototype.getRadius;
             /**
              * @ignore
              */
-            this.getPxExtremes = bubble.prototype.getPxExtremes;
+            this.getPxExtremes = (highcharts_Series_types_bubble_commonjs_highcharts_Series_types_bubble_commonjs2_highcharts_Series_types_bubble_root_Highcharts_Series_types_bubble_default()).prototype.getPxExtremes;
             /**
              * @ignore
              */
-            this.getZExtremes = bubble.prototype.getZExtremes;
+            this.getZExtremes = (highcharts_Series_types_bubble_commonjs_highcharts_Series_types_bubble_commonjs2_highcharts_Series_types_bubble_root_Highcharts_Series_types_bubble_default()).prototype.getZExtremes;
             this.chart = series.chart;
             this.series = series;
             this.options = series.options.onPoint;

@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.1.1-modified (2026-10-26)
+ * @license Highstock JS v13.1.1-modified (2026-10-27)
  * @module highcharts/indicators/macd
  * @requires highcharts
  * @requires highcharts/modules/stock
+ * @requires highcharts/indicators/indicators
  *
  * Indicator series type for Highcharts Stock
  *
@@ -15,17 +16,31 @@
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
+		module.exports = factory(root["_Highcharts"]["Series"]["types"]["column"], root["_Highcharts"]["Series"]["types"]["sma"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
 	else if(typeof define === 'function' && define.amd)
-		define("highcharts/indicators/macd", ["highcharts/highcharts"], function (amd1) {return factory(amd1["SeriesRegistry"],amd1);});
+		define("highcharts/indicators/macd", ["highcharts/highcharts"], function (amd1) {return factory(amd1["Series"]["types"]["column"],amd1["Series"]["types"]["sma"],amd1["SeriesRegistry"],amd1);});
 	else if(typeof exports === 'object')
-		exports["highcharts/indicators/macd"] = factory(root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
+		exports["highcharts/indicators/macd"] = factory(root["_Highcharts"]["Series"]["types"]["column"], root["_Highcharts"]["Series"]["types"]["sma"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
 	else
-		root["Highcharts"] = factory(root["Highcharts"]["SeriesRegistry"], root["Highcharts"]);
-})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__944__) => {
+		root["Highcharts"] = factory(root["Highcharts"]["Series"]["types"]["column"], root["Highcharts"]["Series"]["types"]["sma"], root["Highcharts"]["SeriesRegistry"], root["Highcharts"]);
+})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__448__, __WEBPACK_EXTERNAL_MODULE__80__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__944__) => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
+
+/***/ 448
+(module) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__448__;
+
+/***/ },
+
+/***/ 80
+(module) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__80__;
+
+/***/ },
 
 /***/ 512
 (module) {
@@ -102,6 +117,12 @@ __webpack_require__.d(__webpack_exports__, {
 // EXTERNAL MODULE: external {"amd":["highcharts/highcharts"],"commonjs":["highcharts"],"commonjs2":["highcharts"],"root":["Highcharts"]}
 var highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_ = __webpack_require__(944);
 var highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default = /*#__PURE__*/__webpack_require__.n(highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_);
+// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Series","types","column"],"commonjs":["highcharts","Series","types","column"],"commonjs2":["highcharts","Series","types","column"],"root":["Highcharts","Series","types","column"]}
+var highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_ = __webpack_require__(448);
+var highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_default = /*#__PURE__*/__webpack_require__.n(highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_);
+// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Series","types","sma"],"commonjs":["highcharts","Series","types","sma"],"commonjs2":["highcharts","Series","types","sma"],"root":["Highcharts","Series","types","sma"]}
+var highcharts_Series_types_sma_commonjs_highcharts_Series_types_sma_commonjs2_highcharts_Series_types_sma_root_Highcharts_Series_types_sma_ = __webpack_require__(80);
+var highcharts_Series_types_sma_commonjs_highcharts_Series_types_sma_commonjs2_highcharts_Series_types_sma_root_Highcharts_Series_types_sma_default = /*#__PURE__*/__webpack_require__.n(highcharts_Series_types_sma_commonjs_highcharts_Series_types_sma_commonjs2_highcharts_Series_types_sma_root_Highcharts_Series_types_sma_);
 // EXTERNAL MODULE: external {"amd":["highcharts/highcharts","SeriesRegistry"],"commonjs":["highcharts","SeriesRegistry"],"commonjs2":["highcharts","SeriesRegistry"],"root":["Highcharts","SeriesRegistry"]}
 var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_ = __webpack_require__(512);
 var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_);
@@ -116,9 +137,10 @@ var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highc
  * */
 
 
+
 const { noop } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 
-const { sma: SMAIndicator } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
+
 
 /* *
  *
@@ -133,7 +155,7 @@ const { sma: SMAIndicator } = (highcharts_SeriesRegistry_commonjs_highcharts_Ser
  *
  * @augments Highcharts.Series
  */
-class MACDIndicator extends SMAIndicator {
+class MACDIndicator extends (highcharts_Series_types_sma_commonjs_highcharts_Series_types_sma_commonjs2_highcharts_Series_types_sma_root_Highcharts_Series_types_sma_default()) {
     /* *
      *
      *  Functions
@@ -358,7 +380,7 @@ class MACDIndicator extends SMAIndicator {
  * @optionparent plotOptions.macd
  * @internal
  */
-MACDIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(SMAIndicator.defaultOptions, {
+MACDIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)((highcharts_Series_types_sma_commonjs_highcharts_Series_types_sma_commonjs2_highcharts_Series_types_sma_root_Highcharts_Series_types_sma_default()).defaultOptions, {
     params: {
         /**
          * The short period for indicator calculations.
@@ -455,9 +477,9 @@ MACDIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highc
     pointValKey: 'y',
     // Columns support:
     markerAttribs: noop,
-    getColumnMetrics: (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default()).seriesTypes.column.prototype.getColumnMetrics,
-    crispCol: (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default()).seriesTypes.column.prototype.crispCol,
-    drawPoints: (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default()).seriesTypes.column.prototype.drawPoints
+    getColumnMetrics: (highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_default()).prototype.getColumnMetrics,
+    crispCol: (highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_default()).prototype.crispCol,
+    drawPoints: (highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_default()).prototype.drawPoints
 });
 highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default().registerSeriesType('macd', MACDIndicator);
 /* *

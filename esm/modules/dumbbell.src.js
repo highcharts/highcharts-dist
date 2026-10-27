@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-26)
+ * @license Highcharts JS v13.1.1-modified (2026-10-27)
  * @module highcharts/modules/dumbbell
  * @requires highcharts
+ * @requires highcharts/highcharts-more
  *
  * (c) 2009-2026 Highsoft AS
  * Author: Sebastian Bochan, Rafał Sebestjański
@@ -11,6 +12,8 @@
  * see www.highcharts.com/license
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
+import "../highcharts-more.src.js";
+import * as __WEBPACK_EXTERNAL_MODULE__highcharts_more_src_js_48e0d456__ from "../highcharts-more.src.js";
 /******/ // The require scope
 /******/ const __webpack_require__ = {};
 /******/ 
@@ -43,129 +46,20 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 ;// external ["../highcharts.src.js","default"]
 const external_highcharts_src_js_default_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"];
 var external_highcharts_src_js_default_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_namespaceObject);
-;// external ["../highcharts.src.js","default","SeriesRegistry"]
-const external_highcharts_src_js_default_SeriesRegistry_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].SeriesRegistry;
-var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_SeriesRegistry_namespaceObject);
-;// ./code/es-modules/Series/AreaRange/AreaRangePoint.js
-/* *
- *
- *  (c) 2010-2026 Highsoft AS
- *  Author: Torstein Hønsi
- *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
- *
- *
- * */
+;// external "../highcharts-more.src.js"
 
-
-const { area: { prototype: { pointClass: AreaPoint, pointClass: { prototype: areaProto } } } } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
-
-/* *
- *
- *  Class
- *
- * */
-class AreaRangePoint extends AreaPoint {
-    /* *
-     *
-     *  Functions
-     *
-     * */
-    /**
-     * @internal
-     */
-    setState() {
-        const prevState = this.state, series = this.series, isPolar = series.chart.polar;
-        if (!(0,external_highcharts_src_js_default_namespaceObject.defined)(this.plotHigh)) {
-            // Boost doesn't calculate plotHigh
-            this.plotHigh = series.yAxis.toPixels(this.high, true);
-        }
-        if (!(0,external_highcharts_src_js_default_namespaceObject.defined)(this.plotLow)) {
-            // Boost doesn't calculate plotLow
-            this.plotLow = this.plotY = series.yAxis.toPixels(this.low, true);
-        }
-        series.lowerStateMarkerGraphic = series.stateMarkerGraphic;
-        series.stateMarkerGraphic = series.upperStateMarkerGraphic;
-        // Change state also for the top marker
-        this.graphic = this.graphics && this.graphics[1];
-        this.plotY = this.plotHigh;
-        if (isPolar && (0,external_highcharts_src_js_default_namespaceObject.isNumber)(this.plotHighX)) {
-            this.plotX = this.plotHighX;
-        }
-        // Top state:
-        areaProto.setState.apply(this, arguments);
-        this.state = prevState;
-        // Now restore defaults
-        this.plotY = this.plotLow;
-        this.graphic = this.graphics && this.graphics[0];
-        if (isPolar && (0,external_highcharts_src_js_default_namespaceObject.isNumber)(this.plotLowX)) {
-            this.plotX = this.plotLowX;
-        }
-        series.upperStateMarkerGraphic = series.stateMarkerGraphic;
-        series.stateMarkerGraphic = series.lowerStateMarkerGraphic;
-        // Lower marker is stored at stateMarkerGraphic
-        // to avoid reference duplication (#7021)
-        series.lowerStateMarkerGraphic = void 0;
-        const originalSettings = series.modifyMarkerSettings();
-        // Bottom state
-        areaProto.setState.apply(this, arguments);
-        // Restore previous state
-        series.restoreMarkerSettings(originalSettings);
-    }
-    /** @internal */
-    haloPath() {
-        const isPolar = this.series.chart.polar;
-        let path = [];
-        // Bottom halo
-        this.plotY = this.plotLow;
-        if (isPolar && (0,external_highcharts_src_js_default_namespaceObject.isNumber)(this.plotLowX)) {
-            this.plotX = this.plotLowX;
-        }
-        if (this.isInside) {
-            path = areaProto.haloPath.apply(this, arguments);
-        }
-        // Top halo
-        this.plotY = this.plotHigh;
-        if (isPolar && (0,external_highcharts_src_js_default_namespaceObject.isNumber)(this.plotHighX)) {
-            this.plotX = this.plotHighX;
-        }
-        if (this.isTopInside) {
-            path = path.concat(areaProto.haloPath.apply(this, arguments));
-        }
-        return path;
-    }
-    /** @internal */
-    isValid() {
-        return (0,external_highcharts_src_js_default_namespaceObject.isNumber)(this.low) && (0,external_highcharts_src_js_default_namespaceObject.isNumber)(this.high);
-    }
-}
-/* *
- *
- *  Default Export
- *
- * */
-/* harmony default export */ const AreaRange_AreaRangePoint = (AreaRangePoint);
-/* *
- *
- *  API Options
- *
- * */
-/**
- * Range series only. The high or maximum value for each data point.
- *
- * @name Highcharts.Point#high
- * @type {number|undefined}
- */
-/**
- * Range series only. The low or minimum value for each data point.
- *
- * @name Highcharts.Point#low
- * @type {number|undefined}
- */
-''; // Keeps doclets above in JS file.
-
+;// external ["../highcharts-more.src.js","default","Series","types","arearange"]
+const external_highcharts_more_src_js_default_Series_types_arearange_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_more_src_js_48e0d456__["default"].Series.types.arearange;
+var external_highcharts_more_src_js_default_Series_types_arearange_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_more_src_js_default_Series_types_arearange_namespaceObject);
+;// external ["../highcharts-more.src.js","default","Series","types","columnrange"]
+const external_highcharts_more_src_js_default_Series_types_columnrange_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_more_src_js_48e0d456__["default"].Series.types.columnrange;
+var external_highcharts_more_src_js_default_Series_types_columnrange_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_more_src_js_default_Series_types_columnrange_namespaceObject);
+;// external ["../highcharts.src.js","default","Series","types","column"]
+const external_highcharts_src_js_default_Series_types_column_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].Series.types.column;
+var external_highcharts_src_js_default_Series_types_column_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_Series_types_column_namespaceObject);
+;// external ["../highcharts-more.src.js","default","Series","types","arearange","prototype","pointClass"]
+const external_highcharts_more_src_js_default_Series_types_arearange_prototype_pointClass_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_more_src_js_48e0d456__["default"].Series.types.arearange.prototype.pointClass;
+var external_highcharts_more_src_js_default_Series_types_arearange_prototype_pointClass_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_more_src_js_default_Series_types_arearange_prototype_pointClass_namespaceObject);
 ;// ./code/es-modules/Series/Dumbbell/DumbbellPoint.js
 /* *
  *
@@ -186,7 +80,7 @@ class AreaRangePoint extends AreaPoint {
  *  Class
  *
  * */
-class DumbbellPoint extends AreaRange_AreaRangePoint {
+class DumbbellPoint extends (external_highcharts_more_src_js_default_Series_types_arearange_prototype_pointClass_default()) {
     /* *
      *
      *  Functions
@@ -249,7 +143,7 @@ class DumbbellPoint extends AreaRange_AreaRangePoint {
     }
 }
 ;(0,external_highcharts_src_js_default_namespaceObject.extend)(DumbbellPoint.prototype, {
-    pointSetState: AreaRange_AreaRangePoint.prototype.setState
+    pointSetState: (external_highcharts_more_src_js_default_Series_types_arearange_prototype_pointClass_default()).prototype.setState
 });
 /* *
  *
@@ -494,6 +388,9 @@ const DumbbellSeriesDefaults = {
  * */
 /* harmony default export */ const Dumbbell_DumbbellSeriesDefaults = (DumbbellSeriesDefaults);
 
+;// external ["../highcharts.src.js","default","SeriesRegistry"]
+const external_highcharts_src_js_default_SeriesRegistry_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].SeriesRegistry;
+var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_SeriesRegistry_namespaceObject);
 ;// external ["../highcharts.src.js","default","SVGRenderer"]
 const external_highcharts_src_js_default_SVGRenderer_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].SVGRenderer;
 var external_highcharts_src_js_default_SVGRenderer_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_SVGRenderer_namespaceObject);
@@ -513,9 +410,11 @@ var external_highcharts_src_js_default_SVGRenderer_default = /*#__PURE__*/__webp
 
 
 
+
+
+
 const { noop } = (external_highcharts_src_js_default_default());
 
-const { arearange: AreaRangeSeries, column: ColumnSeries, columnrange: ColumnRangeSeries } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
 
 
 /* *
@@ -531,7 +430,7 @@ const { arearange: AreaRangeSeries, column: ColumnSeries, columnrange: ColumnRan
  *
  * @augments Highcharts.Series
  */
-class DumbbellSeries extends AreaRangeSeries {
+class DumbbellSeries extends (external_highcharts_more_src_js_default_Series_types_arearange_default()) {
     /* *
      *
      *  Functions
@@ -639,7 +538,7 @@ class DumbbellSeries extends AreaRangeSeries {
      * @internal
      */
     getColumnMetrics() {
-        const metrics = ColumnSeries.prototype
+        const metrics = external_highcharts_src_js_default_Series_types_column_default().prototype
             .getColumnMetrics.apply(this, arguments);
         metrics.offset += metrics.width / 2;
         return metrics;
@@ -739,8 +638,8 @@ class DumbbellSeries extends AreaRangeSeries {
      * @internal
      */
     setShapeArgs() {
-        ColumnSeries.prototype.translate.apply(this);
-        ColumnRangeSeries.prototype.afterColumnTranslate.apply(this);
+        external_highcharts_src_js_default_Series_types_column_default().prototype.translate.apply(this);
+        external_highcharts_more_src_js_default_Series_types_columnrange_default().prototype.afterColumnTranslate.apply(this);
     }
 }
 /* *
@@ -749,15 +648,15 @@ class DumbbellSeries extends AreaRangeSeries {
  *
  * */
 /** @internal */
-DumbbellSeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(AreaRangeSeries.defaultOptions, Dumbbell_DumbbellSeriesDefaults);
+DumbbellSeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)((external_highcharts_more_src_js_default_Series_types_arearange_default()).defaultOptions, Dumbbell_DumbbellSeriesDefaults);
 (0,external_highcharts_src_js_default_namespaceObject.extend)(DumbbellSeries.prototype, {
-    crispCol: ColumnSeries.prototype.crispCol,
+    crispCol: (external_highcharts_src_js_default_Series_types_column_default()).prototype.crispCol,
     drawGraph: noop,
-    drawTracker: ColumnSeries.prototype.drawTracker,
+    drawTracker: (external_highcharts_src_js_default_Series_types_column_default()).prototype.drawTracker,
     pointClass: Dumbbell_DumbbellPoint,
-    seriesDrawPoints: AreaRangeSeries.prototype.drawPoints,
+    seriesDrawPoints: (external_highcharts_more_src_js_default_Series_types_arearange_default()).prototype.drawPoints,
     trackerGroups: ['group', 'markerGroup', 'dataLabelsGroup'],
-    translatePoint: AreaRangeSeries.prototype.translate
+    translatePoint: (external_highcharts_more_src_js_default_Series_types_arearange_default()).prototype.translate
 });
 external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('dumbbell', DumbbellSeries);
 /* *
@@ -768,6 +667,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
 /* harmony default export */ const Dumbbell_DumbbellSeries = ((/* unused pure expression or super */ null && (DumbbellSeries)));
 
 ;// ./code/es-modules/masters/modules/dumbbell.src.js
+
 
 
 

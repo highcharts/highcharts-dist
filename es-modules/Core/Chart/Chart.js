@@ -1869,7 +1869,7 @@ class Chart {
      * A configuration object for the new credits.
      */
     addCredits(credits) {
-        const chart = this, creds = merge(true, this.options.credits, credits);
+        const chart = this, creds = merge(true, this.options.credits, credits), position = creds.position || {};
         if (creds.enabled && !this.credits) {
             // Run the user-supplied URL through the allow list, so that
             // references like `javascript:` can't be executed from the
@@ -1896,7 +1896,7 @@ class Chart {
                 });
             })
                 .attr({
-                align: creds.position.align,
+                align: position.align,
                 zIndex: 8
             });
             // If creds.events?.click exists, add it as an event listener
@@ -1908,10 +1908,10 @@ class Chart {
             }
             this.credits
                 .add()
-                .align(creds.position);
+                .align(position, false, position.relativeTo);
             // Dynamically update
             this.credits.update = function (options) {
-                chart.credits = chart.credits.destroy();
+                chart.credits = chart.credits?.destroy();
                 chart.addCredits(options);
             };
         }
@@ -2445,6 +2445,7 @@ class Chart {
                 chart.renderer.setStyle(chart.options.chart.style || {});
             }
         }
+        setAnimation(animation, chart);
         // Moved up, because tooltip needs updated plotOptions (#6218)
         if (!chart.styledMode && options.colors) {
             this.options.colors = options.colors;

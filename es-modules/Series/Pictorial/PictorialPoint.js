@@ -9,9 +9,9 @@
  *
  *
  * */
-import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
+import ColumnSeries from '../Column/ColumnSeries.js';
 import PictorialUtilities from './PictorialUtilities.js';
-const ColumnPoint = SeriesRegistry.seriesTypes.column.prototype.pointClass;
+const ColumnPoint = ColumnSeries.prototype.pointClass;
 const { rescalePatternFill, getStackMetrics } = PictorialUtilities;
 /* *
  *

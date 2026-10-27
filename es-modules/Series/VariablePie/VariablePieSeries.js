@@ -12,8 +12,8 @@
  *
  * */
 'use strict';
+import PieSeries from '../Pie/PieSeries.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-const { pie: PieSeries } = SeriesRegistry.seriesTypes;
 import VariablePieSeriesDefaults from './VariablePieSeriesDefaults.js';
 import { arrayMax, arrayMin, clamp, extend, fireEvent, merge } from '../../Shared/Utilities.js';
 /* *

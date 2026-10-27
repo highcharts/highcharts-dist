@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highmaps JS v13.1.1-modified (2026-10-26)
+ * @license Highmaps JS v13.1.1-modified (2026-10-27)
  * @module highcharts/modules/heatmap
  * @requires highcharts
  *
@@ -49,9 +49,9 @@ var external_highcharts_src_js_default_default = /*#__PURE__*/__webpack_require_
 ;// external ["../highcharts.src.js","default","Color"]
 const external_highcharts_src_js_default_Color_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].Color;
 var external_highcharts_src_js_default_Color_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_Color_namespaceObject);
-;// external ["../highcharts.src.js","default","SeriesRegistry"]
-const external_highcharts_src_js_default_SeriesRegistry_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].SeriesRegistry;
-var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_SeriesRegistry_namespaceObject);
+;// external ["../highcharts.src.js","default","Series","types","column"]
+const external_highcharts_src_js_default_Series_types_column_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].Series.types.column;
+var external_highcharts_src_js_default_Series_types_column_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_Series_types_column_namespaceObject);
 ;// external ["../highcharts.src.js","default","SVGElement"]
 const external_highcharts_src_js_default_SVGElement_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].SVGElement;
 var external_highcharts_src_js_default_SVGElement_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_SVGElement_namespaceObject);
@@ -69,7 +69,6 @@ var external_highcharts_src_js_default_SVGElement_default = /*#__PURE__*/__webpa
  * */
 
 
-const { column: { prototype: columnProto } } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
 
 
 /* *
@@ -98,7 +97,7 @@ var ColorMapComposition;
         pointArrayMap: ['value'],
         trackerGroups: ['group', 'markerGroup', 'dataLabelsGroup'],
         colorAttribs: seriesColorAttribs,
-        pointAttribs: columnProto.pointAttribs
+        pointAttribs: (external_highcharts_src_js_default_Series_types_column_default()).prototype.pointAttribs
     };
     /* *
      *
@@ -187,6 +186,9 @@ var ColorMapComposition;
 /** @internal */
 /* harmony default export */ const Series_ColorMapComposition = (ColorMapComposition);
 
+;// external ["../highcharts.src.js","default","Series","types","scatter"]
+const external_highcharts_src_js_default_Series_types_scatter_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].Series.types.scatter;
+var external_highcharts_src_js_default_Series_types_scatter_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_Series_types_scatter_namespaceObject);
 ;// ./code/es-modules/Series/Heatmap/HeatmapPoint.js
 /* *
  *
@@ -201,8 +203,13 @@ var ColorMapComposition;
  * */
 
 
-const { scatter: { prototype: { pointClass: ScatterPoint } } } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
 
+/* *
+ *
+ *  Constants
+ *
+ * */
+const ScatterPoint = (external_highcharts_src_js_default_Series_types_scatter_default()).prototype.pointClass;
 /* *
  *
  *  Class
@@ -944,6 +951,12 @@ const HeatmapSeriesDefaults = {
  * */
 /* harmony default export */ const Heatmap_HeatmapSeriesDefaults = (HeatmapSeriesDefaults);
 
+;// external ["../highcharts.src.js","default","Series"]
+const external_highcharts_src_js_default_Series_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].Series;
+var external_highcharts_src_js_default_Series_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_Series_namespaceObject);
+;// external ["../highcharts.src.js","default","SeriesRegistry"]
+const external_highcharts_src_js_default_SeriesRegistry_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].SeriesRegistry;
+var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_SeriesRegistry_namespaceObject);
 ;// external ["../highcharts.src.js","default","SVGRenderer"]
 const external_highcharts_src_js_default_SVGRenderer_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].SVGRenderer;
 var external_highcharts_src_js_default_SVGRenderer_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_SVGRenderer_namespaceObject);
@@ -1041,7 +1054,9 @@ const InterpolationUtilities = {
 
 
 
-const { series: Series, seriesTypes: { column: ColumnSeries, scatter: ScatterSeries } } = (external_highcharts_src_js_default_SeriesRegistry_default());
+
+
+
 
 const { prototype: { symbols } } = (external_highcharts_src_js_default_SVGRenderer_default());
 
@@ -1058,7 +1073,7 @@ const { colorFromPoint: HeatmapSeries_colorFromPoint, getContext: HeatmapSeries_
  *
  * @augments Highcharts.Series
  */
-class HeatmapSeries extends ScatterSeries {
+class HeatmapSeries extends (external_highcharts_src_js_default_Series_types_scatter_default()) {
     constructor() {
         /* *
          *
@@ -1122,7 +1137,7 @@ class HeatmapSeries extends ScatterSeries {
             }
         }
         else if (seriesMarkerOptions.enabled || series._hasPointMarkers) {
-            Series.prototype.drawPoints.call(series);
+            external_highcharts_src_js_default_Series_default().prototype.drawPoints.call(series);
             series.points.forEach((point) => {
                 if (point.graphic) {
                     // In styled mode, use CSS, otherwise the fill used in
@@ -1148,7 +1163,7 @@ class HeatmapSeries extends ScatterSeries {
      */
     getExtremes() {
         // Get the extremes from the value data
-        const { dataMin, dataMax } = Series.prototype.getExtremes
+        const { dataMin, dataMax } = external_highcharts_src_js_default_Series_default().prototype.getExtremes
             .call(this, this.getColumn('value'));
         if ((0,external_highcharts_src_js_default_namespaceObject.isNumber)(dataMin)) {
             this.valueMin = dataMin;
@@ -1157,7 +1172,7 @@ class HeatmapSeries extends ScatterSeries {
             this.valueMax = dataMax;
         }
         // Get the extremes from the y data
-        return Series.prototype.getExtremes.call(this);
+        return external_highcharts_src_js_default_Series_default().prototype.getExtremes.call(this);
     }
     /**
      * Override to also allow null points, used when building the k-d-tree for
@@ -1165,7 +1180,7 @@ class HeatmapSeries extends ScatterSeries {
      * @internal
      */
     getValidPoints(points, insideOnly) {
-        return Series.prototype.getValidPoints.call(this, points, insideOnly, true);
+        return external_highcharts_src_js_default_Series_default().prototype.getValidPoints.call(this, points, insideOnly, true);
     }
     /**
      * Define hasData function for non-cartesian series. Returns true if the
@@ -1243,7 +1258,7 @@ class HeatmapSeries extends ScatterSeries {
      * @internal
      */
     pointAttribs(point, state) {
-        const series = this, attr = Series.prototype.pointAttribs.call(series, point, state), seriesOptions = series.options || {}, plotOptions = series.chart.options.plotOptions || {}, seriesPlotOptions = plotOptions.series || {}, heatmapPlotOptions = plotOptions.heatmap || {}, 
+        const series = this, attr = external_highcharts_src_js_default_Series_default().prototype.pointAttribs.call(series, point, state), seriesOptions = series.options || {}, plotOptions = series.chart.options.plotOptions || {}, seriesPlotOptions = plotOptions.series || {}, heatmapPlotOptions = plotOptions.heatmap || {}, 
         // Get old properties in order to keep backward compatibility
         borderColor = point?.options.borderColor ||
             seriesOptions.borderColor ||
@@ -1303,7 +1318,7 @@ class HeatmapSeries extends ScatterSeries {
     }
 }
 /** @internal */
-HeatmapSeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(ScatterSeries.defaultOptions, Heatmap_HeatmapSeriesDefaults);
+HeatmapSeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)((external_highcharts_src_js_default_Series_types_scatter_default()).defaultOptions, Heatmap_HeatmapSeriesDefaults);
 (0,external_highcharts_src_js_default_namespaceObject.addEvent)(HeatmapSeries, 'afterDataClassLegendClick', function () {
     this.isDirtyCanvas = true;
     this.drawPoints();
@@ -1325,7 +1340,7 @@ HeatmapSeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceOb
     /**
      * @internal
      */
-    alignDataLabel: ColumnSeries.prototype.alignDataLabel,
+    alignDataLabel: (external_highcharts_src_js_default_Series_types_column_default()).prototype.alignDataLabel,
     colorAttribs: Series_ColorMapComposition.seriesMembers.colorAttribs
 });
 Series_ColorMapComposition.compose(HeatmapSeries);

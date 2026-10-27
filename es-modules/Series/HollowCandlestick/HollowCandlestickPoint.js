@@ -15,8 +15,7 @@
  *  Imports
  *
  * */
-import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-const { seriesTypes: { candlestick: CandlestickSeries } } = SeriesRegistry;
+import CandlestickSeries from '../Candlestick/CandlestickSeries.js';
 /* *
  *
  *  Class

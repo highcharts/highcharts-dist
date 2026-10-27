@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-26)
+ * @license Highcharts JS v13.1.1-modified (2026-10-27)
  * @module highcharts/modules/windbarb
  * @requires highcharts
+ * @requires highcharts/modules/datagrouping
  *
  * Wind barb series module
  *
@@ -16,7 +17,7 @@
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory(root["_Highcharts"]["Series"]["types"]["column"], root["_Highcharts"]["Series"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]["dataGrouping"]["approximations"], root["_Highcharts"]);
 	else if(typeof define === 'function' && define.amd)
-		define("highcharts/modules/windbarb", ["highcharts/highcharts"], function (amd1) {return factory(amd1["Series"],["types"],["column"],amd1["Series"],amd1["SeriesRegistry"],amd1["dataGrouping"],["approximations"],amd1);});
+		define("highcharts/modules/windbarb", ["highcharts/highcharts"], function (amd1) {return factory(amd1["Series"]["types"]["column"],amd1["Series"],amd1["SeriesRegistry"],amd1["dataGrouping"]["approximations"],amd1);});
 	else if(typeof exports === 'object')
 		exports["highcharts/modules/windbarb"] = factory(root["_Highcharts"]["Series"]["types"]["column"], root["_Highcharts"]["Series"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]["dataGrouping"]["approximations"], root["_Highcharts"]);
 	else
@@ -422,6 +423,7 @@ class WindbarbPoint extends (highcharts_Series_types_column_commonjs_highcharts_
  *               linecap, shadow, stacking, step, boostBlending
  * @since        6.0.0
  * @product      highcharts highstock
+ * @requires     modules/datagrouping
  * @requires     modules/windbarb
  * @optionparent plotOptions.windbarb
  */
@@ -521,6 +523,7 @@ const WindbarbSeriesDefaults = {
  * @extends   series,plotOptions.windbarb
  * @excluding boostThreshold, boostBlending
  * @product   highcharts highstock
+ * @requires  modules/datagrouping
  * @requires  modules/windbarb
  * @apioption series.windbarb
  */
@@ -615,7 +618,7 @@ const WindbarbSeriesDefaults = {
 
 
 
-const { column: ColumnSeries } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
+
 
 
 
@@ -660,7 +663,7 @@ function registerApproximation() {
  *
  * @augments Highcharts.Series
  */
-class WindbarbSeries extends ColumnSeries {
+class WindbarbSeries extends (highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_default()) {
     /* *
      *
      *  Functions
@@ -816,7 +819,7 @@ class WindbarbSeries extends ColumnSeries {
  *
  * */
 /** @internal */
-WindbarbSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(ColumnSeries.defaultOptions, Windbarb_WindbarbSeriesDefaults);
+WindbarbSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)((highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_default()).defaultOptions, Windbarb_WindbarbSeriesDefaults);
 Series_OnSeriesComposition.compose(WindbarbSeries);
 (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.extend)(WindbarbSeries.prototype, {
     beaufortFloor: [

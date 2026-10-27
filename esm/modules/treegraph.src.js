@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-26)
+ * @license Highcharts JS v13.1.1-modified (2026-10-27)
  * Treegraph chart series type
  * @module highcharts/modules/treegraph
  * @requires highcharts
@@ -13,6 +13,8 @@
  * see www.highcharts.com/license
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
+import "./treemap.src.js";
+import * as __WEBPACK_EXTERNAL_MODULE__treemap_src_js_d9a26ac3__ from "./treemap.src.js";
 /******/ // The require scope
 /******/ const __webpack_require__ = {};
 /******/ 
@@ -45,6 +47,8 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 ;// external ["../highcharts.src.js","default"]
 const external_highcharts_src_js_default_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"];
 var external_highcharts_src_js_default_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_namespaceObject);
+;// external "./treemap.src.js"
+
 ;// ./code/es-modules/Series/PathUtilities.js
 /* *
  *
@@ -190,6 +194,15 @@ const PathUtilities = {
 /** @internal */
 /* harmony default export */ const Series_PathUtilities = (PathUtilities);
 
+;// external ["../highcharts.src.js","default","Series","types","column"]
+const external_highcharts_src_js_default_Series_types_column_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].Series.types.column;
+var external_highcharts_src_js_default_Series_types_column_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_Series_types_column_namespaceObject);
+;// external ["../highcharts.src.js","default","Series"]
+const external_highcharts_src_js_default_Series_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].Series;
+var external_highcharts_src_js_default_Series_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_Series_namespaceObject);
+;// external ["./treemap.src.js","default","Series","types","treemap"]
+const external_treemap_src_js_default_Series_types_treemap_namespaceObject = __WEBPACK_EXTERNAL_MODULE__treemap_src_js_d9a26ac3__["default"].Series.types.treemap;
+var external_treemap_src_js_default_Series_types_treemap_default = /*#__PURE__*/__webpack_require__.n(external_treemap_src_js_default_Series_types_treemap_namespaceObject);
 ;// external ["../highcharts.src.js","default","SeriesRegistry"]
 const external_highcharts_src_js_default_SeriesRegistry_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].SeriesRegistry;
 var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_SeriesRegistry_namespaceObject);
@@ -210,7 +223,12 @@ var external_highcharts_src_js_default_SVGRenderer_default = /*#__PURE__*/__webp
  * */
 
 
-const { seriesTypes: { treemap: { prototype: { NodeClass: TreemapNode } } } } = (external_highcharts_src_js_default_SeriesRegistry_default());
+/* *
+ *
+ *  Constants
+ *
+ * */
+const TreemapNode = (external_treemap_src_js_default_Series_types_treemap_default()).prototype.NodeClass;
 /* *
  *
  *  Class
@@ -405,8 +423,13 @@ var external_highcharts_src_js_default_Point_default = /*#__PURE__*/__webpack_re
 
 
 
-const { seriesTypes: { treemap: { prototype: { pointClass: TreemapPoint } } } } = (external_highcharts_src_js_default_SeriesRegistry_default());
 
+/* *
+ *
+ *  Constants
+ *
+ * */
+const TreemapPoint = (external_treemap_src_js_default_Series_types_treemap_default()).prototype.pointClass;
 /* *
  *
  *  Class
@@ -813,7 +836,12 @@ const TreeUtilities = {
 
 
 
-const { seriesTypes: { column: { prototype: { pointClass: ColumnPoint } } } } = (external_highcharts_src_js_default_SeriesRegistry_default());
+/* *
+ *
+ *  Constants
+ *
+ * */
+const ColumnPoint = (external_highcharts_src_js_default_Series_types_column_default()).prototype.pointClass;
 /* *
  *
  *  Class
@@ -1832,7 +1860,9 @@ function composeTextPath(SVGElementClass) {
 
 const { getLinkPath: TreegraphSeries_getLinkPath } = Series_PathUtilities;
 
-const { series: { prototype: seriesProto }, seriesTypes: { treemap: TreemapSeries, column: ColumnSeries } } = (external_highcharts_src_js_default_SeriesRegistry_default());
+
+
+
 
 const { prototype: { symbols } } = (external_highcharts_src_js_default_SVGRenderer_default());
 
@@ -1859,7 +1889,7 @@ composeTextPath((external_highcharts_src_js_default_SVGElement_default()));
  *
  * @augments Highcharts.Series
  */
-class TreegraphSeries extends TreemapSeries {
+class TreegraphSeries extends (external_treemap_src_js_default_Series_types_treemap_default()) {
     constructor() {
         /* *
          *
@@ -2008,8 +2038,8 @@ class TreegraphSeries extends TreemapSeries {
     }
     /** @internal */
     drawTracker() {
-        ColumnSeries.prototype.drawTracker.apply(this, arguments);
-        ColumnSeries.prototype.drawTracker.call(this, this.links);
+        external_highcharts_src_js_default_Series_types_column_default().prototype.drawTracker.apply(this, arguments);
+        external_highcharts_src_js_default_Series_types_column_default().prototype.drawTracker.call(this, this.links);
     }
     /**
      * Run pre-translation by generating the nodeColumns.
@@ -2020,7 +2050,7 @@ class TreegraphSeries extends TreemapSeries {
         // NOTE: updateRootId modifies series.
         let rootId = Series_TreeUtilities.updateRootId(series), rootNode;
         // Call prototype function
-        seriesProto.translate.call(series);
+        external_highcharts_src_js_default_Series_default().prototype.translate.call(series);
         const tree = series.tree = series.getTree();
         rootNode = series.nodeMap[rootId];
         if (rootId !== '' && (!rootNode || !rootNode.children.length)) {
@@ -2140,7 +2170,7 @@ class TreegraphSeries extends TreemapSeries {
             // Merge custom options with point options
             point.dlOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(options, point.options.dataLabels);
         }
-        seriesProto.drawDataLabels.call(this, points);
+        external_highcharts_src_js_default_Series_default().prototype.drawDataLabels.call(this, points);
     }
     /**
      * Override alignDataLabel so that position is always calculated and the
@@ -2172,7 +2202,7 @@ class TreegraphSeries extends TreemapSeries {
             // Render node labels.
             this.drawNodeLabels(this.points);
             // Render link labels.
-            seriesProto.drawDataLabels.call(this, this.links);
+            external_highcharts_src_js_default_Series_default().prototype.drawDataLabels.call(this, this.links);
         }
     }
     /** @internal */
@@ -2184,7 +2214,7 @@ class TreegraphSeries extends TreemapSeries {
             }
             this.links.length = 0;
         }
-        return seriesProto.destroy.apply(this, arguments);
+        return external_highcharts_src_js_default_Series_default().prototype.destroy.apply(this, arguments);
     }
     /**
      * Return the presentational attributes.
@@ -2203,7 +2233,7 @@ class TreegraphSeries extends TreemapSeries {
             series.options.link?.color), linkLineWidth = (stateOptions.link?.lineWidth ??
             options.link?.lineWidth ??
             levelOptions.link?.lineWidth ??
-            series.options.link?.lineWidth), attribs = seriesProto.pointAttribs.call(series, point, state);
+            series.options.link?.lineWidth), attribs = external_highcharts_src_js_default_Series_default().prototype.pointAttribs.call(series, point, state);
         if (point) {
             if (point.isLink) {
                 attribs.stroke = linkColor;
@@ -2218,8 +2248,8 @@ class TreegraphSeries extends TreemapSeries {
     }
     /** @internal */
     drawPoints() {
-        TreemapSeries.prototype.drawPoints.apply(this, arguments);
-        ColumnSeries.prototype.drawPoints.call(this, this.links);
+        external_treemap_src_js_default_Series_types_treemap_default().prototype.drawPoints.apply(this, arguments);
+        external_highcharts_src_js_default_Series_types_column_default().prototype.drawPoints.call(this, this.links);
     }
     /**
      * Run translation operations for one node.
@@ -2283,7 +2313,7 @@ class TreegraphSeries extends TreemapSeries {
     }
 }
 /** @internal */
-TreegraphSeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(TreemapSeries.defaultOptions, Treegraph_TreegraphSeriesDefaults);
+TreegraphSeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)((external_treemap_src_js_default_Series_types_treemap_default()).defaultOptions, Treegraph_TreegraphSeriesDefaults);
 (0,external_highcharts_src_js_default_namespaceObject.extend)(TreegraphSeries.prototype, {
     forceDL: true,
     pointClass: Treegraph_TreegraphPoint,
@@ -2397,6 +2427,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
 ''; // Gets doclets above into transpiled version
 
 ;// ./code/es-modules/masters/modules/treegraph.src.js
+
 
 
 

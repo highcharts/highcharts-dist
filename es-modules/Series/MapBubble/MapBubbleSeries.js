@@ -12,8 +12,9 @@
 'use strict';
 import BubbleSeries from '../Bubble/BubbleSeries.js';
 import MapBubblePoint from './MapBubblePoint.js';
+import MapPointSeries from '../MapPoint/MapPointSeries.js';
+import MapSeries from '../Map/MapSeries.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-const { seriesTypes: { map: { prototype: mapProto }, mappoint: { prototype: mapPointProto } } } = SeriesRegistry;
 import { extend, merge } from '../../Shared/Utilities.js';
 /* *
  *
@@ -38,7 +39,7 @@ class MapBubbleSeries extends BubbleSeries {
          *
          * */
         super(...arguments);
-        this.clearBounds = mapProto.clearBounds;
+        this.clearBounds = MapSeries.prototype.clearBounds;
     }
     /** @internal */
     searchPoint(e, compareX) {
@@ -49,7 +50,7 @@ class MapBubbleSeries extends BubbleSeries {
     }
     /** @internal */
     translate() {
-        mapPointProto.translate.call(this);
+        MapPointSeries.prototype.translate.call(this);
         this.getRadii();
         this.translateBubble();
     }
@@ -236,16 +237,16 @@ MapBubbleSeries.defaultOptions = merge(BubbleSeries.defaultOptions, {
 extend(MapBubbleSeries.prototype, {
     type: 'mapbubble',
     axisTypes: ['colorAxis'],
-    getProjectedBounds: mapProto.getProjectedBounds,
+    getProjectedBounds: MapSeries.prototype.getProjectedBounds,
     isCartesian: false,
     // If one single value is passed, it is interpreted as z
     pointArrayMap: ['z'],
     pointClass: MapBubblePoint,
-    processData: mapProto.processData,
-    projectPoint: mapPointProto.projectPoint,
+    processData: MapSeries.prototype.processData,
+    projectPoint: MapPointSeries.prototype.projectPoint,
     kdAxisArray: ['plotX', 'plotY'],
-    setData: mapProto.setData,
-    setOptions: mapProto.setOptions,
+    setData: MapSeries.prototype.setData,
+    setOptions: MapSeries.prototype.setOptions,
     useMapGeometry: true,
     xyFromShape: true
 });

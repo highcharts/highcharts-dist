@@ -13,8 +13,7 @@
 import H from '../../Core/Globals.js';
 const { composed } = H;
 import { perspective } from '../../Core/Math3D.js';
-import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-const { line: { prototype: lineProto } } = SeriesRegistry.seriesTypes;
+import LineSeries from '../Line/LineSeries.js';
 import { pushUnique, wrap } from '../../Shared/Utilities.js';
 /* *
  *
@@ -40,7 +39,7 @@ function wrapAreaSeriesGetGraphPath(proceed) {
     if (!series.chart.is3d()) {
         return svgPath;
     }
-    const getGraphPath = lineProto.getGraphPath, options = series.options, translatedThreshold = Math.round(// #10909
+    const getGraphPath = LineSeries.prototype.getGraphPath, options = series.options, translatedThreshold = Math.round(// #10909
     series.yAxis.getThreshold(options.threshold));
     let bottomPoints = [];
     if (series.rawPointsX) {

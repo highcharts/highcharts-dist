@@ -12,8 +12,13 @@
  *  Imports
  *
  * */
-import SeriesRegistry from '../../../Core/Series/SeriesRegistry.js';
-const { sma: { prototype: { pointClass: SMAPoint } } } = SeriesRegistry.seriesTypes;
+import SMAIndicator from '../SMA/SMAIndicator.js';
+/* *
+ *
+ *  Constants
+ *
+ * */
+const SMAPoint = SMAIndicator.prototype.pointClass;
 /* *
  *
  *  Class

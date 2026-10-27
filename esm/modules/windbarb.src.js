@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-26)
+ * @license Highcharts JS v13.1.1-modified (2026-10-27)
  * @module highcharts/modules/windbarb
  * @requires highcharts
+ * @requires highcharts/modules/datagrouping
  *
  * Wind barb series module
  *
@@ -13,6 +14,7 @@
  * see www.highcharts.com/license
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
+import "./datagrouping.src.js";
 import * as __WEBPACK_EXTERNAL_MODULE__datagrouping_src_js_902e97be__ from "./datagrouping.src.js";
 /******/ // The require scope
 /******/ const __webpack_require__ = {};
@@ -46,6 +48,8 @@ import * as __WEBPACK_EXTERNAL_MODULE__datagrouping_src_js_902e97be__ from "./da
 ;// external ["../highcharts.src.js","default"]
 const external_highcharts_src_js_default_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"];
 var external_highcharts_src_js_default_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_namespaceObject);
+;// external "./datagrouping.src.js"
+
 ;// external ["./datagrouping.src.js","default","dataGrouping","approximations"]
 const external_datagrouping_src_js_default_dataGrouping_approximations_namespaceObject = __WEBPACK_EXTERNAL_MODULE__datagrouping_src_js_902e97be__["default"].dataGrouping.approximations;
 var external_datagrouping_src_js_default_dataGrouping_approximations_default = /*#__PURE__*/__webpack_require__.n(external_datagrouping_src_js_default_dataGrouping_approximations_namespaceObject);
@@ -346,6 +350,7 @@ class WindbarbPoint extends (external_highcharts_src_js_default_Series_types_col
  *               linecap, shadow, stacking, step, boostBlending
  * @since        6.0.0
  * @product      highcharts highstock
+ * @requires     modules/datagrouping
  * @requires     modules/windbarb
  * @optionparent plotOptions.windbarb
  */
@@ -445,6 +450,7 @@ const WindbarbSeriesDefaults = {
  * @extends   series,plotOptions.windbarb
  * @excluding boostThreshold, boostBlending
  * @product   highcharts highstock
+ * @requires  modules/datagrouping
  * @requires  modules/windbarb
  * @apioption series.windbarb
  */
@@ -539,7 +545,7 @@ const WindbarbSeriesDefaults = {
 
 
 
-const { column: ColumnSeries } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
+
 
 
 
@@ -584,7 +590,7 @@ function registerApproximation() {
  *
  * @augments Highcharts.Series
  */
-class WindbarbSeries extends ColumnSeries {
+class WindbarbSeries extends (external_highcharts_src_js_default_Series_types_column_default()) {
     /* *
      *
      *  Functions
@@ -740,7 +746,7 @@ class WindbarbSeries extends ColumnSeries {
  *
  * */
 /** @internal */
-WindbarbSeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(ColumnSeries.defaultOptions, Windbarb_WindbarbSeriesDefaults);
+WindbarbSeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)((external_highcharts_src_js_default_Series_types_column_default()).defaultOptions, Windbarb_WindbarbSeriesDefaults);
 Series_OnSeriesComposition.compose(WindbarbSeries);
 (0,external_highcharts_src_js_default_namespaceObject.extend)(WindbarbSeries.prototype, {
     beaufortFloor: [
@@ -784,6 +790,7 @@ registerApproximation();
 /* harmony default export */ const Windbarb_WindbarbSeries = ((/* unused pure expression or super */ null && (WindbarbSeries)));
 
 ;// ./code/es-modules/masters/modules/windbarb.src.js
+
 
 
 

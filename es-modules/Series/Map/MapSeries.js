@@ -21,10 +21,9 @@ const { splitPath } = MapChart;
 import MapPoint from './MapPoint.js';
 import MapSeriesDefaults from './MapSeriesDefaults.js';
 import MapView from '../../Maps/MapView.js';
+import ColumnSeries from '../Column/ColumnSeries.js';
+import ScatterSeries from '../Scatter/ScatterSeries.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-const { 
-// Indirect dependency to keep product size low
-column: ColumnSeries, scatter: ScatterSeries } = SeriesRegistry.seriesTypes;
 import { defined, extend, find, fireEvent, getNestedProperty, isArray, isNumber, isObject, merge, objectEach, splat } from '../../Shared/Utilities.js';
 /* *
  *

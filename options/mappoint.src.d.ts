@@ -302,8 +302,6 @@ declare module "../highcharts.src" {
         position?: Highcharts.AlignValue;
         /**
          * (Highcharts, Highstock, Highmaps, Gantt) Text rotation in degrees.
-         * Note that due to a more complex structure, backgrounds, borders and
-         * padding will be lost on a rotated data label.
          */
         rotation?: number;
         /**
@@ -842,8 +840,6 @@ declare module "../highcharts.src" {
         position?: Highcharts.AlignValue;
         /**
          * (Highcharts, Highstock, Highmaps, Gantt) Text rotation in degrees.
-         * Note that due to a more complex structure, backgrounds, borders and
-         * padding will be lost on a rotated data label.
          */
         rotation?: number;
         /**

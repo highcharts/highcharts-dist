@@ -21,8 +21,10 @@ import NetworkgraphPoint from './NetworkgraphPoint.js';
 import NetworkgraphSeriesDefaults from './NetworkgraphSeriesDefaults.js';
 import NodesComposition from '../NodesComposition.js';
 import ReingoldFruchtermanLayout from './ReingoldFruchtermanLayout.js';
+import ColumnSeries from '../Column/ColumnSeries.js';
+import LineSeries from '../Line/LineSeries.js';
+import Series from '../../Core/Series/Series.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-const { series: Series, seriesTypes: { column: { prototype: columnProto }, line: { prototype: lineProto } } } = SeriesRegistry;
 import D from '../SimulationSeriesUtilities.js';
 const { initDataLabels, initDataLabelsDefer } = D;
 import { composeTextPath } from '../../Extensions/TextPath.js';
@@ -277,7 +279,7 @@ class NetworkgraphSeries extends Series {
         const series = this, points = series.points, hoverPoint = series.chart.hoverPoint, dataLabels = [];
         // Render markers:
         series.points = series.nodes;
-        lineProto.render.call(this);
+        LineSeries.prototype.render.call(this);
         series.points = points;
         points.forEach(function (point) {
             if (point.fromNode && point.toNode) {
@@ -351,7 +353,7 @@ extend(NetworkgraphSeries.prototype, {
     initDataLabels: initDataLabels,
     buildKDTree: noop,
     createNode: NodesComposition.createNode,
-    drawTracker: columnProto.drawTracker,
+    drawTracker: ColumnSeries.prototype.drawTracker,
     onMouseDown: DragNodesComposition.onMouseDown,
     onMouseMove: DragNodesComposition.onMouseMove,
     onMouseUp: DragNodesComposition.onMouseUp,

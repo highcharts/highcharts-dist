@@ -11,8 +11,7 @@
  * */
 'use strict';
 import { getDeferredAnimation } from '../../Animation/AnimationUtilities.js';
-import SeriesRegistry from '../../Series/SeriesRegistry.js';
-const { series: { prototype: seriesProto } } = SeriesRegistry;
+import Series from '../../Series/Series.js';
 import StackItem from './StackItem.js';
 import { addEvent, correctFloat, defined, destroyObjectProperties, fireEvent, isNumber, objectEach } from '../../../Shared/Utilities.js';
 /* *
@@ -146,7 +145,7 @@ function seriesSetGroupedPoints(axis) {
         if (this.options.centerInCategory &&
             // With only one series, we don't need to consider centerInCategory
             this.chart.series.length > 1) {
-            seriesProto.setStackedPoints.call(this, axis, 'group');
+            Series.prototype.setStackedPoints.call(this, axis, 'group');
             // After updating, if we now have proper stacks, we must delete the
             // group pseudo stacks (#14980)
         }

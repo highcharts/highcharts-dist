@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-26)
+ * @license Highcharts JS v13.1.1-modified (2026-10-27)
  * @module modules/arc-diagram
  * @requires highcharts/modules/sankey
  *
@@ -14,17 +14,24 @@
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(root["_Highcharts"]["SVGElement"], root["_Highcharts"]["SVGRenderer"], root["_Highcharts"]["Series"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
+		module.exports = factory(root["_Highcharts"]["Point"], root["_Highcharts"]["SVGElement"], root["_Highcharts"]["SVGRenderer"], root["_Highcharts"]["Series"]["types"]["column"], root["_Highcharts"]["Series"]["types"]["sankey"], root["_Highcharts"]["Series"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
 	else if(typeof define === 'function' && define.amd)
-		define("highcharts/modules/arc-diagram", ["highcharts/highcharts"], function (amd1) {return factory(amd1["SVGElement"],amd1["SVGRenderer"],amd1["Series"],amd1["SeriesRegistry"],amd1);});
+		define("highcharts/modules/arc-diagram", ["highcharts/highcharts"], function (amd1) {return factory(amd1["Point"],amd1["SVGElement"],amd1["SVGRenderer"],amd1["Series"]["types"]["column"],amd1["Series"]["types"]["sankey"],amd1["Series"],amd1["SeriesRegistry"],amd1);});
 	else if(typeof exports === 'object')
-		exports["highcharts/modules/arc-diagram"] = factory(root["_Highcharts"]["SVGElement"], root["_Highcharts"]["SVGRenderer"], root["_Highcharts"]["Series"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
+		exports["highcharts/modules/arc-diagram"] = factory(root["_Highcharts"]["Point"], root["_Highcharts"]["SVGElement"], root["_Highcharts"]["SVGRenderer"], root["_Highcharts"]["Series"]["types"]["column"], root["_Highcharts"]["Series"]["types"]["sankey"], root["_Highcharts"]["Series"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
 	else
-		root["Highcharts"] = factory(root["Highcharts"]["SVGElement"], root["Highcharts"]["SVGRenderer"], root["Highcharts"]["Series"], root["Highcharts"]["SeriesRegistry"], root["Highcharts"]);
-})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__28__, __WEBPACK_EXTERNAL_MODULE__540__, __WEBPACK_EXTERNAL_MODULE__820__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__944__) => {
+		root["Highcharts"] = factory(root["Highcharts"]["Point"], root["Highcharts"]["SVGElement"], root["Highcharts"]["SVGRenderer"], root["Highcharts"]["Series"]["types"]["column"], root["Highcharts"]["Series"]["types"]["sankey"], root["Highcharts"]["Series"], root["Highcharts"]["SeriesRegistry"], root["Highcharts"]);
+})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__260__, __WEBPACK_EXTERNAL_MODULE__28__, __WEBPACK_EXTERNAL_MODULE__540__, __WEBPACK_EXTERNAL_MODULE__448__, __WEBPACK_EXTERNAL_MODULE__36__, __WEBPACK_EXTERNAL_MODULE__820__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__944__) => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
+
+/***/ 260
+(module) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__260__;
+
+/***/ },
 
 /***/ 28
 (module) {
@@ -37,6 +44,20 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__28__;
 (module) {
 
 module.exports = __WEBPACK_EXTERNAL_MODULE__540__;
+
+/***/ },
+
+/***/ 448
+(module) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__448__;
+
+/***/ },
+
+/***/ 36
+(module) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__36__;
 
 /***/ },
 
@@ -122,9 +143,12 @@ __webpack_require__.d(__webpack_exports__, {
 // EXTERNAL MODULE: external {"amd":["highcharts/highcharts"],"commonjs":["highcharts"],"commonjs2":["highcharts"],"root":["Highcharts"]}
 var highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_ = __webpack_require__(944);
 var highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default = /*#__PURE__*/__webpack_require__.n(highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_);
-// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","SeriesRegistry"],"commonjs":["highcharts","SeriesRegistry"],"commonjs2":["highcharts","SeriesRegistry"],"root":["Highcharts","SeriesRegistry"]}
-var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_ = __webpack_require__(512);
-var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_);
+// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Point"],"commonjs":["highcharts","Point"],"commonjs2":["highcharts","Point"],"root":["Highcharts","Point"]}
+var highcharts_Point_commonjs_highcharts_Point_commonjs2_highcharts_Point_root_Highcharts_Point_ = __webpack_require__(260);
+var highcharts_Point_commonjs_highcharts_Point_commonjs2_highcharts_Point_root_Highcharts_Point_default = /*#__PURE__*/__webpack_require__.n(highcharts_Point_commonjs_highcharts_Point_commonjs2_highcharts_Point_root_Highcharts_Point_);
+// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Series"],"commonjs":["highcharts","Series"],"commonjs2":["highcharts","Series"],"root":["Highcharts","Series"]}
+var highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_ = __webpack_require__(820);
+var highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_default = /*#__PURE__*/__webpack_require__.n(highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_);
 ;// ./code/es-modules/Series/NodesComposition.js
 /* *
  *
@@ -132,7 +156,7 @@ var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highc
  * */
 
 
-const { series: { prototype: seriesProto, prototype: { pointClass: { prototype: pointProto } } } } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default());
+
 
 /* *
  *
@@ -255,7 +279,7 @@ var NodesComposition;
         // Nodes must also be destroyed (#8682, #9300)
         this.data = []
             .concat(this.points || [], this.nodes);
-        return seriesProto.destroy.apply(this, arguments);
+        return highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_default().prototype.destroy.apply(this, arguments);
     }
     NodesComposition.destroy = destroy;
     /**
@@ -265,7 +289,7 @@ var NodesComposition;
      */
     function generatePoints() {
         const chart = this.chart, nodeLookup = {};
-        seriesProto.generatePoints.call(this);
+        highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_default().prototype.generatePoints.call(this);
         if (!this.nodes) {
             this.nodes = []; // List of Point-like node items
         }
@@ -319,7 +343,7 @@ var NodesComposition;
             });
             this.nodes.length = 0;
         }
-        seriesProto.setData.apply(this, arguments);
+        highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_default().prototype.setData.apply(this, arguments);
     }
     /**
      * When hovering node, highlight all connected links. When hovering a link,
@@ -332,19 +356,19 @@ var NodesComposition;
         if (state !== 'select') {
             others.forEach((linkOrNode) => {
                 if (linkOrNode && linkOrNode.series) {
-                    pointProto.setState.apply(linkOrNode, args);
+                    highcharts_Point_commonjs_highcharts_Point_commonjs2_highcharts_Point_root_Highcharts_Point_default().prototype.setState.apply(linkOrNode, args);
                     if (!linkOrNode.isNode) {
                         if (linkOrNode.fromNode.graphic) {
-                            pointProto.setState.apply(linkOrNode.fromNode, args);
+                            highcharts_Point_commonjs_highcharts_Point_commonjs2_highcharts_Point_root_Highcharts_Point_default().prototype.setState.apply(linkOrNode.fromNode, args);
                         }
                         if (linkOrNode.toNode && linkOrNode.toNode.graphic) {
-                            pointProto.setState.apply(linkOrNode.toNode, args);
+                            highcharts_Point_commonjs_highcharts_Point_commonjs2_highcharts_Point_root_Highcharts_Point_default().prototype.setState.apply(linkOrNode.toNode, args);
                         }
                     }
                 }
             });
         }
-        pointProto.setState.apply(this, args);
+        highcharts_Point_commonjs_highcharts_Point_commonjs2_highcharts_Point_root_Highcharts_Point_default().prototype.setState.apply(this, args);
     }
     NodesComposition.setNodeState = setNodeState;
     /**
@@ -354,7 +378,7 @@ var NodesComposition;
      */
     function updateNode(options, redraw, animation, runEvent) {
         const nodes = this.series.options.nodes, data = this.series.options.data, dataLength = data?.length || 0, linkConfig = data?.[this.index];
-        pointProto.update.call(this, options, this.isNode ? false : redraw, // Hold the redraw for nodes
+        highcharts_Point_commonjs_highcharts_Point_commonjs2_highcharts_Point_root_Highcharts_Point_default().prototype.update.call(this, options, this.isNode ? false : redraw, // Hold the redraw for nodes
         animation, runEvent);
         if (this.isNode) {
             // `this.index` refers to `series.nodes`, not `options.nodes` array
@@ -400,6 +424,9 @@ var NodesComposition;
  * */
 /* harmony default export */ const Series_NodesComposition = (NodesComposition);
 
+// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Series","types","sankey"],"commonjs":["highcharts","Series","types","sankey"],"commonjs2":["highcharts","Series","types","sankey"],"root":["Highcharts","Series","types","sankey"]}
+var highcharts_Series_types_sankey_commonjs_highcharts_Series_types_sankey_commonjs2_highcharts_Series_types_sankey_root_Highcharts_Series_types_sankey_ = __webpack_require__(36);
+var highcharts_Series_types_sankey_commonjs_highcharts_Series_types_sankey_commonjs2_highcharts_Series_types_sankey_root_Highcharts_Series_types_sankey_default = /*#__PURE__*/__webpack_require__.n(highcharts_Series_types_sankey_commonjs_highcharts_Series_types_sankey_commonjs2_highcharts_Series_types_sankey_root_Highcharts_Series_types_sankey_);
 ;// ./code/es-modules/Series/ArcDiagram/ArcDiagramPoint.js
 /* *
  *
@@ -418,7 +445,12 @@ var NodesComposition;
 
 
 
-const { seriesTypes: { sankey: { prototype: { pointClass: SankeyPoint } } } } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default());
+/* *
+ *
+ *  Constants
+ *
+ * */
+const SankeyPoint = (highcharts_Series_types_sankey_commonjs_highcharts_Series_types_sankey_commonjs2_highcharts_Series_types_sankey_root_Highcharts_Series_types_sankey_default()).prototype.pointClass;
 /* *
  *
  *  Class
@@ -955,9 +987,12 @@ var SankeyColumnComposition;
  * */
 /* harmony default export */ const Sankey_SankeyColumnComposition = (SankeyColumnComposition);
 
-// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Series"],"commonjs":["highcharts","Series"],"commonjs2":["highcharts","Series"],"root":["Highcharts","Series"]}
-var highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_ = __webpack_require__(820);
-var highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_default = /*#__PURE__*/__webpack_require__.n(highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_);
+// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Series","types","column"],"commonjs":["highcharts","Series","types","column"],"commonjs2":["highcharts","Series","types","column"],"root":["Highcharts","Series","types","column"]}
+var highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_ = __webpack_require__(448);
+var highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_default = /*#__PURE__*/__webpack_require__.n(highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_);
+// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","SeriesRegistry"],"commonjs":["highcharts","SeriesRegistry"],"commonjs2":["highcharts","SeriesRegistry"],"root":["Highcharts","SeriesRegistry"]}
+var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_ = __webpack_require__(512);
+var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_);
 // EXTERNAL MODULE: external {"amd":["highcharts/highcharts","SVGRenderer"],"commonjs":["highcharts","SVGRenderer"],"commonjs2":["highcharts","SVGRenderer"],"root":["Highcharts","SVGRenderer"]}
 var highcharts_SVGRenderer_commonjs_highcharts_SVGRenderer_commonjs2_highcharts_SVGRenderer_root_Highcharts_SVGRenderer_ = __webpack_require__(540);
 var highcharts_SVGRenderer_commonjs_highcharts_SVGRenderer_commonjs2_highcharts_SVGRenderer_root_Highcharts_SVGRenderer_default = /*#__PURE__*/__webpack_require__.n(highcharts_SVGRenderer_commonjs_highcharts_SVGRenderer_commonjs2_highcharts_SVGRenderer_root_Highcharts_SVGRenderer_);
@@ -1261,9 +1296,10 @@ function composeTextPath(SVGElementClass) {
 
 
 
+
+
 composeTextPath((highcharts_SVGElement_commonjs_highcharts_SVGElement_commonjs2_highcharts_SVGElement_root_Highcharts_SVGElement_default()));
 const { prototype: { symbols } } = (highcharts_SVGRenderer_commonjs_highcharts_SVGRenderer_commonjs2_highcharts_SVGRenderer_root_Highcharts_SVGRenderer_default());
-const { seriesTypes: { column: ColumnSeries, sankey: SankeySeries } } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default());
 /* *
  *
  *  Class
@@ -1275,7 +1311,7 @@ const { seriesTypes: { column: ColumnSeries, sankey: SankeySeries } } = (highcha
  *
  * @augments Highcharts.seriesTypes.sankey
  */
-class ArcDiagramSeries extends SankeySeries {
+class ArcDiagramSeries extends (highcharts_Series_types_sankey_commonjs_highcharts_Series_types_sankey_commonjs2_highcharts_Series_types_sankey_root_Highcharts_Series_types_sankey_default()) {
     /* *
      *
      *  Functions
@@ -1490,7 +1526,7 @@ class ArcDiagramSeries extends SankeySeries {
             if (this.mapOptionsToLevel) {
                 // Calculate data label options for the point
                 node.dlOptions = {
-                    ...SankeySeries.getDLOptions({
+                    ...highcharts_Series_types_sankey_commonjs_highcharts_Series_types_sankey_commonjs2_highcharts_Series_types_sankey_root_Highcharts_Series_types_sankey_default().getDLOptions({
                         level: this.mapOptionsToLevel[node.level],
                         optionsPoint: node.options
                     }),
@@ -1536,11 +1572,11 @@ class ArcDiagramSeries extends SankeySeries {
         if (this.options.dataLabels) {
             const textPath = this.options.dataLabels.textPath;
             // Render node labels:
-            ColumnSeries.prototype.drawDataLabels.call(this, this.nodes);
+            highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_default().prototype.drawDataLabels.call(this, this.nodes);
             // Render link labels:
             this.options.dataLabels.textPath =
                 this.options.dataLabels.linkTextPath;
-            ColumnSeries.prototype.drawDataLabels.call(this, this.data);
+            highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_default().prototype.drawDataLabels.call(this, this.data);
             // Restore nodes
             this.options.dataLabels.textPath = textPath;
         }
@@ -1570,7 +1606,7 @@ class ArcDiagramSeries extends SankeySeries {
  *
  * */
 /** @internal */
-ArcDiagramSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(SankeySeries.defaultOptions, ArcDiagram_ArcDiagramSeriesDefaults);
+ArcDiagramSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)((highcharts_Series_types_sankey_commonjs_highcharts_Series_types_sankey_commonjs2_highcharts_Series_types_sankey_root_Highcharts_Series_types_sankey_default()).defaultOptions, ArcDiagram_ArcDiagramSeriesDefaults);
 (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.extend)(ArcDiagramSeries.prototype, {
     orderNodes: false,
     useCircularLayout: false

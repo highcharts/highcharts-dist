@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-26)
+ * @license Highcharts JS v13.1.1-modified (2026-10-27)
  * @module highcharts/highcharts-more
  * @requires highcharts
  *
@@ -11,14 +11,14 @@
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(root["_Highcharts"]["Chart"], root["_Highcharts"]["Color"], root["_Highcharts"]["Point"], root["_Highcharts"]["SVGElement"], root["_Highcharts"]["Series"]["types"]["column"], root["_Highcharts"]["Series"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]["StackItem"], root["_Highcharts"]["Templating"], root["_Highcharts"]);
+		module.exports = factory(root["_Highcharts"]["Chart"], root["_Highcharts"]["Color"], root["_Highcharts"]["Point"], root["_Highcharts"]["SVGElement"], root["_Highcharts"]["Series"]["types"]["area"], root["_Highcharts"]["Series"]["types"]["column"], root["_Highcharts"]["Series"]["types"]["line"], root["_Highcharts"]["Series"]["types"]["scatter"], root["_Highcharts"]["Series"]["types"]["spline"], root["_Highcharts"]["Series"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]["StackItem"], root["_Highcharts"]["Templating"], root["_Highcharts"]);
 	else if(typeof define === 'function' && define.amd)
-		define("highcharts/highcharts-more", ["highcharts/highcharts"], function (amd1) {return factory(amd1["Chart"],amd1["Color"],amd1["Point"],amd1["SVGElement"],amd1["Series"],["types"],["column"],amd1["Series"],amd1["SeriesRegistry"],amd1["StackItem"],amd1["Templating"],amd1);});
+		define("highcharts/highcharts-more", ["highcharts/highcharts"], function (amd1) {return factory(amd1["Chart"],amd1["Color"],amd1["Point"],amd1["SVGElement"],amd1["Series"]["types"]["area"],amd1["Series"]["types"]["column"],amd1["Series"]["types"]["line"],amd1["Series"]["types"]["scatter"],amd1["Series"]["types"]["spline"],amd1["Series"],amd1["SeriesRegistry"],amd1["StackItem"],amd1["Templating"],amd1);});
 	else if(typeof exports === 'object')
-		exports["highcharts/highcharts-more"] = factory(root["_Highcharts"]["Chart"], root["_Highcharts"]["Color"], root["_Highcharts"]["Point"], root["_Highcharts"]["SVGElement"], root["_Highcharts"]["Series"]["types"]["column"], root["_Highcharts"]["Series"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]["StackItem"], root["_Highcharts"]["Templating"], root["_Highcharts"]);
+		exports["highcharts/highcharts-more"] = factory(root["_Highcharts"]["Chart"], root["_Highcharts"]["Color"], root["_Highcharts"]["Point"], root["_Highcharts"]["SVGElement"], root["_Highcharts"]["Series"]["types"]["area"], root["_Highcharts"]["Series"]["types"]["column"], root["_Highcharts"]["Series"]["types"]["line"], root["_Highcharts"]["Series"]["types"]["scatter"], root["_Highcharts"]["Series"]["types"]["spline"], root["_Highcharts"]["Series"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]["StackItem"], root["_Highcharts"]["Templating"], root["_Highcharts"]);
 	else
-		root["Highcharts"] = factory(root["Highcharts"]["Chart"], root["Highcharts"]["Color"], root["Highcharts"]["Point"], root["Highcharts"]["SVGElement"], root["Highcharts"]["Series"]["types"]["column"], root["Highcharts"]["Series"], root["Highcharts"]["SeriesRegistry"], root["Highcharts"]["StackItem"], root["Highcharts"]["Templating"], root["Highcharts"]);
-})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__960__, __WEBPACK_EXTERNAL_MODULE__620__, __WEBPACK_EXTERNAL_MODULE__260__, __WEBPACK_EXTERNAL_MODULE__28__, __WEBPACK_EXTERNAL_MODULE__448__, __WEBPACK_EXTERNAL_MODULE__820__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__184__, __WEBPACK_EXTERNAL_MODULE__984__, __WEBPACK_EXTERNAL_MODULE__944__) => {
+		root["Highcharts"] = factory(root["Highcharts"]["Chart"], root["Highcharts"]["Color"], root["Highcharts"]["Point"], root["Highcharts"]["SVGElement"], root["Highcharts"]["Series"]["types"]["area"], root["Highcharts"]["Series"]["types"]["column"], root["Highcharts"]["Series"]["types"]["line"], root["Highcharts"]["Series"]["types"]["scatter"], root["Highcharts"]["Series"]["types"]["spline"], root["Highcharts"]["Series"], root["Highcharts"]["SeriesRegistry"], root["Highcharts"]["StackItem"], root["Highcharts"]["Templating"], root["Highcharts"]);
+})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__960__, __WEBPACK_EXTERNAL_MODULE__620__, __WEBPACK_EXTERNAL_MODULE__260__, __WEBPACK_EXTERNAL_MODULE__28__, __WEBPACK_EXTERNAL_MODULE__212__, __WEBPACK_EXTERNAL_MODULE__448__, __WEBPACK_EXTERNAL_MODULE__176__, __WEBPACK_EXTERNAL_MODULE__632__, __WEBPACK_EXTERNAL_MODULE__664__, __WEBPACK_EXTERNAL_MODULE__820__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__184__, __WEBPACK_EXTERNAL_MODULE__984__, __WEBPACK_EXTERNAL_MODULE__944__) => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
@@ -51,10 +51,38 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__28__;
 
 /***/ },
 
+/***/ 212
+(module) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__212__;
+
+/***/ },
+
 /***/ 448
 (module) {
 
 module.exports = __WEBPACK_EXTERNAL_MODULE__448__;
+
+/***/ },
+
+/***/ 176
+(module) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__176__;
+
+/***/ },
+
+/***/ 632
+(module) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__632__;
+
+/***/ },
+
+/***/ 664
+(module) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__664__;
 
 /***/ },
 
@@ -154,9 +182,6 @@ __webpack_require__.d(__webpack_exports__, {
 // EXTERNAL MODULE: external {"amd":["highcharts/highcharts"],"commonjs":["highcharts"],"commonjs2":["highcharts"],"root":["Highcharts"]}
 var highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_ = __webpack_require__(944);
 var highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default = /*#__PURE__*/__webpack_require__.n(highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_);
-// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","SeriesRegistry"],"commonjs":["highcharts","SeriesRegistry"],"commonjs2":["highcharts","SeriesRegistry"],"root":["Highcharts","SeriesRegistry"]}
-var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_ = __webpack_require__(512);
-var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_);
 ;// ./code/es-modules/Series/CenteredUtilities.js
 /* *
  *
@@ -1025,6 +1050,9 @@ Pane.compose = Pane_PaneComposition.compose;
  */
 ''; // Keeps doclets above in JS file
 
+// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Series","types","area"],"commonjs":["highcharts","Series","types","area"],"commonjs2":["highcharts","Series","types","area"],"root":["Highcharts","Series","types","area"]}
+var highcharts_Series_types_area_commonjs_highcharts_Series_types_area_commonjs2_highcharts_Series_types_area_root_Highcharts_Series_types_area_ = __webpack_require__(212);
+var highcharts_Series_types_area_commonjs_highcharts_Series_types_area_commonjs2_highcharts_Series_types_area_root_Highcharts_Series_types_area_default = /*#__PURE__*/__webpack_require__.n(highcharts_Series_types_area_commonjs_highcharts_Series_types_area_commonjs2_highcharts_Series_types_area_root_Highcharts_Series_types_area_);
 ;// ./code/es-modules/Series/AreaRange/AreaRangePoint.js
 /* *
  *
@@ -1039,8 +1067,13 @@ Pane.compose = Pane_PaneComposition.compose;
  * */
 
 
-const { area: { prototype: { pointClass: AreaPoint, pointClass: { prototype: areaProto } } } } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
 
+/* *
+ *
+ *  Constants
+ *
+ * */
+const AreaPoint = (highcharts_Series_types_area_commonjs_highcharts_Series_types_area_commonjs2_highcharts_Series_types_area_root_Highcharts_Series_types_area_default()).prototype.pointClass;
 /* *
  *
  *  Class
@@ -1074,7 +1107,7 @@ class AreaRangePoint extends AreaPoint {
             this.plotX = this.plotHighX;
         }
         // Top state:
-        areaProto.setState.apply(this, arguments);
+        super.setState.apply(this, arguments);
         this.state = prevState;
         // Now restore defaults
         this.plotY = this.plotLow;
@@ -1089,7 +1122,7 @@ class AreaRangePoint extends AreaPoint {
         series.lowerStateMarkerGraphic = void 0;
         const originalSettings = series.modifyMarkerSettings();
         // Bottom state
-        areaProto.setState.apply(this, arguments);
+        super.setState.apply(this, arguments);
         // Restore previous state
         series.restoreMarkerSettings(originalSettings);
     }
@@ -1103,7 +1136,7 @@ class AreaRangePoint extends AreaPoint {
             this.plotX = this.plotLowX;
         }
         if (this.isInside) {
-            path = areaProto.haloPath.apply(this, arguments);
+            path = super.haloPath.apply(this, arguments);
         }
         // Top halo
         this.plotY = this.plotHigh;
@@ -1111,7 +1144,7 @@ class AreaRangePoint extends AreaPoint {
             this.plotX = this.plotHighX;
         }
         if (this.isTopInside) {
-            path = path.concat(areaProto.haloPath.apply(this, arguments));
+            path = path.concat(super.haloPath.apply(this, arguments));
         }
         return path;
     }
@@ -1283,6 +1316,9 @@ var RangeDataLabel;
 /** @internal */
 /* harmony default export */ const Series_RangeDataLabel = (RangeDataLabel);
 
+// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","SeriesRegistry"],"commonjs":["highcharts","SeriesRegistry"],"commonjs2":["highcharts","SeriesRegistry"],"root":["Highcharts","SeriesRegistry"]}
+var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_ = __webpack_require__(512);
+var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_);
 ;// ./code/es-modules/Series/AreaRange/AreaRangeSeries.js
 /* *
  *
@@ -1298,10 +1334,10 @@ var RangeDataLabel;
 
 
 
+
 const { noop } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 
 
-const { area: AreaSeries, area: { prototype: AreaRangeSeries_areaProto } } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
 
 /* *
  *
@@ -1507,7 +1543,7 @@ function getRangeDataLabelOptions(series) {
  *
  * @augments Highcharts.Series
  */
-class AreaRangeSeries extends AreaSeries {
+class AreaRangeSeries extends (highcharts_Series_types_area_commonjs_highcharts_Series_types_area_commonjs2_highcharts_Series_types_area_root_Highcharts_Series_types_area_default()) {
     /* *
      *
      *  Functions
@@ -1537,7 +1573,7 @@ class AreaRangeSeries extends AreaSeries {
      * @internal
      */
     getGraphPath(points) {
-        const highPoints = [], highAreaPoints = [], getGraphPath = AreaRangeSeries_areaProto.getGraphPath, options = this.options, polar = this.chart.polar, connectEnds = polar && options.connectEnds !== false, connectNulls = options.connectNulls;
+        const highPoints = [], highAreaPoints = [], getGraphPath = (highcharts_Series_types_area_commonjs_highcharts_Series_types_area_commonjs2_highcharts_Series_types_area_root_Highcharts_Series_types_area_default()).prototype.getGraphPath, options = this.options, polar = this.chart.polar, connectEnds = polar && options.connectEnds !== false, connectNulls = options.connectNulls;
         let i, point, pointShim, step = options.step;
         points = points || this.points;
         // Create the top line and the top part of the area fill. The area fill
@@ -1625,9 +1661,9 @@ class AreaRangeSeries extends AreaSeries {
             // Resolve value references like `{y}` against the aligned key
             rangeOptions.forEach(Series_RangeDataLabel.applyAlignToKeyValue);
             series.options.dataLabels = rangeOptions;
-            if (AreaRangeSeries_areaProto.drawDataLabels) {
+            if ((highcharts_Series_types_area_commonjs_highcharts_Series_types_area_commonjs2_highcharts_Series_types_area_root_Highcharts_Series_types_area_default()).prototype.drawDataLabels) {
                 // #1209
-                AreaRangeSeries_areaProto.drawDataLabels.call(series);
+                highcharts_Series_types_area_commonjs_highcharts_Series_types_area_commonjs2_highcharts_Series_types_area_root_Highcharts_Series_types_area_default().prototype.drawDataLabels.call(series);
             }
             series.options.dataLabels = dataLabelOptions;
             for (const point of series.points) {
@@ -1666,7 +1702,7 @@ class AreaRangeSeries extends AreaSeries {
         let i, point;
         const originalSettings = series.modifyMarkerSettings();
         // Draw bottom points
-        AreaRangeSeries_areaProto.drawPoints.apply(series, arguments);
+        highcharts_Series_types_area_commonjs_highcharts_Series_types_area_commonjs2_highcharts_Series_types_area_root_Highcharts_Series_types_area_default().prototype.drawPoints.apply(series, arguments);
         // Restore previous state
         series.restoreMarkerSettings(originalSettings);
         // Prepare drawing top points
@@ -1707,7 +1743,7 @@ class AreaRangeSeries extends AreaSeries {
             i++;
         }
         // Draw top points
-        AreaRangeSeries_areaProto.drawPoints.apply(series, arguments);
+        highcharts_Series_types_area_commonjs_highcharts_Series_types_area_commonjs2_highcharts_Series_types_area_root_Highcharts_Series_types_area_default().prototype.drawPoints.apply(series, arguments);
         // Reset top points preliminary modifications
         i = 0;
         while (i < pointLength) {
@@ -1740,7 +1776,7 @@ class AreaRangeSeries extends AreaSeries {
  *
  * @internal
  */
-AreaRangeSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(AreaSeries.defaultOptions, areaRangeSeriesOptions);
+AreaRangeSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)((highcharts_Series_types_area_commonjs_highcharts_Series_types_area_commonjs2_highcharts_Series_types_area_root_Highcharts_Series_types_area_default()).defaultOptions, areaRangeSeriesOptions);
 (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.addEvent)(AreaRangeSeries, 'afterTranslate', function () {
     // Set plotLow and plotHigh
     // Rules out lollipop, but lollipop should not inherit range series in the
@@ -1807,6 +1843,9 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * */
 /* harmony default export */ const AreaRange_AreaRangeSeries = (AreaRangeSeries);
 
+// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Series","types","spline"],"commonjs":["highcharts","Series","types","spline"],"commonjs2":["highcharts","Series","types","spline"],"root":["Highcharts","Series","types","spline"]}
+var highcharts_Series_types_spline_commonjs_highcharts_Series_types_spline_commonjs2_highcharts_Series_types_spline_root_Highcharts_Series_types_spline_ = __webpack_require__(664);
+var highcharts_Series_types_spline_commonjs_highcharts_Series_types_spline_commonjs2_highcharts_Series_types_spline_root_Highcharts_Series_types_spline_default = /*#__PURE__*/__webpack_require__.n(highcharts_Series_types_spline_commonjs_highcharts_Series_types_spline_commonjs2_highcharts_Series_types_spline_root_Highcharts_Series_types_spline_);
 ;// ./code/es-modules/Series/AreaSplineRange/AreaSplineRangeSeries.js
 /* *
  *
@@ -1822,7 +1861,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
 
 
 
-const { spline: { prototype: splineProto } } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
+
 
 /* *
  *
@@ -1847,7 +1886,7 @@ class AreaSplineRangeSeries extends AreaRange_AreaRangeSeries {
 /** @internal */
 AreaSplineRangeSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(AreaRange_AreaRangeSeries.defaultOptions);
 (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.extend)(AreaSplineRangeSeries.prototype, {
-    getPointSpline: splineProto.getPointSpline
+    getPointSpline: (highcharts_Series_types_spline_commonjs_highcharts_Series_types_spline_commonjs2_highcharts_Series_types_spline_root_Highcharts_Series_types_spline_default()).prototype.getPointSpline
 });
 highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default().registerSeriesType('areasplinerange', AreaSplineRangeSeries);
 /* *
@@ -1855,7 +1894,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *  Default Export
  *
  * */
-/* harmony default export */ const AreaSplineRange_AreaSplineRangeSeries = ((/* unused pure expression or super */ null && (AreaSplineRangeSeries)));
+/* harmony default export */ const AreaSplineRange_AreaSplineRangeSeries = (AreaSplineRangeSeries);
 /* *
  *
  *  API Options
@@ -4112,6 +4151,9 @@ const BubbleLegendComposition = {
 // EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Point"],"commonjs":["highcharts","Point"],"commonjs2":["highcharts","Point"],"root":["Highcharts","Point"]}
 var highcharts_Point_commonjs_highcharts_Point_commonjs2_highcharts_Point_root_Highcharts_Point_ = __webpack_require__(260);
 var highcharts_Point_commonjs_highcharts_Point_commonjs2_highcharts_Point_root_Highcharts_Point_default = /*#__PURE__*/__webpack_require__.n(highcharts_Point_commonjs_highcharts_Point_commonjs2_highcharts_Point_root_Highcharts_Point_);
+// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Series","types","scatter"],"commonjs":["highcharts","Series","types","scatter"],"commonjs2":["highcharts","Series","types","scatter"],"root":["Highcharts","Series","types","scatter"]}
+var highcharts_Series_types_scatter_commonjs_highcharts_Series_types_scatter_commonjs2_highcharts_Series_types_scatter_root_Highcharts_Series_types_scatter_ = __webpack_require__(632);
+var highcharts_Series_types_scatter_commonjs_highcharts_Series_types_scatter_commonjs2_highcharts_Series_types_scatter_root_Highcharts_Series_types_scatter_default = /*#__PURE__*/__webpack_require__.n(highcharts_Series_types_scatter_commonjs_highcharts_Series_types_scatter_commonjs2_highcharts_Series_types_scatter_root_Highcharts_Series_types_scatter_);
 ;// ./code/es-modules/Series/Bubble/BubblePoint.js
 /* *
  *
@@ -4128,7 +4170,12 @@ var highcharts_Point_commonjs_highcharts_Point_commonjs2_highcharts_Point_root_H
 
 
 
-const { seriesTypes: { scatter: { prototype: { pointClass: ScatterPoint } } } } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default());
+/* *
+ *
+ *  Constants
+ *
+ * */
+const ScatterPoint = (highcharts_Series_types_scatter_commonjs_highcharts_Series_types_scatter_commonjs2_highcharts_Series_types_scatter_root_Highcharts_Series_types_scatter_default()).prototype.pointClass;
 /* *
  *
  *  Class
@@ -4172,6 +4219,9 @@ class BubblePoint extends ScatterPoint {
  * */
 /* harmony default export */ const Bubble_BubblePoint = (BubblePoint);
 
+// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Series"],"commonjs":["highcharts","Series"],"commonjs2":["highcharts","Series"],"root":["Highcharts","Series"]}
+var highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_ = __webpack_require__(820);
+var highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_default = /*#__PURE__*/__webpack_require__.n(highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_);
 ;// ./code/es-modules/Series/Bubble/BubbleSeries.js
 /* *
  *
@@ -4190,7 +4240,9 @@ class BubblePoint extends ScatterPoint {
 
 const { composed: BubbleSeries_composed, noop: BubbleSeries_noop } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 
-const { series: Series, seriesTypes: { column: { prototype: columnProto }, scatter: ScatterSeries } } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default());
+
+
+
 
 /* *
  *
@@ -4358,7 +4410,7 @@ function onAxisAfterRender() {
  * */
 /**
  */
-class BubbleSeries extends ScatterSeries {
+class BubbleSeries extends (highcharts_Series_types_scatter_commonjs_highcharts_Series_types_scatter_commonjs2_highcharts_Series_types_scatter_root_Highcharts_Series_types_scatter_default()) {
     /* *
      *
      *  Static Functions
@@ -4507,7 +4559,7 @@ class BubbleSeries extends ScatterSeries {
      * @internal
      */
     pointAttribs(point, state) {
-        const markerOptions = this.options.marker, fillOpacity = markerOptions?.fillOpacity, attr = Series.prototype.pointAttribs.call(this, point, state);
+        const markerOptions = this.options.marker, fillOpacity = markerOptions?.fillOpacity, attr = highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_default().prototype.pointAttribs.call(this, point, state);
         attr['fill-opacity'] = fillOpacity ?? 1;
         return attr;
     }
@@ -4639,7 +4691,7 @@ class BubbleSeries extends ScatterSeries {
  * @optionparent plotOptions.bubble
  * @internal
  */
-BubbleSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(ScatterSeries.defaultOptions, {
+BubbleSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)((highcharts_Series_types_scatter_commonjs_highcharts_Series_types_scatter_commonjs2_highcharts_Series_types_scatter_root_Highcharts_Series_types_scatter_default()).defaultOptions, {
     dataLabels: {
         formatter: function () {
             const { numberFormatter } = this.series.chart;
@@ -4875,7 +4927,7 @@ BubbleSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highch
     zoneAxis: 'z'
 });
 (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.extend)(BubbleSeries.prototype, {
-    alignDataLabel: columnProto.alignDataLabel,
+    alignDataLabel: (highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_default()).prototype.alignDataLabel,
     applyZones: BubbleSeries_noop,
     bubblePadding: true,
     isBubble: true,
@@ -5024,14 +5076,20 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * */
 
 
-const { seriesTypes: { column: { prototype: { pointClass: { prototype: ColumnRangePoint_columnProto } } }, arearange: { prototype: { pointClass: ColumnRangePoint_AreaRangePoint } } } } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default());
 
+
+/* *
+ *
+ *  Constants
+ *
+ * */
+const ColumnPoint = (highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_default()).prototype.pointClass;
 /* *
  *
  *  Class
  *
  * */
-class ColumnRangePoint extends ColumnRangePoint_AreaRangePoint {
+class ColumnRangePoint extends AreaRange_AreaRangePoint {
     /* *
      *
      *  Functions
@@ -5043,7 +5101,7 @@ class ColumnRangePoint extends ColumnRangePoint_AreaRangePoint {
     }
 }
 ;(0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.extend)(ColumnRangePoint.prototype, {
-    setState: ColumnRangePoint_columnProto.setState
+    setState: ColumnPoint.prototype.setState
 });
 /* *
  *
@@ -5218,9 +5276,10 @@ const ColumnRangeSeriesDefaults = {
 
 
 
+
+
 const { noop: ColumnRangeSeries_noop } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 
-const { seriesTypes: { arearange: ColumnRangeSeries_AreaRangeSeries, column: ColumnSeries, column: { prototype: ColumnRangeSeries_columnProto } } } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default());
 
 /* *
  *
@@ -5235,7 +5294,7 @@ const { seriesTypes: { arearange: ColumnRangeSeries_AreaRangeSeries, column: Col
  *
  * @augments Highcharts.Series
  */
-class ColumnRangeSeries extends ColumnRangeSeries_AreaRangeSeries {
+class ColumnRangeSeries extends AreaRange_AreaRangeSeries {
     /* *
      *
      *  Functions
@@ -5245,43 +5304,51 @@ class ColumnRangeSeries extends ColumnRangeSeries_AreaRangeSeries {
     setOptions() {
         // #14359 Prevent side-effect from stacking.
         (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(true, arguments[0], { stacking: void 0 });
-        return ColumnRangeSeries_AreaRangeSeries.prototype.setOptions.apply(this, arguments);
+        return AreaRange_AreaRangeSeries.prototype.setOptions.apply(this, arguments);
     }
     // Overrides from modules that may be loaded after this module
     // @todo move to compositions
     /** @internal */
     translate() {
-        return ColumnRangeSeries_columnProto.translate.apply(this);
+        return highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_default().prototype.translate.apply(this);
     }
     // Public crispCol(): BBoxObject {
-    //     return columnProto.crispCol.apply(this, arguments as any);
+    //     return ColumnSeries.prototype.crispCol.apply(this, arguments as any);
     // }
     // public drawPoints(): void {
-    //     return columnProto.drawPoints.apply(this, arguments as any);
+    //     return ColumnSeries.prototype.drawPoints.apply(
+    //         this, arguments as any
+    //     );
     // }
     // public drawTracker(): void {
-    //     return columnProto.drawTracker.apply(this, arguments as any);
+    //     return ColumnSeries.prototype.drawTracker.apply(
+    //         this, arguments as any
+    //     );
     // }
     // public getColumnMetrics(): ColumnMetricsObject {
-    //     return columnProto.getColumnMetrics.apply(this, arguments as any);
+    //     return ColumnSeries.prototype.getColumnMetrics.apply(
+    //         this, arguments as any
+    //     );
     // }
     /** @internal */
     pointAttribs() {
-        return ColumnRangeSeries_columnProto.pointAttribs.apply(this, arguments);
+        return highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_default().prototype.pointAttribs.apply(this, arguments);
     }
     // Public adjustForMissingColumns(): number {
-    //     return columnProto.adjustForMissingColumns.apply(this, arguments);
+    //     return ColumnSeries.prototype.adjustForMissingColumns.apply(
+    //         this, arguments
+    //     );
     // }
     // public animate(): void {
-    //     return columnProto.animate.apply(this, arguments as any);
+    //     return ColumnSeries.prototype.animate.apply(this, arguments as any);
     // }
     /** @internal */
     translate3dPoints() {
-        return ColumnRangeSeries_columnProto.translate3dPoints.apply(this, arguments);
+        return highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_default().prototype.translate3dPoints.apply(this, arguments);
     }
     /** @internal */
     translate3dShapes() {
-        return ColumnRangeSeries_columnProto.translate3dShapes.apply(this, arguments);
+        return highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_default().prototype.translate3dShapes.apply(this, arguments);
     }
     /**
      * Translate data points from raw values x and y to plotX and plotY
@@ -5355,7 +5422,7 @@ class ColumnRangeSeries extends ColumnRangeSeries_AreaRangeSeries {
  *
  * */
 /** @internal */
-ColumnRangeSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(ColumnSeries.defaultOptions, ColumnRangeSeries_AreaRangeSeries.defaultOptions, ColumnRange_ColumnRangeSeriesDefaults);
+ColumnRangeSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)((highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_default()).defaultOptions, AreaRange_AreaRangeSeries.defaultOptions, ColumnRange_ColumnRangeSeriesDefaults);
 (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.addEvent)(ColumnRangeSeries, 'afterColumnTranslate', function () {
     ColumnRangeSeries.prototype.afterColumnTranslate.apply(this);
 }, { order: 5 });
@@ -5363,14 +5430,14 @@ ColumnRangeSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_h
     directTouch: true,
     pointClass: ColumnRange_ColumnRangePoint,
     trackerGroups: ['group', 'dataLabelsGroup'],
-    adjustForMissingColumns: ColumnRangeSeries_columnProto.adjustForMissingColumns,
-    animate: ColumnRangeSeries_columnProto.animate,
-    crispCol: ColumnRangeSeries_columnProto.crispCol,
+    adjustForMissingColumns: (highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_default()).prototype.adjustForMissingColumns,
+    animate: (highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_default()).prototype.animate,
+    crispCol: (highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_default()).prototype.crispCol,
     drawGraph: ColumnRangeSeries_noop,
-    drawPoints: ColumnRangeSeries_columnProto.drawPoints,
+    drawPoints: (highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_default()).prototype.drawPoints,
     getSymbol: ColumnRangeSeries_noop,
-    drawTracker: ColumnRangeSeries_columnProto.drawTracker,
-    getColumnMetrics: ColumnRangeSeries_columnProto.getColumnMetrics
+    drawTracker: (highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_default()).prototype.drawTracker,
+    getColumnMetrics: (highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_default()).prototype.getColumnMetrics
 });
 highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default().registerSeriesType('columnrange', ColumnRangeSeries);
 /* *
@@ -5524,7 +5591,7 @@ const ColumnPyramidSeriesDefaults = {};
 
 
 
-const { column: ColumnPyramidSeries_ColumnSeries } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
+
 
 /* *
  *
@@ -5539,7 +5606,7 @@ const { column: ColumnPyramidSeries_ColumnSeries } = (highcharts_SeriesRegistry_
  *
  * @augments Highcharts.Series
  */
-class ColumnPyramidSeries extends ColumnPyramidSeries_ColumnSeries {
+class ColumnPyramidSeries extends (highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_default()) {
     /* *
      *
      *  Functions
@@ -5682,7 +5749,7 @@ class ColumnPyramidSeries extends ColumnPyramidSeries_ColumnSeries {
  *
  * */
 /** @internal */
-ColumnPyramidSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(ColumnPyramidSeries_ColumnSeries.defaultOptions, ColumnPyramid_ColumnPyramidSeriesDefaults);
+ColumnPyramidSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)((highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_default()).defaultOptions, ColumnPyramid_ColumnPyramidSeriesDefaults);
 highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default().registerSeriesType('columnpyramid', ColumnPyramidSeries);
 /* *
  *
@@ -5873,7 +5940,7 @@ const ErrorBarSeriesDefaults = {
 
 
 
-const { arearange: ErrorBarSeries_AreaRangeSeries } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
+
 
 
 /* *
@@ -5906,8 +5973,8 @@ class ErrorBarSeries extends BoxPlot_BoxPlotSeries {
     /** @internal */
     drawDataLabels() {
         // Error bars draw upper/lower labels via the area range option adapter.
-        if (ErrorBarSeries_AreaRangeSeries) {
-            ErrorBarSeries_AreaRangeSeries.prototype.drawDataLabels.call(this);
+        if (AreaRange_AreaRangeSeries) {
+            AreaRange_AreaRangeSeries.prototype.drawDataLabels.call(this);
         }
     }
     /** @internal */
@@ -5955,13 +6022,12 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * */
 
 
-const { series: { prototype: { pointClass: Point } } } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default());
 /* *
  *
  *  Class
  *
  * */
-class GaugePoint extends Point {
+class GaugePoint extends (highcharts_Point_commonjs_highcharts_Point_commonjs2_highcharts_Point_root_Highcharts_Point_default()) {
     /* *
      *
      *  Functions
@@ -6392,9 +6458,10 @@ const GaugeSeriesDefaults = {
 
 
 
+
 const { noop: GaugeSeries_noop } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 
-const { series: GaugeSeries_Series, seriesTypes: { column: GaugeSeries_ColumnSeries } } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default());
+
 
 /* *
  *
@@ -6410,7 +6477,7 @@ const { series: GaugeSeries_Series, seriesTypes: { column: GaugeSeries_ColumnSer
  *
  * @augments Highcharts.Series
  */
-class GaugeSeries extends GaugeSeries_Series {
+class GaugeSeries extends (highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_default()) {
     /* *
      *
      *  Functions
@@ -6570,7 +6637,7 @@ class GaugeSeries extends GaugeSeries_Series {
      * @internal
      */
     setData(data, redraw) {
-        GaugeSeries_Series.prototype.setData.call(this, data, false);
+        highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_default().prototype.setData.call(this, data, false);
         this.processData();
         this.generatePoints();
         if (redraw ?? true) {
@@ -6591,14 +6658,14 @@ class GaugeSeries extends GaugeSeries_Series {
  *  Static properties
  *
  * */
-GaugeSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(GaugeSeries_Series.defaultOptions, Gauge_GaugeSeriesDefaults);
+GaugeSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)((highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_default()).defaultOptions, Gauge_GaugeSeriesDefaults);
 (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.extend)(GaugeSeries.prototype, {
     // `chart.angular` will be set to true when a gauge series is present, and
     // this will be used on the axes
     angular: true,
     directTouch: true, // #5063
     drawGraph: GaugeSeries_noop,
-    drawTracker: GaugeSeries_ColumnSeries.prototype.drawTracker,
+    drawTracker: (highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_default()).prototype.drawTracker,
     fixedBox: true,
     forceDL: true,
     noSharedTooltip: true,
@@ -6674,6 +6741,9 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  */
 ''; // Adds the doclets above in the transpiled file
 
+// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Series","types","line"],"commonjs":["highcharts","Series","types","line"],"commonjs2":["highcharts","Series","types","line"],"root":["Highcharts","Series","types","line"]}
+var highcharts_Series_types_line_commonjs_highcharts_Series_types_line_commonjs2_highcharts_Series_types_line_root_Highcharts_Series_types_line_ = __webpack_require__(176);
+var highcharts_Series_types_line_commonjs_highcharts_Series_types_line_commonjs2_highcharts_Series_types_line_root_Highcharts_Series_types_line_default = /*#__PURE__*/__webpack_require__.n(highcharts_Series_types_line_commonjs_highcharts_Series_types_line_commonjs2_highcharts_Series_types_line_root_Highcharts_Series_types_line_);
 // EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Color"],"commonjs":["highcharts","Color"],"commonjs2":["highcharts","Color"],"root":["Highcharts","Color"]}
 var highcharts_Color_commonjs_highcharts_Color_commonjs2_highcharts_Color_root_Highcharts_Color_ = __webpack_require__(620);
 var highcharts_Color_commonjs_highcharts_Color_commonjs2_highcharts_Color_root_Highcharts_Color_default = /*#__PURE__*/__webpack_require__.n(highcharts_Color_commonjs_highcharts_Color_commonjs2_highcharts_Color_root_Highcharts_Color_);
@@ -7008,7 +7078,12 @@ var highcharts_Chart_commonjs_highcharts_Chart_commonjs2_highcharts_Chart_root_H
 
 
 
-const { seriesTypes: { bubble: { prototype: { pointClass: PackedBubblePoint_BubblePoint } } } } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default());
+/* *
+ *
+ *  Constants
+ *
+ * */
+const PackedBubblePoint_BubblePoint = Bubble_BubbleSeries.prototype.pointClass;
 /* *
  *
  *  Class
@@ -9484,7 +9559,8 @@ const { noop: PackedBubbleSeries_noop } = (highcharts_commonjs_highcharts_common
 
 
 
-const { series: { prototype: seriesProto }, seriesTypes: { bubble: PackedBubbleSeries_BubbleSeries } } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default());
+
+
 
 const { initDataLabels: PackedBubbleSeries_initDataLabels, initDataLabelsDefer: PackedBubbleSeries_initDataLabelsDefer } = SimulationSeriesUtilities;
 
@@ -9503,7 +9579,7 @@ composeTextPath((highcharts_SVGElement_commonjs_highcharts_SVGElement_commonjs2_
  *
  * @extends Highcharts.Series
  */
-class PackedBubbleSeries extends PackedBubbleSeries_BubbleSeries {
+class PackedBubbleSeries extends Bubble_BubbleSeries {
     constructor() {
         /* *
          *
@@ -9523,7 +9599,7 @@ class PackedBubbleSeries extends PackedBubbleSeries_BubbleSeries {
      * */
     /** @internal */
     static compose(AxisClass, ChartClass, LegendClass) {
-        PackedBubbleSeries_BubbleSeries.compose(AxisClass, ChartClass, LegendClass);
+        Bubble_BubbleSeries.compose(AxisClass, ChartClass, LegendClass);
         Series_DragNodesComposition.compose(ChartClass);
         PackedBubble_PackedBubbleLayout.compose(ChartClass);
     }
@@ -9759,7 +9835,7 @@ class PackedBubbleSeries extends PackedBubbleSeries_BubbleSeries {
                     this.parentNode.dataLabel.destroy();
             }
         }
-        seriesProto.destroy.apply(this, arguments);
+        highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_default().prototype.destroy.apply(this, arguments);
     }
     /**
      * Packedbubble has two separate collections of nodes if split, render
@@ -9772,11 +9848,11 @@ class PackedBubbleSeries extends PackedBubbleSeries_BubbleSeries {
         if (this.deferDataLabels) {
             return;
         }
-        seriesProto.drawDataLabels.call(this, this.points);
+        highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_default().prototype.drawDataLabels.call(this, this.points);
         // Render parentNode labels:
         if (this.parentNode) {
             this.parentNode.formatPrefix = 'parentNode';
-            seriesProto.drawDataLabels.call(this, [this.parentNode]);
+            highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_default().prototype.drawDataLabels.call(this, [this.parentNode]);
         }
     }
     /**
@@ -9886,7 +9962,7 @@ class PackedBubbleSeries extends PackedBubbleSeries_BubbleSeries {
     }
     /** @internal */
     init() {
-        seriesProto.init.apply(this, arguments);
+        highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_default().prototype.init.apply(this, arguments);
         PackedBubbleSeries_initDataLabelsDefer.call(this);
         /* eslint-disable no-invalid-this */
         // When one series is modified, the others need to be recomputed
@@ -10043,7 +10119,7 @@ class PackedBubbleSeries extends PackedBubbleSeries_BubbleSeries {
             options.layoutAlgorithm.parentNodeOptions) {
             markerOptions = options.layoutAlgorithm.parentNodeOptions.marker;
         }
-        const fillOpacity = markerOptions.fillOpacity, attr = seriesProto.pointAttribs.call(this, point, state);
+        const fillOpacity = markerOptions.fillOpacity, attr = highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_default().prototype.pointAttribs.call(this, point, state);
         if (fillOpacity !== 1) {
             attr['fill-opacity'] = fillOpacity;
         }
@@ -10094,7 +10170,7 @@ class PackedBubbleSeries extends PackedBubbleSeries_BubbleSeries {
     /** @internal */
     render() {
         const dataLabels = [];
-        seriesProto.render.apply(this, arguments);
+        highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_default().prototype.render.apply(this, arguments);
         // #10823 - dataLabels should stay visible
         // when enabled allowOverlap.
         if (!this.options.dataLabels.allowOverlap) {
@@ -10195,7 +10271,7 @@ class PackedBubbleSeries extends PackedBubbleSeries_BubbleSeries {
      */
     setVisible() {
         const series = this;
-        seriesProto.setVisible.apply(series, arguments);
+        highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_default().prototype.setVisible.apply(series, arguments);
         if (series.parentNodeLayout && series.graph) {
             if (series.visible) {
                 series.graph.show();
@@ -10275,7 +10351,7 @@ class PackedBubbleSeries extends PackedBubbleSeries_BubbleSeries {
     }
 }
 /** @internal */
-PackedBubbleSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(PackedBubbleSeries_BubbleSeries.defaultOptions, PackedBubble_PackedBubbleSeriesDefaults);
+PackedBubbleSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(Bubble_BubbleSeries.defaultOptions, PackedBubble_PackedBubbleSeriesDefaults);
 (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.extend)(PackedBubbleSeries.prototype, {
     pointClass: PackedBubble_PackedBubblePoint,
     axisTypes: [],
@@ -10290,7 +10366,7 @@ PackedBubbleSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_
     requireSorting: false,
     trackerGroups: ['group', 'dataLabelsGroup', 'parentNodesGroup'],
     initDataLabels: PackedBubbleSeries_initDataLabels,
-    alignDataLabel: seriesProto.alignDataLabel,
+    alignDataLabel: (highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_default()).prototype.alignDataLabel,
     indexateNodes: PackedBubbleSeries_noop,
     onMouseDown: Series_DragNodesComposition.onMouseDown,
     onMouseMove: Series_DragNodesComposition.onMouseMove,
@@ -10473,14 +10549,16 @@ const PolygonSeriesDefaults = {
 const { noop: PolygonSeries_noop } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 
 
-const { area: PolygonSeries_AreaSeries, line: LineSeries, scatter: PolygonSeries_ScatterSeries } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
+
+
+
 
 /* *
  *
  *  Class
  *
  * */
-class PolygonSeries extends PolygonSeries_ScatterSeries {
+class PolygonSeries extends (highcharts_Series_types_scatter_commonjs_highcharts_Series_types_scatter_commonjs2_highcharts_Series_types_scatter_root_Highcharts_Series_types_scatter_default()) {
     /* *
      *
      *  Functions
@@ -10488,7 +10566,7 @@ class PolygonSeries extends PolygonSeries_ScatterSeries {
      * */
     /** @internal */
     getGraphPath() {
-        const graphPath = LineSeries.prototype.getGraphPath.call(this);
+        const graphPath = highcharts_Series_types_line_commonjs_highcharts_Series_types_line_commonjs2_highcharts_Series_types_line_root_Highcharts_Series_types_line_default().prototype.getGraphPath.call(this);
         let i = graphPath.length + 1;
         // Close all segments
         while (i--) {
@@ -10503,7 +10581,7 @@ class PolygonSeries extends PolygonSeries_ScatterSeries {
     drawGraph() {
         // Borrow the fill logic from area.drawGraph, honoring `fillOpacity`
         // and an optional `fillColor`
-        PolygonSeries_AreaSeries.prototype.drawGraph.call(this);
+        highcharts_Series_types_area_commonjs_highcharts_Series_types_area_commonjs2_highcharts_Series_types_area_root_Highcharts_Series_types_area_default().prototype.drawGraph.call(this);
     }
 }
 /* *
@@ -10512,10 +10590,10 @@ class PolygonSeries extends PolygonSeries_ScatterSeries {
  *
  * */
 /** @internal */
-PolygonSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(PolygonSeries_ScatterSeries.defaultOptions, Polygon_PolygonSeriesDefaults);
+PolygonSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)((highcharts_Series_types_scatter_commonjs_highcharts_Series_types_scatter_commonjs2_highcharts_Series_types_scatter_root_Highcharts_Series_types_scatter_default()).defaultOptions, Polygon_PolygonSeriesDefaults);
 (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.extend)(PolygonSeries.prototype, {
     type: 'polygon',
-    drawTracker: LineSeries.prototype.drawTracker,
+    drawTracker: (highcharts_Series_types_line_commonjs_highcharts_Series_types_line_commonjs2_highcharts_Series_types_line_root_Highcharts_Series_types_line_default()).prototype.drawTracker,
     setStackedPoints: PolygonSeries_noop // No stacking points on polygons (#5310)
 });
 highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default().registerSeriesType('polygon', PolygonSeries);
@@ -10526,9 +10604,6 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * */
 /* harmony default export */ const Polygon_PolygonSeries = ((/* unused pure expression or super */ null && (PolygonSeries)));
 
-// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Series"],"commonjs":["highcharts","Series"],"commonjs2":["highcharts","Series"],"root":["Highcharts","Series"]}
-var highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_ = __webpack_require__(820);
-var highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_default = /*#__PURE__*/__webpack_require__.n(highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_);
 ;// ./code/es-modules/Core/Axis/RadialAxisDefaults.js
 /* *
  *
@@ -13169,7 +13244,8 @@ const WaterfallSeriesDefaults = {
  * */
 
 
-const { column: WaterfallSeries_ColumnSeries, line: WaterfallSeries_LineSeries } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
+
+
 
 
 
@@ -13202,7 +13278,7 @@ function ownProp(obj, key) {
  *
  * @private
  */
-class WaterfallSeries extends WaterfallSeries_ColumnSeries {
+class WaterfallSeries extends (highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_default()) {
     /* *
      *
      *  Functions
@@ -13212,7 +13288,7 @@ class WaterfallSeries extends WaterfallSeries_ColumnSeries {
     /** @internal */
     generatePoints() {
         // Parent call:
-        WaterfallSeries_ColumnSeries.prototype.generatePoints.apply(this);
+        highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_default().prototype.generatePoints.apply(this);
         const processedYData = this.getColumn('y', true);
         for (let i = 0, len = this.points.length; i < len; i++) {
             const point = this.points[i], y = processedYData[i];
@@ -13276,7 +13352,7 @@ class WaterfallSeries extends WaterfallSeries_ColumnSeries {
         if (upColor && point && !point.options.color && (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.isNumber)(point.y)) {
             point.color = point.y > 0 ? upColor : void 0;
         }
-        const attr = WaterfallSeries_ColumnSeries.prototype.pointAttribs.call(this, point, state);
+        const attr = highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_default().prototype.pointAttribs.call(this, point, state);
         // The dashStyle option in waterfall applies to the graph, not
         // the points
         delete attr.dashstyle;
@@ -13351,7 +13427,7 @@ class WaterfallSeries extends WaterfallSeries_ColumnSeries {
     // crisp rendering.
     /** @internal */
     drawGraph() {
-        WaterfallSeries_LineSeries.prototype.drawGraph.call(this);
+        highcharts_Series_types_line_commonjs_highcharts_Series_types_line_commonjs2_highcharts_Series_types_line_root_Highcharts_Series_types_line_default().prototype.drawGraph.call(this);
         this.graph?.animate({
             d: this.getCrispPath()
         });
@@ -13507,7 +13583,7 @@ class WaterfallSeries extends WaterfallSeries_ColumnSeries {
  *
  * */
 /** @internal */
-WaterfallSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(WaterfallSeries_ColumnSeries.defaultOptions, Waterfall_WaterfallSeriesDefaults);
+WaterfallSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)((highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_default()).defaultOptions, Waterfall_WaterfallSeriesDefaults);
 /** @internal */
 WaterfallSeries.compose = Axis_WaterfallAxis.compose;
 (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.extend)(WaterfallSeries.prototype, {
@@ -13711,12 +13787,14 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
 
 
 
+
+
 const G = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 G.RadialAxis = Axis_RadialAxis;
 Bubble_BubbleSeries.compose(G.Axis, G.Chart, G.Legend);
 PackedBubble_PackedBubbleSeries.compose(G.Axis, G.Chart, G.Legend);
 Pane_Pane.compose(G.Chart, G.Pointer);
-PolarComposition.compose(G.Axis, G.Chart, G.Pointer, G.Series, G.Tick, G.Point, (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes.areasplinerange, (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes.column, (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes.line, (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes.spline);
+PolarComposition.compose(G.Axis, G.Chart, G.Pointer, G.Series, G.Tick, G.Point, AreaSplineRange_AreaSplineRangeSeries, (highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_default()), (highcharts_Series_types_line_commonjs_highcharts_Series_types_line_commonjs2_highcharts_Series_types_line_root_Highcharts_Series_types_line_default()), (highcharts_Series_types_spline_commonjs_highcharts_Series_types_spline_commonjs2_highcharts_Series_types_spline_root_Highcharts_Series_types_spline_default()));
 Waterfall_WaterfallSeries.compose(G.Axis, G.Chart);
 /* harmony default export */ const highcharts_more_src = (G);
 

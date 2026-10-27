@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-26)
+ * @license Highcharts JS v13.1.1-modified (2026-10-27)
  * @module highcharts/modules/dotplot
  * @requires highcharts
  *
@@ -83,6 +83,9 @@ const DotPlotSeriesDefaults = {
  * */
 /* harmony default export */ const DotPlot_DotPlotSeriesDefaults = (DotPlotSeriesDefaults);
 
+;// external ["../highcharts.src.js","default","Series","types","column"]
+const external_highcharts_src_js_default_Series_types_column_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].Series.types.column;
+var external_highcharts_src_js_default_Series_types_column_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_Series_types_column_namespaceObject);
 ;// external ["../highcharts.src.js","default","SeriesRegistry"]
 const external_highcharts_src_js_default_SeriesRegistry_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].SeriesRegistry;
 var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_SeriesRegistry_namespaceObject);
@@ -110,7 +113,7 @@ var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__w
 
 
 
-const { column: ColumnSeries } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
+
 
 /* *
  *
@@ -123,7 +126,7 @@ const { column: ColumnSeries } = (external_highcharts_src_js_default_SeriesRegis
  *
  * @augments Highcharts.Series
  */
-class DotPlotSeries extends ColumnSeries {
+class DotPlotSeries extends (external_highcharts_src_js_default_Series_types_column_default()) {
     /* *
      *
      *  Functions
@@ -217,7 +220,7 @@ class DotPlotSeries extends ColumnSeries {
  *
  * */
 /** @internal */
-DotPlotSeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(ColumnSeries.defaultOptions, DotPlot_DotPlotSeriesDefaults);
+DotPlotSeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)((external_highcharts_src_js_default_Series_types_column_default()).defaultOptions, DotPlot_DotPlotSeriesDefaults);
 (0,external_highcharts_src_js_default_namespaceObject.extend)(DotPlotSeries.prototype, {
     markerAttribs: void 0
 });

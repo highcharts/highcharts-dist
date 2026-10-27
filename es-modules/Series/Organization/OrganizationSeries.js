@@ -14,9 +14,9 @@
 'use strict';
 import OrganizationPoint from './OrganizationPoint.js';
 import OrganizationSeriesDefaults from './OrganizationSeriesDefaults.js';
+import SankeySeries from '../Sankey/SankeySeries.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 import PathUtilities from '../PathUtilities.js';
-const { sankey: SankeySeries } = SeriesRegistry.seriesTypes;
 import SVGElement from '../../Core/Renderer/SVG/SVGElement.js';
 import { crisp, css, extend, isNumber, merge, splat } from '../../Shared/Utilities.js';
 import { composeTextPath } from '../../Extensions/TextPath.js';

@@ -1,5 +1,6 @@
+// SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-26)
+ * @license Highcharts JS v13.1.1-modified (2026-10-27)
  * @module highcharts/highcharts-autoload
  *
  * (c) 2009-2024 Torstein Honsi
@@ -354,6 +355,7 @@ const DependencyMapping = {
         'highcharts-more'
     ],
     'series.geoheatmap': [
+        'modules/map',
         'modules/geoheatmap'
     ],
     'series.heatmap': [
@@ -377,6 +379,7 @@ const DependencyMapping = {
     ],
     'series.keltnerchannels': [
         'indicators/indicators',
+        'indicators/atr',
         'indicators/keltner-channels'
     ],
     'series.klinger': [
@@ -517,6 +520,7 @@ const DependencyMapping = {
     ],
     'series.supertrend': [
         'indicators/indicators',
+        'indicators/atr',
         'indicators/supertrend'
     ],
     'series.tema': [
@@ -524,6 +528,7 @@ const DependencyMapping = {
         'indicators/tema'
     ],
     'series.tiledwebmap': [
+        'modules/map',
         'modules/tiledwebmap'
     ],
     'series.tilemap': [
@@ -576,6 +581,7 @@ const DependencyMapping = {
         'indicators/williams-r'
     ],
     'series.windbarb': [
+        'modules/datagrouping',
         'modules/windbarb'
     ],
     'series.wma': [

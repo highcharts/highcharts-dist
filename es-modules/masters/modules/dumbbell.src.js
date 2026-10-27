@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-26)
+ * @license Highcharts JS v13.1.1-modified (2026-10-27)
  * @module highcharts/modules/dumbbell
  * @requires highcharts
+ * @requires highcharts/highcharts-more
  *
  * (c) 2009-2026 Highsoft AS
  * Author: Sebastian Bochan, Rafał Sebestjański

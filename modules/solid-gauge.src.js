@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-26)
+ * @license Highcharts JS v13.1.1-modified (2026-10-27)
  * @module highcharts/modules/solid-gauge
  * @requires highcharts
  * @requires highcharts/highcharts-more
@@ -15,14 +15,14 @@
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(root["_Highcharts"]["Color"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
+		module.exports = factory(root["_Highcharts"]["Color"], root["_Highcharts"]["Series"]["types"]["gauge"], root["_Highcharts"]["Series"]["types"]["pie"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
 	else if(typeof define === 'function' && define.amd)
-		define("highcharts/modules/solid-gauge", ["highcharts/highcharts"], function (amd1) {return factory(amd1["Color"],amd1["SeriesRegistry"],amd1);});
+		define("highcharts/modules/solid-gauge", ["highcharts/highcharts"], function (amd1) {return factory(amd1["Color"],amd1["Series"]["types"]["gauge"],amd1["Series"]["types"]["pie"],amd1["SeriesRegistry"],amd1);});
 	else if(typeof exports === 'object')
-		exports["highcharts/modules/solid-gauge"] = factory(root["_Highcharts"]["Color"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
+		exports["highcharts/modules/solid-gauge"] = factory(root["_Highcharts"]["Color"], root["_Highcharts"]["Series"]["types"]["gauge"], root["_Highcharts"]["Series"]["types"]["pie"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
 	else
-		root["Highcharts"] = factory(root["Highcharts"]["Color"], root["Highcharts"]["SeriesRegistry"], root["Highcharts"]);
-})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__620__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__944__) => {
+		root["Highcharts"] = factory(root["Highcharts"]["Color"], root["Highcharts"]["Series"]["types"]["gauge"], root["Highcharts"]["Series"]["types"]["pie"], root["Highcharts"]["SeriesRegistry"], root["Highcharts"]);
+})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__620__, __WEBPACK_EXTERNAL_MODULE__188__, __WEBPACK_EXTERNAL_MODULE__20__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__944__) => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
@@ -31,6 +31,20 @@ return /******/ (() => { // webpackBootstrap
 (module) {
 
 module.exports = __WEBPACK_EXTERNAL_MODULE__620__;
+
+/***/ },
+
+/***/ 188
+(module) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__188__;
+
+/***/ },
+
+/***/ 20
+(module) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__20__;
 
 /***/ },
 
@@ -504,6 +518,12 @@ function roundedRect(x, y, width, height, options = {}) {
 */
 (''); // Keeps doclets above in JS file
 
+// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Series","types","gauge"],"commonjs":["highcharts","Series","types","gauge"],"commonjs2":["highcharts","Series","types","gauge"],"root":["Highcharts","Series","types","gauge"]}
+var highcharts_Series_types_gauge_commonjs_highcharts_Series_types_gauge_commonjs2_highcharts_Series_types_gauge_root_Highcharts_Series_types_gauge_ = __webpack_require__(188);
+var highcharts_Series_types_gauge_commonjs_highcharts_Series_types_gauge_commonjs2_highcharts_Series_types_gauge_root_Highcharts_Series_types_gauge_default = /*#__PURE__*/__webpack_require__.n(highcharts_Series_types_gauge_commonjs_highcharts_Series_types_gauge_commonjs2_highcharts_Series_types_gauge_root_Highcharts_Series_types_gauge_);
+// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Series","types","pie"],"commonjs":["highcharts","Series","types","pie"],"commonjs2":["highcharts","Series","types","pie"],"root":["Highcharts","Series","types","pie"]}
+var highcharts_Series_types_pie_commonjs_highcharts_Series_types_pie_commonjs2_highcharts_Series_types_pie_root_Highcharts_Series_types_pie_ = __webpack_require__(20);
+var highcharts_Series_types_pie_commonjs_highcharts_Series_types_pie_commonjs2_highcharts_Series_types_pie_root_Highcharts_Series_types_pie_default = /*#__PURE__*/__webpack_require__.n(highcharts_Series_types_pie_commonjs_highcharts_Series_types_pie_commonjs2_highcharts_Series_types_pie_root_Highcharts_Series_types_pie_);
 // EXTERNAL MODULE: external {"amd":["highcharts/highcharts","SeriesRegistry"],"commonjs":["highcharts","SeriesRegistry"],"commonjs2":["highcharts","SeriesRegistry"],"root":["Highcharts","SeriesRegistry"]}
 var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_ = __webpack_require__(512);
 var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_);
@@ -938,7 +958,8 @@ const SolidGaugeSeriesDefaults = {
 
 
 
-const { gauge: GaugeSeries, pie: PieSeries } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
+
+
 
 
 
@@ -956,7 +977,7 @@ const { gauge: GaugeSeries, pie: PieSeries } = (highcharts_SeriesRegistry_common
  *
  * @augments Highcharts.Series
  */
-class SolidGaugeSeries extends GaugeSeries {
+class SolidGaugeSeries extends (highcharts_Series_types_gauge_commonjs_highcharts_Series_types_gauge_commonjs2_highcharts_Series_types_gauge_root_Highcharts_Series_types_gauge_default()) {
     /* *
      *
      *  Functions
@@ -974,7 +995,7 @@ class SolidGaugeSeries extends GaugeSeries {
         }
         axis.initStops();
         // Generate points and inherit data label position
-        GaugeSeries.prototype.translate.call(this);
+        highcharts_Series_types_gauge_commonjs_highcharts_Series_types_gauge_commonjs2_highcharts_Series_types_gauge_root_Highcharts_Series_types_gauge_default().prototype.translate.call(this);
     }
     // Draw the points where each point is one needle.
     /** @internal */
@@ -1083,7 +1104,7 @@ class SolidGaugeSeries extends GaugeSeries {
     animate(init) {
         if (!init) {
             this.startAngleRad = this.thresholdAngleRad;
-            PieSeries.prototype.animate.call(this, init);
+            highcharts_Series_types_pie_commonjs_highcharts_Series_types_pie_commonjs2_highcharts_Series_types_pie_root_Highcharts_Series_types_pie_default().prototype.animate.call(this, init);
         }
     }
 }
@@ -1093,7 +1114,7 @@ class SolidGaugeSeries extends GaugeSeries {
  *
  * */
 /** @internal */
-SolidGaugeSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(GaugeSeries.defaultOptions, SolidGauge_SolidGaugeSeriesDefaults);
+SolidGaugeSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)((highcharts_Series_types_gauge_commonjs_highcharts_Series_types_gauge_commonjs2_highcharts_Series_types_gauge_root_Highcharts_Series_types_gauge_default()).defaultOptions, SolidGauge_SolidGaugeSeriesDefaults);
 highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default().registerSeriesType('solidgauge', SolidGaugeSeries);
 /* *
  *

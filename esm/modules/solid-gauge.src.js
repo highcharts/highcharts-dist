@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-26)
+ * @license Highcharts JS v13.1.1-modified (2026-10-27)
  * @module highcharts/modules/solid-gauge
  * @requires highcharts
  * @requires highcharts/highcharts-more
@@ -14,6 +14,8 @@
  * see www.highcharts.com/license
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
+import "../highcharts-more.src.js";
+import * as __WEBPACK_EXTERNAL_MODULE__highcharts_more_src_js_48e0d456__ from "../highcharts-more.src.js";
 /******/ // The require scope
 /******/ const __webpack_require__ = {};
 /******/ 
@@ -46,6 +48,8 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 ;// external ["../highcharts.src.js","default"]
 const external_highcharts_src_js_default_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"];
 var external_highcharts_src_js_default_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_namespaceObject);
+;// external "../highcharts-more.src.js"
+
 ;// ./code/es-modules/Extensions/BorderRadius.js
 /* unused harmony import specifier */ var relativeLength;
 /* unused harmony import specifier */ var isObject;
@@ -441,6 +445,12 @@ function roundedRect(x, y, width, height, options = {}) {
 */
 (''); // Keeps doclets above in JS file
 
+;// external ["../highcharts-more.src.js","default","Series","types","gauge"]
+const external_highcharts_more_src_js_default_Series_types_gauge_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_more_src_js_48e0d456__["default"].Series.types.gauge;
+var external_highcharts_more_src_js_default_Series_types_gauge_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_more_src_js_default_Series_types_gauge_namespaceObject);
+;// external ["../highcharts.src.js","default","Series","types","pie"]
+const external_highcharts_src_js_default_Series_types_pie_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].Series.types.pie;
+var external_highcharts_src_js_default_Series_types_pie_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_Series_types_pie_namespaceObject);
 ;// external ["../highcharts.src.js","default","SeriesRegistry"]
 const external_highcharts_src_js_default_SeriesRegistry_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].SeriesRegistry;
 var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_SeriesRegistry_namespaceObject);
@@ -875,7 +885,8 @@ const SolidGaugeSeriesDefaults = {
 
 
 
-const { gauge: GaugeSeries, pie: PieSeries } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
+
+
 
 
 
@@ -893,7 +904,7 @@ const { gauge: GaugeSeries, pie: PieSeries } = (external_highcharts_src_js_defau
  *
  * @augments Highcharts.Series
  */
-class SolidGaugeSeries extends GaugeSeries {
+class SolidGaugeSeries extends (external_highcharts_more_src_js_default_Series_types_gauge_default()) {
     /* *
      *
      *  Functions
@@ -911,7 +922,7 @@ class SolidGaugeSeries extends GaugeSeries {
         }
         axis.initStops();
         // Generate points and inherit data label position
-        GaugeSeries.prototype.translate.call(this);
+        external_highcharts_more_src_js_default_Series_types_gauge_default().prototype.translate.call(this);
     }
     // Draw the points where each point is one needle.
     /** @internal */
@@ -1020,7 +1031,7 @@ class SolidGaugeSeries extends GaugeSeries {
     animate(init) {
         if (!init) {
             this.startAngleRad = this.thresholdAngleRad;
-            PieSeries.prototype.animate.call(this, init);
+            external_highcharts_src_js_default_Series_types_pie_default().prototype.animate.call(this, init);
         }
     }
 }
@@ -1030,7 +1041,7 @@ class SolidGaugeSeries extends GaugeSeries {
  *
  * */
 /** @internal */
-SolidGaugeSeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(GaugeSeries.defaultOptions, SolidGauge_SolidGaugeSeriesDefaults);
+SolidGaugeSeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)((external_highcharts_more_src_js_default_Series_types_gauge_default()).defaultOptions, SolidGauge_SolidGaugeSeriesDefaults);
 external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('solidgauge', SolidGaugeSeries);
 /* *
  *
@@ -1040,6 +1051,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
 /* harmony default export */ const SolidGauge_SolidGaugeSeries = ((/* unused pure expression or super */ null && (SolidGaugeSeries)));
 
 ;// ./code/es-modules/masters/modules/solid-gauge.src.js
+
 
 
 

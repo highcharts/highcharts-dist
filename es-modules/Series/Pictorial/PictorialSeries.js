@@ -23,6 +23,7 @@ import PictorialPoint from './PictorialPoint.js';
 import PictorialSeriesDefaults from './PictorialSeriesDefaults.js';
 import PictorialUtilities from './PictorialUtilities.js';
 import Series from '../../Core/Series/Series.js';
+import ColumnSeries from '../Column/ColumnSeries.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 import StackItem from '../../Core/Axis/Stacking/StackItem.js';
 import SVGRenderer from '../../Core/Renderer/SVG/SVGRenderer.js';
@@ -38,7 +39,6 @@ composePatternFill(Chart, Series, SVGRenderer);
  *  Constants
  *
  * */
-const ColumnSeries = SeriesRegistry.seriesTypes.column;
 const { getStackMetrics, invertShadowGroup, rescalePatternFill } = PictorialUtilities;
 /* *
  *

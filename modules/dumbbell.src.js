@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-26)
+ * @license Highcharts JS v13.1.1-modified (2026-10-27)
  * @module highcharts/modules/dumbbell
  * @requires highcharts
+ * @requires highcharts/highcharts-more
  *
  * (c) 2009-2026 Highsoft AS
  * Author: Sebastian Bochan, Rafał Sebestjański
@@ -12,14 +13,14 @@
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(root["_Highcharts"]["SVGRenderer"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
+		module.exports = factory(root["_Highcharts"]["SVGRenderer"], root["_Highcharts"]["Series"]["types"]["arearange"]["prototype"]["pointClass"], root["_Highcharts"]["Series"]["types"]["arearange"], root["_Highcharts"]["Series"]["types"]["column"], root["_Highcharts"]["Series"]["types"]["columnrange"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
 	else if(typeof define === 'function' && define.amd)
-		define("highcharts/modules/dumbbell", ["highcharts/highcharts"], function (amd1) {return factory(amd1["SVGRenderer"],amd1["SeriesRegistry"],amd1);});
+		define("highcharts/modules/dumbbell", ["highcharts/highcharts"], function (amd1) {return factory(amd1["SVGRenderer"],amd1["Series"]["types"]["arearange"]["prototype"]["pointClass"],amd1["Series"]["types"]["arearange"],amd1["Series"]["types"]["column"],amd1["Series"]["types"]["columnrange"],amd1["SeriesRegistry"],amd1);});
 	else if(typeof exports === 'object')
-		exports["highcharts/modules/dumbbell"] = factory(root["_Highcharts"]["SVGRenderer"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
+		exports["highcharts/modules/dumbbell"] = factory(root["_Highcharts"]["SVGRenderer"], root["_Highcharts"]["Series"]["types"]["arearange"]["prototype"]["pointClass"], root["_Highcharts"]["Series"]["types"]["arearange"], root["_Highcharts"]["Series"]["types"]["column"], root["_Highcharts"]["Series"]["types"]["columnrange"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
 	else
-		root["Highcharts"] = factory(root["Highcharts"]["SVGRenderer"], root["Highcharts"]["SeriesRegistry"], root["Highcharts"]);
-})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__540__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__944__) => {
+		root["Highcharts"] = factory(root["Highcharts"]["SVGRenderer"], root["Highcharts"]["Series"]["types"]["arearange"]["prototype"]["pointClass"], root["Highcharts"]["Series"]["types"]["arearange"], root["Highcharts"]["Series"]["types"]["column"], root["Highcharts"]["Series"]["types"]["columnrange"], root["Highcharts"]["SeriesRegistry"], root["Highcharts"]);
+})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__540__, __WEBPACK_EXTERNAL_MODULE__900__, __WEBPACK_EXTERNAL_MODULE__660__, __WEBPACK_EXTERNAL_MODULE__448__, __WEBPACK_EXTERNAL_MODULE__716__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__944__) => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
@@ -28,6 +29,34 @@ return /******/ (() => { // webpackBootstrap
 (module) {
 
 module.exports = __WEBPACK_EXTERNAL_MODULE__540__;
+
+/***/ },
+
+/***/ 900
+(module) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__900__;
+
+/***/ },
+
+/***/ 660
+(module) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__660__;
+
+/***/ },
+
+/***/ 448
+(module) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__448__;
+
+/***/ },
+
+/***/ 716
+(module) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__716__;
 
 /***/ },
 
@@ -106,129 +135,18 @@ __webpack_require__.d(__webpack_exports__, {
 // EXTERNAL MODULE: external {"amd":["highcharts/highcharts"],"commonjs":["highcharts"],"commonjs2":["highcharts"],"root":["Highcharts"]}
 var highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_ = __webpack_require__(944);
 var highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default = /*#__PURE__*/__webpack_require__.n(highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_);
-// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","SeriesRegistry"],"commonjs":["highcharts","SeriesRegistry"],"commonjs2":["highcharts","SeriesRegistry"],"root":["Highcharts","SeriesRegistry"]}
-var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_ = __webpack_require__(512);
-var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_);
-;// ./code/es-modules/Series/AreaRange/AreaRangePoint.js
-/* *
- *
- *  (c) 2010-2026 Highsoft AS
- *  Author: Torstein Hønsi
- *
- *  Integration of this software requires a license.
- *  - For commercial use, see www.highcharts.com/license
- *  - For non-commercial, see www.highcharts.com/license-eula
- *
- *
- * */
-
-
-const { area: { prototype: { pointClass: AreaPoint, pointClass: { prototype: areaProto } } } } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
-
-/* *
- *
- *  Class
- *
- * */
-class AreaRangePoint extends AreaPoint {
-    /* *
-     *
-     *  Functions
-     *
-     * */
-    /**
-     * @internal
-     */
-    setState() {
-        const prevState = this.state, series = this.series, isPolar = series.chart.polar;
-        if (!(0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.defined)(this.plotHigh)) {
-            // Boost doesn't calculate plotHigh
-            this.plotHigh = series.yAxis.toPixels(this.high, true);
-        }
-        if (!(0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.defined)(this.plotLow)) {
-            // Boost doesn't calculate plotLow
-            this.plotLow = this.plotY = series.yAxis.toPixels(this.low, true);
-        }
-        series.lowerStateMarkerGraphic = series.stateMarkerGraphic;
-        series.stateMarkerGraphic = series.upperStateMarkerGraphic;
-        // Change state also for the top marker
-        this.graphic = this.graphics && this.graphics[1];
-        this.plotY = this.plotHigh;
-        if (isPolar && (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.isNumber)(this.plotHighX)) {
-            this.plotX = this.plotHighX;
-        }
-        // Top state:
-        areaProto.setState.apply(this, arguments);
-        this.state = prevState;
-        // Now restore defaults
-        this.plotY = this.plotLow;
-        this.graphic = this.graphics && this.graphics[0];
-        if (isPolar && (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.isNumber)(this.plotLowX)) {
-            this.plotX = this.plotLowX;
-        }
-        series.upperStateMarkerGraphic = series.stateMarkerGraphic;
-        series.stateMarkerGraphic = series.lowerStateMarkerGraphic;
-        // Lower marker is stored at stateMarkerGraphic
-        // to avoid reference duplication (#7021)
-        series.lowerStateMarkerGraphic = void 0;
-        const originalSettings = series.modifyMarkerSettings();
-        // Bottom state
-        areaProto.setState.apply(this, arguments);
-        // Restore previous state
-        series.restoreMarkerSettings(originalSettings);
-    }
-    /** @internal */
-    haloPath() {
-        const isPolar = this.series.chart.polar;
-        let path = [];
-        // Bottom halo
-        this.plotY = this.plotLow;
-        if (isPolar && (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.isNumber)(this.plotLowX)) {
-            this.plotX = this.plotLowX;
-        }
-        if (this.isInside) {
-            path = areaProto.haloPath.apply(this, arguments);
-        }
-        // Top halo
-        this.plotY = this.plotHigh;
-        if (isPolar && (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.isNumber)(this.plotHighX)) {
-            this.plotX = this.plotHighX;
-        }
-        if (this.isTopInside) {
-            path = path.concat(areaProto.haloPath.apply(this, arguments));
-        }
-        return path;
-    }
-    /** @internal */
-    isValid() {
-        return (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.isNumber)(this.low) && (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.isNumber)(this.high);
-    }
-}
-/* *
- *
- *  Default Export
- *
- * */
-/* harmony default export */ const AreaRange_AreaRangePoint = (AreaRangePoint);
-/* *
- *
- *  API Options
- *
- * */
-/**
- * Range series only. The high or maximum value for each data point.
- *
- * @name Highcharts.Point#high
- * @type {number|undefined}
- */
-/**
- * Range series only. The low or minimum value for each data point.
- *
- * @name Highcharts.Point#low
- * @type {number|undefined}
- */
-''; // Keeps doclets above in JS file.
-
+// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Series","types","arearange"],"commonjs":["highcharts","Series","types","arearange"],"commonjs2":["highcharts","Series","types","arearange"],"root":["Highcharts","Series","types","arearange"]}
+var highcharts_Series_types_arearange_commonjs_highcharts_Series_types_arearange_commonjs2_highcharts_Series_types_arearange_root_Highcharts_Series_types_arearange_ = __webpack_require__(660);
+var highcharts_Series_types_arearange_commonjs_highcharts_Series_types_arearange_commonjs2_highcharts_Series_types_arearange_root_Highcharts_Series_types_arearange_default = /*#__PURE__*/__webpack_require__.n(highcharts_Series_types_arearange_commonjs_highcharts_Series_types_arearange_commonjs2_highcharts_Series_types_arearange_root_Highcharts_Series_types_arearange_);
+// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Series","types","columnrange"],"commonjs":["highcharts","Series","types","columnrange"],"commonjs2":["highcharts","Series","types","columnrange"],"root":["Highcharts","Series","types","columnrange"]}
+var highcharts_Series_types_columnrange_commonjs_highcharts_Series_types_columnrange_commonjs2_highcharts_Series_types_columnrange_root_Highcharts_Series_types_columnrange_ = __webpack_require__(716);
+var highcharts_Series_types_columnrange_commonjs_highcharts_Series_types_columnrange_commonjs2_highcharts_Series_types_columnrange_root_Highcharts_Series_types_columnrange_default = /*#__PURE__*/__webpack_require__.n(highcharts_Series_types_columnrange_commonjs_highcharts_Series_types_columnrange_commonjs2_highcharts_Series_types_columnrange_root_Highcharts_Series_types_columnrange_);
+// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Series","types","column"],"commonjs":["highcharts","Series","types","column"],"commonjs2":["highcharts","Series","types","column"],"root":["Highcharts","Series","types","column"]}
+var highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_ = __webpack_require__(448);
+var highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_default = /*#__PURE__*/__webpack_require__.n(highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_);
+// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Series","types","arearange","prototype","pointClass"],"commonjs":["highcharts","Series","types","arearange","prototype","pointClass"],"commonjs2":["highcharts","Series","types","arearange","prototype","pointClass"],"root":["Highcharts","Series","types","arearange","prototype","pointClass"]}
+var highcharts_Series_types_arearange_prototype_pointClass_commonjs_highcharts_Series_types_arearange_prototype_pointClass_commonjs2_highcharts_Series_types_arearange_prototype_pointClass_root_Highcharts_Series_types_arearange_prototype_pointClass_ = __webpack_require__(900);
+var highcharts_Series_types_arearange_prototype_pointClass_commonjs_highcharts_Series_types_arearange_prototype_pointClass_commonjs2_highcharts_Series_types_arearange_prototype_pointClass_root_Highcharts_Series_types_arearange_prototype_pointClass_default = /*#__PURE__*/__webpack_require__.n(highcharts_Series_types_arearange_prototype_pointClass_commonjs_highcharts_Series_types_arearange_prototype_pointClass_commonjs2_highcharts_Series_types_arearange_prototype_pointClass_root_Highcharts_Series_types_arearange_prototype_pointClass_);
 ;// ./code/es-modules/Series/Dumbbell/DumbbellPoint.js
 /* *
  *
@@ -249,7 +167,7 @@ class AreaRangePoint extends AreaPoint {
  *  Class
  *
  * */
-class DumbbellPoint extends AreaRange_AreaRangePoint {
+class DumbbellPoint extends (highcharts_Series_types_arearange_prototype_pointClass_commonjs_highcharts_Series_types_arearange_prototype_pointClass_commonjs2_highcharts_Series_types_arearange_prototype_pointClass_root_Highcharts_Series_types_arearange_prototype_pointClass_default()) {
     /* *
      *
      *  Functions
@@ -312,7 +230,7 @@ class DumbbellPoint extends AreaRange_AreaRangePoint {
     }
 }
 ;(0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.extend)(DumbbellPoint.prototype, {
-    pointSetState: AreaRange_AreaRangePoint.prototype.setState
+    pointSetState: (highcharts_Series_types_arearange_prototype_pointClass_commonjs_highcharts_Series_types_arearange_prototype_pointClass_commonjs2_highcharts_Series_types_arearange_prototype_pointClass_root_Highcharts_Series_types_arearange_prototype_pointClass_default()).prototype.setState
 });
 /* *
  *
@@ -557,6 +475,9 @@ const DumbbellSeriesDefaults = {
  * */
 /* harmony default export */ const Dumbbell_DumbbellSeriesDefaults = (DumbbellSeriesDefaults);
 
+// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","SeriesRegistry"],"commonjs":["highcharts","SeriesRegistry"],"commonjs2":["highcharts","SeriesRegistry"],"root":["Highcharts","SeriesRegistry"]}
+var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_ = __webpack_require__(512);
+var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_);
 // EXTERNAL MODULE: external {"amd":["highcharts/highcharts","SVGRenderer"],"commonjs":["highcharts","SVGRenderer"],"commonjs2":["highcharts","SVGRenderer"],"root":["Highcharts","SVGRenderer"]}
 var highcharts_SVGRenderer_commonjs_highcharts_SVGRenderer_commonjs2_highcharts_SVGRenderer_root_Highcharts_SVGRenderer_ = __webpack_require__(540);
 var highcharts_SVGRenderer_commonjs_highcharts_SVGRenderer_commonjs2_highcharts_SVGRenderer_root_Highcharts_SVGRenderer_default = /*#__PURE__*/__webpack_require__.n(highcharts_SVGRenderer_commonjs_highcharts_SVGRenderer_commonjs2_highcharts_SVGRenderer_root_Highcharts_SVGRenderer_);
@@ -576,9 +497,11 @@ var highcharts_SVGRenderer_commonjs_highcharts_SVGRenderer_commonjs2_highcharts_
 
 
 
+
+
+
 const { noop } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 
-const { arearange: AreaRangeSeries, column: ColumnSeries, columnrange: ColumnRangeSeries } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
 
 
 /* *
@@ -594,7 +517,7 @@ const { arearange: AreaRangeSeries, column: ColumnSeries, columnrange: ColumnRan
  *
  * @augments Highcharts.Series
  */
-class DumbbellSeries extends AreaRangeSeries {
+class DumbbellSeries extends (highcharts_Series_types_arearange_commonjs_highcharts_Series_types_arearange_commonjs2_highcharts_Series_types_arearange_root_Highcharts_Series_types_arearange_default()) {
     /* *
      *
      *  Functions
@@ -702,7 +625,7 @@ class DumbbellSeries extends AreaRangeSeries {
      * @internal
      */
     getColumnMetrics() {
-        const metrics = ColumnSeries.prototype
+        const metrics = highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_default().prototype
             .getColumnMetrics.apply(this, arguments);
         metrics.offset += metrics.width / 2;
         return metrics;
@@ -802,8 +725,8 @@ class DumbbellSeries extends AreaRangeSeries {
      * @internal
      */
     setShapeArgs() {
-        ColumnSeries.prototype.translate.apply(this);
-        ColumnRangeSeries.prototype.afterColumnTranslate.apply(this);
+        highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_default().prototype.translate.apply(this);
+        highcharts_Series_types_columnrange_commonjs_highcharts_Series_types_columnrange_commonjs2_highcharts_Series_types_columnrange_root_Highcharts_Series_types_columnrange_default().prototype.afterColumnTranslate.apply(this);
     }
 }
 /* *
@@ -812,15 +735,15 @@ class DumbbellSeries extends AreaRangeSeries {
  *
  * */
 /** @internal */
-DumbbellSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(AreaRangeSeries.defaultOptions, Dumbbell_DumbbellSeriesDefaults);
+DumbbellSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)((highcharts_Series_types_arearange_commonjs_highcharts_Series_types_arearange_commonjs2_highcharts_Series_types_arearange_root_Highcharts_Series_types_arearange_default()).defaultOptions, Dumbbell_DumbbellSeriesDefaults);
 (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.extend)(DumbbellSeries.prototype, {
-    crispCol: ColumnSeries.prototype.crispCol,
+    crispCol: (highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_default()).prototype.crispCol,
     drawGraph: noop,
-    drawTracker: ColumnSeries.prototype.drawTracker,
+    drawTracker: (highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_default()).prototype.drawTracker,
     pointClass: Dumbbell_DumbbellPoint,
-    seriesDrawPoints: AreaRangeSeries.prototype.drawPoints,
+    seriesDrawPoints: (highcharts_Series_types_arearange_commonjs_highcharts_Series_types_arearange_commonjs2_highcharts_Series_types_arearange_root_Highcharts_Series_types_arearange_default()).prototype.drawPoints,
     trackerGroups: ['group', 'markerGroup', 'dataLabelsGroup'],
-    translatePoint: AreaRangeSeries.prototype.translate
+    translatePoint: (highcharts_Series_types_arearange_commonjs_highcharts_Series_types_arearange_commonjs2_highcharts_Series_types_arearange_root_Highcharts_Series_types_arearange_default()).prototype.translate
 });
 highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default().registerSeriesType('dumbbell', DumbbellSeries);
 /* *

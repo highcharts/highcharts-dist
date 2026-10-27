@@ -11,8 +11,8 @@
  * */
 'use strict';
 import SplineSeries from '../Spline/SplineSeries.js';
+import AreaSeries from '../Area/AreaSeries.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-const { area: AreaSeries, area: { prototype: areaProto } } = SeriesRegistry.seriesTypes;
 import { extend, merge } from '../../Shared/Utilities.js';
 /* *
  *
@@ -37,9 +37,9 @@ class AreaSplineSeries extends SplineSeries {
 /** @internal */
 AreaSplineSeries.defaultOptions = merge(SplineSeries.defaultOptions, AreaSeries.defaultOptions);
 extend(AreaSplineSeries.prototype, {
-    getGraphPath: areaProto.getGraphPath,
-    getStackPoints: areaProto.getStackPoints,
-    drawGraph: areaProto.drawGraph
+    getGraphPath: AreaSeries.prototype.getGraphPath,
+    getStackPoints: AreaSeries.prototype.getStackPoints,
+    drawGraph: AreaSeries.prototype.drawGraph
 });
 SeriesRegistry.registerSeriesType('areaspline', AreaSplineSeries);
 /* *

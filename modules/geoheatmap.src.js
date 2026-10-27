@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-26)
+ * @license Highcharts JS v13.1.1-modified (2026-10-27)
  * @module highcharts/modules/geoheatmap
  * @requires highcharts
+ * @requires highcharts/modules/map
  *
  * (c) 2009-2026
  *
@@ -11,17 +12,24 @@
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
+		module.exports = factory(root["_Highcharts"]["Series"]["types"]["map"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
 	else if(typeof define === 'function' && define.amd)
-		define("highcharts/modules/geoheatmap", ["highcharts/highcharts"], function (amd1) {return factory(amd1["SeriesRegistry"],amd1);});
+		define("highcharts/modules/geoheatmap", ["highcharts/highcharts"], function (amd1) {return factory(amd1["Series"]["types"]["map"],amd1["SeriesRegistry"],amd1);});
 	else if(typeof exports === 'object')
-		exports["highcharts/modules/geoheatmap"] = factory(root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
+		exports["highcharts/modules/geoheatmap"] = factory(root["_Highcharts"]["Series"]["types"]["map"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
 	else
-		root["Highcharts"] = factory(root["Highcharts"]["SeriesRegistry"], root["Highcharts"]);
-})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__944__) => {
+		root["Highcharts"] = factory(root["Highcharts"]["Series"]["types"]["map"], root["Highcharts"]["SeriesRegistry"], root["Highcharts"]);
+})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__468__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__944__) => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
+
+/***/ 468
+(module) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__468__;
+
+/***/ },
 
 /***/ 512
 (module) {
@@ -98,9 +106,9 @@ __webpack_require__.d(__webpack_exports__, {
 // EXTERNAL MODULE: external {"amd":["highcharts/highcharts"],"commonjs":["highcharts"],"commonjs2":["highcharts"],"root":["Highcharts"]}
 var highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_ = __webpack_require__(944);
 var highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default = /*#__PURE__*/__webpack_require__.n(highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_);
-// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","SeriesRegistry"],"commonjs":["highcharts","SeriesRegistry"],"commonjs2":["highcharts","SeriesRegistry"],"root":["Highcharts","SeriesRegistry"]}
-var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_ = __webpack_require__(512);
-var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_);
+// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Series","types","map"],"commonjs":["highcharts","Series","types","map"],"commonjs2":["highcharts","Series","types","map"],"root":["Highcharts","Series","types","map"]}
+var highcharts_Series_types_map_commonjs_highcharts_Series_types_map_commonjs2_highcharts_Series_types_map_root_Highcharts_Series_types_map_ = __webpack_require__(468);
+var highcharts_Series_types_map_commonjs_highcharts_Series_types_map_commonjs2_highcharts_Series_types_map_root_Highcharts_Series_types_map_default = /*#__PURE__*/__webpack_require__.n(highcharts_Series_types_map_commonjs_highcharts_Series_types_map_commonjs2_highcharts_Series_types_map_root_Highcharts_Series_types_map_);
 ;// ./code/es-modules/Series/GeoHeatmap/GeoHeatmapPoint.js
 /* *
  *
@@ -117,7 +125,12 @@ var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highc
 
 
 
-const { map: { prototype: { pointClass: MapPoint } } } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
+/* *
+ *
+ *  Constants
+ *
+ * */
+const MapPoint = (highcharts_Series_types_map_commonjs_highcharts_Series_types_map_commonjs2_highcharts_Series_types_map_root_Highcharts_Series_types_map_default()).prototype.pointClass;
 /* *
  *
  *  Class
@@ -462,6 +475,9 @@ const InterpolationUtilities = {
 };
 /* harmony default export */ const Series_InterpolationUtilities = (InterpolationUtilities);
 
+// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","SeriesRegistry"],"commonjs":["highcharts","SeriesRegistry"],"commonjs2":["highcharts","SeriesRegistry"],"root":["Highcharts","SeriesRegistry"]}
+var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_ = __webpack_require__(512);
+var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_);
 ;// ./code/es-modules/Series/GeoHeatmap/GeoHeatmapSeries.js
 /* *
  *
@@ -484,7 +500,7 @@ const { noop } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highc
 
 const { colorFromPoint: GeoHeatmapSeries_colorFromPoint, getContext: GeoHeatmapSeries_getContext } = Series_InterpolationUtilities;
 
-const { seriesTypes: { map: MapSeries } } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default());
+
 
 
 /**
@@ -515,7 +531,7 @@ function scaledPointPos(lon, lat, canvasWidth, canvasHeight, colsize, rowsize) {
  *
  * @augments Highcharts.Series
  */
-class GeoHeatmapSeries extends MapSeries {
+class GeoHeatmapSeries extends (highcharts_Series_types_map_commonjs_highcharts_Series_types_map_commonjs2_highcharts_Series_types_map_root_Highcharts_Series_types_map_default()) {
     constructor() {
         /* *
          *
@@ -794,7 +810,7 @@ class GeoHeatmapSeries extends MapSeries {
         }
     }
 }
-GeoHeatmapSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(MapSeries.defaultOptions, GeoHeatmap_GeoHeatmapSeriesDefaults);
+GeoHeatmapSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)((highcharts_Series_types_map_commonjs_highcharts_Series_types_map_commonjs2_highcharts_Series_types_map_root_Highcharts_Series_types_map_default()).defaultOptions, GeoHeatmap_GeoHeatmapSeriesDefaults);
 (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.addEvent)(GeoHeatmapSeries, 'afterDataClassLegendClick', function () {
     this.isDirtyCanvas = true;
     this.drawPoints();

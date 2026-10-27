@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-26)
+ * @license Highcharts JS v13.1.1-modified (2026-10-27)
  * @module highcharts/modules/histogram-bellcurve
  * @requires highcharts
  *
@@ -12,17 +12,31 @@
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(root["_Highcharts"]["Series"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
+		module.exports = factory(root["_Highcharts"]["Series"]["types"]["areaspline"], root["_Highcharts"]["Series"]["types"]["column"], root["_Highcharts"]["Series"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
 	else if(typeof define === 'function' && define.amd)
-		define("highcharts/modules/histogram-bellcurve", ["highcharts/highcharts"], function (amd1) {return factory(amd1["Series"],amd1["SeriesRegistry"],amd1);});
+		define("highcharts/modules/histogram-bellcurve", ["highcharts/highcharts"], function (amd1) {return factory(amd1["Series"]["types"]["areaspline"],amd1["Series"]["types"]["column"],amd1["Series"],amd1["SeriesRegistry"],amd1);});
 	else if(typeof exports === 'object')
-		exports["highcharts/modules/histogram-bellcurve"] = factory(root["_Highcharts"]["Series"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
+		exports["highcharts/modules/histogram-bellcurve"] = factory(root["_Highcharts"]["Series"]["types"]["areaspline"], root["_Highcharts"]["Series"]["types"]["column"], root["_Highcharts"]["Series"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
 	else
-		root["Highcharts"] = factory(root["Highcharts"]["Series"], root["Highcharts"]["SeriesRegistry"], root["Highcharts"]);
-})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__820__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__944__) => {
+		root["Highcharts"] = factory(root["Highcharts"]["Series"]["types"]["areaspline"], root["Highcharts"]["Series"]["types"]["column"], root["Highcharts"]["Series"], root["Highcharts"]["SeriesRegistry"], root["Highcharts"]);
+})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__908__, __WEBPACK_EXTERNAL_MODULE__448__, __WEBPACK_EXTERNAL_MODULE__820__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__944__) => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
+
+/***/ 908
+(module) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__908__;
+
+/***/ },
+
+/***/ 448
+(module) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__448__;
+
+/***/ },
 
 /***/ 820
 (module) {
@@ -332,6 +346,9 @@ const HistogramSeriesDefaults = {
  * */
 /* harmony default export */ const Histogram_HistogramSeriesDefaults = (HistogramSeriesDefaults);
 
+// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Series","types","column"],"commonjs":["highcharts","Series","types","column"],"commonjs2":["highcharts","Series","types","column"],"root":["Highcharts","Series","types","column"]}
+var highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_ = __webpack_require__(448);
+var highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_default = /*#__PURE__*/__webpack_require__.n(highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_);
 // EXTERNAL MODULE: external {"amd":["highcharts/highcharts","SeriesRegistry"],"commonjs":["highcharts","SeriesRegistry"],"commonjs2":["highcharts","SeriesRegistry"],"root":["Highcharts","SeriesRegistry"]}
 var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_ = __webpack_require__(512);
 var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_);
@@ -351,7 +368,7 @@ var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highc
 
 
 
-const { column: ColumnSeries } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
+
 
 /* ************************************************************************** *
  *  HISTOGRAM
@@ -396,7 +413,7 @@ function fitToBinLeftClosed(bins) {
  * @name Highcharts.seriesTypes.histogram
  * @augments Highcharts.Series
  */
-class HistogramSeries extends ColumnSeries {
+class HistogramSeries extends (highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_default()) {
     /* *
      *
      *  Functions
@@ -499,7 +516,7 @@ class HistogramSeries extends ColumnSeries {
  *
  * */
 /** @internal */
-HistogramSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(ColumnSeries.defaultOptions, Histogram_HistogramSeriesDefaults);
+HistogramSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)((highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_default()).defaultOptions, Histogram_HistogramSeriesDefaults);
 Series_DerivedComposition.compose(HistogramSeries);
 highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default().registerSeriesType('histogram', HistogramSeries);
 /* *
@@ -637,6 +654,9 @@ const BellcurveSeriesDefaults = {
  * */
 /* harmony default export */ const Bellcurve_BellcurveSeriesDefaults = (BellcurveSeriesDefaults);
 
+// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Series","types","areaspline"],"commonjs":["highcharts","Series","types","areaspline"],"commonjs2":["highcharts","Series","types","areaspline"],"root":["Highcharts","Series","types","areaspline"]}
+var highcharts_Series_types_areaspline_commonjs_highcharts_Series_types_areaspline_commonjs2_highcharts_Series_types_areaspline_root_Highcharts_Series_types_areaspline_ = __webpack_require__(908);
+var highcharts_Series_types_areaspline_commonjs_highcharts_Series_types_areaspline_commonjs2_highcharts_Series_types_areaspline_root_Highcharts_Series_types_areaspline_default = /*#__PURE__*/__webpack_require__.n(highcharts_Series_types_areaspline_commonjs_highcharts_Series_types_areaspline_commonjs2_highcharts_Series_types_areaspline_root_Highcharts_Series_types_areaspline_);
 ;// ./code/es-modules/Series/Bellcurve/BellcurveSeries.js
 /* *
  *
@@ -654,7 +674,7 @@ const BellcurveSeriesDefaults = {
 
 
 
-const { areaspline: AreaSplineSeries } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
+
 
 /* *
  *
@@ -669,7 +689,7 @@ const { areaspline: AreaSplineSeries } = (highcharts_SeriesRegistry_commonjs_hig
  *
  * @augments Highcharts.Series
  */
-class BellcurveSeries extends AreaSplineSeries {
+class BellcurveSeries extends (highcharts_Series_types_areaspline_commonjs_highcharts_Series_types_areaspline_commonjs2_highcharts_Series_types_areaspline_root_Highcharts_Series_types_areaspline_default()) {
     /* *
      *
      *  Static Functions
@@ -758,7 +778,7 @@ class BellcurveSeries extends AreaSplineSeries {
  *
  * */
 /** @internal */
-BellcurveSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(AreaSplineSeries.defaultOptions, Bellcurve_BellcurveSeriesDefaults);
+BellcurveSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)((highcharts_Series_types_areaspline_commonjs_highcharts_Series_types_areaspline_commonjs2_highcharts_Series_types_areaspline_root_Highcharts_Series_types_areaspline_default()).defaultOptions, Bellcurve_BellcurveSeriesDefaults);
 Series_DerivedComposition.compose(BellcurveSeries);
 highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default().registerSeriesType('bellcurve', BellcurveSeries);
 /* *

@@ -13,8 +13,8 @@
 import ColorMapComposition from '../ColorMapComposition.js';
 import MU from '../../Maps/MapUtilities.js';
 const { boundsFromPath } = MU;
-import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-const ScatterPoint = SeriesRegistry.seriesTypes.scatter.prototype.pointClass;
+import ScatterSeries from '../Scatter/ScatterSeries.js';
+const ScatterPoint = ScatterSeries.prototype.pointClass;
 import { extend, internalClearTimeout, isNumber } from '../../Shared/Utilities.js';
 /* *
  *

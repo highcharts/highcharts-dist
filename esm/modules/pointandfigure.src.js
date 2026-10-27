@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.1.1-modified (2026-10-26)
+ * @license Highstock JS v13.1.1-modified (2026-10-27)
  * @module highcharts/modules/pointandfigure
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -15,6 +15,7 @@
  * see www.highcharts.com/license
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
+import "./stock.src.js";
 /******/ // The require scope
 /******/ const __webpack_require__ = {};
 /******/ 
@@ -47,6 +48,8 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 ;// external ["../highcharts.src.js","default"]
 const external_highcharts_src_js_default_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"];
 var external_highcharts_src_js_default_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_namespaceObject);
+;// external "./stock.src.js"
+
 ;// ./code/es-modules/Data/ColumnUtils.js
 /* *
  *
@@ -584,9 +587,9 @@ class DataTableCore {
 */
 (''); // Keeps doclets above in JS file
 
-;// external ["../highcharts.src.js","default","SeriesRegistry"]
-const external_highcharts_src_js_default_SeriesRegistry_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].SeriesRegistry;
-var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_SeriesRegistry_namespaceObject);
+;// external ["../highcharts.src.js","default","Series","types","scatter"]
+const external_highcharts_src_js_default_Series_types_scatter_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].Series.types.scatter;
+var external_highcharts_src_js_default_Series_types_scatter_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_Series_types_scatter_namespaceObject);
 ;// ./code/es-modules/Series/PointAndFigure/PointAndFigurePoint.js
 /* *
  *
@@ -606,7 +609,12 @@ var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__w
 *
 * */
 
-const { seriesTypes: { scatter: { prototype: { pointClass: ScatterPoint } } } } = (external_highcharts_src_js_default_SeriesRegistry_default());
+/* *
+ *
+ *  Constants
+ *
+ * */
+const ScatterPoint = (external_highcharts_src_js_default_Series_types_scatter_default()).prototype.pointClass;
 /* *
  *
  *  Class
@@ -799,6 +807,12 @@ const PointAndFigureSeriesDefaults = {
  * */
 /* harmony default export */ const PointAndFigure_PointAndFigureSeriesDefaults = (PointAndFigureSeriesDefaults);
 
+;// external ["../highcharts.src.js","default","Series","types","column"]
+const external_highcharts_src_js_default_Series_types_column_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].Series.types.column;
+var external_highcharts_src_js_default_Series_types_column_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_Series_types_column_namespaceObject);
+;// external ["../highcharts.src.js","default","SeriesRegistry"]
+const external_highcharts_src_js_default_SeriesRegistry_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].SeriesRegistry;
+var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_SeriesRegistry_namespaceObject);
 ;// ./code/es-modules/Series/CrossSymbol.js
 /* *
  *
@@ -888,8 +902,9 @@ var CrossSymbol;
 
 
 
+
+
 const { composed: PointAndFigureSeries_composed } = (external_highcharts_src_js_default_default());
-const { scatter: ScatterSeries, column: { prototype: columnProto } } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
 /* *
  *
  *  Declarations
@@ -914,7 +929,7 @@ const { scatter: ScatterSeries, column: { prototype: columnProto } } = (external
  *
  * @augments Highcharts.Series
  */
-class PointAndFigureSeries extends ScatterSeries {
+class PointAndFigureSeries extends (external_highcharts_src_js_default_Series_types_scatter_default()) {
     constructor() {
         /* *
          *
@@ -1079,11 +1094,11 @@ class PointAndFigureSeries extends ScatterSeries {
     }
 }
 /** @internal */
-PointAndFigureSeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(ScatterSeries.defaultOptions, PointAndFigure_PointAndFigureSeriesDefaults);
+PointAndFigureSeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)((external_highcharts_src_js_default_Series_types_scatter_default()).defaultOptions, PointAndFigure_PointAndFigureSeriesDefaults);
 (0,external_highcharts_src_js_default_namespaceObject.extend)(PointAndFigureSeries.prototype, {
     takeOrdinalPosition: true,
     pnfDataGroups: [],
-    getColumnMetrics: columnProto.getColumnMetrics,
+    getColumnMetrics: (external_highcharts_src_js_default_Series_types_column_default()).prototype.getColumnMetrics,
     pointClass: PointAndFigure_PointAndFigurePoint,
     sorted: true
 });
@@ -1096,6 +1111,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
 /* harmony default export */ const PointAndFigure_PointAndFigureSeries = (PointAndFigureSeries);
 
 ;// ./code/es-modules/masters/modules/pointandfigure.src.js
+
 
 
 

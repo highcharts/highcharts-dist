@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.1.1-modified (2026-10-26)
+ * @license Highstock JS v13.1.1-modified (2026-10-27)
  * @module highcharts/modules/hollowcandlestick
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -14,6 +14,8 @@
  * see www.highcharts.com/license
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
+import "./stock.src.js";
+import * as __WEBPACK_EXTERNAL_MODULE__stock_src_js_3de69a45__ from "./stock.src.js";
 /******/ // The require scope
 /******/ const __webpack_require__ = {};
 /******/ 
@@ -46,9 +48,11 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 ;// external ["../highcharts.src.js","default"]
 const external_highcharts_src_js_default_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"];
 var external_highcharts_src_js_default_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_namespaceObject);
-;// external ["../highcharts.src.js","default","SeriesRegistry"]
-const external_highcharts_src_js_default_SeriesRegistry_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].SeriesRegistry;
-var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_SeriesRegistry_namespaceObject);
+;// external "./stock.src.js"
+
+;// external ["./stock.src.js","default","Series","types","candlestick"]
+const external_stock_src_js_default_Series_types_candlestick_namespaceObject = __WEBPACK_EXTERNAL_MODULE__stock_src_js_3de69a45__["default"].Series.types.candlestick;
+var external_stock_src_js_default_Series_types_candlestick_default = /*#__PURE__*/__webpack_require__.n(external_stock_src_js_default_Series_types_candlestick_namespaceObject);
 ;// ./code/es-modules/Series/HollowCandlestick/HollowCandlestickPoint.js
 /* *
  *
@@ -68,13 +72,12 @@ var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__w
  *
  * */
 
-const { seriesTypes: { candlestick: CandlestickSeries } } = (external_highcharts_src_js_default_SeriesRegistry_default());
 /* *
  *
  *  Class
  *
  * */
-class HollowCandlestickPoint extends CandlestickSeries.prototype.pointClass {
+class HollowCandlestickPoint extends (external_stock_src_js_default_Series_types_candlestick_default()).prototype.pointClass {
     /* *
      *
      *  Functions
@@ -101,6 +104,9 @@ class HollowCandlestickPoint extends CandlestickSeries.prototype.pointClass {
  * */
 /* harmony default export */ const HollowCandlestick_HollowCandlestickPoint = (HollowCandlestickPoint);
 
+;// external ["../highcharts.src.js","default","SeriesRegistry"]
+const external_highcharts_src_js_default_SeriesRegistry_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].SeriesRegistry;
+var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_SeriesRegistry_namespaceObject);
 ;// external ["../highcharts.src.js","default","Axis"]
 const external_highcharts_src_js_default_Axis_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].Axis;
 var external_highcharts_src_js_default_Axis_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_Axis_namespaceObject);
@@ -126,7 +132,7 @@ var external_highcharts_src_js_default_Axis_default = /*#__PURE__*/__webpack_req
 
 
 
-const { seriesTypes: { candlestick: HollowCandlestickSeries_CandlestickSeries } } = (external_highcharts_src_js_default_SeriesRegistry_default());
+
 /* *
  *
  *  Code
@@ -138,7 +144,7 @@ const { seriesTypes: { candlestick: HollowCandlestickSeries_CandlestickSeries } 
  * @class
  * @name Highcharts.seriesTypes.hollowcandlestick
  */
-class HollowCandlestickSeries extends HollowCandlestickSeries_CandlestickSeries {
+class HollowCandlestickSeries extends (external_stock_src_js_default_Series_types_candlestick_default()) {
     constructor() {
         /* *
          *
@@ -300,7 +306,7 @@ class HollowCandlestickSeries extends HollowCandlestickSeries_CandlestickSeries 
  * @requires     modules/hollowcandlestick
  * @optionparent plotOptions.hollowcandlestick
  */
-HollowCandlestickSeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(HollowCandlestickSeries_CandlestickSeries.defaultOptions, {
+HollowCandlestickSeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)((external_stock_src_js_default_Series_types_candlestick_default()).defaultOptions, {
     /**
      * The fill color of the candlestick when the current
      * close is lower than the previous one.
@@ -459,6 +465,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
 ''; // Adds doclets above to transpiled
 
 ;// ./code/es-modules/masters/modules/hollowcandlestick.src.js
+
 
 
 

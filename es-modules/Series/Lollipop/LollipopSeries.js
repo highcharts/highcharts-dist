@@ -11,11 +11,10 @@
  * */
 'use strict';
 import LollipopPoint from './LollipopPoint.js';
+import ColumnSeries from '../Column/ColumnSeries.js';
+import DumbbellSeries from '../Dumbbell/DumbbellSeries.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 import Series from '../../Core/Series/Series.js';
-const { seriesTypes: { column: { prototype: colProto }, dumbbell: { prototype: dumbbellProto }, 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-scatter: ScatterSeries } } = SeriesRegistry;
 import { extend, merge } from '../../Shared/Utilities.js';
 /* *
  *
@@ -60,7 +59,7 @@ class LollipopSeries extends Series {
      */
     translate() {
         const series = this;
-        colProto.translate.apply(series, arguments);
+        ColumnSeries.prototype.translate.apply(series, arguments);
         // Correct x position
         for (const point of series.points) {
             const { pointWidth, shapeArgs } = point;
@@ -139,12 +138,12 @@ LollipopSeries.defaultOptions = merge(Series.defaultOptions, {
     pointRange: 1
 });
 extend(LollipopSeries.prototype, {
-    alignDataLabel: colProto.alignDataLabel,
-    crispCol: colProto.crispCol,
-    drawConnector: dumbbellProto.drawConnector,
-    drawDataLabels: colProto.drawDataLabels,
-    getColumnMetrics: colProto.getColumnMetrics,
-    getConnectorAttribs: dumbbellProto.getConnectorAttribs,
+    alignDataLabel: ColumnSeries.prototype.alignDataLabel,
+    crispCol: ColumnSeries.prototype.crispCol,
+    drawConnector: DumbbellSeries.prototype.drawConnector,
+    drawDataLabels: ColumnSeries.prototype.drawDataLabels,
+    getColumnMetrics: ColumnSeries.prototype.getColumnMetrics,
+    getConnectorAttribs: DumbbellSeries.prototype.getConnectorAttribs,
     pointClass: LollipopPoint
 });
 SeriesRegistry.registerSeriesType('lollipop', LollipopSeries);

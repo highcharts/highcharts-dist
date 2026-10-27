@@ -1,5 +1,6 @@
+// SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highmaps JS v13.1.1-modified (2026-10-26)
+ * @license Highmaps JS v13.1.1-modified (2026-10-27)
  * @module highcharts/modules/contour
  * @requires highcharts
  * @requires highcharts/modules/coloraxis
@@ -47,9 +48,9 @@ var external_highcharts_src_js_default_default = /*#__PURE__*/__webpack_require_
 ;// external ["../highcharts.src.js","default","Color"]
 const external_highcharts_src_js_default_Color_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].Color;
 var external_highcharts_src_js_default_Color_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_Color_namespaceObject);
-;// external ["../highcharts.src.js","default","SeriesRegistry"]
-const external_highcharts_src_js_default_SeriesRegistry_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].SeriesRegistry;
-var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_SeriesRegistry_namespaceObject);
+;// external ["../highcharts.src.js","default","Series","types","scatter"]
+const external_highcharts_src_js_default_Series_types_scatter_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].Series.types.scatter;
+var external_highcharts_src_js_default_Series_types_scatter_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_Series_types_scatter_namespaceObject);
 ;// ./code/es-modules/Series/Contour/ContourPoint.js
 /* *
  *
@@ -69,7 +70,12 @@ var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__w
  *
  * */
 
-const { scatter: { prototype: { pointClass: ScatterPoint } } } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
+/* *
+ *
+ *  Constants
+ *
+ * */
+const ScatterPoint = (external_highcharts_src_js_default_Series_types_scatter_default()).prototype.pointClass;
 /* *
  *
  *  Class
@@ -869,6 +875,9 @@ class Delaunay {
  * */
 /* harmony default export */ const Core_Delaunay = (Delaunay);
 
+;// external ["../highcharts.src.js","default","SeriesRegistry"]
+const external_highcharts_src_js_default_SeriesRegistry_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].SeriesRegistry;
+var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_SeriesRegistry_namespaceObject);
 ;// ./code/es-modules/Series/Contour/ContourSeries.js
 /* *
  *
@@ -891,13 +900,13 @@ class Delaunay {
 
 
 
-const { seriesTypes: { scatter: ScatterSeries } } = (external_highcharts_src_js_default_SeriesRegistry_default());
+
 /* *
  *
  *  Class
  *
  * */
-class ContourSeries extends ScatterSeries {
+class ContourSeries extends (external_highcharts_src_js_default_Series_types_scatter_default()) {
     /** @internal */
     static compose(SVGRendererClass) {
         Series_CrossSymbol.compose(SVGRendererClass);
@@ -1478,7 +1487,7 @@ class ContourSeries extends ScatterSeries {
  *
  * */
 /** @internal */
-ContourSeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(ScatterSeries.defaultOptions, Contour_ContourSeriesDefaults);
+ContourSeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)((external_highcharts_src_js_default_Series_types_scatter_default()).defaultOptions, Contour_ContourSeriesDefaults);
 /* harmony default export */ const Contour_ContourSeries = (ContourSeries);
 (0,external_highcharts_src_js_default_namespaceObject.extend)(ContourSeries.prototype, {
     pointClass: Contour_ContourPoint,

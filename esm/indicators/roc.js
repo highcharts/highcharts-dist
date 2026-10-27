@@ -1,8 +1,9 @@
 /**
- * Highstock JS v13.1.1-modified (2026-10-26)
+ * Highstock JS v13.1.1-modified (2026-10-27)
  * @module highcharts/indicators/roc
  * @requires highcharts
  * @requires highcharts/modules/stock
+ * @requires highcharts/indicators/indicators
  *
  * Indicator series type for Highcharts Stock
  *
@@ -11,4 +12,4 @@
  *
  * A commercial license may be required depending on use,
  * see www.highcharts.com/license
- */import*as e from"../highcharts.js";let t={};t.n=e=>{let r=e&&e.__esModule?()=>e.default:()=>e;return t.d(r,{a:r}),r},t.d=(e,r)=>{for(var a in r)t.o(r,a)&&!t.o(e,a)&&Object.defineProperty(e,a,{enumerable:!0,get:r[a]})},t.o=(e,t)=>Object.prototype.hasOwnProperty.call(e,t);let r=e.default;var a=t.n(r);let s=e.default.SeriesRegistry;var l=t.n(s);let{sma:n}=l().seriesTypes;class o extends n{getValues(e,t){let a=t.period,s=e.xData,l=e.yData,n=l?l.length:0,o=[],u=[],i=[],p,d=-1,f;if(!(s.length<=a)){for((0,r.isArray)(l[0])&&(d=t.index),p=a;p<n;p++)f=function(e,t,r,a,s){let l,n;return n=s<0?(l=t[r-a])?(t[r]-l)/l*100:null:(l=t[r-a][s])?(t[r][s]-l)/l*100:null,[e[r],n]}(s,l,p,a,d),o.push(f),u.push(f[0]),i.push(f[1]);return{values:o,xData:u,yData:i}}}}o.defaultOptions=(0,r.merge)(n.defaultOptions,{params:{index:3,period:9}}),(0,r.extend)(o.prototype,{nameBase:"Rate of Change"}),l().registerSeriesType("roc",o);let u=a();export{u as default};
+ */import*as e from"../highcharts.js";import"../modules/stock.js";import*as t from"./indicators.js";let r={};r.n=e=>{let t=e&&e.__esModule?()=>e.default:()=>e;return r.d(t,{a:t}),t},r.d=(e,t)=>{for(var a in t)r.o(t,a)&&!r.o(e,a)&&Object.defineProperty(e,a,{enumerable:!0,get:t[a]})},r.o=(e,t)=>Object.prototype.hasOwnProperty.call(e,t);let a=e.default;var s=r.n(a);let l=t.default.Series.types.sma;var o=r.n(l);let n=e.default.SeriesRegistry;var i=r.n(n);class u extends o(){getValues(e,t){let r=t.period,s=e.xData,l=e.yData,o=l?l.length:0,n=[],i=[],u=[],p,d=-1,f;if(!(s.length<=r)){for((0,a.isArray)(l[0])&&(d=t.index),p=r;p<o;p++)f=function(e,t,r,a,s){let l,o;return o=s<0?(l=t[r-a])?(t[r]-l)/l*100:null:(l=t[r-a][s])?(t[r][s]-l)/l*100:null,[e[r],o]}(s,l,p,r,d),n.push(f),i.push(f[0]),u.push(f[1]);return{values:n,xData:i,yData:u}}}}u.defaultOptions=(0,a.merge)(o().defaultOptions,{params:{index:3,period:9}}),(0,a.extend)(u.prototype,{nameBase:"Rate of Change"}),i().registerSeriesType("roc",u);let p=s();export{p as default};

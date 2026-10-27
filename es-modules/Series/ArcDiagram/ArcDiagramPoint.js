@@ -13,9 +13,14 @@
  * */
 'use strict';
 import NodesComposition from '../NodesComposition.js';
-import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
+import SankeySeries from '../Sankey/SankeySeries.js';
 import { extend } from '../../Shared/Utilities.js';
-const { seriesTypes: { sankey: { prototype: { pointClass: SankeyPoint } } } } = SeriesRegistry;
+/* *
+ *
+ *  Constants
+ *
+ * */
+const SankeyPoint = SankeySeries.prototype.pointClass;
 /* *
  *
  *  Class

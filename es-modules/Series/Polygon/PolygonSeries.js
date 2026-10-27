@@ -13,8 +13,10 @@
 import H from '../../Core/Globals.js';
 const { noop } = H;
 import PolygonSeriesDefaults from './PolygonSeriesDefaults.js';
+import AreaSeries from '../Area/AreaSeries.js';
+import LineSeries from '../Line/LineSeries.js';
+import ScatterSeries from '../Scatter/ScatterSeries.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-const { area: AreaSeries, line: LineSeries, scatter: ScatterSeries } = SeriesRegistry.seriesTypes;
 import { extend, merge } from '../../Shared/Utilities.js';
 /* *
  *

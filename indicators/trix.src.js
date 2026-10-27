@@ -1,9 +1,11 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.1.1-modified (2026-10-26)
+ * @license Highstock JS v13.1.1-modified (2026-10-27)
  * @module highcharts/indicators/trix
  * @requires highcharts
  * @requires highcharts/modules/stock
+ * @requires highcharts/indicators/indicators
+ * @requires highcharts/indicators/tema
  *
  * Indicator series type for Highcharts Stock
  *
@@ -15,17 +17,24 @@
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
+		module.exports = factory(root["_Highcharts"]["Series"]["types"]["tema"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
 	else if(typeof define === 'function' && define.amd)
-		define("highcharts/indicators/trix", ["highcharts/highcharts"], function (amd1) {return factory(amd1["SeriesRegistry"],amd1);});
+		define("highcharts/indicators/trix", ["highcharts/highcharts"], function (amd1) {return factory(amd1["Series"]["types"]["tema"],amd1["SeriesRegistry"],amd1);});
 	else if(typeof exports === 'object')
-		exports["highcharts/indicators/trix"] = factory(root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
+		exports["highcharts/indicators/trix"] = factory(root["_Highcharts"]["Series"]["types"]["tema"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
 	else
-		root["Highcharts"] = factory(root["Highcharts"]["SeriesRegistry"], root["Highcharts"]);
-})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__944__) => {
+		root["Highcharts"] = factory(root["Highcharts"]["Series"]["types"]["tema"], root["Highcharts"]["SeriesRegistry"], root["Highcharts"]);
+})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__352__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__944__) => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
+
+/***/ 352
+(module) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__352__;
+
+/***/ },
 
 /***/ 512
 (module) {
@@ -102,6 +111,9 @@ __webpack_require__.d(__webpack_exports__, {
 // EXTERNAL MODULE: external {"amd":["highcharts/highcharts"],"commonjs":["highcharts"],"commonjs2":["highcharts"],"root":["Highcharts"]}
 var highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_ = __webpack_require__(944);
 var highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default = /*#__PURE__*/__webpack_require__.n(highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_);
+// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Series","types","tema"],"commonjs":["highcharts","Series","types","tema"],"commonjs2":["highcharts","Series","types","tema"],"root":["Highcharts","Series","types","tema"]}
+var highcharts_Series_types_tema_commonjs_highcharts_Series_types_tema_commonjs2_highcharts_Series_types_tema_root_Highcharts_Series_types_tema_ = __webpack_require__(352);
+var highcharts_Series_types_tema_commonjs_highcharts_Series_types_tema_commonjs2_highcharts_Series_types_tema_root_Highcharts_Series_types_tema_default = /*#__PURE__*/__webpack_require__.n(highcharts_Series_types_tema_commonjs_highcharts_Series_types_tema_commonjs2_highcharts_Series_types_tema_root_Highcharts_Series_types_tema_);
 // EXTERNAL MODULE: external {"amd":["highcharts/highcharts","SeriesRegistry"],"commonjs":["highcharts","SeriesRegistry"],"commonjs2":["highcharts","SeriesRegistry"],"root":["Highcharts","SeriesRegistry"]}
 var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_ = __webpack_require__(512);
 var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_);
@@ -116,7 +128,7 @@ var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highc
  * */
 
 
-const { tema: TEMAIndicator } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
+
 
 /* *
  *
@@ -131,7 +143,7 @@ const { tema: TEMAIndicator } = (highcharts_SeriesRegistry_commonjs_highcharts_S
  *
  * @augments Highcharts.Series
  */
-class TRIXIndicator extends TEMAIndicator {
+class TRIXIndicator extends (highcharts_Series_types_tema_commonjs_highcharts_Series_types_tema_commonjs2_highcharts_Series_types_tema_root_Highcharts_Series_types_tema_default()) {
     /* *
      *
      *  Functions
@@ -175,7 +187,7 @@ class TRIXIndicator extends TEMAIndicator {
  * @optionparent plotOptions.trix
  * @internal
  */
-TRIXIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(TEMAIndicator.defaultOptions);
+TRIXIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)((highcharts_Series_types_tema_commonjs_highcharts_Series_types_tema_commonjs2_highcharts_Series_types_tema_root_Highcharts_Series_types_tema_default()).defaultOptions);
 highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default().registerSeriesType('trix', TRIXIndicator);
 /* *
  *

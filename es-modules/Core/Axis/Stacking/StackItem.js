@@ -12,8 +12,7 @@
 'use strict';
 import T from '../../Templating.js';
 const { format } = T;
-import SeriesRegistry from '../../Series/SeriesRegistry.js';
-const { series: Series } = SeriesRegistry;
+import Series from '../../Series/Series.js';
 import { destroyObjectProperties, fireEvent, getAlignFactor, isNumber } from '../../../Shared/Utilities.js';
 /* *
  *

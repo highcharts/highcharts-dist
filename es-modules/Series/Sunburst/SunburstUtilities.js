@@ -13,8 +13,7 @@
  *
  * */
 'use strict';
-import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-const { seriesTypes: { treemap: TreemapSeries } } = SeriesRegistry;
+import TreemapSeries from '../Treemap/TreemapSeries.js';
 import { isNumber, isObject, merge } from '../../Shared/Utilities.js';
 /* *
  *

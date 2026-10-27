@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.1.1-modified (2026-10-26)
+ * @license Highstock JS v13.1.1-modified (2026-10-27)
  * @module highcharts/indicators/chaikin
  * @requires highcharts
  * @requires highcharts/modules/stock
+ * @requires highcharts/indicators/indicators
  *
  * Indicator series type for Highcharts Stock
  *
@@ -14,6 +15,9 @@
  * see www.highcharts.com/license
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
+import "../modules/stock.src.js";
+import "./indicators.src.js";
+import * as __WEBPACK_EXTERNAL_MODULE__indicators_src_js_eb4ee23f__ from "./indicators.src.js";
 /******/ // The require scope
 /******/ const __webpack_require__ = {};
 /******/ 
@@ -46,6 +50,13 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 ;// external ["../highcharts.src.js","default"]
 const external_highcharts_src_js_default_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"];
 var external_highcharts_src_js_default_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_namespaceObject);
+;// external "../modules/stock.src.js"
+
+;// external "./indicators.src.js"
+
+;// external ["./indicators.src.js","default","Series","types","sma"]
+const external_indicators_src_js_default_Series_types_sma_namespaceObject = __WEBPACK_EXTERNAL_MODULE__indicators_src_js_eb4ee23f__["default"].Series.types.sma;
+var external_indicators_src_js_default_Series_types_sma_default = /*#__PURE__*/__webpack_require__.n(external_indicators_src_js_default_Series_types_sma_namespaceObject);
 ;// external ["../highcharts.src.js","default","SeriesRegistry"]
 const external_highcharts_src_js_default_SeriesRegistry_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].SeriesRegistry;
 var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_SeriesRegistry_namespaceObject);
@@ -59,7 +70,7 @@ var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__w
  * */
 
 
-const { sma: SMAIndicator } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
+
 
 
 /* *
@@ -75,7 +86,7 @@ const { sma: SMAIndicator } = (external_highcharts_src_js_default_SeriesRegistry
  *
  * @augments Highcharts.Series
  */
-class ADIndicator extends SMAIndicator {
+class ADIndicator extends (external_indicators_src_js_default_Series_types_sma_default()) {
     /* *
      *
      *  Static Functions
@@ -149,7 +160,7 @@ class ADIndicator extends SMAIndicator {
  * @optionparent plotOptions.ad
  * @internal
  */
-ADIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(SMAIndicator.defaultOptions, {
+ADIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)((external_indicators_src_js_default_Series_types_sma_default()).defaultOptions, {
     /**
      * @excluding index
      */
@@ -194,6 +205,9 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  */
 ''; // Add doclet above to transpiled file
 
+;// external ["./indicators.src.js","default","Series","types","ema"]
+const external_indicators_src_js_default_Series_types_ema_namespaceObject = __WEBPACK_EXTERNAL_MODULE__indicators_src_js_eb4ee23f__["default"].Series.types.ema;
+var external_indicators_src_js_default_Series_types_ema_default = /*#__PURE__*/__webpack_require__.n(external_indicators_src_js_default_Series_types_ema_namespaceObject);
 ;// ./code/es-modules/Stock/Indicators/Chaikin/ChaikinIndicator.js
 /* *
  *
@@ -206,7 +220,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
 
  // For historic reasons, AD is built into Chaikin
 
-const { ema: EMAIndicator } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
+
 
 
 /* *
@@ -222,7 +236,7 @@ const { ema: EMAIndicator } = (external_highcharts_src_js_default_SeriesRegistry
  *
  * @augments Highcharts.Series
  */
-class ChaikinIndicator extends EMAIndicator {
+class ChaikinIndicator extends (external_indicators_src_js_default_Series_types_ema_default()) {
     /* *
      *
      *  Functions
@@ -299,7 +313,7 @@ class ChaikinIndicator extends EMAIndicator {
  * @optionparent plotOptions.chaikin
  * @internal
  */
-ChaikinIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(EMAIndicator.defaultOptions, {
+ChaikinIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)((external_indicators_src_js_default_Series_types_ema_default()).defaultOptions, {
     /**
      * Parameters used in calculation of Chaikin Oscillator
      * series points.
@@ -362,6 +376,8 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
 ''; // To include the above in the js output
 
 ;// ./code/es-modules/masters/indicators/chaikin.src.js
+
+
 
 
 

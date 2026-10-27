@@ -1,8 +1,9 @@
 /**
- * Highstock JS v13.1.1-modified (2026-10-26)
+ * Highstock JS v13.1.1-modified (2026-10-27)
  * @module highcharts/indicators/rsi
  * @requires highcharts
  * @requires highcharts/modules/stock
+ * @requires highcharts/indicators/indicators
  *
  * Indicator series type for Highcharts Stock
  *
@@ -11,4 +12,4 @@
  *
  * A commercial license may be required depending on use,
  * see www.highcharts.com/license
- */import*as e from"../highcharts.js";let t={};t.n=e=>{let a=e&&e.__esModule?()=>e.default:()=>e;return t.d(a,{a:a}),a},t.d=(e,a)=>{for(var r in a)t.o(a,r)&&!t.o(e,r)&&Object.defineProperty(e,r,{enumerable:!0,get:a[r]})},t.o=(e,t)=>Object.prototype.hasOwnProperty.call(e,t);let a=e.default;var r=t.n(a);let s=e.default.SeriesRegistry;var l=t.n(s);let{sma:i}=l().seriesTypes;function n(e,t){return parseFloat(e.toFixed(t))}class o extends i{getValues(e,t){let r=t.period,s=e.xData,l=e.yData,i=l?l.length:0,o=t.decimals,u=[],d=[],p=[],f=0,h=0,m=t.index,c=1,g,y,x,b,O,v;if(!(s.length<r)){for((0,a.isNumber)(l[0])?v=l:(m=Math.min(m,l[0].length-1),v=l.map(e=>e[m]));c<r;)(y=n(v[c]-v[c-1],o))>0?f+=y:h+=Math.abs(y),c++;for(x=n(f/(r-1),o),b=n(h/(r-1),o),O=c;O<i;O++)(y=n(v[O]-v[O-1],o))>0?(f=y,h=0):(f=0,h=Math.abs(y)),x=n((x*(r-1)+f)/r,o),g=0===(b=n((b*(r-1)+h)/r,o))?100:0===x?0:n(100-100/(1+x/b),o),u.push([s[O],g]),d.push(s[O]),p.push(g);return{values:u,xData:d,yData:p}}}}o.defaultOptions=(0,a.merge)(i.defaultOptions,{params:{decimals:4,index:3}}),l().registerSeriesType("rsi",o);let u=r();export{u as default};
+ */import*as e from"../highcharts.js";import"../modules/stock.js";import*as t from"./indicators.js";let a={};a.n=e=>{let t=e&&e.__esModule?()=>e.default:()=>e;return a.d(t,{a:t}),t},a.d=(e,t)=>{for(var r in t)a.o(t,r)&&!a.o(e,r)&&Object.defineProperty(e,r,{enumerable:!0,get:t[r]})},a.o=(e,t)=>Object.prototype.hasOwnProperty.call(e,t);let r=e.default;var s=a.n(r);let l=t.default.Series.types.sma;var i=a.n(l);let o=e.default.SeriesRegistry;var n=a.n(o);function d(e,t){return parseFloat(e.toFixed(t))}class u extends i(){getValues(e,t){let a=t.period,s=e.xData,l=e.yData,i=l?l.length:0,o=t.decimals,n=[],u=[],p=[],f=0,m=0,c=t.index,h=1,g,y,x,b,j,v;if(!(s.length<a)){for((0,r.isNumber)(l[0])?v=l:(c=Math.min(c,l[0].length-1),v=l.map(e=>e[c]));h<a;)(y=d(v[h]-v[h-1],o))>0?f+=y:m+=Math.abs(y),h++;for(x=d(f/(a-1),o),b=d(m/(a-1),o),j=h;j<i;j++)(y=d(v[j]-v[j-1],o))>0?(f=y,m=0):(f=0,m=Math.abs(y)),x=d((x*(a-1)+f)/a,o),g=0===(b=d((b*(a-1)+m)/a,o))?100:0===x?0:d(100-100/(1+x/b),o),n.push([s[j],g]),u.push(s[j]),p.push(g);return{values:n,xData:u,yData:p}}}}u.defaultOptions=(0,r.merge)(i().defaultOptions,{params:{decimals:4,index:3}}),n().registerSeriesType("rsi",u);let p=s();export{p as default};

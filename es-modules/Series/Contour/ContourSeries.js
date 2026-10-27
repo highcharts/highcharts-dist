@@ -16,10 +16,10 @@ import contourShader from './ContourShader.js';
 import ContourSeriesDefaults from './ContourSeriesDefaults.js';
 import CrossSymbol from '../CrossSymbol.js';
 import Delaunay from '../../Core/Delaunay.js';
+import ScatterSeries from '../Scatter/ScatterSeries.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 import { diffObjects, extend, merge, normalizeTickInterval } from '../../Shared/Utilities.js';
 import { error } from '../../Core/Utilities.js';
-const { seriesTypes: { scatter: ScatterSeries } } = SeriesRegistry;
 /* *
  *
  *  Class

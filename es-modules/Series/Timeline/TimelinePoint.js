@@ -14,9 +14,16 @@
  * */
 'use strict';
 import Point from '../../Core/Series/Point.js';
-import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-const { line: { prototype: { pointClass: LinePoint } }, pie: { prototype: { pointClass: PiePoint } } } = SeriesRegistry.seriesTypes;
+import LineSeries from '../Line/LineSeries.js';
+import PieSeries from '../Pie/PieSeries.js';
 import { defined, isNumber, merge, objectEach } from '../../Shared/Utilities.js';
+/* *
+ *
+ *  Constants
+ *
+ * */
+const LinePoint = LineSeries.prototype.pointClass;
+const PiePoint = PieSeries.prototype.pointClass;
 /* *
  *
  *  Class

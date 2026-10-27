@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-26)
+ * @license Highcharts JS v13.1.1-modified (2026-10-27)
  * @module highcharts/modules/streamgraph
  * @requires highcharts
  *
@@ -14,17 +14,24 @@
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
+		module.exports = factory(root["_Highcharts"]["Series"]["types"]["areaspline"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
 	else if(typeof define === 'function' && define.amd)
-		define("highcharts/modules/streamgraph", ["highcharts/highcharts"], function (amd1) {return factory(amd1["SeriesRegistry"],amd1);});
+		define("highcharts/modules/streamgraph", ["highcharts/highcharts"], function (amd1) {return factory(amd1["Series"]["types"]["areaspline"],amd1["SeriesRegistry"],amd1);});
 	else if(typeof exports === 'object')
-		exports["highcharts/modules/streamgraph"] = factory(root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
+		exports["highcharts/modules/streamgraph"] = factory(root["_Highcharts"]["Series"]["types"]["areaspline"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
 	else
-		root["Highcharts"] = factory(root["Highcharts"]["SeriesRegistry"], root["Highcharts"]);
-})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__944__) => {
+		root["Highcharts"] = factory(root["Highcharts"]["Series"]["types"]["areaspline"], root["Highcharts"]["SeriesRegistry"], root["Highcharts"]);
+})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__908__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__944__) => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
+
+/***/ 908
+(module) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__908__;
+
+/***/ },
 
 /***/ 512
 (module) {
@@ -101,6 +108,9 @@ __webpack_require__.d(__webpack_exports__, {
 // EXTERNAL MODULE: external {"amd":["highcharts/highcharts"],"commonjs":["highcharts"],"commonjs2":["highcharts"],"root":["Highcharts"]}
 var highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_ = __webpack_require__(944);
 var highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default = /*#__PURE__*/__webpack_require__.n(highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_);
+// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Series","types","areaspline"],"commonjs":["highcharts","Series","types","areaspline"],"commonjs2":["highcharts","Series","types","areaspline"],"root":["Highcharts","Series","types","areaspline"]}
+var highcharts_Series_types_areaspline_commonjs_highcharts_Series_types_areaspline_commonjs2_highcharts_Series_types_areaspline_root_Highcharts_Series_types_areaspline_ = __webpack_require__(908);
+var highcharts_Series_types_areaspline_commonjs_highcharts_Series_types_areaspline_commonjs2_highcharts_Series_types_areaspline_root_Highcharts_Series_types_areaspline_default = /*#__PURE__*/__webpack_require__.n(highcharts_Series_types_areaspline_commonjs_highcharts_Series_types_areaspline_commonjs2_highcharts_Series_types_areaspline_root_Highcharts_Series_types_areaspline_);
 // EXTERNAL MODULE: external {"amd":["highcharts/highcharts","SeriesRegistry"],"commonjs":["highcharts","SeriesRegistry"],"commonjs2":["highcharts","SeriesRegistry"],"root":["Highcharts","SeriesRegistry"]}
 var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_ = __webpack_require__(512);
 var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_);
@@ -277,7 +287,7 @@ const StreamgraphSeriesDefaults = {
  * */
 
 
-const { areaspline: AreaSplineSeries } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
+
 
 
 /**
@@ -289,7 +299,7 @@ const { areaspline: AreaSplineSeries } = (highcharts_SeriesRegistry_commonjs_hig
  *
  * @augments Highcharts.Series
  */
-class StreamgraphSeries extends AreaSplineSeries {
+class StreamgraphSeries extends (highcharts_Series_types_areaspline_commonjs_highcharts_Series_types_areaspline_commonjs2_highcharts_Series_types_areaspline_root_Highcharts_Series_types_areaspline_default()) {
     /* *
      *
      *  Functions
@@ -317,7 +327,7 @@ class StreamgraphSeries extends AreaSplineSeries {
  *
  * */
 /** @internal */
-StreamgraphSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(AreaSplineSeries.defaultOptions, Streamgraph_StreamgraphSeriesDefaults);
+StreamgraphSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)((highcharts_Series_types_areaspline_commonjs_highcharts_Series_types_areaspline_commonjs2_highcharts_Series_types_areaspline_root_Highcharts_Series_types_areaspline_default()).defaultOptions, Streamgraph_StreamgraphSeriesDefaults);
 // Reflect the dataMin property, as only dataMax is registered above
 (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.addEvent)(StreamgraphSeries, 'afterGetExtremes', (e) => {
     e.dataExtremes.dataMin = -e.dataExtremes.dataMax;

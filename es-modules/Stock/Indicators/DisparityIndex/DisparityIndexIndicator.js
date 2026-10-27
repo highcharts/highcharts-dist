@@ -11,8 +11,8 @@
  *
  * */
 'use strict';
+import SMAIndicator from '../SMA/SMAIndicator.js';
 import SeriesRegistry from '../../../Core/Series/SeriesRegistry.js';
-const { sma: SMAIndicator } = SeriesRegistry.seriesTypes;
 import { correctFloat, defined, extend, isArray, merge } from '../../../Shared/Utilities.js';
 /* *
  *

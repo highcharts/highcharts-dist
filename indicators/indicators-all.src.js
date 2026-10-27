@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.1.1-modified (2026-10-26)
+ * @license Highstock JS v13.1.1-modified (2026-10-27)
  * @module highcharts/indicators/indicators-all
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -15,14 +15,14 @@
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(root["_Highcharts"]["Chart"], root["_Highcharts"]["Color"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]["dataGrouping"]["approximations"], root["_Highcharts"]);
+		module.exports = factory(root["_Highcharts"]["Chart"], root["_Highcharts"]["Color"], root["_Highcharts"]["Series"]["types"]["column"], root["_Highcharts"]["Series"]["types"]["line"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]["dataGrouping"]["approximations"], root["_Highcharts"]);
 	else if(typeof define === 'function' && define.amd)
-		define("highcharts/indicators/indicators-all", ["highcharts/highcharts"], function (amd1) {return factory(amd1["Chart"],amd1["Color"],amd1["SeriesRegistry"],amd1["dataGrouping"],["approximations"],amd1);});
+		define("highcharts/indicators/indicators-all", ["highcharts/highcharts"], function (amd1) {return factory(amd1["Chart"],amd1["Color"],amd1["Series"]["types"]["column"],amd1["Series"]["types"]["line"],amd1["SeriesRegistry"],amd1["dataGrouping"]["approximations"],amd1);});
 	else if(typeof exports === 'object')
-		exports["highcharts/indicators/indicators-all"] = factory(root["_Highcharts"]["Chart"], root["_Highcharts"]["Color"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]["dataGrouping"]["approximations"], root["_Highcharts"]);
+		exports["highcharts/indicators/indicators-all"] = factory(root["_Highcharts"]["Chart"], root["_Highcharts"]["Color"], root["_Highcharts"]["Series"]["types"]["column"], root["_Highcharts"]["Series"]["types"]["line"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]["dataGrouping"]["approximations"], root["_Highcharts"]);
 	else
-		root["Highcharts"] = factory(root["Highcharts"]["Chart"], root["Highcharts"]["Color"], root["Highcharts"]["SeriesRegistry"], root["Highcharts"]["dataGrouping"]["approximations"], root["Highcharts"]);
-})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__960__, __WEBPACK_EXTERNAL_MODULE__620__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__956__, __WEBPACK_EXTERNAL_MODULE__944__) => {
+		root["Highcharts"] = factory(root["Highcharts"]["Chart"], root["Highcharts"]["Color"], root["Highcharts"]["Series"]["types"]["column"], root["Highcharts"]["Series"]["types"]["line"], root["Highcharts"]["SeriesRegistry"], root["Highcharts"]["dataGrouping"]["approximations"], root["Highcharts"]);
+})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__960__, __WEBPACK_EXTERNAL_MODULE__620__, __WEBPACK_EXTERNAL_MODULE__448__, __WEBPACK_EXTERNAL_MODULE__176__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__956__, __WEBPACK_EXTERNAL_MODULE__944__) => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
@@ -38,6 +38,20 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__960__;
 (module) {
 
 module.exports = __WEBPACK_EXTERNAL_MODULE__620__;
+
+/***/ },
+
+/***/ 448
+(module) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__448__;
+
+/***/ },
+
+/***/ 176
+(module) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__176__;
 
 /***/ },
 
@@ -663,6 +677,9 @@ class DataTableCore {
 */
 (''); // Keeps doclets above in JS file
 
+// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Series","types","line"],"commonjs":["highcharts","Series","types","line"],"commonjs2":["highcharts","Series","types","line"],"root":["Highcharts","Series","types","line"]}
+var highcharts_Series_types_line_commonjs_highcharts_Series_types_line_commonjs2_highcharts_Series_types_line_root_Highcharts_Series_types_line_ = __webpack_require__(176);
+var highcharts_Series_types_line_commonjs_highcharts_Series_types_line_commonjs2_highcharts_Series_types_line_root_Highcharts_Series_types_line_default = /*#__PURE__*/__webpack_require__.n(highcharts_Series_types_line_commonjs_highcharts_Series_types_line_commonjs2_highcharts_Series_types_line_root_Highcharts_Series_types_line_);
 // EXTERNAL MODULE: external {"amd":["highcharts/highcharts","SeriesRegistry"],"commonjs":["highcharts","SeriesRegistry"],"commonjs2":["highcharts","SeriesRegistry"],"root":["Highcharts","SeriesRegistry"]}
 var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_ = __webpack_require__(512);
 var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_);
@@ -679,7 +696,7 @@ var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highc
 
 
 
-const { line: LineSeries } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
+
 
 
 /**
@@ -709,7 +726,7 @@ const tableToMultiYData = (series, processed) => {
  * The SMA series type.
  *
  */
-class SMAIndicator extends LineSeries {
+class SMAIndicator extends (highcharts_Series_types_line_commonjs_highcharts_Series_types_line_commonjs2_highcharts_Series_types_line_root_Highcharts_Series_types_line_default()) {
     /* *
      *
      *  Functions
@@ -962,7 +979,7 @@ class SMAIndicator extends LineSeries {
  * @optionparent plotOptions.sma
  * @internal
  */
-SMAIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(LineSeries.defaultOptions, {
+SMAIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)((highcharts_Series_types_line_commonjs_highcharts_Series_types_line_commonjs2_highcharts_Series_types_line_root_Highcharts_Series_types_line_default()).defaultOptions, {
     /**
      * The name of the series as shown in the legend, tooltip etc. If not
      * set, it will be based on a technical indicator type and default
@@ -1028,7 +1045,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *  Default Export
  *
  * */
-/* harmony default export */ const SMA_SMAIndicator = ((/* unused pure expression or super */ null && (SMAIndicator)));
+/* harmony default export */ const SMA_SMAIndicator = (SMAIndicator);
 /* *
  *
  *  API Options
@@ -1058,7 +1075,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * */
 
 
-const { sma: EMAIndicator_SMAIndicator } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
+
 
 /* *
  *
@@ -1073,7 +1090,7 @@ const { sma: EMAIndicator_SMAIndicator } = (highcharts_SeriesRegistry_commonjs_h
  *
  * @augments Highcharts.Series
  */
-class EMAIndicator extends EMAIndicator_SMAIndicator {
+class EMAIndicator extends SMA_SMAIndicator {
     /* *
      *
      *  Functions
@@ -1148,7 +1165,7 @@ class EMAIndicator extends EMAIndicator_SMAIndicator {
  * @optionparent plotOptions.ema
  * @internal
  */
-EMAIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(EMAIndicator_SMAIndicator.defaultOptions, {
+EMAIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(SMA_SMAIndicator.defaultOptions, {
     params: {
         /**
          * The point index which indicator calculations will base. For
@@ -1170,7 +1187,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *  Default Export
  *
  * */
-/* harmony default export */ const EMA_EMAIndicator = ((/* unused pure expression or super */ null && (EMAIndicator)));
+/* harmony default export */ const EMA_EMAIndicator = (EMAIndicator);
 /* *
  *
  *  API Options
@@ -1198,7 +1215,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * */
 
 
-const { sma: ADIndicator_SMAIndicator } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
+
 
 
 /* *
@@ -1214,7 +1231,7 @@ const { sma: ADIndicator_SMAIndicator } = (highcharts_SeriesRegistry_commonjs_hi
  *
  * @augments Highcharts.Series
  */
-class ADIndicator extends ADIndicator_SMAIndicator {
+class ADIndicator extends SMA_SMAIndicator {
     /* *
      *
      *  Static Functions
@@ -1288,7 +1305,7 @@ class ADIndicator extends ADIndicator_SMAIndicator {
  * @optionparent plotOptions.ad
  * @internal
  */
-ADIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(ADIndicator_SMAIndicator.defaultOptions, {
+ADIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(SMA_SMAIndicator.defaultOptions, {
     /**
      * @excluding index
      */
@@ -1333,6 +1350,9 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  */
 ''; // Add doclet above to transpiled file
 
+// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Series","types","column"],"commonjs":["highcharts","Series","types","column"],"commonjs2":["highcharts","Series","types","column"],"root":["Highcharts","Series","types","column"]}
+var highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_ = __webpack_require__(448);
+var highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_default = /*#__PURE__*/__webpack_require__.n(highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_);
 ;// ./code/es-modules/Stock/Indicators/AO/AOIndicator.js
 /* *
  *
@@ -1343,9 +1363,10 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * */
 
 
+
 const { noop } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 
-const { column: { prototype: columnProto }, sma: AOIndicator_SMAIndicator } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
+
 
 /* *
  *
@@ -1360,7 +1381,7 @@ const { column: { prototype: columnProto }, sma: AOIndicator_SMAIndicator } = (h
  *
  * @augments Highcharts.Series
  */
-class AOIndicator extends AOIndicator_SMAIndicator {
+class AOIndicator extends SMA_SMAIndicator {
     /* *
      *
      *  Functions
@@ -1453,7 +1474,7 @@ class AOIndicator extends AOIndicator_SMAIndicator {
  * @optionparent plotOptions.ao
  * @internal
  */
-AOIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(AOIndicator_SMAIndicator.defaultOptions, {
+AOIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(SMA_SMAIndicator.defaultOptions, {
     params: {
         // Index and period are unchangeable, do not inherit (#15362)
         index: void 0,
@@ -1500,10 +1521,10 @@ AOIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcha
     nameComponents: void 0,
     // Columns support:
     markerAttribs: noop,
-    getColumnMetrics: columnProto.getColumnMetrics,
-    crispCol: columnProto.crispCol,
-    translate: columnProto.translate,
-    drawPoints: columnProto.drawPoints
+    getColumnMetrics: (highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_default()).prototype.getColumnMetrics,
+    crispCol: (highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_default()).prototype.crispCol,
+    translate: (highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_default()).prototype.translate,
+    drawPoints: (highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_default()).prototype.drawPoints
 });
 highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default().registerSeriesType('ao', AOIndicator);
 /* *
@@ -1547,7 +1568,6 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * */
 
 
-const { sma: { prototype: smaProto } } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
 
 
 /* *
@@ -1707,7 +1727,7 @@ var MultipleLinesComposition;
             indicator.options = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(mainLinePoints, gappedExtend);
             indicator.graph = indicator.area;
             indicator.fillGraph = true;
-            smaProto.drawGraph.call(indicator);
+            SMA_SMAIndicator.prototype.drawGraph.call(indicator);
             indicator.area = indicator.graph;
             // Clean temporary properties:
             delete indicator.nextPoints;
@@ -1727,7 +1747,7 @@ var MultipleLinesComposition;
                         ' are consistent with your DOCS line names."');
                 }
                 indicator.graph = indicator['graph' + lineName];
-                smaProto.drawGraph.call(indicator);
+                SMA_SMAIndicator.prototype.drawGraph.call(indicator);
                 // Now save lines:
                 indicator['graph' + lineName] = indicator.graph;
             }
@@ -1741,7 +1761,7 @@ var MultipleLinesComposition;
         indicator.points = mainLinePoints;
         indicator.options = mainLineOptions;
         indicator.graph = mainLinePath;
-        smaProto.drawGraph.call(indicator);
+        SMA_SMAIndicator.prototype.drawGraph.call(indicator);
     }
     /**
      * Create the path based on points provided as argument.
@@ -1755,10 +1775,10 @@ var MultipleLinesComposition;
         points = points || this.points;
         // Render Span
         if (this.fillGraph && this.nextPoints) {
-            areaPath = smaProto.getGraphPath.call(this, this.nextPoints);
+            areaPath = SMA_SMAIndicator.prototype.getGraphPath.call(this, this.nextPoints);
             if (areaPath && areaPath.length) {
                 areaPath[0][0] = 'L';
-                path = smaProto.getGraphPath.call(this, points);
+                path = SMA_SMAIndicator.prototype.getGraphPath.call(this, points);
                 higherAreaPath = areaPath.slice(0, path.length);
                 // Reverse points, so that the areaFill will start from the end:
                 for (let i = higherAreaPath.length - 1; i >= 0; i--) {
@@ -1767,7 +1787,7 @@ var MultipleLinesComposition;
             }
         }
         else {
-            path = smaProto.getGraphPath.apply(this, arguments);
+            path = SMA_SMAIndicator.prototype.getGraphPath.apply(this, arguments);
         }
         return path;
     }
@@ -1794,7 +1814,7 @@ var MultipleLinesComposition;
         const pointArrayMap = this.pointArrayMap;
         let LinesNames = [], value;
         LinesNames = getTranslatedLinesNames(this);
-        smaProto.translate.apply(this, arguments);
+        SMA_SMAIndicator.prototype.translate.apply(this, arguments);
         this.points.forEach((point) => {
             pointArrayMap.forEach((propertyName, i) => {
                 value = point[propertyName];
@@ -1829,7 +1849,7 @@ var MultipleLinesComposition;
 
 
 
-const { sma: AroonIndicator_SMAIndicator } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
+
 
 /* *
  *
@@ -1863,7 +1883,7 @@ function getExtremeIndexInArray(arr, extreme) {
  *
  * @augments Highcharts.Series
  */
-class AroonIndicator extends AroonIndicator_SMAIndicator {
+class AroonIndicator extends SMA_SMAIndicator {
     /* *
      *
      *  Functions
@@ -1925,7 +1945,7 @@ class AroonIndicator extends AroonIndicator_SMAIndicator {
  * @optionparent plotOptions.aroon
  * @internal
  */
-AroonIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(AroonIndicator_SMAIndicator.defaultOptions, {
+AroonIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(SMA_SMAIndicator.defaultOptions, {
     /**
      * Parameters used in calculation of aroon series points.
      *
@@ -1980,7 +2000,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *  Default Export
  *
  * */
-/* harmony default export */ const Aroon_AroonIndicator = ((/* unused pure expression or super */ null && (AroonIndicator)));
+/* harmony default export */ const Aroon_AroonIndicator = (AroonIndicator);
 /* *
  *
  *  API Options
@@ -2014,7 +2034,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
 
 
 
-const { aroon: AroonOscillatorIndicator_AroonIndicator } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
+
 
 /* *
  *
@@ -2029,7 +2049,7 @@ const { aroon: AroonOscillatorIndicator_AroonIndicator } = (highcharts_SeriesReg
  *
  * @augments Highcharts.Series
  */
-class AroonOscillatorIndicator extends AroonOscillatorIndicator_AroonIndicator {
+class AroonOscillatorIndicator extends Aroon_AroonIndicator {
     /* *
      *
      *  Functions
@@ -2082,7 +2102,7 @@ class AroonOscillatorIndicator extends AroonOscillatorIndicator_AroonIndicator {
  * @optionparent plotOptions.aroonoscillator
  * @internal
  */
-AroonOscillatorIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(AroonOscillatorIndicator_AroonIndicator.defaultOptions, {
+AroonOscillatorIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(Aroon_AroonIndicator.defaultOptions, {
     tooltip: {
         pointFormat: '<span style="color:{point.color}">\u25CF</span><b> {series.name}</b>: {point.y}'
     }
@@ -2093,7 +2113,7 @@ AroonOscillatorIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_comm
     pointArrayMap: ['y'],
     pointValKey: 'y'
 });
-Indicators_MultipleLinesComposition.compose(AroonOscillatorIndicator_AroonIndicator);
+Indicators_MultipleLinesComposition.compose(Aroon_AroonIndicator);
 highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default().registerSeriesType('aroonoscillator', AroonOscillatorIndicator);
 /* *
  *
@@ -2135,7 +2155,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * */
 
 
-const { sma: ATRIndicator_SMAIndicator } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
+
 
 /* *
  *
@@ -2171,7 +2191,7 @@ function populateAverage(points, xVal, yVal, i, period, prevATR) {
  *
  * @augments Highcharts.Series
  */
-class ATRIndicator extends ATRIndicator_SMAIndicator {
+class ATRIndicator extends SMA_SMAIndicator {
     /* *
      *
      *  Functions
@@ -2234,7 +2254,7 @@ class ATRIndicator extends ATRIndicator_SMAIndicator {
  * @optionparent plotOptions.atr
  * @internal
  */
-ATRIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(ATRIndicator_SMAIndicator.defaultOptions, {
+ATRIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(SMA_SMAIndicator.defaultOptions, {
     /**
      * @excluding index
      */
@@ -2248,7 +2268,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *  Default Export
  *
  * */
-/* harmony default export */ const ATR_ATRIndicator = ((/* unused pure expression or super */ null && (ATRIndicator)));
+/* harmony default export */ const ATR_ATRIndicator = (ATRIndicator);
 /* *
  *
  *  API Options
@@ -2280,7 +2300,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
 
 
 
-const { sma: BBIndicator_SMAIndicator } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
+
 
 /* *
  *
@@ -2313,7 +2333,7 @@ function getStandardDeviation(arr, index, isOHLC, mean) {
  *
  * @augments Highcharts.Series
  */
-class BBIndicator extends BBIndicator_SMAIndicator {
+class BBIndicator extends SMA_SMAIndicator {
     /* *
      *
      *  Functions
@@ -2390,7 +2410,7 @@ class BBIndicator extends BBIndicator_SMAIndicator {
  * @optionparent plotOptions.bb
  * @internal
  */
-BBIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(BBIndicator_SMAIndicator.defaultOptions, {
+BBIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(SMA_SMAIndicator.defaultOptions, {
     /**
      * Option for fill color between lines in Bollinger Bands Indicator.
      *
@@ -2509,7 +2529,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * */
 
 
-const { sma: CCIIndicator_SMAIndicator } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
+
 
 /* *
  *
@@ -2545,7 +2565,7 @@ function meanDeviation(arr, sma) {
  *
  * @augments Highcharts.Series
  */
-class CCIIndicator extends CCIIndicator_SMAIndicator {
+class CCIIndicator extends SMA_SMAIndicator {
     /* *
      *
      *  Functions
@@ -2606,7 +2626,7 @@ class CCIIndicator extends CCIIndicator_SMAIndicator {
  * @optionparent plotOptions.cci
  * @internal
  */
-CCIIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(CCIIndicator_SMAIndicator.defaultOptions, {
+CCIIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(SMA_SMAIndicator.defaultOptions, {
     /**
      * @excluding index
      */
@@ -2657,7 +2677,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
 
 
 
-const { sma: CMFIndicator_SMAIndicator } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
+
 /* *
  *
  *  Class
@@ -2671,7 +2691,7 @@ const { sma: CMFIndicator_SMAIndicator } = (highcharts_SeriesRegistry_commonjs_h
  *
  * @augments Highcharts.Series
  */
-class CMFIndicator extends CMFIndicator_SMAIndicator {
+class CMFIndicator extends SMA_SMAIndicator {
     constructor() {
         /* *
          *
@@ -2838,7 +2858,7 @@ class CMFIndicator extends CMFIndicator_SMAIndicator {
  * @optionparent plotOptions.cmf
  * @internal
  */
-CMFIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(CMFIndicator_SMAIndicator.defaultOptions, {
+CMFIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(SMA_SMAIndicator.defaultOptions, {
     /**
      * @excluding index
      */
@@ -2892,7 +2912,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
 
 
 
-const { sma: DMIIndicator_SMAIndicator } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
+
 
 /* *
  *
@@ -2907,7 +2927,7 @@ const { sma: DMIIndicator_SMAIndicator } = (highcharts_SeriesRegistry_commonjs_h
  *
  * @augments Highcharts.Series
  */
-class DMIIndicator extends DMIIndicator_SMAIndicator {
+class DMIIndicator extends SMA_SMAIndicator {
     /* *
      *
      *  Functions
@@ -3038,7 +3058,7 @@ class DMIIndicator extends DMIIndicator_SMAIndicator {
  * @optionparent plotOptions.dmi
  * @internal
  */
-DMIIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(DMIIndicator_SMAIndicator.defaultOptions, {
+DMIIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(SMA_SMAIndicator.defaultOptions, {
     /**
      * @excluding index
      */
@@ -3152,7 +3172,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * */
 
 
-const { sma: DPOIndicator_SMAIndicator } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
+
 
 /* *
  *
@@ -3181,7 +3201,7 @@ function accumulatePoints(sum, yVal, i, index, subtract) {
  *
  * @augments Highcharts.Series
  */
-class DPOIndicator extends DPOIndicator_SMAIndicator {
+class DPOIndicator extends SMA_SMAIndicator {
     /* *
      *
      *  Functions
@@ -3247,7 +3267,7 @@ class DPOIndicator extends DPOIndicator_SMAIndicator {
  * @optionparent plotOptions.dpo
  * @internal
  */
-DPOIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(DPOIndicator_SMAIndicator.defaultOptions, {
+DPOIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(SMA_SMAIndicator.defaultOptions, {
     /**
      * Parameters used in calculation of Detrended Price Oscillator series
      * points.
@@ -3303,7 +3323,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
 
  // For historic reasons, AD is built into Chaikin
 
-const { ema: ChaikinIndicator_EMAIndicator } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
+
 
 
 /* *
@@ -3319,7 +3339,7 @@ const { ema: ChaikinIndicator_EMAIndicator } = (highcharts_SeriesRegistry_common
  *
  * @augments Highcharts.Series
  */
-class ChaikinIndicator extends ChaikinIndicator_EMAIndicator {
+class ChaikinIndicator extends EMA_EMAIndicator {
     /* *
      *
      *  Functions
@@ -3396,7 +3416,7 @@ class ChaikinIndicator extends ChaikinIndicator_EMAIndicator {
  * @optionparent plotOptions.chaikin
  * @internal
  */
-ChaikinIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(ChaikinIndicator_EMAIndicator.defaultOptions, {
+ChaikinIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(EMA_EMAIndicator.defaultOptions, {
     /**
      * Parameters used in calculation of Chaikin Oscillator
      * series points.
@@ -3469,7 +3489,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * */
 
 
-const { sma: CMOIndicator_SMAIndicator } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
+
 
 /* *
  *
@@ -3484,7 +3504,7 @@ const { sma: CMOIndicator_SMAIndicator } = (highcharts_SeriesRegistry_commonjs_h
  *
  * @augments Highcharts.Series
  */
-class CMOIndicator extends CMOIndicator_SMAIndicator {
+class CMOIndicator extends SMA_SMAIndicator {
     /* *
      *
      *  Functions
@@ -3582,7 +3602,7 @@ class CMOIndicator extends CMOIndicator_SMAIndicator {
  * @optionparent plotOptions.cmo
  * @internal
  */
-CMOIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(CMOIndicator_SMAIndicator.defaultOptions, {
+CMOIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(SMA_SMAIndicator.defaultOptions, {
     params: {
         period: 20,
         index: 3
@@ -3624,7 +3644,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * */
 
 
-const { ema: DEMAIndicator_EMAIndicator } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
+
 
 /* *
  *
@@ -3639,7 +3659,7 @@ const { ema: DEMAIndicator_EMAIndicator } = (highcharts_SeriesRegistry_commonjs_
  *
  * @augments Highcharts.Series
  */
-class DEMAIndicator extends DEMAIndicator_EMAIndicator {
+class DEMAIndicator extends EMA_EMAIndicator {
     /* *
      *
      *  Functions
@@ -3735,7 +3755,7 @@ class DEMAIndicator extends DEMAIndicator_EMAIndicator {
  * @optionparent plotOptions.dema
  * @internal
  */
-DEMAIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(DEMAIndicator_EMAIndicator.defaultOptions);
+DEMAIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(EMA_EMAIndicator.defaultOptions);
 highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default().registerSeriesType('dema', DEMAIndicator);
 /* *
  *
@@ -3775,7 +3795,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * */
 
 
-const { ema: TEMAIndicator_EMAIndicator } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
+
 
 /* *
  *
@@ -3790,7 +3810,7 @@ const { ema: TEMAIndicator_EMAIndicator } = (highcharts_SeriesRegistry_commonjs_
  *
  * @augments Highcharts.Series
  */
-class TEMAIndicator extends TEMAIndicator_EMAIndicator {
+class TEMAIndicator extends EMA_EMAIndicator {
     /* *
      *
      *  Functions
@@ -3920,14 +3940,14 @@ class TEMAIndicator extends TEMAIndicator_EMAIndicator {
  * @optionparent plotOptions.tema
  * @internal
  */
-TEMAIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(TEMAIndicator_EMAIndicator.defaultOptions);
+TEMAIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(EMA_EMAIndicator.defaultOptions);
 highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default().registerSeriesType('tema', TEMAIndicator);
 /* *
  *
  *  Default Export
  *
  * */
-/* harmony default export */ const TEMA_TEMAIndicator = ((/* unused pure expression or super */ null && (TEMAIndicator)));
+/* harmony default export */ const TEMA_TEMAIndicator = (TEMAIndicator);
 /* *
  *
  *  API Options
@@ -3960,7 +3980,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * */
 
 
-const { tema: TRIXIndicator_TEMAIndicator } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
+
 
 /* *
  *
@@ -3975,7 +3995,7 @@ const { tema: TRIXIndicator_TEMAIndicator } = (highcharts_SeriesRegistry_commonj
  *
  * @augments Highcharts.Series
  */
-class TRIXIndicator extends TRIXIndicator_TEMAIndicator {
+class TRIXIndicator extends TEMA_TEMAIndicator {
     /* *
      *
      *  Functions
@@ -4019,7 +4039,7 @@ class TRIXIndicator extends TRIXIndicator_TEMAIndicator {
  * @optionparent plotOptions.trix
  * @internal
  */
-TRIXIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(TRIXIndicator_TEMAIndicator.defaultOptions);
+TRIXIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(TEMA_TEMAIndicator.defaultOptions);
 highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default().registerSeriesType('trix', TRIXIndicator);
 /* *
  *
@@ -4060,7 +4080,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * */
 
 
-const { ema: APOIndicator_EMAIndicator } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
+
 
 
 /* *
@@ -4076,7 +4096,7 @@ const { ema: APOIndicator_EMAIndicator } = (highcharts_SeriesRegistry_commonjs_h
  *
  * @augments Highcharts.Series
  */
-class APOIndicator extends APOIndicator_EMAIndicator {
+class APOIndicator extends EMA_EMAIndicator {
     /* *
      *
      *  Functions
@@ -4146,7 +4166,7 @@ class APOIndicator extends APOIndicator_EMAIndicator {
  * @optionparent plotOptions.apo
  * @internal
  */
-APOIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(APOIndicator_EMAIndicator.defaultOptions, {
+APOIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(EMA_EMAIndicator.defaultOptions, {
     /**
      * Parameters used in calculation of Absolute Price Oscillator
      * series points.
@@ -4217,7 +4237,7 @@ var highcharts_Color_commonjs_highcharts_Color_commonjs2_highcharts_Color_root_H
 
 const { parse: color } = (highcharts_Color_commonjs_highcharts_Color_commonjs2_highcharts_Color_root_Highcharts_Color_default());
 
-const { sma: IKHIndicator_SMAIndicator } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
+
 
 /* *
  *
@@ -4311,7 +4331,7 @@ function ichimokuAverages() {
  *
  * @augments Highcharts.Series
  */
-class IKHIndicator extends IKHIndicator_SMAIndicator {
+class IKHIndicator extends SMA_SMAIndicator {
     constructor() {
         /* *
          *
@@ -4699,7 +4719,7 @@ class IKHIndicator extends IKHIndicator_SMAIndicator {
  * @optionparent plotOptions.ikh
  * @internal
  */
-IKHIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(IKHIndicator_SMAIndicator.defaultOptions, {
+IKHIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(SMA_SMAIndicator.defaultOptions, {
     /**
      * @excluding index
      */
@@ -4909,7 +4929,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
 
 
 
-const { sma: KeltnerChannelsIndicator_SMAIndicator } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
+
 
 /* *
  *
@@ -4924,7 +4944,7 @@ const { sma: KeltnerChannelsIndicator_SMAIndicator } = (highcharts_SeriesRegistr
  *
  * @augments Highcharts.Series
  */
-class KeltnerChannelsIndicator extends KeltnerChannelsIndicator_SMAIndicator {
+class KeltnerChannelsIndicator extends SMA_SMAIndicator {
     /* *
      *
      *  Functions
@@ -5002,11 +5022,12 @@ class KeltnerChannelsIndicator extends KeltnerChannelsIndicator_SMAIndicator {
  *               pointPlacement, pointRange, pointStart,showInNavigator,
  *               stacking
  * @requires     indicators/indicators
+ * @requires     indicators/atr
  * @requires     indicators/keltner-channels
  * @optionparent plotOptions.keltnerchannels
  * @internal
  */
-KeltnerChannelsIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(KeltnerChannelsIndicator_SMAIndicator.defaultOptions, {
+KeltnerChannelsIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(SMA_SMAIndicator.defaultOptions, {
     /**
      * Option for fill color between lines in Keltner Channels Indicator.
      *
@@ -5111,6 +5132,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *               pointIntervalUnit, pointPlacement, pointRange, pointStart,
  *               stacking, showInNavigator
  * @requires     indicators/indicators
+ * @requires     indicators/atr
  * @requires     indicators/keltner-channels
  * @apioption    series.keltnerchannels
  */
@@ -5128,7 +5150,8 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
 
 
 
-const { ema: KlingerIndicator_EMAIndicator, sma: KlingerIndicator_SMAIndicator } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
+
+
 
 
 /* *
@@ -5144,7 +5167,7 @@ const { ema: KlingerIndicator_EMAIndicator, sma: KlingerIndicator_SMAIndicator }
  *
  * @augments Highcharts.Series
  */
-class KlingerIndicator extends KlingerIndicator_SMAIndicator {
+class KlingerIndicator extends SMA_SMAIndicator {
     /* *
      *
      *  Functions
@@ -5211,11 +5234,11 @@ class KlingerIndicator extends KlingerIndicator_SMAIndicator {
     }
     /** @internal */
     getEMA(yVal, prevEMA, SMA, EMApercent, index, i, xVal) {
-        return KlingerIndicator_EMAIndicator.prototype.calculateEma(xVal || [], yVal, typeof i === 'undefined' ? 1 : i, EMApercent, prevEMA, typeof index === 'undefined' ? -1 : index, SMA);
+        return EMA_EMAIndicator.prototype.calculateEma(xVal || [], yVal, typeof i === 'undefined' ? 1 : i, EMApercent, prevEMA, typeof index === 'undefined' ? -1 : index, SMA);
     }
     /** @internal */
     getSMA(period, index, values) {
-        return KlingerIndicator_EMAIndicator.prototype
+        return EMA_EMAIndicator.prototype
             .accumulatePeriodPoints(period, index, values) / period;
     }
     /** @internal */
@@ -5282,7 +5305,7 @@ class KlingerIndicator extends KlingerIndicator_SMAIndicator {
  * @optionparent plotOptions.klinger
  * @internal
  */
-KlingerIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(KlingerIndicator_SMAIndicator.defaultOptions, {
+KlingerIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(SMA_SMAIndicator.defaultOptions, {
     /**
      * Parameters used in calculation of Klinger Oscillator.
      *
@@ -5386,9 +5409,10 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * */
 
 
+
 const { noop: MACDIndicator_noop } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 
-const { sma: MACDIndicator_SMAIndicator } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
+
 
 /* *
  *
@@ -5403,7 +5427,7 @@ const { sma: MACDIndicator_SMAIndicator } = (highcharts_SeriesRegistry_commonjs_
  *
  * @augments Highcharts.Series
  */
-class MACDIndicator extends MACDIndicator_SMAIndicator {
+class MACDIndicator extends SMA_SMAIndicator {
     /* *
      *
      *  Functions
@@ -5628,7 +5652,7 @@ class MACDIndicator extends MACDIndicator_SMAIndicator {
  * @optionparent plotOptions.macd
  * @internal
  */
-MACDIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(MACDIndicator_SMAIndicator.defaultOptions, {
+MACDIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(SMA_SMAIndicator.defaultOptions, {
     params: {
         /**
          * The short period for indicator calculations.
@@ -5725,9 +5749,9 @@ MACDIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highc
     pointValKey: 'y',
     // Columns support:
     markerAttribs: MACDIndicator_noop,
-    getColumnMetrics: (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default()).seriesTypes.column.prototype.getColumnMetrics,
-    crispCol: (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default()).seriesTypes.column.prototype.crispCol,
-    drawPoints: (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default()).seriesTypes.column.prototype.drawPoints
+    getColumnMetrics: (highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_default()).prototype.getColumnMetrics,
+    crispCol: (highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_default()).prototype.crispCol,
+    drawPoints: (highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_default()).prototype.drawPoints
 });
 highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default().registerSeriesType('macd', MACDIndicator);
 /* *
@@ -5770,7 +5794,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * */
 
 
-const { sma: MFIIndicator_SMAIndicator } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
+
 
 
 /* *
@@ -5810,7 +5834,7 @@ function calculateRawMoneyFlow(typicalPrice, volume) {
  *
  * @augments Highcharts.Series
  */
-class MFIIndicator extends MFIIndicator_SMAIndicator {
+class MFIIndicator extends SMA_SMAIndicator {
     /* *
      *
      *  Functions
@@ -5901,7 +5925,7 @@ class MFIIndicator extends MFIIndicator_SMAIndicator {
  * @optionparent plotOptions.mfi
  * @internal
  */
-MFIIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(MFIIndicator_SMAIndicator.defaultOptions, {
+MFIIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(SMA_SMAIndicator.defaultOptions, {
     /**
      * @excluding index
      */
@@ -5958,7 +5982,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * */
 
 
-const { sma: MomentumIndicator_SMAIndicator } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
+
 
 /* *
  *
@@ -5983,7 +6007,7 @@ function MomentumIndicator_populateAverage(xVal, yVal, i, period, index) {
  *
  * @augments Highcharts.Series
  */
-class MomentumIndicator extends MomentumIndicator_SMAIndicator {
+class MomentumIndicator extends SMA_SMAIndicator {
     /* *
      *
      *  Functions
@@ -6037,7 +6061,7 @@ class MomentumIndicator extends MomentumIndicator_SMAIndicator {
  * @optionparent plotOptions.momentum
  * @internal
  */
-MomentumIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(MomentumIndicator_SMAIndicator.defaultOptions, {
+MomentumIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(SMA_SMAIndicator.defaultOptions, {
     params: {
         index: 3
     }
@@ -6082,7 +6106,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
 
 
 
-const { atr: NATRIndicator_ATRIndicator } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
+
 /* *
  *
  *  Class
@@ -6096,7 +6120,7 @@ const { atr: NATRIndicator_ATRIndicator } = (highcharts_SeriesRegistry_commonjs_
  *
  * @augments Highcharts.Series
  */
-class NATRIndicator extends NATRIndicator_ATRIndicator {
+class NATRIndicator extends ATR_ATRIndicator {
     /* *
      *
      *  Functions
@@ -6139,7 +6163,7 @@ class NATRIndicator extends NATRIndicator_ATRIndicator {
  * @optionparent plotOptions.natr
  * @internal
  */
-NATRIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(NATRIndicator_ATRIndicator.defaultOptions, {
+NATRIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(ATR_ATRIndicator.defaultOptions, {
     tooltip: {
         valueSuffix: '%'
     }
@@ -6181,7 +6205,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * */
 
 
-const { sma: OBVIndicator_SMAIndicator } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
+
 
 
 /* *
@@ -6197,7 +6221,7 @@ const { sma: OBVIndicator_SMAIndicator } = (highcharts_SeriesRegistry_commonjs_h
  *
  * @augments Highcharts.Series
  */
-class OBVIndicator extends OBVIndicator_SMAIndicator {
+class OBVIndicator extends SMA_SMAIndicator {
     /* *
      *
      *  Functions
@@ -6277,7 +6301,7 @@ class OBVIndicator extends OBVIndicator_SMAIndicator {
  * @optionparent plotOptions.obv
  * @internal
  */
-OBVIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(OBVIndicator_SMAIndicator.defaultOptions, {
+OBVIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(SMA_SMAIndicator.defaultOptions, {
     marker: {
         enabled: false
     },
@@ -6337,7 +6361,8 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * */
 
 
-const SMAPoint = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes.sma.prototype.pointClass;
+
+const SMAPoint = SMA_SMAIndicator.prototype.pointClass;
 /* *
  *
  *  Functions
@@ -6397,7 +6422,7 @@ class PivotPointsPoint extends SMAPoint {
 
 
 
-const { sma: PivotPointsIndicator_SMAIndicator } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
+
 
 /**
  *
@@ -6412,7 +6437,7 @@ const { sma: PivotPointsIndicator_SMAIndicator } = (highcharts_SeriesRegistry_co
  *
  * @augments Highcharts.Series
  */
-class PivotPointsIndicator extends PivotPointsIndicator_SMAIndicator {
+class PivotPointsIndicator extends SMA_SMAIndicator {
     /* *
      *
      *  Functions
@@ -6628,7 +6653,7 @@ class PivotPointsIndicator extends PivotPointsIndicator_SMAIndicator {
  * @optionparent plotOptions.pivotpoints
  * @internal
  */
-PivotPointsIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(PivotPointsIndicator_SMAIndicator.defaultOptions, {
+PivotPointsIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(SMA_SMAIndicator.defaultOptions, {
     /**
      * @excluding index
      */
@@ -6701,7 +6726,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * */
 
 
-const { ema: PPOIndicator_EMAIndicator } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
+
 
 
 /* *
@@ -6717,7 +6742,7 @@ const { ema: PPOIndicator_EMAIndicator } = (highcharts_SeriesRegistry_commonjs_h
  *
  * @augments Highcharts.Series
  */
-class PPOIndicator extends PPOIndicator_EMAIndicator {
+class PPOIndicator extends EMA_EMAIndicator {
     /* *
      *
      *  Functions
@@ -6790,7 +6815,7 @@ class PPOIndicator extends PPOIndicator_EMAIndicator {
  * @optionparent plotOptions.ppo
  * @internal
  */
-PPOIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(PPOIndicator_EMAIndicator.defaultOptions, {
+PPOIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(EMA_EMAIndicator.defaultOptions, {
     /**
      * Parameters used in calculation of Percentage Price Oscillator series
      * points.
@@ -6905,7 +6930,7 @@ const ArrayUtilities = {
 
 
 
-const { sma: PCIndicator_SMAIndicator } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
+
 
 /* *
  *
@@ -6920,7 +6945,7 @@ const { sma: PCIndicator_SMAIndicator } = (highcharts_SeriesRegistry_commonjs_hi
  *
  * @augments Highcharts.Series
  */
-class PCIndicator extends PCIndicator_SMAIndicator {
+class PCIndicator extends SMA_SMAIndicator {
     /* *
      *
      *  Functions
@@ -6979,7 +7004,7 @@ class PCIndicator extends PCIndicator_SMAIndicator {
  * @optionparent plotOptions.pc
  * @internal
  */
-PCIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(PCIndicator_SMAIndicator.defaultOptions, {
+PCIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(SMA_SMAIndicator.defaultOptions, {
     /**
      * Option for fill color between lines in Price channel Indicator.
      *
@@ -7081,7 +7106,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
 
 
 
-const { sma: PriceEnvelopesIndicator_SMAIndicator } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
+
 
 /* *
  *
@@ -7096,7 +7121,7 @@ const { sma: PriceEnvelopesIndicator_SMAIndicator } = (highcharts_SeriesRegistry
  *
  * @augments Highcharts.Series
  */
-class PriceEnvelopesIndicator extends PriceEnvelopesIndicator_SMAIndicator {
+class PriceEnvelopesIndicator extends SMA_SMAIndicator {
     /* *
      *
      *  Functions
@@ -7176,7 +7201,7 @@ class PriceEnvelopesIndicator extends PriceEnvelopesIndicator_SMAIndicator {
  * @optionparent plotOptions.priceenvelopes
  * @internal
  */
-PriceEnvelopesIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(PriceEnvelopesIndicator_SMAIndicator.defaultOptions, {
+PriceEnvelopesIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(SMA_SMAIndicator.defaultOptions, {
     marker: {
         enabled: false
     },
@@ -7292,7 +7317,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
 
 
 
-const { sma: PSARIndicator_SMAIndicator } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
+
 /* *
  *
  *  Functions
@@ -7388,7 +7413,7 @@ function getPSAR(pdir, sDir, PSAR, pACCMulti, sLow, pLow, pHigh, sHigh, pEP) {
  *
  * @augments Highcharts.Series
  */
-class PSARIndicator extends PSARIndicator_SMAIndicator {
+class PSARIndicator extends SMA_SMAIndicator {
     constructor() {
         /* *
          *
@@ -7478,7 +7503,7 @@ class PSARIndicator extends PSARIndicator_SMAIndicator {
  * @optionparent plotOptions.psar
  * @internal
  */
-PSARIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(PSARIndicator_SMAIndicator.defaultOptions, {
+PSARIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(SMA_SMAIndicator.defaultOptions, {
     lineWidth: 0,
     marker: {
         enabled: true
@@ -7568,7 +7593,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * */
 
 
-const { sma: ROCIndicator_SMAIndicator } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
+
 
 /* *
  *
@@ -7614,7 +7639,7 @@ function ROCIndicator_populateAverage(xVal, yVal, i, period, index) {
  *
  * @augments Highcharts.Series
  */
-class ROCIndicator extends ROCIndicator_SMAIndicator {
+class ROCIndicator extends SMA_SMAIndicator {
     /* *
      *
      *  Functions
@@ -7676,7 +7701,7 @@ class ROCIndicator extends ROCIndicator_SMAIndicator {
  * @optionparent plotOptions.roc
  * @internal
  */
-ROCIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(ROCIndicator_SMAIndicator.defaultOptions, {
+ROCIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(SMA_SMAIndicator.defaultOptions, {
     params: {
         index: 3,
         period: 9
@@ -7732,7 +7757,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * */
 
 
-const { sma: RSIIndicator_SMAIndicator } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
+
 
 /* *
  *
@@ -7757,7 +7782,7 @@ function RSIIndicator_toFixed(a, n) {
  *
  * @augments Highcharts.Series
  */
-class RSIIndicator extends RSIIndicator_SMAIndicator {
+class RSIIndicator extends SMA_SMAIndicator {
     /* *
      *
      *  Functions
@@ -7856,7 +7881,7 @@ class RSIIndicator extends RSIIndicator_SMAIndicator {
  * @optionparent plotOptions.rsi
  * @internal
  */
-RSIIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(RSIIndicator_SMAIndicator.defaultOptions, {
+RSIIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(SMA_SMAIndicator.defaultOptions, {
     params: {
         decimals: 4,
         index: 3
@@ -7900,7 +7925,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
 
 
 
-const { sma: StochasticIndicator_SMAIndicator } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
+
 
 /* *
  *
@@ -7915,7 +7940,7 @@ const { sma: StochasticIndicator_SMAIndicator } = (highcharts_SeriesRegistry_com
  *
  * @augments Highcharts.Series
  */
-class StochasticIndicator extends StochasticIndicator_SMAIndicator {
+class StochasticIndicator extends SMA_SMAIndicator {
     /* *
      *
      *  Functions
@@ -8024,7 +8049,7 @@ class StochasticIndicator extends StochasticIndicator_SMAIndicator {
  * @optionparent plotOptions.stochastic
  * @internal
  */
-StochasticIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(StochasticIndicator_SMAIndicator.defaultOptions, {
+StochasticIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(SMA_SMAIndicator.defaultOptions, {
     /**
      * @excluding index, period
      */
@@ -8088,7 +8113,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *  Default Export
  *
  * */
-/* harmony default export */ const Stochastic_StochasticIndicator = ((/* unused pure expression or super */ null && (StochasticIndicator)));
+/* harmony default export */ const Stochastic_StochasticIndicator = (StochasticIndicator);
 /* *
  *
  *  API Options
@@ -8121,7 +8146,8 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * */
 
 
-const { sma: SlowStochasticIndicator_SMAIndicator, stochastic: SlowStochasticIndicator_StochasticIndicator } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
+
+
 
 /* *
  *
@@ -8136,7 +8162,7 @@ const { sma: SlowStochasticIndicator_SMAIndicator, stochastic: SlowStochasticInd
  *
  * @augments Highcharts.Series
  */
-class SlowStochasticIndicator extends SlowStochasticIndicator_StochasticIndicator {
+class SlowStochasticIndicator extends Stochastic_StochasticIndicator {
     /* *
      *
      *  Functions
@@ -8155,7 +8181,7 @@ class SlowStochasticIndicator extends SlowStochasticIndicator_StochasticIndicato
         slowValues.xData = fastValues.xData.slice(periods[1] - 1);
         const fastYData = fastValues.yData.slice(periods[1] - 1);
         // Get SMA(%D)
-        const smoothedValues = SlowStochasticIndicator_SMAIndicator.prototype.getValues.call(this, {
+        const smoothedValues = SMA_SMAIndicator.prototype.getValues.call(this, {
             xData: slowValues.xData,
             yData: fastYData
         }, {
@@ -8202,7 +8228,7 @@ class SlowStochasticIndicator extends SlowStochasticIndicator_StochasticIndicato
  * @optionparent plotOptions.slowstochastic
  * @internal
  */
-SlowStochasticIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(SlowStochasticIndicator_StochasticIndicator.defaultOptions, {
+SlowStochasticIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(Stochastic_StochasticIndicator.defaultOptions, {
     params: {
         /**
          * Periods for Slow Stochastic oscillator: [%K, %D, SMA(%D)].
@@ -8253,7 +8279,8 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * */
 
 
-const { atr: SupertrendIndicator_ATRIndicator, sma: SupertrendIndicator_SMAIndicator } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
+
+
 
 /* *
  *
@@ -8282,7 +8309,7 @@ function createPointObj(mainSeries, index) {
  *
  * @augments Highcharts.Series
  */
-class SupertrendIndicator extends SupertrendIndicator_SMAIndicator {
+class SupertrendIndicator extends SMA_SMAIndicator {
     /* *
      *
      *  Functions
@@ -8491,7 +8518,7 @@ class SupertrendIndicator extends SupertrendIndicator_SMAIndicator {
             indicator.points = values;
             indicator.options = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(supertrendLineOptions[lineName].styles, gappedExtend);
             indicator.graph = indicator['graph' + lineName + 'Line'];
-            SupertrendIndicator_SMAIndicator.prototype.drawGraph.call(indicator);
+            SMA_SMAIndicator.prototype.drawGraph.call(indicator);
             // Now save line
             indicator['graph' + lineName + 'Line'] = indicator.graph;
         });
@@ -8543,7 +8570,7 @@ class SupertrendIndicator extends SupertrendIndicator_SMAIndicator {
             yVal[0].length !== 4 || period < 0) {
             return;
         }
-        atrData = SupertrendIndicator_ATRIndicator.prototype.getValues.call(this, series, {
+        atrData = ATR_ATRIndicator.prototype.getValues.call(this, series, {
             period: period
         }).yData;
         for (i = 0; i < atrData.length; i++) {
@@ -8611,11 +8638,12 @@ class SupertrendIndicator extends SupertrendIndicator_SMAIndicator {
  *               pointPlacement, pointRange, pointStart, showInNavigator,
  *               stacking, threshold
  * @requires     indicators/indicators
+ * @requires     indicators/atr
  * @requires     indicators/supertrend
  * @optionparent plotOptions.supertrend
  * @internal
  */
-SupertrendIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(SupertrendIndicator_SMAIndicator.defaultOptions, {
+SupertrendIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(SMA_SMAIndicator.defaultOptions, {
     /**
      * Parameters used in calculation of Supertrend indicator series points.
      *
@@ -8715,6 +8743,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *            pointIntervalUnit, pointPlacement, pointRange, pointStart,
  *            showInNavigator, stacking, threshold
  * @requires  indicators/indicators
+ * @requires  indicators/atr
  * @requires  indicators/supertrend
  * @apioption series.supertrend
  */
@@ -8736,7 +8765,12 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *
  * */
 
-const { sma: { prototype: { pointClass: VBPPoint_SMAPoint } } } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
+/* *
+ *
+ *  Constants
+ *
+ * */
+const VBPPoint_SMAPoint = SMA_SMAIndicator.prototype.pointClass;
 /* *
  *
  *  Class
@@ -8778,9 +8812,10 @@ class VBPPoint extends VBPPoint_SMAPoint {
 
 
 
+
 const { noop: VBPIndicator_noop } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 
-const { column: { prototype: VBPIndicator_columnProto }, sma: VBPIndicator_SMAIndicator } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
+
 
 
 /* *
@@ -8830,7 +8865,7 @@ function arrayExtremesOHLC(data) {
  *
  * @augments Highcharts.Series
  */
-class VBPIndicator extends VBPIndicator_SMAIndicator {
+class VBPIndicator extends SMA_SMAIndicator {
     /* *
      *
      *  Functions
@@ -8914,10 +8949,10 @@ class VBPIndicator extends VBPIndicator_SMAIndicator {
         const indicator = this;
         if (indicator.options.volumeDivision.enabled) {
             indicator.posNegVolume(true, true);
-            VBPIndicator_columnProto.drawPoints.apply(indicator, arguments);
+            highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_default().prototype.drawPoints.apply(indicator, arguments);
             indicator.posNegVolume(false, false);
         }
-        VBPIndicator_columnProto.drawPoints.apply(indicator, arguments);
+        highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_default().prototype.drawPoints.apply(indicator, arguments);
     }
     // Function responsible for dividing volume into positive and negative
     /** @internal */
@@ -8966,7 +9001,7 @@ class VBPIndicator extends VBPIndicator_SMAIndicator {
     translate() {
         const indicator = this, options = indicator.options, chart = indicator.chart, yAxis = indicator.yAxis, yAxisMin = yAxis.min, zoneLinesOptions = indicator.options.zoneLines, priceZones = (indicator.priceZones);
         let yBarOffset = 0, volumeDataArray, maxVolume, primalBarWidth, barHeight, barHeightP, oldBarHeight, barWidth, pointPadding, chartPlotTop, barX, barY;
-        VBPIndicator_columnProto.translate.apply(indicator);
+        highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_default().prototype.translate.apply(indicator);
         const indicatorPoints = indicator.points;
         // Do translate operation when points exist
         if (indicatorPoints.length) {
@@ -9246,7 +9281,7 @@ class VBPIndicator extends VBPIndicator_SMAIndicator {
  * @optionparent plotOptions.vbp
  * @internal
  */
-VBPIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(VBPIndicator_SMAIndicator.defaultOptions, {
+VBPIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(SMA_SMAIndicator.defaultOptions, {
     /**
      * @excluding index, period
      */
@@ -9343,8 +9378,8 @@ VBPIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highch
     pointClass: VBP_VBPPoint,
     markerAttribs: VBPIndicator_noop,
     drawGraph: VBPIndicator_noop,
-    getColumnMetrics: VBPIndicator_columnProto.getColumnMetrics,
-    crispCol: VBPIndicator_columnProto.crispCol
+    getColumnMetrics: (highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_default()).prototype.getColumnMetrics,
+    crispCol: (highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_default()).prototype.crispCol
 });
 highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default().registerSeriesType('vbp', VBPIndicator);
 /* *
@@ -9388,7 +9423,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * */
 
 
-const { sma: VWAPIndicator_SMAIndicator } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
+
 
 
 /* *
@@ -9404,7 +9439,7 @@ const { sma: VWAPIndicator_SMAIndicator } = (highcharts_SeriesRegistry_commonjs_
  *
  * @augments Highcharts.Series
  */
-class VWAPIndicator extends VWAPIndicator_SMAIndicator {
+class VWAPIndicator extends SMA_SMAIndicator {
     /* *
      *
      *  Functions
@@ -9514,7 +9549,7 @@ class VWAPIndicator extends VWAPIndicator_SMAIndicator {
  * @optionparent plotOptions.vwap
  * @internal
  */
-VWAPIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(VWAPIndicator_SMAIndicator.defaultOptions, {
+VWAPIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(SMA_SMAIndicator.defaultOptions, {
     /**
      * @excluding index
      */
@@ -9567,7 +9602,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
 
 
 
-const { sma: WilliamsRIndicator_SMAIndicator } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
+
 
 /* *
  *
@@ -9582,7 +9617,7 @@ const { sma: WilliamsRIndicator_SMAIndicator } = (highcharts_SeriesRegistry_comm
  *
  * @augments Highcharts.Series
  */
-class WilliamsRIndicator extends WilliamsRIndicator_SMAIndicator {
+class WilliamsRIndicator extends SMA_SMAIndicator {
     /* *
      *
      *  Functions
@@ -9648,7 +9683,7 @@ class WilliamsRIndicator extends WilliamsRIndicator_SMAIndicator {
  * @optionparent plotOptions.williamsr
  * @internal
  */
-WilliamsRIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(WilliamsRIndicator_SMAIndicator.defaultOptions, {
+WilliamsRIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(SMA_SMAIndicator.defaultOptions, {
     /**
      * Parameters used in calculation of Williams %R series points.
      * @excluding index
@@ -9706,7 +9741,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * */
 
 
-const { sma: WMAIndicator_SMAIndicator } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
+
 
 /* *
  *
@@ -9749,7 +9784,7 @@ function WMAIndicator_populateAverage(points, xVal, yVal, i) {
  *
  * @augments Highcharts.Series
  */
-class WMAIndicator extends WMAIndicator_SMAIndicator {
+class WMAIndicator extends SMA_SMAIndicator {
     /* *
      *
      *  Functions
@@ -9813,7 +9848,7 @@ class WMAIndicator extends WMAIndicator_SMAIndicator {
  * @optionparent plotOptions.wma
  * @internal
  */
-WMAIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(WMAIndicator_SMAIndicator.defaultOptions, {
+WMAIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(SMA_SMAIndicator.defaultOptions, {
     params: {
         index: 3,
         period: 9
@@ -9858,7 +9893,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * */
 
 
-const { sma: ZigzagIndicator_SMAIndicator } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
+
 
 /* *
  *
@@ -9873,7 +9908,7 @@ const { sma: ZigzagIndicator_SMAIndicator } = (highcharts_SeriesRegistry_commonj
  *
  * @augments Highcharts.Series
  */
-class ZigzagIndicator extends ZigzagIndicator_SMAIndicator {
+class ZigzagIndicator extends SMA_SMAIndicator {
     /* *
      *
      *  Functions
@@ -9995,7 +10030,7 @@ class ZigzagIndicator extends ZigzagIndicator_SMAIndicator {
  * @optionparent plotOptions.zigzag
  * @internal
  */
-ZigzagIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(ZigzagIndicator_SMAIndicator.defaultOptions, {
+ZigzagIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(SMA_SMAIndicator.defaultOptions, {
     /**
      * @excluding index, period
      */
@@ -10072,7 +10107,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * */
 
 
-const { sma: LinearRegressionIndicator_SMAIndicator } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
+
 
 /* *
  *
@@ -10087,7 +10122,7 @@ const { sma: LinearRegressionIndicator_SMAIndicator } = (highcharts_SeriesRegist
  *
  * @augments Highcharts.Series
  */
-class LinearRegressionIndicator extends LinearRegressionIndicator_SMAIndicator {
+class LinearRegressionIndicator extends SMA_SMAIndicator {
     /* *
      *
      *  Functions
@@ -10248,7 +10283,7 @@ class LinearRegressionIndicator extends LinearRegressionIndicator_SMAIndicator {
  * @optionparent plotOptions.linearregression
  * @internal
  */
-LinearRegressionIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(LinearRegressionIndicator_SMAIndicator.defaultOptions, {
+LinearRegressionIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(SMA_SMAIndicator.defaultOptions, {
     params: {
         /**
          * Unit (in milliseconds) for the x axis distances used to
@@ -10315,7 +10350,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *  Default Export
  *
  * */
-/* harmony default export */ const LinearRegression_LinearRegressionIndicator = ((/* unused pure expression or super */ null && (LinearRegressionIndicator)));
+/* harmony default export */ const LinearRegression_LinearRegressionIndicator = (LinearRegressionIndicator);
 /* *
  *
  *  API Options
@@ -10349,7 +10384,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * */
 
 
-const { linearregression: LinearRegressionSlopesIndicator_LinearRegressionIndicator } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
+
 
 /* *
  *
@@ -10364,7 +10399,7 @@ const { linearregression: LinearRegressionSlopesIndicator_LinearRegressionIndica
  *
  * @augments Highcharts.Series
  */
-class LinearRegressionSlopesIndicator extends LinearRegressionSlopesIndicator_LinearRegressionIndicator {
+class LinearRegressionSlopesIndicator extends LinearRegression_LinearRegressionIndicator {
     /* *
      *
      *  Functions
@@ -10395,7 +10430,7 @@ class LinearRegressionSlopesIndicator extends LinearRegressionSlopesIndicator_Li
  * @optionparent plotOptions.linearregressionslope
  * @internal
  */
-LinearRegressionSlopesIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(LinearRegressionSlopesIndicator_LinearRegressionIndicator.defaultOptions);
+LinearRegressionSlopesIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(LinearRegression_LinearRegressionIndicator.defaultOptions);
 (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.extend)(LinearRegressionSlopesIndicator.prototype, {
     nameBase: 'Linear Regression Slope Indicator'
 });
@@ -10441,7 +10476,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * */
 
 
-const { linearregression: LinearRegressionInterceptIndicator_LinearRegressionIndicator } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
+
 
 /* *
  *
@@ -10456,7 +10491,7 @@ const { linearregression: LinearRegressionInterceptIndicator_LinearRegressionInd
  *
  * @augments Highcharts.Series
  */
-class LinearRegressionInterceptIndicator extends LinearRegressionInterceptIndicator_LinearRegressionIndicator {
+class LinearRegressionInterceptIndicator extends LinearRegression_LinearRegressionIndicator {
     /* *
      *
      *  Functions
@@ -10487,7 +10522,7 @@ class LinearRegressionInterceptIndicator extends LinearRegressionInterceptIndica
  * @optionparent plotOptions.linearregressionintercept
  * @internal
  */
-LinearRegressionInterceptIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(LinearRegressionInterceptIndicator_LinearRegressionIndicator.defaultOptions);
+LinearRegressionInterceptIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(LinearRegression_LinearRegressionIndicator.defaultOptions);
 (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.extend)(LinearRegressionInterceptIndicator.prototype, {
     nameBase: 'Linear Regression Intercept Indicator'
 });
@@ -10533,7 +10568,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * */
 
 
-const { linearregression: LinearRegressionAngleIndicator_LinearRegressionIndicator } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
+
 
 /* *
  *
@@ -10548,7 +10583,7 @@ const { linearregression: LinearRegressionAngleIndicator_LinearRegressionIndicat
  *
  * @augments Highcharts.Series
  */
-class LinearRegressionAngleIndicator extends LinearRegressionAngleIndicator_LinearRegressionIndicator {
+class LinearRegressionAngleIndicator extends LinearRegression_LinearRegressionIndicator {
     /* *
      *
      *  Functions
@@ -10589,7 +10624,7 @@ class LinearRegressionAngleIndicator extends LinearRegressionAngleIndicator_Line
  * @optionparent plotOptions.linearregressionangle
  * @internal
  */
-LinearRegressionAngleIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(LinearRegressionAngleIndicator_LinearRegressionIndicator.defaultOptions, {
+LinearRegressionAngleIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(LinearRegression_LinearRegressionIndicator.defaultOptions, {
     tooltip: {
         pointFormat: '<span style="color:{point.color}">\u25CF</span>' +
             '{series.name}: <b>{point.y}°</b><br/>'
@@ -10633,7 +10668,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
 
 
 
-const { sma: ABandsIndicator_SMAIndicator } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
+
 
 /* *
  *
@@ -10666,7 +10701,7 @@ function getPointLB(low, base) {
  *
  * @augments Highcharts.Series
  */
-class ABandsIndicator extends ABandsIndicator_SMAIndicator {
+class ABandsIndicator extends SMA_SMAIndicator {
     /* *
      *
      *  Functions
@@ -10761,7 +10796,7 @@ class ABandsIndicator extends ABandsIndicator_SMAIndicator {
  * @optionparent plotOptions.abands
  * @internal
  */
-ABandsIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(ABandsIndicator_SMAIndicator.defaultOptions, {
+ABandsIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(SMA_SMAIndicator.defaultOptions, {
     /**
      * Option for fill color between lines in Acceleration bands Indicator.
      *
@@ -10853,7 +10888,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * */
 
 
-const { sma: TrendLineIndicator_SMAIndicator } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
+
 
 /* *
  *
@@ -10868,7 +10903,7 @@ const { sma: TrendLineIndicator_SMAIndicator } = (highcharts_SeriesRegistry_comm
  *
  * @augments Highcharts.Series
  */
-class TrendLineIndicator extends TrendLineIndicator_SMAIndicator {
+class TrendLineIndicator extends SMA_SMAIndicator {
     constructor() {
         /* *
          *
@@ -10939,7 +10974,7 @@ class TrendLineIndicator extends TrendLineIndicator_SMAIndicator {
  * @optionparent plotOptions.trendline
  * @internal
  */
-TrendLineIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(TrendLineIndicator_SMAIndicator.defaultOptions, {
+TrendLineIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(SMA_SMAIndicator.defaultOptions, {
     /**
      * @excluding period
      */
@@ -10999,7 +11034,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * */
 
 
-const { sma: DisparityIndexIndicator_SMAIndicator } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
+
 
 /* *
  *
@@ -11014,7 +11049,7 @@ const { sma: DisparityIndexIndicator_SMAIndicator } = (highcharts_SeriesRegistry
  *
  * @augments Highcharts.Series
  */
-class DisparityIndexIndicator extends DisparityIndexIndicator_SMAIndicator {
+class DisparityIndexIndicator extends SMA_SMAIndicator {
     /* *
      *
      *  Functions
@@ -11025,7 +11060,7 @@ class DisparityIndexIndicator extends DisparityIndexIndicator_SMAIndicator {
         const args = arguments, ctx = this, // Disparity Index indicator
         params = args[1].params, // Options.params
         averageType = params && params.average ? params.average : void 0;
-        ctx.averageIndicator = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes[averageType] || DisparityIndexIndicator_SMAIndicator;
+        ctx.averageIndicator = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes[averageType] || SMA_SMAIndicator;
         ctx.averageIndicator.prototype.init.apply(ctx, args);
     }
     /** @internal */
@@ -11086,7 +11121,7 @@ class DisparityIndexIndicator extends DisparityIndexIndicator_SMAIndicator {
  * @optionparent plotOptions.disparityindex
  * @internal
  */
-DisparityIndexIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(DisparityIndexIndicator_SMAIndicator.defaultOptions, {
+DisparityIndexIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(SMA_SMAIndicator.defaultOptions, {
     params: {
         /**
          * The average used to calculate the Disparity Index indicator.

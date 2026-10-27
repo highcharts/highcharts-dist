@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-26)
+ * @license Highcharts JS v13.1.1-modified (2026-10-27)
  * @module highcharts/modules/annotations-advanced
  * @requires highcharts
  *
@@ -1605,9 +1605,9 @@ const NavigationBindingsUtilities = {
 /** @internal */
 /* harmony default export */ const Annotations_NavigationBindingsUtilities = (NavigationBindingsUtilities);
 
-;// external ["../highcharts.src.js","default","SeriesRegistry"]
-const external_highcharts_src_js_default_SeriesRegistry_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].SeriesRegistry;
-var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_SeriesRegistry_namespaceObject);
+;// external ["../highcharts.src.js","default","Series"]
+const external_highcharts_src_js_default_Series_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].Series;
+var external_highcharts_src_js_default_Series_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_Series_namespaceObject);
 ;// ./code/es-modules/Extensions/Annotations/MockPoint.js
 /* *
  *
@@ -1617,7 +1617,6 @@ var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__w
 
 const { getAxisFromOptions: MockPoint_getAxisFromOptions } = Annotations_NavigationBindingsUtilities;
 
-const { series: { prototype: seriesProto } } = (external_highcharts_src_js_default_SeriesRegistry_default());
 
 /* *
  *
@@ -1752,7 +1751,7 @@ class MockPoint {
         this.series = {
             visible: true,
             chart: chart,
-            getPlotBox: seriesProto.getPlotBox
+            getPlotBox: (external_highcharts_src_js_default_Series_default()).prototype.getPlotBox
         };
         /**
          * @name Annotation.AnnotationMockPoint#target
@@ -4394,6 +4393,9 @@ const PopupAnnotations = {
 /** @internal */
 /* harmony default export */ const Popup_PopupAnnotations = (PopupAnnotations);
 
+;// external ["../highcharts.src.js","default","SeriesRegistry"]
+const external_highcharts_src_js_default_SeriesRegistry_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].SeriesRegistry;
+var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_SeriesRegistry_namespaceObject);
 ;// ./code/es-modules/Extensions/Annotations/Popup/PopupIndicators.js
 /* *
  *

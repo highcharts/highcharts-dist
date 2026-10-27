@@ -13,8 +13,9 @@
  *
  * */
 'use strict';
+import ColumnSeries from '../Column/ColumnSeries.js';
+import LineSeries from '../Line/LineSeries.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-const { column: ColumnSeries, line: LineSeries } = SeriesRegistry.seriesTypes;
 import TimelinePoint from './TimelinePoint.js';
 import TimelineSeriesDefaults from './TimelineSeriesDefaults.js';
 import { addEvent, arrayMax, arrayMin, defined, extend, merge } from '../../Shared/Utilities.js';

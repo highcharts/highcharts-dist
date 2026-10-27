@@ -19,8 +19,9 @@ const { noop } = H;
 import PackedBubblePoint from './PackedBubblePoint.js';
 import PackedBubbleSeriesDefaults from './PackedBubbleSeriesDefaults.js';
 import PackedBubbleLayout from './PackedBubbleLayout.js';
+import BubbleSeries from '../Bubble/BubbleSeries.js';
+import Series from '../../Core/Series/Series.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-const { series: { prototype: seriesProto }, seriesTypes: { bubble: BubbleSeries } } = SeriesRegistry;
 import D from '../SimulationSeriesUtilities.js';
 const { initDataLabels, initDataLabelsDefer } = D;
 import SVGElement from '../../Core/Renderer/SVG/SVGElement.js';
@@ -295,7 +296,7 @@ class PackedBubbleSeries extends BubbleSeries {
                     this.parentNode.dataLabel.destroy();
             }
         }
-        seriesProto.destroy.apply(this, arguments);
+        Series.prototype.destroy.apply(this, arguments);
     }
     /**
      * Packedbubble has two separate collections of nodes if split, render
@@ -308,11 +309,11 @@ class PackedBubbleSeries extends BubbleSeries {
         if (this.deferDataLabels) {
             return;
         }
-        seriesProto.drawDataLabels.call(this, this.points);
+        Series.prototype.drawDataLabels.call(this, this.points);
         // Render parentNode labels:
         if (this.parentNode) {
             this.parentNode.formatPrefix = 'parentNode';
-            seriesProto.drawDataLabels.call(this, [this.parentNode]);
+            Series.prototype.drawDataLabels.call(this, [this.parentNode]);
         }
     }
     /**
@@ -422,7 +423,7 @@ class PackedBubbleSeries extends BubbleSeries {
     }
     /** @internal */
     init() {
-        seriesProto.init.apply(this, arguments);
+        Series.prototype.init.apply(this, arguments);
         initDataLabelsDefer.call(this);
         /* eslint-disable no-invalid-this */
         // When one series is modified, the others need to be recomputed
@@ -579,7 +580,7 @@ class PackedBubbleSeries extends BubbleSeries {
             options.layoutAlgorithm.parentNodeOptions) {
             markerOptions = options.layoutAlgorithm.parentNodeOptions.marker;
         }
-        const fillOpacity = markerOptions.fillOpacity, attr = seriesProto.pointAttribs.call(this, point, state);
+        const fillOpacity = markerOptions.fillOpacity, attr = Series.prototype.pointAttribs.call(this, point, state);
         if (fillOpacity !== 1) {
             attr['fill-opacity'] = fillOpacity;
         }
@@ -630,7 +631,7 @@ class PackedBubbleSeries extends BubbleSeries {
     /** @internal */
     render() {
         const dataLabels = [];
-        seriesProto.render.apply(this, arguments);
+        Series.prototype.render.apply(this, arguments);
         // #10823 - dataLabels should stay visible
         // when enabled allowOverlap.
         if (!this.options.dataLabels.allowOverlap) {
@@ -731,7 +732,7 @@ class PackedBubbleSeries extends BubbleSeries {
      */
     setVisible() {
         const series = this;
-        seriesProto.setVisible.apply(series, arguments);
+        Series.prototype.setVisible.apply(series, arguments);
         if (series.parentNodeLayout && series.graph) {
             if (series.visible) {
                 series.graph.show();
@@ -826,7 +827,7 @@ extend(PackedBubbleSeries.prototype, {
     requireSorting: false,
     trackerGroups: ['group', 'dataLabelsGroup', 'parentNodesGroup'],
     initDataLabels: initDataLabels,
-    alignDataLabel: seriesProto.alignDataLabel,
+    alignDataLabel: Series.prototype.alignDataLabel,
     indexateNodes: noop,
     onMouseDown: DragNodesComposition.onMouseDown,
     onMouseMove: DragNodesComposition.onMouseMove,

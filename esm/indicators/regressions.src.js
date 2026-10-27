@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.1.1-modified (2026-10-26)
+ * @license Highstock JS v13.1.1-modified (2026-10-27)
  * @module highcharts/indicators/regressions
  * @requires highcharts
  * @requires highcharts/modules/stock
+ * @requires highcharts/indicators/indicators
  *
  * Indicator series type for Highcharts Stock
  *
@@ -14,6 +15,9 @@
  * see www.highcharts.com/license
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
+import "../modules/stock.src.js";
+import "./indicators.src.js";
+import * as __WEBPACK_EXTERNAL_MODULE__indicators_src_js_eb4ee23f__ from "./indicators.src.js";
 /******/ // The require scope
 /******/ const __webpack_require__ = {};
 /******/ 
@@ -46,6 +50,13 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 ;// external ["../highcharts.src.js","default"]
 const external_highcharts_src_js_default_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"];
 var external_highcharts_src_js_default_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_namespaceObject);
+;// external "../modules/stock.src.js"
+
+;// external "./indicators.src.js"
+
+;// external ["./indicators.src.js","default","Series","types","sma"]
+const external_indicators_src_js_default_Series_types_sma_namespaceObject = __WEBPACK_EXTERNAL_MODULE__indicators_src_js_eb4ee23f__["default"].Series.types.sma;
+var external_indicators_src_js_default_Series_types_sma_default = /*#__PURE__*/__webpack_require__.n(external_indicators_src_js_default_Series_types_sma_namespaceObject);
 ;// external ["../highcharts.src.js","default","SeriesRegistry"]
 const external_highcharts_src_js_default_SeriesRegistry_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].SeriesRegistry;
 var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_SeriesRegistry_namespaceObject);
@@ -63,7 +74,7 @@ var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__w
  * */
 
 
-const { sma: SMAIndicator } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
+
 
 /* *
  *
@@ -78,7 +89,7 @@ const { sma: SMAIndicator } = (external_highcharts_src_js_default_SeriesRegistry
  *
  * @augments Highcharts.Series
  */
-class LinearRegressionIndicator extends SMAIndicator {
+class LinearRegressionIndicator extends (external_indicators_src_js_default_Series_types_sma_default()) {
     /* *
      *
      *  Functions
@@ -239,7 +250,7 @@ class LinearRegressionIndicator extends SMAIndicator {
  * @optionparent plotOptions.linearregression
  * @internal
  */
-LinearRegressionIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(SMAIndicator.defaultOptions, {
+LinearRegressionIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)((external_indicators_src_js_default_Series_types_sma_default()).defaultOptions, {
     params: {
         /**
          * Unit (in milliseconds) for the x axis distances used to
@@ -306,7 +317,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *  Default Export
  *
  * */
-/* harmony default export */ const LinearRegression_LinearRegressionIndicator = ((/* unused pure expression or super */ null && (LinearRegressionIndicator)));
+/* harmony default export */ const LinearRegression_LinearRegressionIndicator = (LinearRegressionIndicator);
 /* *
  *
  *  API Options
@@ -340,7 +351,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  * */
 
 
-const { linearregression: LinearRegressionSlopesIndicator_LinearRegressionIndicator } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
+
 
 /* *
  *
@@ -355,7 +366,7 @@ const { linearregression: LinearRegressionSlopesIndicator_LinearRegressionIndica
  *
  * @augments Highcharts.Series
  */
-class LinearRegressionSlopesIndicator extends LinearRegressionSlopesIndicator_LinearRegressionIndicator {
+class LinearRegressionSlopesIndicator extends LinearRegression_LinearRegressionIndicator {
     /* *
      *
      *  Functions
@@ -386,7 +397,7 @@ class LinearRegressionSlopesIndicator extends LinearRegressionSlopesIndicator_Li
  * @optionparent plotOptions.linearregressionslope
  * @internal
  */
-LinearRegressionSlopesIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(LinearRegressionSlopesIndicator_LinearRegressionIndicator.defaultOptions);
+LinearRegressionSlopesIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(LinearRegression_LinearRegressionIndicator.defaultOptions);
 (0,external_highcharts_src_js_default_namespaceObject.extend)(LinearRegressionSlopesIndicator.prototype, {
     nameBase: 'Linear Regression Slope Indicator'
 });
@@ -432,7 +443,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  * */
 
 
-const { linearregression: LinearRegressionInterceptIndicator_LinearRegressionIndicator } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
+
 
 /* *
  *
@@ -447,7 +458,7 @@ const { linearregression: LinearRegressionInterceptIndicator_LinearRegressionInd
  *
  * @augments Highcharts.Series
  */
-class LinearRegressionInterceptIndicator extends LinearRegressionInterceptIndicator_LinearRegressionIndicator {
+class LinearRegressionInterceptIndicator extends LinearRegression_LinearRegressionIndicator {
     /* *
      *
      *  Functions
@@ -478,7 +489,7 @@ class LinearRegressionInterceptIndicator extends LinearRegressionInterceptIndica
  * @optionparent plotOptions.linearregressionintercept
  * @internal
  */
-LinearRegressionInterceptIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(LinearRegressionInterceptIndicator_LinearRegressionIndicator.defaultOptions);
+LinearRegressionInterceptIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(LinearRegression_LinearRegressionIndicator.defaultOptions);
 (0,external_highcharts_src_js_default_namespaceObject.extend)(LinearRegressionInterceptIndicator.prototype, {
     nameBase: 'Linear Regression Intercept Indicator'
 });
@@ -524,7 +535,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  * */
 
 
-const { linearregression: LinearRegressionAngleIndicator_LinearRegressionIndicator } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
+
 
 /* *
  *
@@ -539,7 +550,7 @@ const { linearregression: LinearRegressionAngleIndicator_LinearRegressionIndicat
  *
  * @augments Highcharts.Series
  */
-class LinearRegressionAngleIndicator extends LinearRegressionAngleIndicator_LinearRegressionIndicator {
+class LinearRegressionAngleIndicator extends LinearRegression_LinearRegressionIndicator {
     /* *
      *
      *  Functions
@@ -580,7 +591,7 @@ class LinearRegressionAngleIndicator extends LinearRegressionAngleIndicator_Line
  * @optionparent plotOptions.linearregressionangle
  * @internal
  */
-LinearRegressionAngleIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(LinearRegressionAngleIndicator_LinearRegressionIndicator.defaultOptions, {
+LinearRegressionAngleIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(LinearRegression_LinearRegressionIndicator.defaultOptions, {
     tooltip: {
         pointFormat: '<span style="color:{point.color}">\u25CF</span>' +
             '{series.name}: <b>{point.y}°</b><br/>'
@@ -613,6 +624,8 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
 ''; // To include the above in the js output
 
 ;// ./code/es-modules/masters/indicators/regressions.src.js
+
+
 
 
 

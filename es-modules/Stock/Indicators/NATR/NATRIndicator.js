@@ -7,9 +7,9 @@
  *
  * */
 'use strict';
+import ATRIndicator from '../ATR/ATRIndicator.js';
 import SeriesRegistry from '../../../Core/Series/SeriesRegistry.js';
 import { merge } from '../../../Shared/Utilities.js';
-const { atr: ATRIndicator } = SeriesRegistry.seriesTypes;
 /* *
  *
  *  Class

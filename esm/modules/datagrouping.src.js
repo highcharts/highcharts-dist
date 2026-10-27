@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.1.1-modified (2026-10-26)
+ * @license Highstock JS v13.1.1-modified (2026-10-27)
  * @module highcharts/modules/datagrouping
  * @requires highcharts
  *
@@ -1266,9 +1266,9 @@ var DateTimeAxis;
  * */
 /* harmony default export */ const Axis_DateTimeAxis = (DateTimeAxis);
 
-;// external ["../highcharts.src.js","default","SeriesRegistry"]
-const external_highcharts_src_js_default_SeriesRegistry_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].SeriesRegistry;
-var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_SeriesRegistry_namespaceObject);
+;// external ["../highcharts.src.js","default","Series"]
+const external_highcharts_src_js_default_Series_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].Series;
+var external_highcharts_src_js_default_Series_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_Series_namespaceObject);
 ;// ./code/es-modules/Extensions/DataGrouping/DataGroupingSeriesComposition.js
 /* *
  *
@@ -1288,7 +1288,6 @@ var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__w
 
 
 
-const { series: { prototype: seriesProto } } = (external_highcharts_src_js_default_SeriesRegistry_default());
 
 
 /* *
@@ -1296,7 +1295,7 @@ const { series: { prototype: seriesProto } } = (external_highcharts_src_js_defau
  *  Constants
  *
  * */
-const baseGeneratePoints = seriesProto.generatePoints;
+const baseGeneratePoints = (external_highcharts_src_js_default_Series_default()).prototype.generatePoints;
 /* *
  *
  *  Functions
@@ -1443,7 +1442,7 @@ function DataGroupingSeriesComposition_applyGrouping(hasExtremesChanged) {
         if (rightShoulder) {
             groupPositions.push(lastStart);
         }
-        const groupedData = seriesProto.groupData.call(series, table, groupPositions, dataGroupingOptions.approximation);
+        const groupedData = external_highcharts_src_js_default_Series_default().prototype.groupData.call(series, table, groupPositions, dataGroupingOptions.approximation);
         let modified = groupedData.modified, groupedXData = modified.getColumn('x', true), gapSize = 0;
         // The smoothed option is deprecated, instead, there is a fallback
         // to the new anchoring mechanism. #12455.

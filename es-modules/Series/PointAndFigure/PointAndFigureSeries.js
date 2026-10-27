@@ -17,12 +17,13 @@
 import DataTableCore from '../../Data/DataTableCore.js';
 import PointAndFigurePoint from './PointAndFigurePoint.js';
 import PointAndFigureSeriesDefaults from './PointAndFigureSeriesDefaults.js';
+import ColumnSeries from '../Column/ColumnSeries.js';
+import ScatterSeries from '../Scatter/ScatterSeries.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 import CrossSymbol from '../CrossSymbol.js';
 import H from '../../Core/Globals.js';
 import { extend, isNumber, merge, pushUnique, relativeLength } from '../../Shared/Utilities.js';
 const { composed } = H;
-const { scatter: ScatterSeries, column: { prototype: columnProto } } = SeriesRegistry.seriesTypes;
 /* *
  *
  *  Declarations
@@ -216,7 +217,7 @@ PointAndFigureSeries.defaultOptions = merge(ScatterSeries.defaultOptions, PointA
 extend(PointAndFigureSeries.prototype, {
     takeOrdinalPosition: true,
     pnfDataGroups: [],
-    getColumnMetrics: columnProto.getColumnMetrics,
+    getColumnMetrics: ColumnSeries.prototype.getColumnMetrics,
     pointClass: PointAndFigurePoint,
     sorted: true
 });

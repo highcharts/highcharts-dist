@@ -12,8 +12,10 @@
 'use strict';
 import PU from '../PathUtilities.js';
 const { getLinkPath } = PU;
+import ColumnSeries from '../Column/ColumnSeries.js';
+import Series from '../../Core/Series/Series.js';
+import TreemapSeries from '../Treemap/TreemapSeries.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-const { series: { prototype: seriesProto }, seriesTypes: { treemap: TreemapSeries, column: ColumnSeries } } = SeriesRegistry;
 import SVGRenderer from '../../Core/Renderer/SVG/SVGRenderer.js';
 const { prototype: { symbols } } = SVGRenderer;
 import TreegraphNode from './TreegraphNode.js';
@@ -201,7 +203,7 @@ class TreegraphSeries extends TreemapSeries {
         // NOTE: updateRootId modifies series.
         let rootId = TU.updateRootId(series), rootNode;
         // Call prototype function
-        seriesProto.translate.call(series);
+        Series.prototype.translate.call(series);
         const tree = series.tree = series.getTree();
         rootNode = series.nodeMap[rootId];
         if (rootId !== '' && (!rootNode || !rootNode.children.length)) {
@@ -321,7 +323,7 @@ class TreegraphSeries extends TreemapSeries {
             // Merge custom options with point options
             point.dlOptions = merge(options, point.options.dataLabels);
         }
-        seriesProto.drawDataLabels.call(this, points);
+        Series.prototype.drawDataLabels.call(this, points);
     }
     /**
      * Override alignDataLabel so that position is always calculated and the
@@ -353,7 +355,7 @@ class TreegraphSeries extends TreemapSeries {
             // Render node labels.
             this.drawNodeLabels(this.points);
             // Render link labels.
-            seriesProto.drawDataLabels.call(this, this.links);
+            Series.prototype.drawDataLabels.call(this, this.links);
         }
     }
     /** @internal */
@@ -365,7 +367,7 @@ class TreegraphSeries extends TreemapSeries {
             }
             this.links.length = 0;
         }
-        return seriesProto.destroy.apply(this, arguments);
+        return Series.prototype.destroy.apply(this, arguments);
     }
     /**
      * Return the presentational attributes.
@@ -384,7 +386,7 @@ class TreegraphSeries extends TreemapSeries {
             series.options.link?.color), linkLineWidth = (stateOptions.link?.lineWidth ??
             options.link?.lineWidth ??
             levelOptions.link?.lineWidth ??
-            series.options.link?.lineWidth), attribs = seriesProto.pointAttribs.call(series, point, state);
+            series.options.link?.lineWidth), attribs = Series.prototype.pointAttribs.call(series, point, state);
         if (point) {
             if (point.isLink) {
                 attribs.stroke = linkColor;

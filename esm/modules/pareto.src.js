@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-26)
+ * @license Highcharts JS v13.1.1-modified (2026-10-27)
  * @module highcharts/modules/pareto
  * @requires highcharts
  *
@@ -263,6 +263,9 @@ const ParetoSeriesDefaults = {
  * */
 /* harmony default export */ const ParetoSeries_ParetoSeriesDefaults = (ParetoSeriesDefaults);
 
+;// external ["../highcharts.src.js","default","Series","types","line"]
+const external_highcharts_src_js_default_Series_types_line_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].Series.types.line;
+var external_highcharts_src_js_default_Series_types_line_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_Series_types_line_namespaceObject);
 ;// external ["../highcharts.src.js","default","SeriesRegistry"]
 const external_highcharts_src_js_default_SeriesRegistry_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].SeriesRegistry;
 var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_SeriesRegistry_namespaceObject);
@@ -282,7 +285,7 @@ var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__w
 
 
 
-const { line: LineSeries } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
+
 
 /* *
  *
@@ -297,7 +300,7 @@ const { line: LineSeries } = (external_highcharts_src_js_default_SeriesRegistry_
  *
  * @augments Highcharts.Series
  */
-class ParetoSeries extends LineSeries {
+class ParetoSeries extends (external_highcharts_src_js_default_Series_types_line_default()) {
     /* *
      *
      *  Functions
@@ -365,7 +368,7 @@ class ParetoSeries extends LineSeries {
  *
  * */
 /** @internal */
-ParetoSeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(LineSeries.defaultOptions, ParetoSeries_ParetoSeriesDefaults);
+ParetoSeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)((external_highcharts_src_js_default_Series_types_line_default()).defaultOptions, ParetoSeries_ParetoSeriesDefaults);
 (0,external_highcharts_src_js_default_namespaceObject.extend)(ParetoSeries.prototype, {
     hasDerivedData: Series_DerivedComposition.hasDerivedData
 });

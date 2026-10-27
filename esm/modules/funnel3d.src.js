@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-26)
+ * @license Highcharts JS v13.1.1-modified (2026-10-27)
  * @module highcharts/modules/funnel3d
  * @requires highcharts
  * @requires highcharts/highcharts-3d
@@ -15,6 +15,8 @@
  * see www.highcharts.com/license
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
+import "../highcharts-3d.src.js";
+import "./cylinder.src.js";
 /******/ // The require scope
 /******/ const __webpack_require__ = {};
 /******/ 
@@ -837,9 +839,6 @@ const Funnel3DSeriesDefaults = {
  * */
 /* harmony default export */ const Funnel3D_Funnel3DSeriesDefaults = (Funnel3DSeriesDefaults);
 
-;// external ["../highcharts.src.js","default","SeriesRegistry"]
-const external_highcharts_src_js_default_SeriesRegistry_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].SeriesRegistry;
-var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_SeriesRegistry_namespaceObject);
 ;// ./code/es-modules/Series/Funnel3D/Funnel3DPoint.js
 /* *
  *
@@ -858,13 +857,12 @@ var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__w
 
 
 
-const { seriesTypes: { column: ColumnSeries } } = (external_highcharts_src_js_default_SeriesRegistry_default());
 /* *
  *
  *  Class
  *
  * */
-class Funnel3DPoint extends ColumnSeries.prototype.pointClass {
+class Funnel3DPoint extends (external_highcharts_src_js_default_Series_types_column_default()).prototype.pointClass {
 }
 ;(0,external_highcharts_src_js_default_namespaceObject.extend)(Funnel3DPoint.prototype, {
     shapeType: 'funnel3d'
@@ -1115,6 +1113,12 @@ function shapeArea3D(vertexes, chart, insidePlotArea) {
     return shapeArea(perspective(vertexes, chart, insidePlotArea));
 }
 
+;// external ["../highcharts.src.js","default","Series"]
+const external_highcharts_src_js_default_Series_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].Series;
+var external_highcharts_src_js_default_Series_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_Series_namespaceObject);
+;// external ["../highcharts.src.js","default","SeriesRegistry"]
+const external_highcharts_src_js_default_SeriesRegistry_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].SeriesRegistry;
+var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_SeriesRegistry_namespaceObject);
 ;// ./code/es-modules/Series/Funnel3D/Funnel3DSeries.js
 /* *
  *
@@ -1139,7 +1143,7 @@ function shapeArea3D(vertexes, chart, insidePlotArea) {
 const { noop } = (external_highcharts_src_js_default_default());
 
 
-const { series: Series } = (external_highcharts_src_js_default_SeriesRegistry_default());
+
 
 /* *
  *
@@ -1222,7 +1226,7 @@ class Funnel3DSeries extends (external_highcharts_src_js_default_Series_types_co
     }
     /** @internal */
     translate() {
-        Series.prototype.translate.apply(this, arguments);
+        external_highcharts_src_js_default_Series_default().prototype.translate.apply(this, arguments);
         const series = this, chart = series.chart, options = series.options, reversed = options.reversed, ignoreHiddenPoint = options.ignoreHiddenPoint, plotWidth = chart.plotWidth, plotHeight = chart.plotHeight, center = options.center, centerX = (0,external_highcharts_src_js_default_namespaceObject.relativeLength)(center[0], plotWidth), centerY = (0,external_highcharts_src_js_default_namespaceObject.relativeLength)(center[1], plotHeight), width = (0,external_highcharts_src_js_default_namespaceObject.relativeLength)(options.width, plotWidth), height = (0,external_highcharts_src_js_default_namespaceObject.relativeLength)(options.height, plotHeight), neckWidth = (0,external_highcharts_src_js_default_namespaceObject.relativeLength)(options.neckWidth, plotWidth), neckHeight = (0,external_highcharts_src_js_default_namespaceObject.relativeLength)(options.neckHeight, plotHeight), neckY = (centerY - height / 2) + height - neckHeight, points = series.points;
         let sum = 0, cumulative = 0, // Start at top
         tempWidth, getWidthAt, fraction, tooltipPos, 
@@ -1372,7 +1376,13 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  * */
 /* harmony default export */ const Funnel3D_Funnel3DSeries = (Funnel3DSeries);
 
+;// external "../highcharts-3d.src.js"
+
+;// external "./cylinder.src.js"
+
 ;// ./code/es-modules/masters/modules/funnel3d.src.js
+
+
 
 
 

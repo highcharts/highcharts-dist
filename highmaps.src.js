@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Maps v13.1.1-modified (2026-10-26)
+ * @license Highcharts Maps v13.1.1-modified (2026-10-27)
  * @module highcharts/highmaps
  *
  * (c) 2011-2026 Highsoft AS
@@ -7661,6 +7661,8 @@ const defaultOptions = {
         /**
          * Position configuration for the credits label.
          *
+         * @sample highcharts/credits/position/
+         *         Credits position
          * @sample {highcharts} highcharts/credits/position-left/
          *         Left aligned
          * @sample {highmaps} maps/credits/customized/
@@ -7671,9 +7673,10 @@ const defaultOptions = {
          */
         position: {
             align: 'right',
+            relativeTo: 'spacingBox',
             verticalAlign: 'bottom',
-            x: -10,
-            y: -5
+            x: 0,
+            y: 10
         },
         /**
          * CSS styles for the credits label.
@@ -8713,6 +8716,7 @@ class Fx {
         // For sideways animation, find out how much we need to shift to get the
         // start path Xs to match the end path Xs.
         if (startX && endX && endX.length) {
+            const xLengthDelta = endX.length - startX.length;
             for (i = 0; i < startX.length; i++) {
                 // Moving left, new points coming in on right
                 if (startX[i] === endX[0]) {
@@ -8720,15 +8724,29 @@ class Fx {
                     break;
                     // Moving right
                 }
-                else if (startX[0] ===
-                    endX[endX.length - startX.length + i]) {
+                else if (startX[0] === endX[xLengthDelta + i]) {
                     shift = i;
                     reverse = true;
                     break;
+                    // Shared x in the middle, both edges may differ (#25280).
+                }
+                else if (endX.length > 2 &&
+                    startX[i] === endX[Math.floor(endX.length / 2)]) {
+                    const diff = i - Math.floor(endX.length / 2);
+                    // Shift is always a pad count (>= 0). Reverse covers
+                    // sliding either way (new points on the left vs right).
+                    // Subtract length delta so growing windows are not
+                    // over-padded (when reversed).
+                    reverse = diff < 0;
+                    shift = reverse ?
+                        Math.max(0, Math.abs(diff) - xLengthDelta) :
+                        Math.abs(diff);
+                    break;
                     // Fixed from the right side, "scaling" left
                 }
-                else if (startX[startX.length - 1] ===
-                    endX[endX.length - startX.length + i]) {
+                else if (startX[startX.length - 1] === endX[xLengthDelta + i] &&
+                    // Ensure right side is not moving (#25280)
+                    startX[startX.length - 1] === endX[endX.length - 1]) {
                     shift = startX.length - i;
                     break;
                 }
@@ -32087,12 +32105,12 @@ const seriesDefaults = {
          * @apioption plotOptions.series.dataLabels.position
          */
         /**
-         * Text rotation in degrees. Note that due to a more complex
-         * structure, backgrounds, borders and padding will be lost on a
-         * rotated data label.
+         * Text rotation in degrees.
          *
          * @sample {highcharts} highcharts/plotoptions/series-datalabels-rotation/
          *         Vertical labels
+         * @sample {highcharts} highcharts/plotoptions/pie-datalabels-rotationmode-plugin
+         *         Perpendicular rotation in pie series via plugin
          *
          * @type      {number}
          * @default   0
@@ -34043,11 +34061,11 @@ class Series {
         if (this.hasBoundDataTableEvents) {
             return;
         }
-        const { chart, eventsToUnbind } = this, queueRedraw = () => {
+        const { chart } = this, queueRedraw = () => {
             clearTimeout(chart.redrawTimeout);
             chart.redrawTimeout = setTimeout(() => chart.renderer && chart.redraw(), 0);
         };
-        eventsToUnbind.push(addEvent(dataTable, 'afterSetRows', (e) => {
+        addEvent(dataTable, 'afterSetRows', (e) => {
             const rowIndex = e.rowIndex;
             if (isNumber(rowIndex)) {
                 const row = Data_DataTableCore.prototype.getRowObject.call({ columns }, rowIndex), point = this.data[rowIndex];
@@ -34068,8 +34086,8 @@ class Series {
                     }
                 }
             }
-        }));
-        eventsToUnbind.push(addEvent(dataTable, 'afterDeleteRows', (e) => {
+        });
+        addEvent(dataTable, 'afterDeleteRows', (e) => {
             const { rowCount, rowIndex } = e;
             if (isNumber(rowIndex)) {
                 for (let i = rowIndex + rowCount - 1; i >= rowIndex; i--) {
@@ -34077,10 +34095,10 @@ class Series {
                 }
                 queueRedraw();
             }
-        }));
-        eventsToUnbind.push(addEvent(dataTable, 'afterSetColumns', (e) => {
+        });
+        addEvent(dataTable, 'afterSetColumns', (e) => {
             this.setData(e.target);
-        }));
+        });
         this.hasBoundDataTableEvents = true;
     }
     /**
@@ -36050,7 +36068,7 @@ class Series {
         }
         fireEvent(this, 'afterUpdate');
         if (redraw ?? true) {
-            chart.redraw(keepPoints ? void 0 : false);
+            chart.redraw();
         }
     }
     /**
@@ -36423,6 +36441,7 @@ Series.registerType = Series_SeriesRegistry.registerSeriesType;
 Series.keepProps = [
     'colorIndex',
     'eventOptions',
+    'hasBoundDataTableEvents',
     'navigatorSeries',
     'symbolIndex',
     'baseSeries'
@@ -40195,7 +40214,7 @@ class Chart {
      * A configuration object for the new credits.
      */
     addCredits(credits) {
-        const chart = this, creds = merge(true, this.options.credits, credits);
+        const chart = this, creds = merge(true, this.options.credits, credits), position = creds.position || {};
         if (creds.enabled && !this.credits) {
             // Run the user-supplied URL through the allow list, so that
             // references like `javascript:` can't be executed from the
@@ -40222,7 +40241,7 @@ class Chart {
                 });
             })
                 .attr({
-                align: creds.position.align,
+                align: position.align,
                 zIndex: 8
             });
             // If creds.events?.click exists, add it as an event listener
@@ -40234,10 +40253,10 @@ class Chart {
             }
             this.credits
                 .add()
-                .align(creds.position);
+                .align(position, false, position.relativeTo);
             // Dynamically update
             this.credits.update = function (options) {
-                chart.credits = chart.credits.destroy();
+                chart.credits = chart.credits?.destroy();
                 chart.addCredits(options);
             };
         }
@@ -40771,6 +40790,7 @@ class Chart {
                 chart.renderer.setStyle(chart.options.chart.style || {});
             }
         }
+        setAnimation(animation, chart);
         // Moved up, because tooltip needs updated plotOptions (#6218)
         if (!chart.styledMode && options.colors) {
             this.options.colors = options.colors;
@@ -41738,9 +41758,9 @@ ScrollablePlotArea.fixedSelectors = [
  * **Note:** Because native browser scrollbars are used, they may
  * overlap with fixed chart elements such as credits or the chart
  * border. To avoid this collision, it is recommended to manually add
- * extra space to the corresponding side using `chart.spacingBottom`
- * (for horizontal scrollbars) or `chart.spacingRight` (for vertical
- * scrollbars).
+ * extra space to the corresponding side using
+ * [chart.spacingBottom](#chart.spacingBottom) (for horizontal scrollbars) or
+ * [chart.spacingRight](#chart.spacingRight) (for vertical scrollbars).
  *
  * @sample highcharts/chart/scrollable-plotarea
  *         Scrollable plot area
@@ -41816,7 +41836,6 @@ ScrollablePlotArea.fixedSelectors = [
 
 const { format: StackItem_format } = Core_Templating;
 
-const { series: StackItem_Series } = Series_SeriesRegistry;
 
 /* *
  *
@@ -41941,7 +41960,7 @@ class StackItem {
             }
             if (isJustify) {
                 // Justify stackLabel into the alignBox
-                StackItem_Series.prototype.justifyDataLabel.call(axis, label, alignOptions, label.alignAttr, labelBox, stackBox);
+                Series_Series.prototype.justifyDataLabel.call(axis, label, alignOptions, label.alignAttr, labelBox, stackBox);
             }
             // Add correct rotation with its rotation origin (#15129)
             label.attr({
@@ -42067,7 +42086,6 @@ class StackItem {
 
 
 
-const { series: { prototype: seriesProto } } = Series_SeriesRegistry;
 
 
 /* *
@@ -42201,7 +42219,7 @@ function seriesSetGroupedPoints(axis) {
         if (this.options.centerInCategory &&
             // With only one series, we don't need to consider centerInCategory
             this.chart.series.length > 1) {
-            seriesProto.setStackedPoints.call(this, axis, 'group');
+            Series_Series.prototype.setStackedPoints.call(this, axis, 'group');
             // After updating, if we now have proper stacks, we must delete the
             // group pseudo stacks (#14980)
         }
@@ -42739,7 +42757,7 @@ Series_SeriesRegistry.registerSeriesType('line', LineSeries);
  *  Default Export
  *
  * */
-/* harmony default export */ const Line_LineSeries = ((/* unused pure expression or super */ null && (LineSeries)));
+/* harmony default export */ const Line_LineSeries = (LineSeries);
 /* *
  *
  *  API Options
@@ -43243,7 +43261,7 @@ const AreaSeriesDefaults = {
 
 
 
-const { seriesTypes: { line: AreaSeries_LineSeries } } = Series_SeriesRegistry;
+
 
 /* *
  *
@@ -43258,7 +43276,7 @@ const { seriesTypes: { line: AreaSeries_LineSeries } } = Series_SeriesRegistry;
  *
  * @augments LineSeries
  */
-class AreaSeries extends AreaSeries_LineSeries {
+class AreaSeries extends Line_LineSeries {
     /* *
      *
      *  Functions
@@ -43327,7 +43345,7 @@ class AreaSeries extends AreaSeries_LineSeries {
     }
     /** @internal */
     getGraphPath(points) {
-        const getGraphPath = AreaSeries_LineSeries.prototype.getGraphPath, options = this.options, stacking = options.stacking, yAxis = this.yAxis, bottomPoints = [], graphPoints = [], seriesIndex = this.index, stacks = yAxis.stacking.stacks[this.stackKey], threshold = options.threshold, translatedThreshold = Math.round(// #10909
+        const getGraphPath = Line_LineSeries.prototype.getGraphPath, options = this.options, stacking = options.stacking, yAxis = this.yAxis, bottomPoints = [], graphPoints = [], seriesIndex = this.index, stacks = yAxis.stacking.stacks[this.stackKey], threshold = options.threshold, translatedThreshold = Math.round(// #10909
         yAxis.getThreshold(options.threshold)), connectNulls = (options.connectNulls ?? stacking === 'percent'), 
         // To display null points in underlying stacked series, this
         // series graph must be broken, and the area also fall down to
@@ -43549,7 +43567,7 @@ class AreaSeries extends AreaSeries_LineSeries {
  *
  * */
 /** @internal */
-AreaSeries.defaultOptions = merge(AreaSeries_LineSeries.defaultOptions, Area_AreaSeriesDefaults);
+AreaSeries.defaultOptions = merge(Line_LineSeries.defaultOptions, Area_AreaSeriesDefaults);
 extend(AreaSeries.prototype, {
     singleStacks: false
 });
@@ -43559,7 +43577,7 @@ Series_SeriesRegistry.registerSeriesType('area', AreaSeries);
  *  Default Export
  *
  * */
-/* harmony default export */ const Area_AreaSeries = ((/* unused pure expression or super */ null && (AreaSeries)));
+/* harmony default export */ const Area_AreaSeries = (AreaSeries);
 
 ;// ./code/es-modules/Series/Spline/SplineSeries.js
 /* *
@@ -43575,7 +43593,7 @@ Series_SeriesRegistry.registerSeriesType('area', AreaSeries);
  * */
 
 
-const { line: SplineSeries_LineSeries } = Series_SeriesRegistry.seriesTypes;
+
 
 /* *
  *
@@ -43587,7 +43605,7 @@ const { line: SplineSeries_LineSeries } = Series_SeriesRegistry.seriesTypes;
  *
  * @private
  */
-class SplineSeries extends SplineSeries_LineSeries {
+class SplineSeries extends Line_LineSeries {
     /* *
      *
      *  Functions
@@ -43752,7 +43770,7 @@ class SplineSeries extends SplineSeries_LineSeries {
  * @product      highcharts highstock
  * @optionparent plotOptions.spline
  */
-SplineSeries.defaultOptions = merge(SplineSeries_LineSeries.defaultOptions);
+SplineSeries.defaultOptions = merge(Line_LineSeries.defaultOptions);
 Series_SeriesRegistry.registerSeriesType('spline', SplineSeries);
 /* *
  *
@@ -43851,7 +43869,7 @@ Series_SeriesRegistry.registerSeriesType('spline', SplineSeries);
 
 
 
-const { area: AreaSplineSeries_AreaSeries, area: { prototype: areaProto } } = Series_SeriesRegistry.seriesTypes;
+
 
 /* *
  *
@@ -43874,11 +43892,11 @@ class AreaSplineSeries extends Spline_SplineSeries {
  *
  * */
 /** @internal */
-AreaSplineSeries.defaultOptions = merge(Spline_SplineSeries.defaultOptions, AreaSplineSeries_AreaSeries.defaultOptions);
+AreaSplineSeries.defaultOptions = merge(Spline_SplineSeries.defaultOptions, Area_AreaSeries.defaultOptions);
 extend(AreaSplineSeries.prototype, {
-    getGraphPath: areaProto.getGraphPath,
-    getStackPoints: areaProto.getStackPoints,
-    drawGraph: areaProto.drawGraph
+    getGraphPath: Area_AreaSeries.prototype.getGraphPath,
+    getStackPoints: Area_AreaSeries.prototype.getStackPoints,
+    drawGraph: Area_AreaSeries.prototype.drawGraph
 });
 Series_SeriesRegistry.registerSeriesType('areaspline', AreaSplineSeries);
 /* *
@@ -45612,14 +45630,7 @@ var DataLabel;
                         !defined(labelText) ||
                         // Changed useHTML value
                         !!(dataLabel.div ||
-                            dataLabel.text?.foreignObject) !== !!labelOptions.useHTML ||
-                        (
-                        // Change from no rotation to rotation and
-                        // vice versa. Don't use defined() because
-                        // rotation = 0 means also rotation = undefined
-                        (!dataLabel.rotation ||
-                            !labelOptions.rotation) &&
-                            dataLabel.rotation !== labelOptions.rotation))) {
+                            dataLabel.text?.foreignObject) !== !!labelOptions.useHTML)) {
                         dataLabel = void 0;
                         isNew = true;
                     }
@@ -45864,7 +45875,6 @@ var DataLabel;
 
 const { composed: ColumnDataLabel_composed } = Core_Globals;
 
-const { series: ColumnDataLabel_Series } = Series_SeriesRegistry;
 
 /* *
  *
@@ -45935,7 +45945,7 @@ var ColumnDataLabel;
         dlOptions.verticalAlign ?? (dlOptions.verticalAlign = inverted || inside ?
             'middle' : below ? 'top' : 'bottom');
         // Call the parent method
-        ColumnDataLabel_Series.prototype.alignDataLabel.call(this, point, dataLabel, dlOptions, alignTo, isNew);
+        Series_Series.prototype.alignDataLabel.call(this, point, dataLabel, dlOptions, alignTo, isNew);
         // If label was justified and we have contrast, set it:
         if (dlOptions.inside && point.contrastColor) {
             dataLabel.css({
@@ -45945,7 +45955,7 @@ var ColumnDataLabel;
     }
     /** @internal */
     function compose(ColumnSeriesClass) {
-        Series_DataLabel.compose(ColumnDataLabel_Series);
+        Series_DataLabel.compose(Series_Series);
         if (pushUnique(ColumnDataLabel_composed, 'ColumnDataLabel')) {
             ColumnSeriesClass.prototype.alignDataLabel = alignDataLabel;
         }
@@ -46320,7 +46330,8 @@ const ScatterSeriesDefaults = {
 
 
 
-const { column: ScatterSeries_ColumnSeries, line: ScatterSeries_LineSeries } = Series_SeriesRegistry.seriesTypes;
+
+
 
 /* *
  *
@@ -46332,7 +46343,7 @@ const { column: ScatterSeries_ColumnSeries, line: ScatterSeries_LineSeries } = S
  *
  * @private
  */
-class ScatterSeries extends ScatterSeries_LineSeries {
+class ScatterSeries extends Line_LineSeries {
     /* *
      *
      *  Functions
@@ -46394,10 +46405,10 @@ class ScatterSeries extends ScatterSeries_LineSeries {
  *  Static Properties
  *
  * */
-ScatterSeries.defaultOptions = merge(ScatterSeries_LineSeries.defaultOptions, Scatter_ScatterSeriesDefaults);
+ScatterSeries.defaultOptions = merge(Line_LineSeries.defaultOptions, Scatter_ScatterSeriesDefaults);
 extend(ScatterSeries.prototype, {
     allowOutsidePlotInteraction: true,
-    drawTracker: ScatterSeries_ColumnSeries.prototype.drawTracker,
+    drawTracker: Column_ColumnSeries.prototype.drawTracker,
     sorted: false,
     requireSorting: false,
     noSharedTooltip: true,
@@ -46418,7 +46429,7 @@ Series_SeriesRegistry.registerSeriesType('scatter', ScatterSeries);
  *  Default Export
  *
  * */
-/* harmony default export */ const Scatter_ScatterSeries = ((/* unused pure expression or super */ null && (ScatterSeries)));
+/* harmony default export */ const Scatter_ScatterSeries = (ScatterSeries);
 
 ;// ./code/es-modules/Series/CenteredUtilities.js
 /* *
@@ -47793,7 +47804,7 @@ Series_SeriesRegistry.registerSeriesType('pie', PieSeries);
  *  Default Export
  *
  * */
-/* harmony default export */ const Pie_PieSeries = ((/* unused pure expression or super */ null && (PieSeries)));
+/* harmony default export */ const Pie_PieSeries = (PieSeries);
 
 ;// ./code/es-modules/Series/Pie/PieDataLabel.js
 /* *
@@ -47814,7 +47825,6 @@ const { composed: PieDataLabel_composed, noop: PieDataLabel_noop } = Core_Global
 
 const { distribute: PieDataLabel_distribute } = Renderer_RendererUtilities;
 
-const { series: PieDataLabel_Series } = Series_SeriesRegistry;
 
 /* *
  *
@@ -47882,7 +47892,7 @@ var PieDataLabel_ColumnDataLabel;
      * */
     /** @internal */
     function compose(PieSeriesClass) {
-        Series_DataLabel.compose(PieDataLabel_Series);
+        Series_DataLabel.compose(Series_Series);
         if (pushUnique(PieDataLabel_composed, 'PieDataLabel')) {
             const pieProto = PieSeriesClass.prototype;
             pieProto.dataLabelPositioners = dataLabelPositioners;
@@ -47974,7 +47984,7 @@ var PieDataLabel_ColumnDataLabel;
             });
         });
         // Run parent method
-        PieDataLabel_Series.prototype.drawDataLabels.apply(series);
+        Series_Series.prototype.drawDataLabels.apply(series);
         points.forEach((point) => {
             (point.dataLabels || []).forEach((dataLabel, i) => {
                 const r = seriesCenter[2] / 2, dataLabelOptions = dataLabel.options, distance = relativeLength(dataLabelOptions?.distance || 0, r);
@@ -49360,7 +49370,7 @@ var Responsive;
 ;// ./code/es-modules/masters/highcharts.src.js
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-26)
+ * @license Highcharts JS v13.1.1-modified (2026-10-27)
  * @module highcharts/highcharts
  *
  * (c) 2009-2026 Highsoft AS
@@ -49516,14 +49526,14 @@ G.useSerialIds = useSerialIds;
 G.wrap = wrap;
 // Compositions
 composeBorderRadius(G.Series, G.SVGElement, G.SVGRenderer);
-Column_ColumnDataLabel.compose(G.Series.types.column);
+Column_ColumnDataLabel.compose(Column_ColumnSeries);
 Series_DataLabel.compose(G.Series);
 Axis_DateTimeAxis.compose(G.Axis);
 HTML_HTMLElement.compose(G.SVGRenderer);
 Legend_Legend.compose(G.Chart);
 Axis_LogarithmicAxis.compose(G.Axis);
 composeOverlappingDataLabels(G.Chart);
-PieDataLabel.compose(G.Series.types.pie);
+PieDataLabel.compose(Pie_PieSeries);
 PlotLineOrBand_PlotLineOrBand.compose(G.Chart, G.Axis);
 Core_Pointer.compose(G.Chart);
 Core_Responsive.compose(G.Chart);
@@ -50487,7 +50497,6 @@ const colorAxisDefaults = {
 
 const { defaultOptions: ColorAxis_defaultOptions } = Defaults;
 
-const { series: ColorAxis_Series } = Series_SeriesRegistry;
 
 ColorAxis_defaultOptions.colorAxis = merge(ColorAxis_defaultOptions.xAxis, ColorAxisDefaults);
 /* *
@@ -50840,7 +50849,7 @@ class ColorAxis extends Axis_Axis {
                 cSeries.maxColorValue = cSeries[colorKey + 'Max'];
             }
             else {
-                const cExtremes = ColorAxis_Series.prototype.getExtremes.call(cSeries, colorValArray);
+                const cExtremes = Series_Series.prototype.getExtremes.call(cSeries, colorValArray);
                 cSeries.minColorValue = cExtremes.dataMin;
                 cSeries.maxColorValue = cExtremes.dataMax;
             }
@@ -50852,7 +50861,7 @@ class ColorAxis extends Axis_Axis {
                     Math.max(this.dataMax, cSeries.maxColorValue);
             }
             if (!calculatedExtremes) {
-                ColorAxis_Series.prototype.applyExtremes.call(cSeries);
+                Series_Series.prototype.applyExtremes.call(cSeries);
             }
         }
     }
@@ -51045,7 +51054,7 @@ class ColorAxis extends Axis_Axis {
                     chart,
                     name,
                     options: {},
-                    drawLegendSymbol: ColorAxis_Series.prototype.drawLegendSymbol,
+                    drawLegendSymbol: Series_Series.prototype.drawLegendSymbol,
                     visible: true,
                     isDataClass: true,
                     // Override setState to set either normal or inactive
@@ -51125,7 +51134,7 @@ extend(ColorAxis.prototype, Color_ColorAxisBase);
 /* unused harmony import specifier */ var Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-26)
+ * @license Highcharts JS v13.1.1-modified (2026-10-27)
  * @module highcharts/modules/color-axis
  * @requires highcharts
  *
@@ -51907,7 +51916,6 @@ class MapNavigation {
  * */
 
 
-const { column: { prototype: columnProto } } = Series_SeriesRegistry.seriesTypes;
 
 
 /* *
@@ -51936,7 +51944,7 @@ var ColorMapComposition;
         pointArrayMap: ['value'],
         trackerGroups: ['group', 'markerGroup', 'dataLabelsGroup'],
         colorAttribs: seriesColorAttribs,
-        pointAttribs: columnProto.pointAttribs
+        pointAttribs: Column_ColumnSeries.prototype.pointAttribs
     };
     /* *
      *
@@ -52334,7 +52342,7 @@ const MapUtilities = {
 
 const { boundsFromPath: MapPoint_boundsFromPath } = Maps_MapUtilities;
 
-const ScatterPoint = Series_SeriesRegistry.seriesTypes.scatter.prototype.pointClass;
+const ScatterPoint = Scatter_ScatterSeries.prototype.pointClass;
 
 /* *
  *
@@ -56340,9 +56348,8 @@ const { splitPath } = Chart_MapChart;
 
 
 
-const { 
-// Indirect dependency to keep product size low
-column: MapSeries_ColumnSeries, scatter: MapSeries_ScatterSeries } = Series_SeriesRegistry.seriesTypes;
+
+
 
 /* *
  *
@@ -56356,7 +56363,7 @@ column: MapSeries_ColumnSeries, scatter: MapSeries_ScatterSeries } = Series_Seri
  *
  * @augments Highcharts.Series
  */
-class MapSeries extends MapSeries_ScatterSeries {
+class MapSeries extends Scatter_ScatterSeries {
     constructor() {
         /* *
          *
@@ -56463,7 +56470,7 @@ class MapSeries extends MapSeries_ScatterSeries {
                 }
             });
             // Draw the points
-            MapSeries_ColumnSeries.prototype.drawPoints.apply(this);
+            Column_ColumnSeries.prototype.drawPoints.apply(this);
             // Add class names
             this.points.forEach((point) => {
                 const graphic = point.graphic;
@@ -56690,7 +56697,7 @@ class MapSeries extends MapSeries_ScatterSeries {
         const { mapView, styledMode } = (point?.series || this).chart;
         const attr = styledMode && point ?
             this.colorAttribs(point) :
-            MapSeries_ColumnSeries.prototype.pointAttribs.call(this, point, state);
+            Column_ColumnSeries.prototype.pointAttribs.call(this, point, state);
         // Individual stroke width
         let pointStrokeWidth = this.getStrokeWidth(point?.options || {});
         // Handle state specific border or line width
@@ -56947,7 +56954,7 @@ class MapSeries extends MapSeries_ScatterSeries {
         super.update.apply(this, arguments);
     }
 }
-MapSeries.defaultOptions = merge(MapSeries_ScatterSeries.defaultOptions, Map_MapSeriesDefaults);
+MapSeries.defaultOptions = merge(Scatter_ScatterSeries.defaultOptions, Map_MapSeriesDefaults);
 extend(MapSeries.prototype, {
     type: 'map',
     axisTypes: Series_ColorMapComposition.seriesMembers.axisTypes,
@@ -57212,13 +57219,12 @@ Series_SeriesRegistry.registerSeriesType('mapline', MapLineSeries);
 
 
 
-const { scatter: MapPointPoint_ScatterSeries } = Series_SeriesRegistry.seriesTypes;
 /* *
  *
  *  Class
  *
  * */
-class MapPointPoint extends MapPointPoint_ScatterSeries.prototype.pointClass {
+class MapPointPoint extends Scatter_ScatterSeries.prototype.pointClass {
     /* *
      *
      *  Functions
@@ -57467,7 +57473,8 @@ const { noop: MapPointSeries_noop } = Core_Globals;
 
 
 
-const { map: MapPointSeries_MapSeries, scatter: MapPointSeries_ScatterSeries } = Series_SeriesRegistry.seriesTypes;
+
+
 
 
 
@@ -57484,7 +57491,7 @@ const { map: MapPointSeries_MapSeries, scatter: MapPointSeries_ScatterSeries } =
  *
  * @augments Highcharts.Series
  */
-class MapPointSeries extends MapPointSeries_ScatterSeries {
+class MapPointSeries extends Scatter_ScatterSeries {
     constructor() {
         /* *
          *
@@ -57492,7 +57499,7 @@ class MapPointSeries extends MapPointSeries_ScatterSeries {
          *
          * */
         super(...arguments);
-        this.clearBounds = MapPointSeries_MapSeries.prototype.clearBounds;
+        this.clearBounds = Map_MapSeries.prototype.clearBounds;
     }
     /* *
      *
@@ -57590,7 +57597,7 @@ class MapPointSeries extends MapPointSeries_ScatterSeries {
     }
 }
 /** @internal */
-MapPointSeries.defaultOptions = merge(MapPointSeries_ScatterSeries.defaultOptions, MapPoint_MapPointSeriesDefaults);
+MapPointSeries.defaultOptions = merge(Scatter_ScatterSeries.defaultOptions, MapPoint_MapPointSeriesDefaults);
 /* *
  *
  * Extra
@@ -57653,7 +57660,7 @@ Series_SeriesRegistry.registerSeriesType('mappoint', MapPointSeries);
  *  Default Export
  *
  * */
-/* harmony default export */ const MapPoint_MapPointSeries = ((/* unused pure expression or super */ null && (MapPointSeries)));
+/* harmony default export */ const MapPoint_MapPointSeries = (MapPointSeries);
 /* *
  *
  *  API Options
@@ -58661,7 +58668,12 @@ const BubbleLegendComposition = {
 
 
 
-const { seriesTypes: { scatter: { prototype: { pointClass: BubblePoint_ScatterPoint } } } } = Series_SeriesRegistry;
+/* *
+ *
+ *  Constants
+ *
+ * */
+const BubblePoint_ScatterPoint = Scatter_ScatterSeries.prototype.pointClass;
 /* *
  *
  *  Class
@@ -58723,7 +58735,9 @@ extend(BubblePoint.prototype, {
 
 const { composed: BubbleSeries_composed, noop: BubbleSeries_noop } = Core_Globals;
 
-const { series: BubbleSeries_Series, seriesTypes: { column: { prototype: BubbleSeries_columnProto }, scatter: BubbleSeries_ScatterSeries } } = Series_SeriesRegistry;
+
+
+
 
 /* *
  *
@@ -58891,7 +58905,7 @@ function onAxisAfterRender() {
  * */
 /**
  */
-class BubbleSeries extends BubbleSeries_ScatterSeries {
+class BubbleSeries extends Scatter_ScatterSeries {
     /* *
      *
      *  Static Functions
@@ -59040,7 +59054,7 @@ class BubbleSeries extends BubbleSeries_ScatterSeries {
      * @internal
      */
     pointAttribs(point, state) {
-        const markerOptions = this.options.marker, fillOpacity = markerOptions?.fillOpacity, attr = BubbleSeries_Series.prototype.pointAttribs.call(this, point, state);
+        const markerOptions = this.options.marker, fillOpacity = markerOptions?.fillOpacity, attr = Series_Series.prototype.pointAttribs.call(this, point, state);
         attr['fill-opacity'] = fillOpacity ?? 1;
         return attr;
     }
@@ -59172,7 +59186,7 @@ class BubbleSeries extends BubbleSeries_ScatterSeries {
  * @optionparent plotOptions.bubble
  * @internal
  */
-BubbleSeries.defaultOptions = merge(BubbleSeries_ScatterSeries.defaultOptions, {
+BubbleSeries.defaultOptions = merge(Scatter_ScatterSeries.defaultOptions, {
     dataLabels: {
         formatter: function () {
             const { numberFormatter } = this.series.chart;
@@ -59408,7 +59422,7 @@ BubbleSeries.defaultOptions = merge(BubbleSeries_ScatterSeries.defaultOptions, {
     zoneAxis: 'z'
 });
 extend(BubbleSeries.prototype, {
-    alignDataLabel: BubbleSeries_columnProto.alignDataLabel,
+    alignDataLabel: Column_ColumnSeries.prototype.alignDataLabel,
     applyZones: BubbleSeries_noop,
     bubblePadding: true,
     isBubble: true,
@@ -59564,7 +59578,12 @@ Series_SeriesRegistry.registerSeriesType('bubble', BubbleSeries);
 
 
 
-const { seriesTypes: { map: { prototype: { pointClass: { prototype: mapPointProto } } } } } = Series_SeriesRegistry;
+/* *
+ *
+ *  Constants
+ *
+ * */
+const MapBubblePoint_MapPoint = Map_MapSeries.prototype.pointClass;
 /* *
  *
  *  Class
@@ -59582,8 +59601,8 @@ class MapBubblePoint extends Bubble_BubblePoint {
     }
 }
 extend(MapBubblePoint.prototype, {
-    applyOptions: mapPointProto.applyOptions,
-    getProjectedBounds: mapPointProto.getProjectedBounds
+    applyOptions: MapBubblePoint_MapPoint.prototype.applyOptions,
+    getProjectedBounds: MapBubblePoint_MapPoint.prototype.getProjectedBounds
 });
 /* *
  *
@@ -59608,7 +59627,8 @@ extend(MapBubblePoint.prototype, {
 
 
 
-const { seriesTypes: { map: { prototype: mapProto }, mappoint: { prototype: MapBubbleSeries_mapPointProto } } } = Series_SeriesRegistry;
+
+
 
 /* *
  *
@@ -59633,7 +59653,7 @@ class MapBubbleSeries extends Bubble_BubbleSeries {
          *
          * */
         super(...arguments);
-        this.clearBounds = mapProto.clearBounds;
+        this.clearBounds = Map_MapSeries.prototype.clearBounds;
     }
     /** @internal */
     searchPoint(e, compareX) {
@@ -59644,7 +59664,7 @@ class MapBubbleSeries extends Bubble_BubbleSeries {
     }
     /** @internal */
     translate() {
-        MapBubbleSeries_mapPointProto.translate.call(this);
+        MapPoint_MapPointSeries.prototype.translate.call(this);
         this.getRadii();
         this.translateBubble();
     }
@@ -59831,16 +59851,16 @@ MapBubbleSeries.defaultOptions = merge(Bubble_BubbleSeries.defaultOptions, {
 extend(MapBubbleSeries.prototype, {
     type: 'mapbubble',
     axisTypes: ['colorAxis'],
-    getProjectedBounds: mapProto.getProjectedBounds,
+    getProjectedBounds: Map_MapSeries.prototype.getProjectedBounds,
     isCartesian: false,
     // If one single value is passed, it is interpreted as z
     pointArrayMap: ['z'],
     pointClass: MapBubble_MapBubblePoint,
-    processData: mapProto.processData,
-    projectPoint: MapBubbleSeries_mapPointProto.projectPoint,
+    processData: Map_MapSeries.prototype.processData,
+    projectPoint: MapPoint_MapPointSeries.prototype.projectPoint,
     kdAxisArray: ['plotX', 'plotY'],
-    setData: mapProto.setData,
-    setOptions: mapProto.setOptions,
+    setData: Map_MapSeries.prototype.setData,
+    setOptions: Map_MapSeries.prototype.setOptions,
     useMapGeometry: true,
     xyFromShape: true
 });
@@ -59934,8 +59954,13 @@ Series_SeriesRegistry.registerSeriesType('mapbubble', MapBubbleSeries);
  * */
 
 
-const { scatter: { prototype: { pointClass: HeatmapPoint_ScatterPoint } } } = Series_SeriesRegistry.seriesTypes;
 
+/* *
+ *
+ *  Constants
+ *
+ * */
+const HeatmapPoint_ScatterPoint = Scatter_ScatterSeries.prototype.pointClass;
 /* *
  *
  *  Class
@@ -60771,7 +60796,9 @@ const InterpolationUtilities = {
 
 
 
-const { series: HeatmapSeries_Series, seriesTypes: { column: HeatmapSeries_ColumnSeries, scatter: HeatmapSeries_ScatterSeries } } = Series_SeriesRegistry;
+
+
+
 
 const { prototype: { symbols: HeatmapSeries_symbols } } = SVG_SVGRenderer;
 
@@ -60788,7 +60815,7 @@ const { colorFromPoint: HeatmapSeries_colorFromPoint, getContext: HeatmapSeries_
  *
  * @augments Highcharts.Series
  */
-class HeatmapSeries extends HeatmapSeries_ScatterSeries {
+class HeatmapSeries extends Scatter_ScatterSeries {
     constructor() {
         /* *
          *
@@ -60852,7 +60879,7 @@ class HeatmapSeries extends HeatmapSeries_ScatterSeries {
             }
         }
         else if (seriesMarkerOptions.enabled || series._hasPointMarkers) {
-            HeatmapSeries_Series.prototype.drawPoints.call(series);
+            Series_Series.prototype.drawPoints.call(series);
             series.points.forEach((point) => {
                 if (point.graphic) {
                     // In styled mode, use CSS, otherwise the fill used in
@@ -60878,7 +60905,7 @@ class HeatmapSeries extends HeatmapSeries_ScatterSeries {
      */
     getExtremes() {
         // Get the extremes from the value data
-        const { dataMin, dataMax } = HeatmapSeries_Series.prototype.getExtremes
+        const { dataMin, dataMax } = Series_Series.prototype.getExtremes
             .call(this, this.getColumn('value'));
         if (isNumber(dataMin)) {
             this.valueMin = dataMin;
@@ -60887,7 +60914,7 @@ class HeatmapSeries extends HeatmapSeries_ScatterSeries {
             this.valueMax = dataMax;
         }
         // Get the extremes from the y data
-        return HeatmapSeries_Series.prototype.getExtremes.call(this);
+        return Series_Series.prototype.getExtremes.call(this);
     }
     /**
      * Override to also allow null points, used when building the k-d-tree for
@@ -60895,7 +60922,7 @@ class HeatmapSeries extends HeatmapSeries_ScatterSeries {
      * @internal
      */
     getValidPoints(points, insideOnly) {
-        return HeatmapSeries_Series.prototype.getValidPoints.call(this, points, insideOnly, true);
+        return Series_Series.prototype.getValidPoints.call(this, points, insideOnly, true);
     }
     /**
      * Define hasData function for non-cartesian series. Returns true if the
@@ -60973,7 +61000,7 @@ class HeatmapSeries extends HeatmapSeries_ScatterSeries {
      * @internal
      */
     pointAttribs(point, state) {
-        const series = this, attr = HeatmapSeries_Series.prototype.pointAttribs.call(series, point, state), seriesOptions = series.options || {}, plotOptions = series.chart.options.plotOptions || {}, seriesPlotOptions = plotOptions.series || {}, heatmapPlotOptions = plotOptions.heatmap || {}, 
+        const series = this, attr = Series_Series.prototype.pointAttribs.call(series, point, state), seriesOptions = series.options || {}, plotOptions = series.chart.options.plotOptions || {}, seriesPlotOptions = plotOptions.series || {}, heatmapPlotOptions = plotOptions.heatmap || {}, 
         // Get old properties in order to keep backward compatibility
         borderColor = point?.options.borderColor ||
             seriesOptions.borderColor ||
@@ -61033,7 +61060,7 @@ class HeatmapSeries extends HeatmapSeries_ScatterSeries {
     }
 }
 /** @internal */
-HeatmapSeries.defaultOptions = merge(HeatmapSeries_ScatterSeries.defaultOptions, Heatmap_HeatmapSeriesDefaults);
+HeatmapSeries.defaultOptions = merge(Scatter_ScatterSeries.defaultOptions, Heatmap_HeatmapSeriesDefaults);
 addEvent(HeatmapSeries, 'afterDataClassLegendClick', function () {
     this.isDirtyCanvas = true;
     this.drawPoints();
@@ -61055,7 +61082,7 @@ extend(HeatmapSeries.prototype, {
     /**
      * @internal
      */
-    alignDataLabel: HeatmapSeries_ColumnSeries.prototype.alignDataLabel,
+    alignDataLabel: Column_ColumnSeries.prototype.alignDataLabel,
     colorAttribs: Series_ColorMapComposition.seriesMembers.colorAttribs
 });
 Series_ColorMapComposition.compose(HeatmapSeries);
@@ -61100,7 +61127,7 @@ Series_SeriesRegistry.registerSeriesType('heatmap', HeatmapSeries);
 /* unused harmony import specifier */ var map_src_Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highmaps JS v13.1.1-modified (2026-10-26)
+ * @license Highmaps JS v13.1.1-modified (2026-10-27)
  * @module highcharts/modules/map
  * @requires highcharts
  *

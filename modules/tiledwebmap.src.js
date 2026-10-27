@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-26)
+ * @license Highcharts JS v13.1.1-modified (2026-10-27)
  * @module highcharts/modules/tiledwebmap
  * @requires highcharts
+ * @requires highcharts/modules/map
  *
  * (c) 2009-2026
  *
@@ -11,14 +12,14 @@
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(root["_Highcharts"]["Fx"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
+		module.exports = factory(root["_Highcharts"]["Fx"], root["_Highcharts"]["MapView"], root["_Highcharts"]["Series"]["types"]["map"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
 	else if(typeof define === 'function' && define.amd)
-		define("highcharts/modules/tiledwebmap", ["highcharts/highcharts"], function (amd1) {return factory(amd1["Fx"],amd1["SeriesRegistry"],amd1);});
+		define("highcharts/modules/tiledwebmap", ["highcharts/highcharts"], function (amd1) {return factory(amd1["Fx"],amd1["MapView"],amd1["Series"]["types"]["map"],amd1["SeriesRegistry"],amd1);});
 	else if(typeof exports === 'object')
-		exports["highcharts/modules/tiledwebmap"] = factory(root["_Highcharts"]["Fx"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
+		exports["highcharts/modules/tiledwebmap"] = factory(root["_Highcharts"]["Fx"], root["_Highcharts"]["MapView"], root["_Highcharts"]["Series"]["types"]["map"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
 	else
-		root["Highcharts"] = factory(root["Highcharts"]["Fx"], root["Highcharts"]["SeriesRegistry"], root["Highcharts"]);
-})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__168__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__944__) => {
+		root["Highcharts"] = factory(root["Highcharts"]["Fx"], root["Highcharts"]["MapView"], root["Highcharts"]["Series"]["types"]["map"], root["Highcharts"]["SeriesRegistry"], root["Highcharts"]);
+})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__168__, __WEBPACK_EXTERNAL_MODULE__12__, __WEBPACK_EXTERNAL_MODULE__468__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__944__) => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
@@ -27,6 +28,20 @@ return /******/ (() => { // webpackBootstrap
 (module) {
 
 module.exports = __WEBPACK_EXTERNAL_MODULE__168__;
+
+/***/ },
+
+/***/ 12
+(module) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__12__;
+
+/***/ },
+
+/***/ 468
+(module) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__468__;
 
 /***/ },
 
@@ -105,6 +120,9 @@ __webpack_require__.d(__webpack_exports__, {
 // EXTERNAL MODULE: external {"amd":["highcharts/highcharts"],"commonjs":["highcharts"],"commonjs2":["highcharts"],"root":["Highcharts"]}
 var highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_ = __webpack_require__(944);
 var highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default = /*#__PURE__*/__webpack_require__.n(highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_);
+// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","MapView"],"commonjs":["highcharts","MapView"],"commonjs2":["highcharts","MapView"],"root":["Highcharts","MapView"]}
+var highcharts_MapView_commonjs_highcharts_MapView_commonjs2_highcharts_MapView_root_Highcharts_MapView_ = __webpack_require__(12);
+var highcharts_MapView_commonjs_highcharts_MapView_commonjs2_highcharts_MapView_root_Highcharts_MapView_default = /*#__PURE__*/__webpack_require__.n(highcharts_MapView_commonjs_highcharts_MapView_commonjs2_highcharts_MapView_root_Highcharts_MapView_);
 ;// ./code/es-modules/Maps/TilesProviders/OpenStreetMap.js
 /* *
  * OpenStreetMap provider, used for tile map services
@@ -540,6 +558,9 @@ const tilesProviderRegistry = {
 // EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Fx"],"commonjs":["highcharts","Fx"],"commonjs2":["highcharts","Fx"],"root":["Highcharts","Fx"]}
 var highcharts_Fx_commonjs_highcharts_Fx_commonjs2_highcharts_Fx_root_Highcharts_Fx_ = __webpack_require__(168);
 var highcharts_Fx_commonjs_highcharts_Fx_commonjs2_highcharts_Fx_root_Highcharts_Fx_default = /*#__PURE__*/__webpack_require__.n(highcharts_Fx_commonjs_highcharts_Fx_commonjs2_highcharts_Fx_root_Highcharts_Fx_);
+// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Series","types","map"],"commonjs":["highcharts","Series","types","map"],"commonjs2":["highcharts","Series","types","map"],"root":["Highcharts","Series","types","map"]}
+var highcharts_Series_types_map_commonjs_highcharts_Series_types_map_commonjs2_highcharts_Series_types_map_root_Highcharts_Series_types_map_ = __webpack_require__(468);
+var highcharts_Series_types_map_commonjs_highcharts_Series_types_map_commonjs2_highcharts_Series_types_map_root_Highcharts_Series_types_map_default = /*#__PURE__*/__webpack_require__.n(highcharts_Series_types_map_commonjs_highcharts_Series_types_map_commonjs2_highcharts_Series_types_map_root_Highcharts_Series_types_map_);
 // EXTERNAL MODULE: external {"amd":["highcharts/highcharts","SeriesRegistry"],"commonjs":["highcharts","SeriesRegistry"],"commonjs2":["highcharts","SeriesRegistry"],"root":["Highcharts","SeriesRegistry"]}
 var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_ = __webpack_require__(512);
 var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_);
@@ -711,7 +732,7 @@ const TiledWebMapSeriesDefaults = {
 
 const { composed } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 
-const { map: MapSeries } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
+
 
 
 
@@ -768,7 +789,7 @@ function onRecommendMapView(e) {
  *
  * @augments Highcharts.Series
  */
-class TiledWebMapSeries extends MapSeries {
+class TiledWebMapSeries extends (highcharts_Series_types_map_commonjs_highcharts_Series_types_map_commonjs2_highcharts_Series_types_map_root_Highcharts_Series_types_map_default()) {
     constructor() {
         /* *
          *
@@ -1191,7 +1212,7 @@ class TiledWebMapSeries extends MapSeries {
     }
 }
 /** @internal */
-TiledWebMapSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(MapSeries.defaultOptions, TiledWebMap_TiledWebMapSeriesDefaults);
+TiledWebMapSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)((highcharts_Series_types_map_commonjs_highcharts_Series_types_map_commonjs2_highcharts_Series_types_map_root_Highcharts_Series_types_map_default()).defaultOptions, TiledWebMap_TiledWebMapSeriesDefaults);
 highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default().registerSeriesType('tiledwebmap', TiledWebMapSeries);
 /* *
  *
@@ -1206,9 +1227,10 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
 
 
 
+
 const G = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 G.TilesProviderRegistry = G.TilesProviderRegistry || TilesProviderRegistry;
-TiledWebMap_TiledWebMapSeries.compose(G.MapView);
+TiledWebMap_TiledWebMapSeries.compose((highcharts_MapView_commonjs_highcharts_MapView_commonjs2_highcharts_MapView_root_Highcharts_MapView_default()));
 /* harmony default export */ const tiledwebmap_src = ((highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default()));
 
 __webpack_exports__ = __webpack_exports__["default"];

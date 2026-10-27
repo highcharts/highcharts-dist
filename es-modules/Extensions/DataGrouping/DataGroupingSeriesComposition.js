@@ -15,8 +15,7 @@ import DataGroupingDefaults from './DataGroupingDefaults.js';
 import DataTableCore from '../../Data/DataTableCore.js';
 import DateTimeAxis from '../../Core/Axis/DateTimeAxis.js';
 import D from '../../Core/Defaults.js';
-import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-const { series: { prototype: seriesProto } } = SeriesRegistry;
+import Series from '../../Core/Series/Series.js';
 import { addEvent, defined, extend, isNumber, merge, splat } from '../../Shared/Utilities.js';
 import { error } from '../../Core/Utilities.js';
 /* *
@@ -24,7 +23,7 @@ import { error } from '../../Core/Utilities.js';
  *  Constants
  *
  * */
-const baseGeneratePoints = seriesProto.generatePoints;
+const baseGeneratePoints = Series.prototype.generatePoints;
 /* *
  *
  *  Functions
@@ -171,7 +170,7 @@ function applyGrouping(hasExtremesChanged) {
         if (rightShoulder) {
             groupPositions.push(lastStart);
         }
-        const groupedData = seriesProto.groupData.call(series, table, groupPositions, dataGroupingOptions.approximation);
+        const groupedData = Series.prototype.groupData.call(series, table, groupPositions, dataGroupingOptions.approximation);
         let modified = groupedData.modified, groupedXData = modified.getColumn('x', true), gapSize = 0;
         // The smoothed option is deprecated, instead, there is a fallback
         // to the new anchoring mechanism. #12455.

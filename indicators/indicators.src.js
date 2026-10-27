@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.1.1-modified (2026-10-26)
+ * @license Highstock JS v13.1.1-modified (2026-10-27)
  * @module highcharts/indicators/indicators
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -15,14 +15,14 @@
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(root["_Highcharts"]["Chart"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
+		module.exports = factory(root["_Highcharts"]["Chart"], root["_Highcharts"]["Series"]["types"]["line"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
 	else if(typeof define === 'function' && define.amd)
-		define("highcharts/indicators/indicators", ["highcharts/highcharts"], function (amd1) {return factory(amd1["Chart"],amd1["SeriesRegistry"],amd1);});
+		define("highcharts/indicators/indicators", ["highcharts/highcharts"], function (amd1) {return factory(amd1["Chart"],amd1["Series"]["types"]["line"],amd1["SeriesRegistry"],amd1);});
 	else if(typeof exports === 'object')
-		exports["highcharts/indicators/indicators"] = factory(root["_Highcharts"]["Chart"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
+		exports["highcharts/indicators/indicators"] = factory(root["_Highcharts"]["Chart"], root["_Highcharts"]["Series"]["types"]["line"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
 	else
-		root["Highcharts"] = factory(root["Highcharts"]["Chart"], root["Highcharts"]["SeriesRegistry"], root["Highcharts"]);
-})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__960__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__944__) => {
+		root["Highcharts"] = factory(root["Highcharts"]["Chart"], root["Highcharts"]["Series"]["types"]["line"], root["Highcharts"]["SeriesRegistry"], root["Highcharts"]);
+})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__960__, __WEBPACK_EXTERNAL_MODULE__176__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__944__) => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
@@ -31,6 +31,13 @@ return /******/ (() => { // webpackBootstrap
 (module) {
 
 module.exports = __WEBPACK_EXTERNAL_MODULE__960__;
+
+/***/ },
+
+/***/ 176
+(module) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__176__;
 
 /***/ },
 
@@ -649,6 +656,9 @@ class DataTableCore {
 */
 (''); // Keeps doclets above in JS file
 
+// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Series","types","line"],"commonjs":["highcharts","Series","types","line"],"commonjs2":["highcharts","Series","types","line"],"root":["Highcharts","Series","types","line"]}
+var highcharts_Series_types_line_commonjs_highcharts_Series_types_line_commonjs2_highcharts_Series_types_line_root_Highcharts_Series_types_line_ = __webpack_require__(176);
+var highcharts_Series_types_line_commonjs_highcharts_Series_types_line_commonjs2_highcharts_Series_types_line_root_Highcharts_Series_types_line_default = /*#__PURE__*/__webpack_require__.n(highcharts_Series_types_line_commonjs_highcharts_Series_types_line_commonjs2_highcharts_Series_types_line_root_Highcharts_Series_types_line_);
 // EXTERNAL MODULE: external {"amd":["highcharts/highcharts","SeriesRegistry"],"commonjs":["highcharts","SeriesRegistry"],"commonjs2":["highcharts","SeriesRegistry"],"root":["Highcharts","SeriesRegistry"]}
 var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_ = __webpack_require__(512);
 var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_);
@@ -665,7 +675,7 @@ var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highc
 
 
 
-const { line: LineSeries } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
+
 
 
 /**
@@ -695,7 +705,7 @@ const tableToMultiYData = (series, processed) => {
  * The SMA series type.
  *
  */
-class SMAIndicator extends LineSeries {
+class SMAIndicator extends (highcharts_Series_types_line_commonjs_highcharts_Series_types_line_commonjs2_highcharts_Series_types_line_root_Highcharts_Series_types_line_default()) {
     /* *
      *
      *  Functions
@@ -948,7 +958,7 @@ class SMAIndicator extends LineSeries {
  * @optionparent plotOptions.sma
  * @internal
  */
-SMAIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(LineSeries.defaultOptions, {
+SMAIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)((highcharts_Series_types_line_commonjs_highcharts_Series_types_line_commonjs2_highcharts_Series_types_line_root_Highcharts_Series_types_line_default()).defaultOptions, {
     /**
      * The name of the series as shown in the legend, tooltip etc. If not
      * set, it will be based on a technical indicator type and default
@@ -1014,7 +1024,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *  Default Export
  *
  * */
-/* harmony default export */ const SMA_SMAIndicator = ((/* unused pure expression or super */ null && (SMAIndicator)));
+/* harmony default export */ const SMA_SMAIndicator = (SMAIndicator);
 /* *
  *
  *  API Options
@@ -1044,7 +1054,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * */
 
 
-const { sma: EMAIndicator_SMAIndicator } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
+
 
 /* *
  *
@@ -1059,7 +1069,7 @@ const { sma: EMAIndicator_SMAIndicator } = (highcharts_SeriesRegistry_commonjs_h
  *
  * @augments Highcharts.Series
  */
-class EMAIndicator extends EMAIndicator_SMAIndicator {
+class EMAIndicator extends SMA_SMAIndicator {
     /* *
      *
      *  Functions
@@ -1134,7 +1144,7 @@ class EMAIndicator extends EMAIndicator_SMAIndicator {
  * @optionparent plotOptions.ema
  * @internal
  */
-EMAIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(EMAIndicator_SMAIndicator.defaultOptions, {
+EMAIndicator.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(SMA_SMAIndicator.defaultOptions, {
     params: {
         /**
          * The point index which indicator calculations will base. For
@@ -1188,7 +1198,6 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * */
 
 
-const { sma: { prototype: smaProto } } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
 
 
 /* *
@@ -1348,7 +1357,7 @@ var MultipleLinesComposition;
             indicator.options = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(mainLinePoints, gappedExtend);
             indicator.graph = indicator.area;
             indicator.fillGraph = true;
-            smaProto.drawGraph.call(indicator);
+            SMA_SMAIndicator.prototype.drawGraph.call(indicator);
             indicator.area = indicator.graph;
             // Clean temporary properties:
             delete indicator.nextPoints;
@@ -1368,7 +1377,7 @@ var MultipleLinesComposition;
                         ' are consistent with your DOCS line names."');
                 }
                 indicator.graph = indicator['graph' + lineName];
-                smaProto.drawGraph.call(indicator);
+                SMA_SMAIndicator.prototype.drawGraph.call(indicator);
                 // Now save lines:
                 indicator['graph' + lineName] = indicator.graph;
             }
@@ -1382,7 +1391,7 @@ var MultipleLinesComposition;
         indicator.points = mainLinePoints;
         indicator.options = mainLineOptions;
         indicator.graph = mainLinePath;
-        smaProto.drawGraph.call(indicator);
+        SMA_SMAIndicator.prototype.drawGraph.call(indicator);
     }
     /**
      * Create the path based on points provided as argument.
@@ -1396,10 +1405,10 @@ var MultipleLinesComposition;
         points = points || this.points;
         // Render Span
         if (this.fillGraph && this.nextPoints) {
-            areaPath = smaProto.getGraphPath.call(this, this.nextPoints);
+            areaPath = SMA_SMAIndicator.prototype.getGraphPath.call(this, this.nextPoints);
             if (areaPath && areaPath.length) {
                 areaPath[0][0] = 'L';
-                path = smaProto.getGraphPath.call(this, points);
+                path = SMA_SMAIndicator.prototype.getGraphPath.call(this, points);
                 higherAreaPath = areaPath.slice(0, path.length);
                 // Reverse points, so that the areaFill will start from the end:
                 for (let i = higherAreaPath.length - 1; i >= 0; i--) {
@@ -1408,7 +1417,7 @@ var MultipleLinesComposition;
             }
         }
         else {
-            path = smaProto.getGraphPath.apply(this, arguments);
+            path = SMA_SMAIndicator.prototype.getGraphPath.apply(this, arguments);
         }
         return path;
     }
@@ -1435,7 +1444,7 @@ var MultipleLinesComposition;
         const pointArrayMap = this.pointArrayMap;
         let LinesNames = [], value;
         LinesNames = getTranslatedLinesNames(this);
-        smaProto.translate.apply(this, arguments);
+        SMA_SMAIndicator.prototype.translate.apply(this, arguments);
         this.points.forEach((point) => {
             pointArrayMap.forEach((propertyName, i) => {
                 value = point[propertyName];

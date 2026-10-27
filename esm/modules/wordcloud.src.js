@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-26)
+ * @license Highcharts JS v13.1.1-modified (2026-10-27)
  * @module highcharts/modules/wordcloud
  * @requires highcharts
  *
@@ -127,6 +127,9 @@ const DrawPointUtilities = {
 /** @internal */
 /* harmony default export */ const Series_DrawPointUtilities = (DrawPointUtilities);
 
+;// external ["../highcharts.src.js","default","Series","types","column"]
+const external_highcharts_src_js_default_Series_types_column_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].Series.types.column;
+var external_highcharts_src_js_default_Series_types_column_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_Series_types_column_namespaceObject);
 ;// external ["../highcharts.src.js","default","SeriesRegistry"]
 const external_highcharts_src_js_default_SeriesRegistry_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].SeriesRegistry;
 var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_SeriesRegistry_namespaceObject);
@@ -145,8 +148,13 @@ var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__w
  * */
 
 
-const { column: { prototype: { pointClass: ColumnPoint } } } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
 
+/* *
+ *
+ *  Constants
+ *
+ * */
+const ColumnPoint = (external_highcharts_src_js_default_Series_types_column_default()).prototype.pointClass;
 /* *
  *
  *  Class
@@ -1116,7 +1124,7 @@ const WordcloudUtils = {
 
 const { noop } = (external_highcharts_src_js_default_default());
 
-const { column: ColumnSeries } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
+
 
 
 
@@ -1134,7 +1142,7 @@ const { archimedeanSpiral: WordcloudSeries_archimedeanSpiral, extendPlayingField
  *
  * @augments Highcharts.Series
  */
-class WordcloudSeries extends ColumnSeries {
+class WordcloudSeries extends (external_highcharts_src_js_default_Series_types_column_default()) {
     /**
      *
      * Functions
@@ -1409,7 +1417,7 @@ class WordcloudSeries extends ColumnSeries {
  *
  * */
 /** @internal */
-WordcloudSeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(ColumnSeries.defaultOptions, Wordcloud_WordcloudSeriesDefaults);
+WordcloudSeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)((external_highcharts_src_js_default_Series_types_column_default()).defaultOptions, Wordcloud_WordcloudSeriesDefaults);
 (0,external_highcharts_src_js_default_namespaceObject.extend)(WordcloudSeries.prototype, {
     animate: noop,
     animateDrilldown: noop,

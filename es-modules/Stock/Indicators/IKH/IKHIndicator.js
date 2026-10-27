@@ -10,8 +10,8 @@
 import ApproximationRegistry from '../../../Extensions/DataGrouping/ApproximationRegistry.js';
 import Color from '../../../Core/Color/Color.js';
 const { parse: color } = Color;
+import SMAIndicator from '../SMA/SMAIndicator.js';
 import SeriesRegistry from '../../../Core/Series/SeriesRegistry.js';
-const { sma: SMAIndicator } = SeriesRegistry.seriesTypes;
 import { defined, extend, getClosestDistance, isArray, isNumber, merge, objectEach } from '../../../Shared/Utilities.js';
 /* *
  *

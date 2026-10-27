@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-26)
+ * @license Highcharts JS v13.1.1-modified (2026-10-27)
  * Organization chart series type
  * @module highcharts/modules/organization
  * @requires highcharts
@@ -14,14 +14,14 @@
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(root["_Highcharts"]["SVGElement"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
+		module.exports = factory(root["_Highcharts"]["SVGElement"], root["_Highcharts"]["Series"]["types"]["sankey"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
 	else if(typeof define === 'function' && define.amd)
-		define("highcharts/modules/organization", ["highcharts/highcharts"], function (amd1) {return factory(amd1["SVGElement"],amd1["SeriesRegistry"],amd1);});
+		define("highcharts/modules/organization", ["highcharts/highcharts"], function (amd1) {return factory(amd1["SVGElement"],amd1["Series"]["types"]["sankey"],amd1["SeriesRegistry"],amd1);});
 	else if(typeof exports === 'object')
-		exports["highcharts/modules/organization"] = factory(root["_Highcharts"]["SVGElement"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
+		exports["highcharts/modules/organization"] = factory(root["_Highcharts"]["SVGElement"], root["_Highcharts"]["Series"]["types"]["sankey"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
 	else
-		root["Highcharts"] = factory(root["Highcharts"]["SVGElement"], root["Highcharts"]["SeriesRegistry"], root["Highcharts"]);
-})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__28__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__944__) => {
+		root["Highcharts"] = factory(root["Highcharts"]["SVGElement"], root["Highcharts"]["Series"]["types"]["sankey"], root["Highcharts"]["SeriesRegistry"], root["Highcharts"]);
+})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__28__, __WEBPACK_EXTERNAL_MODULE__36__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__944__) => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
@@ -30,6 +30,13 @@ return /******/ (() => { // webpackBootstrap
 (module) {
 
 module.exports = __WEBPACK_EXTERNAL_MODULE__28__;
+
+/***/ },
+
+/***/ 36
+(module) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__36__;
 
 /***/ },
 
@@ -108,9 +115,9 @@ __webpack_require__.d(__webpack_exports__, {
 // EXTERNAL MODULE: external {"amd":["highcharts/highcharts"],"commonjs":["highcharts"],"commonjs2":["highcharts"],"root":["Highcharts"]}
 var highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_ = __webpack_require__(944);
 var highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default = /*#__PURE__*/__webpack_require__.n(highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_);
-// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","SeriesRegistry"],"commonjs":["highcharts","SeriesRegistry"],"commonjs2":["highcharts","SeriesRegistry"],"root":["Highcharts","SeriesRegistry"]}
-var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_ = __webpack_require__(512);
-var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_);
+// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Series","types","sankey"],"commonjs":["highcharts","Series","types","sankey"],"commonjs2":["highcharts","Series","types","sankey"],"root":["Highcharts","Series","types","sankey"]}
+var highcharts_Series_types_sankey_commonjs_highcharts_Series_types_sankey_commonjs2_highcharts_Series_types_sankey_root_Highcharts_Series_types_sankey_ = __webpack_require__(36);
+var highcharts_Series_types_sankey_commonjs_highcharts_Series_types_sankey_commonjs2_highcharts_Series_types_sankey_root_Highcharts_Series_types_sankey_default = /*#__PURE__*/__webpack_require__.n(highcharts_Series_types_sankey_commonjs_highcharts_Series_types_sankey_commonjs2_highcharts_Series_types_sankey_root_Highcharts_Series_types_sankey_);
 ;// ./code/es-modules/Series/Organization/OrganizationPoint.js
 /* *
  *
@@ -127,8 +134,13 @@ var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highc
  * */
 
 
-const { sankey: { prototype: { pointClass: SankeyPointClass } } } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
 
+/* *
+ *
+ *  Constants
+ *
+ * */
+const SankeyPointClass = (highcharts_Series_types_sankey_commonjs_highcharts_Series_types_sankey_commonjs2_highcharts_Series_types_sankey_root_Highcharts_Series_types_sankey_default()).prototype.pointClass;
 /* *
  *
  *  Functions
@@ -717,6 +729,9 @@ const OrganizationSeriesDefaults = {
  * */
 /* harmony default export */ const Organization_OrganizationSeriesDefaults = (OrganizationSeriesDefaults);
 
+// EXTERNAL MODULE: external {"amd":["highcharts/highcharts","SeriesRegistry"],"commonjs":["highcharts","SeriesRegistry"],"commonjs2":["highcharts","SeriesRegistry"],"root":["Highcharts","SeriesRegistry"]}
+var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_ = __webpack_require__(512);
+var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_);
 ;// ./code/es-modules/Series/PathUtilities.js
 /* *
  *
@@ -1157,7 +1172,7 @@ function composeTextPath(SVGElementClass) {
 
 
 
-const { sankey: SankeySeries } = (highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highcharts_SeriesRegistry_root_Highcharts_SeriesRegistry_default()).seriesTypes;
+
 
 
 
@@ -1174,7 +1189,7 @@ composeTextPath((highcharts_SVGElement_commonjs_highcharts_SVGElement_commonjs2_
  *
  * @augments Highcharts.seriesTypes.sankey
  */
-class OrganizationSeries extends SankeySeries {
+class OrganizationSeries extends (highcharts_Series_types_sankey_commonjs_highcharts_Series_types_sankey_commonjs2_highcharts_Series_types_sankey_root_Highcharts_Series_types_sankey_default()) {
     /* *
      *
      *  Functions
@@ -1231,7 +1246,7 @@ class OrganizationSeries extends SankeySeries {
     }
     /** @internal */
     pointAttribs(point, state) {
-        const series = this, attribs = SankeySeries.prototype.pointAttribs.call(series, point, state), level = point.isNode ? point.level : point.fromNode.level, levelOptions = series.mapOptionsToLevel[level || 0] || {}, options = point.options, stateOptions = levelOptions.states?.[state || 'normal'] || {}, borderRadius = (stateOptions.borderRadius ??
+        const series = this, attribs = highcharts_Series_types_sankey_commonjs_highcharts_Series_types_sankey_commonjs2_highcharts_Series_types_sankey_root_Highcharts_Series_types_sankey_default().prototype.pointAttribs.call(series, point, state), level = point.isNode ? point.level : point.fromNode.level, levelOptions = series.mapOptionsToLevel[level || 0] || {}, options = point.options, stateOptions = levelOptions.states?.[state || 'normal'] || {}, borderRadius = (stateOptions.borderRadius ??
             options.borderRadius ??
             levelOptions.borderRadius ??
             series.options.borderRadius), linkColor = (stateOptions.linkColor ??
@@ -1423,7 +1438,7 @@ class OrganizationSeries extends SankeySeries {
  *  Static Properties
  *
  * */
-OrganizationSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)(SankeySeries.defaultOptions, Organization_OrganizationSeriesDefaults);
+OrganizationSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)((highcharts_Series_types_sankey_commonjs_highcharts_Series_types_sankey_commonjs2_highcharts_Series_types_sankey_root_Highcharts_Series_types_sankey_default()).defaultOptions, Organization_OrganizationSeriesDefaults);
 (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.extend)(OrganizationSeries.prototype, {
     pointClass: Organization_OrganizationPoint,
     useCircularLayout: false

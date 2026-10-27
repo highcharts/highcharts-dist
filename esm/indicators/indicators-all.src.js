@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.1.1-modified (2026-10-26)
+ * @license Highstock JS v13.1.1-modified (2026-10-27)
  * @module highcharts/indicators/indicators-all
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -15,6 +15,7 @@
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
 import * as __WEBPACK_EXTERNAL_MODULE__modules_datagrouping_src_js_b7a4250c__ from "../modules/datagrouping.src.js";
+import "../modules/stock.src.js";
 /******/ // The require scope
 /******/ const __webpack_require__ = {};
 /******/ 
@@ -587,6 +588,9 @@ class DataTableCore {
 */
 (''); // Keeps doclets above in JS file
 
+;// external ["../highcharts.src.js","default","Series","types","line"]
+const external_highcharts_src_js_default_Series_types_line_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].Series.types.line;
+var external_highcharts_src_js_default_Series_types_line_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_Series_types_line_namespaceObject);
 ;// external ["../highcharts.src.js","default","SeriesRegistry"]
 const external_highcharts_src_js_default_SeriesRegistry_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].SeriesRegistry;
 var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_SeriesRegistry_namespaceObject);
@@ -603,7 +607,7 @@ var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__w
 
 
 
-const { line: LineSeries } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
+
 
 
 /**
@@ -633,7 +637,7 @@ const tableToMultiYData = (series, processed) => {
  * The SMA series type.
  *
  */
-class SMAIndicator extends LineSeries {
+class SMAIndicator extends (external_highcharts_src_js_default_Series_types_line_default()) {
     /* *
      *
      *  Functions
@@ -886,7 +890,7 @@ class SMAIndicator extends LineSeries {
  * @optionparent plotOptions.sma
  * @internal
  */
-SMAIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(LineSeries.defaultOptions, {
+SMAIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)((external_highcharts_src_js_default_Series_types_line_default()).defaultOptions, {
     /**
      * The name of the series as shown in the legend, tooltip etc. If not
      * set, it will be based on a technical indicator type and default
@@ -952,7 +956,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *  Default Export
  *
  * */
-/* harmony default export */ const SMA_SMAIndicator = ((/* unused pure expression or super */ null && (SMAIndicator)));
+/* harmony default export */ const SMA_SMAIndicator = (SMAIndicator);
 /* *
  *
  *  API Options
@@ -982,7 +986,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  * */
 
 
-const { sma: EMAIndicator_SMAIndicator } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
+
 
 /* *
  *
@@ -997,7 +1001,7 @@ const { sma: EMAIndicator_SMAIndicator } = (external_highcharts_src_js_default_S
  *
  * @augments Highcharts.Series
  */
-class EMAIndicator extends EMAIndicator_SMAIndicator {
+class EMAIndicator extends SMA_SMAIndicator {
     /* *
      *
      *  Functions
@@ -1072,7 +1076,7 @@ class EMAIndicator extends EMAIndicator_SMAIndicator {
  * @optionparent plotOptions.ema
  * @internal
  */
-EMAIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(EMAIndicator_SMAIndicator.defaultOptions, {
+EMAIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(SMA_SMAIndicator.defaultOptions, {
     params: {
         /**
          * The point index which indicator calculations will base. For
@@ -1094,7 +1098,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *  Default Export
  *
  * */
-/* harmony default export */ const EMA_EMAIndicator = ((/* unused pure expression or super */ null && (EMAIndicator)));
+/* harmony default export */ const EMA_EMAIndicator = (EMAIndicator);
 /* *
  *
  *  API Options
@@ -1122,7 +1126,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  * */
 
 
-const { sma: ADIndicator_SMAIndicator } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
+
 
 
 /* *
@@ -1138,7 +1142,7 @@ const { sma: ADIndicator_SMAIndicator } = (external_highcharts_src_js_default_Se
  *
  * @augments Highcharts.Series
  */
-class ADIndicator extends ADIndicator_SMAIndicator {
+class ADIndicator extends SMA_SMAIndicator {
     /* *
      *
      *  Static Functions
@@ -1212,7 +1216,7 @@ class ADIndicator extends ADIndicator_SMAIndicator {
  * @optionparent plotOptions.ad
  * @internal
  */
-ADIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(ADIndicator_SMAIndicator.defaultOptions, {
+ADIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(SMA_SMAIndicator.defaultOptions, {
     /**
      * @excluding index
      */
@@ -1257,6 +1261,9 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  */
 ''; // Add doclet above to transpiled file
 
+;// external ["../highcharts.src.js","default","Series","types","column"]
+const external_highcharts_src_js_default_Series_types_column_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].Series.types.column;
+var external_highcharts_src_js_default_Series_types_column_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_Series_types_column_namespaceObject);
 ;// ./code/es-modules/Stock/Indicators/AO/AOIndicator.js
 /* *
  *
@@ -1267,9 +1274,10 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  * */
 
 
+
 const { noop } = (external_highcharts_src_js_default_default());
 
-const { column: { prototype: columnProto }, sma: AOIndicator_SMAIndicator } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
+
 
 /* *
  *
@@ -1284,7 +1292,7 @@ const { column: { prototype: columnProto }, sma: AOIndicator_SMAIndicator } = (e
  *
  * @augments Highcharts.Series
  */
-class AOIndicator extends AOIndicator_SMAIndicator {
+class AOIndicator extends SMA_SMAIndicator {
     /* *
      *
      *  Functions
@@ -1377,7 +1385,7 @@ class AOIndicator extends AOIndicator_SMAIndicator {
  * @optionparent plotOptions.ao
  * @internal
  */
-AOIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(AOIndicator_SMAIndicator.defaultOptions, {
+AOIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(SMA_SMAIndicator.defaultOptions, {
     params: {
         // Index and period are unchangeable, do not inherit (#15362)
         index: void 0,
@@ -1424,10 +1432,10 @@ AOIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObje
     nameComponents: void 0,
     // Columns support:
     markerAttribs: noop,
-    getColumnMetrics: columnProto.getColumnMetrics,
-    crispCol: columnProto.crispCol,
-    translate: columnProto.translate,
-    drawPoints: columnProto.drawPoints
+    getColumnMetrics: (external_highcharts_src_js_default_Series_types_column_default()).prototype.getColumnMetrics,
+    crispCol: (external_highcharts_src_js_default_Series_types_column_default()).prototype.crispCol,
+    translate: (external_highcharts_src_js_default_Series_types_column_default()).prototype.translate,
+    drawPoints: (external_highcharts_src_js_default_Series_types_column_default()).prototype.drawPoints
 });
 external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('ao', AOIndicator);
 /* *
@@ -1471,7 +1479,6 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  * */
 
 
-const { sma: { prototype: smaProto } } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
 
 
 /* *
@@ -1631,7 +1638,7 @@ var MultipleLinesComposition;
             indicator.options = (0,external_highcharts_src_js_default_namespaceObject.merge)(mainLinePoints, gappedExtend);
             indicator.graph = indicator.area;
             indicator.fillGraph = true;
-            smaProto.drawGraph.call(indicator);
+            SMA_SMAIndicator.prototype.drawGraph.call(indicator);
             indicator.area = indicator.graph;
             // Clean temporary properties:
             delete indicator.nextPoints;
@@ -1651,7 +1658,7 @@ var MultipleLinesComposition;
                         ' are consistent with your DOCS line names."');
                 }
                 indicator.graph = indicator['graph' + lineName];
-                smaProto.drawGraph.call(indicator);
+                SMA_SMAIndicator.prototype.drawGraph.call(indicator);
                 // Now save lines:
                 indicator['graph' + lineName] = indicator.graph;
             }
@@ -1665,7 +1672,7 @@ var MultipleLinesComposition;
         indicator.points = mainLinePoints;
         indicator.options = mainLineOptions;
         indicator.graph = mainLinePath;
-        smaProto.drawGraph.call(indicator);
+        SMA_SMAIndicator.prototype.drawGraph.call(indicator);
     }
     /**
      * Create the path based on points provided as argument.
@@ -1679,10 +1686,10 @@ var MultipleLinesComposition;
         points = points || this.points;
         // Render Span
         if (this.fillGraph && this.nextPoints) {
-            areaPath = smaProto.getGraphPath.call(this, this.nextPoints);
+            areaPath = SMA_SMAIndicator.prototype.getGraphPath.call(this, this.nextPoints);
             if (areaPath && areaPath.length) {
                 areaPath[0][0] = 'L';
-                path = smaProto.getGraphPath.call(this, points);
+                path = SMA_SMAIndicator.prototype.getGraphPath.call(this, points);
                 higherAreaPath = areaPath.slice(0, path.length);
                 // Reverse points, so that the areaFill will start from the end:
                 for (let i = higherAreaPath.length - 1; i >= 0; i--) {
@@ -1691,7 +1698,7 @@ var MultipleLinesComposition;
             }
         }
         else {
-            path = smaProto.getGraphPath.apply(this, arguments);
+            path = SMA_SMAIndicator.prototype.getGraphPath.apply(this, arguments);
         }
         return path;
     }
@@ -1718,7 +1725,7 @@ var MultipleLinesComposition;
         const pointArrayMap = this.pointArrayMap;
         let LinesNames = [], value;
         LinesNames = getTranslatedLinesNames(this);
-        smaProto.translate.apply(this, arguments);
+        SMA_SMAIndicator.prototype.translate.apply(this, arguments);
         this.points.forEach((point) => {
             pointArrayMap.forEach((propertyName, i) => {
                 value = point[propertyName];
@@ -1753,7 +1760,7 @@ var MultipleLinesComposition;
 
 
 
-const { sma: AroonIndicator_SMAIndicator } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
+
 
 /* *
  *
@@ -1787,7 +1794,7 @@ function getExtremeIndexInArray(arr, extreme) {
  *
  * @augments Highcharts.Series
  */
-class AroonIndicator extends AroonIndicator_SMAIndicator {
+class AroonIndicator extends SMA_SMAIndicator {
     /* *
      *
      *  Functions
@@ -1849,7 +1856,7 @@ class AroonIndicator extends AroonIndicator_SMAIndicator {
  * @optionparent plotOptions.aroon
  * @internal
  */
-AroonIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(AroonIndicator_SMAIndicator.defaultOptions, {
+AroonIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(SMA_SMAIndicator.defaultOptions, {
     /**
      * Parameters used in calculation of aroon series points.
      *
@@ -1904,7 +1911,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *  Default Export
  *
  * */
-/* harmony default export */ const Aroon_AroonIndicator = ((/* unused pure expression or super */ null && (AroonIndicator)));
+/* harmony default export */ const Aroon_AroonIndicator = (AroonIndicator);
 /* *
  *
  *  API Options
@@ -1938,7 +1945,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
 
 
 
-const { aroon: AroonOscillatorIndicator_AroonIndicator } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
+
 
 /* *
  *
@@ -1953,7 +1960,7 @@ const { aroon: AroonOscillatorIndicator_AroonIndicator } = (external_highcharts_
  *
  * @augments Highcharts.Series
  */
-class AroonOscillatorIndicator extends AroonOscillatorIndicator_AroonIndicator {
+class AroonOscillatorIndicator extends Aroon_AroonIndicator {
     /* *
      *
      *  Functions
@@ -2006,7 +2013,7 @@ class AroonOscillatorIndicator extends AroonOscillatorIndicator_AroonIndicator {
  * @optionparent plotOptions.aroonoscillator
  * @internal
  */
-AroonOscillatorIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(AroonOscillatorIndicator_AroonIndicator.defaultOptions, {
+AroonOscillatorIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(Aroon_AroonIndicator.defaultOptions, {
     tooltip: {
         pointFormat: '<span style="color:{point.color}">\u25CF</span><b> {series.name}</b>: {point.y}'
     }
@@ -2017,7 +2024,7 @@ AroonOscillatorIndicator.defaultOptions = (0,external_highcharts_src_js_default_
     pointArrayMap: ['y'],
     pointValKey: 'y'
 });
-Indicators_MultipleLinesComposition.compose(AroonOscillatorIndicator_AroonIndicator);
+Indicators_MultipleLinesComposition.compose(Aroon_AroonIndicator);
 external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('aroonoscillator', AroonOscillatorIndicator);
 /* *
  *
@@ -2059,7 +2066,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  * */
 
 
-const { sma: ATRIndicator_SMAIndicator } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
+
 
 /* *
  *
@@ -2095,7 +2102,7 @@ function populateAverage(points, xVal, yVal, i, period, prevATR) {
  *
  * @augments Highcharts.Series
  */
-class ATRIndicator extends ATRIndicator_SMAIndicator {
+class ATRIndicator extends SMA_SMAIndicator {
     /* *
      *
      *  Functions
@@ -2158,7 +2165,7 @@ class ATRIndicator extends ATRIndicator_SMAIndicator {
  * @optionparent plotOptions.atr
  * @internal
  */
-ATRIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(ATRIndicator_SMAIndicator.defaultOptions, {
+ATRIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(SMA_SMAIndicator.defaultOptions, {
     /**
      * @excluding index
      */
@@ -2172,7 +2179,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *  Default Export
  *
  * */
-/* harmony default export */ const ATR_ATRIndicator = ((/* unused pure expression or super */ null && (ATRIndicator)));
+/* harmony default export */ const ATR_ATRIndicator = (ATRIndicator);
 /* *
  *
  *  API Options
@@ -2204,7 +2211,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
 
 
 
-const { sma: BBIndicator_SMAIndicator } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
+
 
 /* *
  *
@@ -2237,7 +2244,7 @@ function getStandardDeviation(arr, index, isOHLC, mean) {
  *
  * @augments Highcharts.Series
  */
-class BBIndicator extends BBIndicator_SMAIndicator {
+class BBIndicator extends SMA_SMAIndicator {
     /* *
      *
      *  Functions
@@ -2314,7 +2321,7 @@ class BBIndicator extends BBIndicator_SMAIndicator {
  * @optionparent plotOptions.bb
  * @internal
  */
-BBIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(BBIndicator_SMAIndicator.defaultOptions, {
+BBIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(SMA_SMAIndicator.defaultOptions, {
     /**
      * Option for fill color between lines in Bollinger Bands Indicator.
      *
@@ -2433,7 +2440,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  * */
 
 
-const { sma: CCIIndicator_SMAIndicator } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
+
 
 /* *
  *
@@ -2469,7 +2476,7 @@ function meanDeviation(arr, sma) {
  *
  * @augments Highcharts.Series
  */
-class CCIIndicator extends CCIIndicator_SMAIndicator {
+class CCIIndicator extends SMA_SMAIndicator {
     /* *
      *
      *  Functions
@@ -2530,7 +2537,7 @@ class CCIIndicator extends CCIIndicator_SMAIndicator {
  * @optionparent plotOptions.cci
  * @internal
  */
-CCIIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(CCIIndicator_SMAIndicator.defaultOptions, {
+CCIIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(SMA_SMAIndicator.defaultOptions, {
     /**
      * @excluding index
      */
@@ -2581,7 +2588,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
 
 
 
-const { sma: CMFIndicator_SMAIndicator } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
+
 /* *
  *
  *  Class
@@ -2595,7 +2602,7 @@ const { sma: CMFIndicator_SMAIndicator } = (external_highcharts_src_js_default_S
  *
  * @augments Highcharts.Series
  */
-class CMFIndicator extends CMFIndicator_SMAIndicator {
+class CMFIndicator extends SMA_SMAIndicator {
     constructor() {
         /* *
          *
@@ -2762,7 +2769,7 @@ class CMFIndicator extends CMFIndicator_SMAIndicator {
  * @optionparent plotOptions.cmf
  * @internal
  */
-CMFIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(CMFIndicator_SMAIndicator.defaultOptions, {
+CMFIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(SMA_SMAIndicator.defaultOptions, {
     /**
      * @excluding index
      */
@@ -2816,7 +2823,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
 
 
 
-const { sma: DMIIndicator_SMAIndicator } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
+
 
 /* *
  *
@@ -2831,7 +2838,7 @@ const { sma: DMIIndicator_SMAIndicator } = (external_highcharts_src_js_default_S
  *
  * @augments Highcharts.Series
  */
-class DMIIndicator extends DMIIndicator_SMAIndicator {
+class DMIIndicator extends SMA_SMAIndicator {
     /* *
      *
      *  Functions
@@ -2962,7 +2969,7 @@ class DMIIndicator extends DMIIndicator_SMAIndicator {
  * @optionparent plotOptions.dmi
  * @internal
  */
-DMIIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(DMIIndicator_SMAIndicator.defaultOptions, {
+DMIIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(SMA_SMAIndicator.defaultOptions, {
     /**
      * @excluding index
      */
@@ -3076,7 +3083,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  * */
 
 
-const { sma: DPOIndicator_SMAIndicator } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
+
 
 /* *
  *
@@ -3105,7 +3112,7 @@ function accumulatePoints(sum, yVal, i, index, subtract) {
  *
  * @augments Highcharts.Series
  */
-class DPOIndicator extends DPOIndicator_SMAIndicator {
+class DPOIndicator extends SMA_SMAIndicator {
     /* *
      *
      *  Functions
@@ -3171,7 +3178,7 @@ class DPOIndicator extends DPOIndicator_SMAIndicator {
  * @optionparent plotOptions.dpo
  * @internal
  */
-DPOIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(DPOIndicator_SMAIndicator.defaultOptions, {
+DPOIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(SMA_SMAIndicator.defaultOptions, {
     /**
      * Parameters used in calculation of Detrended Price Oscillator series
      * points.
@@ -3227,7 +3234,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
 
  // For historic reasons, AD is built into Chaikin
 
-const { ema: ChaikinIndicator_EMAIndicator } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
+
 
 
 /* *
@@ -3243,7 +3250,7 @@ const { ema: ChaikinIndicator_EMAIndicator } = (external_highcharts_src_js_defau
  *
  * @augments Highcharts.Series
  */
-class ChaikinIndicator extends ChaikinIndicator_EMAIndicator {
+class ChaikinIndicator extends EMA_EMAIndicator {
     /* *
      *
      *  Functions
@@ -3320,7 +3327,7 @@ class ChaikinIndicator extends ChaikinIndicator_EMAIndicator {
  * @optionparent plotOptions.chaikin
  * @internal
  */
-ChaikinIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(ChaikinIndicator_EMAIndicator.defaultOptions, {
+ChaikinIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(EMA_EMAIndicator.defaultOptions, {
     /**
      * Parameters used in calculation of Chaikin Oscillator
      * series points.
@@ -3393,7 +3400,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  * */
 
 
-const { sma: CMOIndicator_SMAIndicator } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
+
 
 /* *
  *
@@ -3408,7 +3415,7 @@ const { sma: CMOIndicator_SMAIndicator } = (external_highcharts_src_js_default_S
  *
  * @augments Highcharts.Series
  */
-class CMOIndicator extends CMOIndicator_SMAIndicator {
+class CMOIndicator extends SMA_SMAIndicator {
     /* *
      *
      *  Functions
@@ -3506,7 +3513,7 @@ class CMOIndicator extends CMOIndicator_SMAIndicator {
  * @optionparent plotOptions.cmo
  * @internal
  */
-CMOIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(CMOIndicator_SMAIndicator.defaultOptions, {
+CMOIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(SMA_SMAIndicator.defaultOptions, {
     params: {
         period: 20,
         index: 3
@@ -3548,7 +3555,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  * */
 
 
-const { ema: DEMAIndicator_EMAIndicator } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
+
 
 /* *
  *
@@ -3563,7 +3570,7 @@ const { ema: DEMAIndicator_EMAIndicator } = (external_highcharts_src_js_default_
  *
  * @augments Highcharts.Series
  */
-class DEMAIndicator extends DEMAIndicator_EMAIndicator {
+class DEMAIndicator extends EMA_EMAIndicator {
     /* *
      *
      *  Functions
@@ -3659,7 +3666,7 @@ class DEMAIndicator extends DEMAIndicator_EMAIndicator {
  * @optionparent plotOptions.dema
  * @internal
  */
-DEMAIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(DEMAIndicator_EMAIndicator.defaultOptions);
+DEMAIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(EMA_EMAIndicator.defaultOptions);
 external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('dema', DEMAIndicator);
 /* *
  *
@@ -3699,7 +3706,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  * */
 
 
-const { ema: TEMAIndicator_EMAIndicator } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
+
 
 /* *
  *
@@ -3714,7 +3721,7 @@ const { ema: TEMAIndicator_EMAIndicator } = (external_highcharts_src_js_default_
  *
  * @augments Highcharts.Series
  */
-class TEMAIndicator extends TEMAIndicator_EMAIndicator {
+class TEMAIndicator extends EMA_EMAIndicator {
     /* *
      *
      *  Functions
@@ -3844,14 +3851,14 @@ class TEMAIndicator extends TEMAIndicator_EMAIndicator {
  * @optionparent plotOptions.tema
  * @internal
  */
-TEMAIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(TEMAIndicator_EMAIndicator.defaultOptions);
+TEMAIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(EMA_EMAIndicator.defaultOptions);
 external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('tema', TEMAIndicator);
 /* *
  *
  *  Default Export
  *
  * */
-/* harmony default export */ const TEMA_TEMAIndicator = ((/* unused pure expression or super */ null && (TEMAIndicator)));
+/* harmony default export */ const TEMA_TEMAIndicator = (TEMAIndicator);
 /* *
  *
  *  API Options
@@ -3884,7 +3891,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  * */
 
 
-const { tema: TRIXIndicator_TEMAIndicator } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
+
 
 /* *
  *
@@ -3899,7 +3906,7 @@ const { tema: TRIXIndicator_TEMAIndicator } = (external_highcharts_src_js_defaul
  *
  * @augments Highcharts.Series
  */
-class TRIXIndicator extends TRIXIndicator_TEMAIndicator {
+class TRIXIndicator extends TEMA_TEMAIndicator {
     /* *
      *
      *  Functions
@@ -3943,7 +3950,7 @@ class TRIXIndicator extends TRIXIndicator_TEMAIndicator {
  * @optionparent plotOptions.trix
  * @internal
  */
-TRIXIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(TRIXIndicator_TEMAIndicator.defaultOptions);
+TRIXIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(TEMA_TEMAIndicator.defaultOptions);
 external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('trix', TRIXIndicator);
 /* *
  *
@@ -3984,7 +3991,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  * */
 
 
-const { ema: APOIndicator_EMAIndicator } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
+
 
 
 /* *
@@ -4000,7 +4007,7 @@ const { ema: APOIndicator_EMAIndicator } = (external_highcharts_src_js_default_S
  *
  * @augments Highcharts.Series
  */
-class APOIndicator extends APOIndicator_EMAIndicator {
+class APOIndicator extends EMA_EMAIndicator {
     /* *
      *
      *  Functions
@@ -4070,7 +4077,7 @@ class APOIndicator extends APOIndicator_EMAIndicator {
  * @optionparent plotOptions.apo
  * @internal
  */
-APOIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(APOIndicator_EMAIndicator.defaultOptions, {
+APOIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(EMA_EMAIndicator.defaultOptions, {
     /**
      * Parameters used in calculation of Absolute Price Oscillator
      * series points.
@@ -4141,7 +4148,7 @@ var external_highcharts_src_js_default_Color_default = /*#__PURE__*/__webpack_re
 
 const { parse: color } = (external_highcharts_src_js_default_Color_default());
 
-const { sma: IKHIndicator_SMAIndicator } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
+
 
 /* *
  *
@@ -4235,7 +4242,7 @@ function ichimokuAverages() {
  *
  * @augments Highcharts.Series
  */
-class IKHIndicator extends IKHIndicator_SMAIndicator {
+class IKHIndicator extends SMA_SMAIndicator {
     constructor() {
         /* *
          *
@@ -4623,7 +4630,7 @@ class IKHIndicator extends IKHIndicator_SMAIndicator {
  * @optionparent plotOptions.ikh
  * @internal
  */
-IKHIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(IKHIndicator_SMAIndicator.defaultOptions, {
+IKHIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(SMA_SMAIndicator.defaultOptions, {
     /**
      * @excluding index
      */
@@ -4833,7 +4840,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
 
 
 
-const { sma: KeltnerChannelsIndicator_SMAIndicator } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
+
 
 /* *
  *
@@ -4848,7 +4855,7 @@ const { sma: KeltnerChannelsIndicator_SMAIndicator } = (external_highcharts_src_
  *
  * @augments Highcharts.Series
  */
-class KeltnerChannelsIndicator extends KeltnerChannelsIndicator_SMAIndicator {
+class KeltnerChannelsIndicator extends SMA_SMAIndicator {
     /* *
      *
      *  Functions
@@ -4926,11 +4933,12 @@ class KeltnerChannelsIndicator extends KeltnerChannelsIndicator_SMAIndicator {
  *               pointPlacement, pointRange, pointStart,showInNavigator,
  *               stacking
  * @requires     indicators/indicators
+ * @requires     indicators/atr
  * @requires     indicators/keltner-channels
  * @optionparent plotOptions.keltnerchannels
  * @internal
  */
-KeltnerChannelsIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(KeltnerChannelsIndicator_SMAIndicator.defaultOptions, {
+KeltnerChannelsIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(SMA_SMAIndicator.defaultOptions, {
     /**
      * Option for fill color between lines in Keltner Channels Indicator.
      *
@@ -5035,6 +5043,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *               pointIntervalUnit, pointPlacement, pointRange, pointStart,
  *               stacking, showInNavigator
  * @requires     indicators/indicators
+ * @requires     indicators/atr
  * @requires     indicators/keltner-channels
  * @apioption    series.keltnerchannels
  */
@@ -5052,7 +5061,8 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
 
 
 
-const { ema: KlingerIndicator_EMAIndicator, sma: KlingerIndicator_SMAIndicator } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
+
+
 
 
 /* *
@@ -5068,7 +5078,7 @@ const { ema: KlingerIndicator_EMAIndicator, sma: KlingerIndicator_SMAIndicator }
  *
  * @augments Highcharts.Series
  */
-class KlingerIndicator extends KlingerIndicator_SMAIndicator {
+class KlingerIndicator extends SMA_SMAIndicator {
     /* *
      *
      *  Functions
@@ -5135,11 +5145,11 @@ class KlingerIndicator extends KlingerIndicator_SMAIndicator {
     }
     /** @internal */
     getEMA(yVal, prevEMA, SMA, EMApercent, index, i, xVal) {
-        return KlingerIndicator_EMAIndicator.prototype.calculateEma(xVal || [], yVal, typeof i === 'undefined' ? 1 : i, EMApercent, prevEMA, typeof index === 'undefined' ? -1 : index, SMA);
+        return EMA_EMAIndicator.prototype.calculateEma(xVal || [], yVal, typeof i === 'undefined' ? 1 : i, EMApercent, prevEMA, typeof index === 'undefined' ? -1 : index, SMA);
     }
     /** @internal */
     getSMA(period, index, values) {
-        return KlingerIndicator_EMAIndicator.prototype
+        return EMA_EMAIndicator.prototype
             .accumulatePeriodPoints(period, index, values) / period;
     }
     /** @internal */
@@ -5206,7 +5216,7 @@ class KlingerIndicator extends KlingerIndicator_SMAIndicator {
  * @optionparent plotOptions.klinger
  * @internal
  */
-KlingerIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(KlingerIndicator_SMAIndicator.defaultOptions, {
+KlingerIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(SMA_SMAIndicator.defaultOptions, {
     /**
      * Parameters used in calculation of Klinger Oscillator.
      *
@@ -5310,9 +5320,10 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  * */
 
 
+
 const { noop: MACDIndicator_noop } = (external_highcharts_src_js_default_default());
 
-const { sma: MACDIndicator_SMAIndicator } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
+
 
 /* *
  *
@@ -5327,7 +5338,7 @@ const { sma: MACDIndicator_SMAIndicator } = (external_highcharts_src_js_default_
  *
  * @augments Highcharts.Series
  */
-class MACDIndicator extends MACDIndicator_SMAIndicator {
+class MACDIndicator extends SMA_SMAIndicator {
     /* *
      *
      *  Functions
@@ -5552,7 +5563,7 @@ class MACDIndicator extends MACDIndicator_SMAIndicator {
  * @optionparent plotOptions.macd
  * @internal
  */
-MACDIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(MACDIndicator_SMAIndicator.defaultOptions, {
+MACDIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(SMA_SMAIndicator.defaultOptions, {
     params: {
         /**
          * The short period for indicator calculations.
@@ -5649,9 +5660,9 @@ MACDIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceOb
     pointValKey: 'y',
     // Columns support:
     markerAttribs: MACDIndicator_noop,
-    getColumnMetrics: (external_highcharts_src_js_default_default()).seriesTypes.column.prototype.getColumnMetrics,
-    crispCol: (external_highcharts_src_js_default_default()).seriesTypes.column.prototype.crispCol,
-    drawPoints: (external_highcharts_src_js_default_default()).seriesTypes.column.prototype.drawPoints
+    getColumnMetrics: (external_highcharts_src_js_default_Series_types_column_default()).prototype.getColumnMetrics,
+    crispCol: (external_highcharts_src_js_default_Series_types_column_default()).prototype.crispCol,
+    drawPoints: (external_highcharts_src_js_default_Series_types_column_default()).prototype.drawPoints
 });
 external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('macd', MACDIndicator);
 /* *
@@ -5694,7 +5705,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  * */
 
 
-const { sma: MFIIndicator_SMAIndicator } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
+
 
 
 /* *
@@ -5734,7 +5745,7 @@ function calculateRawMoneyFlow(typicalPrice, volume) {
  *
  * @augments Highcharts.Series
  */
-class MFIIndicator extends MFIIndicator_SMAIndicator {
+class MFIIndicator extends SMA_SMAIndicator {
     /* *
      *
      *  Functions
@@ -5825,7 +5836,7 @@ class MFIIndicator extends MFIIndicator_SMAIndicator {
  * @optionparent plotOptions.mfi
  * @internal
  */
-MFIIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(MFIIndicator_SMAIndicator.defaultOptions, {
+MFIIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(SMA_SMAIndicator.defaultOptions, {
     /**
      * @excluding index
      */
@@ -5882,7 +5893,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  * */
 
 
-const { sma: MomentumIndicator_SMAIndicator } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
+
 
 /* *
  *
@@ -5907,7 +5918,7 @@ function MomentumIndicator_populateAverage(xVal, yVal, i, period, index) {
  *
  * @augments Highcharts.Series
  */
-class MomentumIndicator extends MomentumIndicator_SMAIndicator {
+class MomentumIndicator extends SMA_SMAIndicator {
     /* *
      *
      *  Functions
@@ -5961,7 +5972,7 @@ class MomentumIndicator extends MomentumIndicator_SMAIndicator {
  * @optionparent plotOptions.momentum
  * @internal
  */
-MomentumIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(MomentumIndicator_SMAIndicator.defaultOptions, {
+MomentumIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(SMA_SMAIndicator.defaultOptions, {
     params: {
         index: 3
     }
@@ -6006,7 +6017,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
 
 
 
-const { atr: NATRIndicator_ATRIndicator } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
+
 /* *
  *
  *  Class
@@ -6020,7 +6031,7 @@ const { atr: NATRIndicator_ATRIndicator } = (external_highcharts_src_js_default_
  *
  * @augments Highcharts.Series
  */
-class NATRIndicator extends NATRIndicator_ATRIndicator {
+class NATRIndicator extends ATR_ATRIndicator {
     /* *
      *
      *  Functions
@@ -6063,7 +6074,7 @@ class NATRIndicator extends NATRIndicator_ATRIndicator {
  * @optionparent plotOptions.natr
  * @internal
  */
-NATRIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(NATRIndicator_ATRIndicator.defaultOptions, {
+NATRIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(ATR_ATRIndicator.defaultOptions, {
     tooltip: {
         valueSuffix: '%'
     }
@@ -6105,7 +6116,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  * */
 
 
-const { sma: OBVIndicator_SMAIndicator } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
+
 
 
 /* *
@@ -6121,7 +6132,7 @@ const { sma: OBVIndicator_SMAIndicator } = (external_highcharts_src_js_default_S
  *
  * @augments Highcharts.Series
  */
-class OBVIndicator extends OBVIndicator_SMAIndicator {
+class OBVIndicator extends SMA_SMAIndicator {
     /* *
      *
      *  Functions
@@ -6201,7 +6212,7 @@ class OBVIndicator extends OBVIndicator_SMAIndicator {
  * @optionparent plotOptions.obv
  * @internal
  */
-OBVIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(OBVIndicator_SMAIndicator.defaultOptions, {
+OBVIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(SMA_SMAIndicator.defaultOptions, {
     marker: {
         enabled: false
     },
@@ -6261,7 +6272,8 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  * */
 
 
-const SMAPoint = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes.sma.prototype.pointClass;
+
+const SMAPoint = SMA_SMAIndicator.prototype.pointClass;
 /* *
  *
  *  Functions
@@ -6321,7 +6333,7 @@ class PivotPointsPoint extends SMAPoint {
 
 
 
-const { sma: PivotPointsIndicator_SMAIndicator } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
+
 
 /**
  *
@@ -6336,7 +6348,7 @@ const { sma: PivotPointsIndicator_SMAIndicator } = (external_highcharts_src_js_d
  *
  * @augments Highcharts.Series
  */
-class PivotPointsIndicator extends PivotPointsIndicator_SMAIndicator {
+class PivotPointsIndicator extends SMA_SMAIndicator {
     /* *
      *
      *  Functions
@@ -6552,7 +6564,7 @@ class PivotPointsIndicator extends PivotPointsIndicator_SMAIndicator {
  * @optionparent plotOptions.pivotpoints
  * @internal
  */
-PivotPointsIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(PivotPointsIndicator_SMAIndicator.defaultOptions, {
+PivotPointsIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(SMA_SMAIndicator.defaultOptions, {
     /**
      * @excluding index
      */
@@ -6625,7 +6637,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  * */
 
 
-const { ema: PPOIndicator_EMAIndicator } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
+
 
 
 /* *
@@ -6641,7 +6653,7 @@ const { ema: PPOIndicator_EMAIndicator } = (external_highcharts_src_js_default_S
  *
  * @augments Highcharts.Series
  */
-class PPOIndicator extends PPOIndicator_EMAIndicator {
+class PPOIndicator extends EMA_EMAIndicator {
     /* *
      *
      *  Functions
@@ -6714,7 +6726,7 @@ class PPOIndicator extends PPOIndicator_EMAIndicator {
  * @optionparent plotOptions.ppo
  * @internal
  */
-PPOIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(PPOIndicator_EMAIndicator.defaultOptions, {
+PPOIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(EMA_EMAIndicator.defaultOptions, {
     /**
      * Parameters used in calculation of Percentage Price Oscillator series
      * points.
@@ -6829,7 +6841,7 @@ const ArrayUtilities = {
 
 
 
-const { sma: PCIndicator_SMAIndicator } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
+
 
 /* *
  *
@@ -6844,7 +6856,7 @@ const { sma: PCIndicator_SMAIndicator } = (external_highcharts_src_js_default_Se
  *
  * @augments Highcharts.Series
  */
-class PCIndicator extends PCIndicator_SMAIndicator {
+class PCIndicator extends SMA_SMAIndicator {
     /* *
      *
      *  Functions
@@ -6903,7 +6915,7 @@ class PCIndicator extends PCIndicator_SMAIndicator {
  * @optionparent plotOptions.pc
  * @internal
  */
-PCIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(PCIndicator_SMAIndicator.defaultOptions, {
+PCIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(SMA_SMAIndicator.defaultOptions, {
     /**
      * Option for fill color between lines in Price channel Indicator.
      *
@@ -7005,7 +7017,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
 
 
 
-const { sma: PriceEnvelopesIndicator_SMAIndicator } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
+
 
 /* *
  *
@@ -7020,7 +7032,7 @@ const { sma: PriceEnvelopesIndicator_SMAIndicator } = (external_highcharts_src_j
  *
  * @augments Highcharts.Series
  */
-class PriceEnvelopesIndicator extends PriceEnvelopesIndicator_SMAIndicator {
+class PriceEnvelopesIndicator extends SMA_SMAIndicator {
     /* *
      *
      *  Functions
@@ -7100,7 +7112,7 @@ class PriceEnvelopesIndicator extends PriceEnvelopesIndicator_SMAIndicator {
  * @optionparent plotOptions.priceenvelopes
  * @internal
  */
-PriceEnvelopesIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(PriceEnvelopesIndicator_SMAIndicator.defaultOptions, {
+PriceEnvelopesIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(SMA_SMAIndicator.defaultOptions, {
     marker: {
         enabled: false
     },
@@ -7216,7 +7228,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
 
 
 
-const { sma: PSARIndicator_SMAIndicator } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
+
 /* *
  *
  *  Functions
@@ -7312,7 +7324,7 @@ function getPSAR(pdir, sDir, PSAR, pACCMulti, sLow, pLow, pHigh, sHigh, pEP) {
  *
  * @augments Highcharts.Series
  */
-class PSARIndicator extends PSARIndicator_SMAIndicator {
+class PSARIndicator extends SMA_SMAIndicator {
     constructor() {
         /* *
          *
@@ -7402,7 +7414,7 @@ class PSARIndicator extends PSARIndicator_SMAIndicator {
  * @optionparent plotOptions.psar
  * @internal
  */
-PSARIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(PSARIndicator_SMAIndicator.defaultOptions, {
+PSARIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(SMA_SMAIndicator.defaultOptions, {
     lineWidth: 0,
     marker: {
         enabled: true
@@ -7492,7 +7504,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  * */
 
 
-const { sma: ROCIndicator_SMAIndicator } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
+
 
 /* *
  *
@@ -7538,7 +7550,7 @@ function ROCIndicator_populateAverage(xVal, yVal, i, period, index) {
  *
  * @augments Highcharts.Series
  */
-class ROCIndicator extends ROCIndicator_SMAIndicator {
+class ROCIndicator extends SMA_SMAIndicator {
     /* *
      *
      *  Functions
@@ -7600,7 +7612,7 @@ class ROCIndicator extends ROCIndicator_SMAIndicator {
  * @optionparent plotOptions.roc
  * @internal
  */
-ROCIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(ROCIndicator_SMAIndicator.defaultOptions, {
+ROCIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(SMA_SMAIndicator.defaultOptions, {
     params: {
         index: 3,
         period: 9
@@ -7656,7 +7668,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  * */
 
 
-const { sma: RSIIndicator_SMAIndicator } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
+
 
 /* *
  *
@@ -7681,7 +7693,7 @@ function RSIIndicator_toFixed(a, n) {
  *
  * @augments Highcharts.Series
  */
-class RSIIndicator extends RSIIndicator_SMAIndicator {
+class RSIIndicator extends SMA_SMAIndicator {
     /* *
      *
      *  Functions
@@ -7780,7 +7792,7 @@ class RSIIndicator extends RSIIndicator_SMAIndicator {
  * @optionparent plotOptions.rsi
  * @internal
  */
-RSIIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(RSIIndicator_SMAIndicator.defaultOptions, {
+RSIIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(SMA_SMAIndicator.defaultOptions, {
     params: {
         decimals: 4,
         index: 3
@@ -7824,7 +7836,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
 
 
 
-const { sma: StochasticIndicator_SMAIndicator } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
+
 
 /* *
  *
@@ -7839,7 +7851,7 @@ const { sma: StochasticIndicator_SMAIndicator } = (external_highcharts_src_js_de
  *
  * @augments Highcharts.Series
  */
-class StochasticIndicator extends StochasticIndicator_SMAIndicator {
+class StochasticIndicator extends SMA_SMAIndicator {
     /* *
      *
      *  Functions
@@ -7948,7 +7960,7 @@ class StochasticIndicator extends StochasticIndicator_SMAIndicator {
  * @optionparent plotOptions.stochastic
  * @internal
  */
-StochasticIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(StochasticIndicator_SMAIndicator.defaultOptions, {
+StochasticIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(SMA_SMAIndicator.defaultOptions, {
     /**
      * @excluding index, period
      */
@@ -8012,7 +8024,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *  Default Export
  *
  * */
-/* harmony default export */ const Stochastic_StochasticIndicator = ((/* unused pure expression or super */ null && (StochasticIndicator)));
+/* harmony default export */ const Stochastic_StochasticIndicator = (StochasticIndicator);
 /* *
  *
  *  API Options
@@ -8045,7 +8057,8 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  * */
 
 
-const { sma: SlowStochasticIndicator_SMAIndicator, stochastic: SlowStochasticIndicator_StochasticIndicator } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
+
+
 
 /* *
  *
@@ -8060,7 +8073,7 @@ const { sma: SlowStochasticIndicator_SMAIndicator, stochastic: SlowStochasticInd
  *
  * @augments Highcharts.Series
  */
-class SlowStochasticIndicator extends SlowStochasticIndicator_StochasticIndicator {
+class SlowStochasticIndicator extends Stochastic_StochasticIndicator {
     /* *
      *
      *  Functions
@@ -8079,7 +8092,7 @@ class SlowStochasticIndicator extends SlowStochasticIndicator_StochasticIndicato
         slowValues.xData = fastValues.xData.slice(periods[1] - 1);
         const fastYData = fastValues.yData.slice(periods[1] - 1);
         // Get SMA(%D)
-        const smoothedValues = SlowStochasticIndicator_SMAIndicator.prototype.getValues.call(this, {
+        const smoothedValues = SMA_SMAIndicator.prototype.getValues.call(this, {
             xData: slowValues.xData,
             yData: fastYData
         }, {
@@ -8126,7 +8139,7 @@ class SlowStochasticIndicator extends SlowStochasticIndicator_StochasticIndicato
  * @optionparent plotOptions.slowstochastic
  * @internal
  */
-SlowStochasticIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(SlowStochasticIndicator_StochasticIndicator.defaultOptions, {
+SlowStochasticIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(Stochastic_StochasticIndicator.defaultOptions, {
     params: {
         /**
          * Periods for Slow Stochastic oscillator: [%K, %D, SMA(%D)].
@@ -8177,7 +8190,8 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  * */
 
 
-const { atr: SupertrendIndicator_ATRIndicator, sma: SupertrendIndicator_SMAIndicator } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
+
+
 
 /* *
  *
@@ -8206,7 +8220,7 @@ function createPointObj(mainSeries, index) {
  *
  * @augments Highcharts.Series
  */
-class SupertrendIndicator extends SupertrendIndicator_SMAIndicator {
+class SupertrendIndicator extends SMA_SMAIndicator {
     /* *
      *
      *  Functions
@@ -8415,7 +8429,7 @@ class SupertrendIndicator extends SupertrendIndicator_SMAIndicator {
             indicator.points = values;
             indicator.options = (0,external_highcharts_src_js_default_namespaceObject.merge)(supertrendLineOptions[lineName].styles, gappedExtend);
             indicator.graph = indicator['graph' + lineName + 'Line'];
-            SupertrendIndicator_SMAIndicator.prototype.drawGraph.call(indicator);
+            SMA_SMAIndicator.prototype.drawGraph.call(indicator);
             // Now save line
             indicator['graph' + lineName + 'Line'] = indicator.graph;
         });
@@ -8467,7 +8481,7 @@ class SupertrendIndicator extends SupertrendIndicator_SMAIndicator {
             yVal[0].length !== 4 || period < 0) {
             return;
         }
-        atrData = SupertrendIndicator_ATRIndicator.prototype.getValues.call(this, series, {
+        atrData = ATR_ATRIndicator.prototype.getValues.call(this, series, {
             period: period
         }).yData;
         for (i = 0; i < atrData.length; i++) {
@@ -8535,11 +8549,12 @@ class SupertrendIndicator extends SupertrendIndicator_SMAIndicator {
  *               pointPlacement, pointRange, pointStart, showInNavigator,
  *               stacking, threshold
  * @requires     indicators/indicators
+ * @requires     indicators/atr
  * @requires     indicators/supertrend
  * @optionparent plotOptions.supertrend
  * @internal
  */
-SupertrendIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(SupertrendIndicator_SMAIndicator.defaultOptions, {
+SupertrendIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(SMA_SMAIndicator.defaultOptions, {
     /**
      * Parameters used in calculation of Supertrend indicator series points.
      *
@@ -8639,6 +8654,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *            pointIntervalUnit, pointPlacement, pointRange, pointStart,
  *            showInNavigator, stacking, threshold
  * @requires  indicators/indicators
+ * @requires  indicators/atr
  * @requires  indicators/supertrend
  * @apioption series.supertrend
  */
@@ -8660,7 +8676,12 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *
  * */
 
-const { sma: { prototype: { pointClass: VBPPoint_SMAPoint } } } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
+/* *
+ *
+ *  Constants
+ *
+ * */
+const VBPPoint_SMAPoint = SMA_SMAIndicator.prototype.pointClass;
 /* *
  *
  *  Class
@@ -8702,9 +8723,10 @@ class VBPPoint extends VBPPoint_SMAPoint {
 
 
 
+
 const { noop: VBPIndicator_noop } = (external_highcharts_src_js_default_default());
 
-const { column: { prototype: VBPIndicator_columnProto }, sma: VBPIndicator_SMAIndicator } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
+
 
 
 /* *
@@ -8754,7 +8776,7 @@ function arrayExtremesOHLC(data) {
  *
  * @augments Highcharts.Series
  */
-class VBPIndicator extends VBPIndicator_SMAIndicator {
+class VBPIndicator extends SMA_SMAIndicator {
     /* *
      *
      *  Functions
@@ -8838,10 +8860,10 @@ class VBPIndicator extends VBPIndicator_SMAIndicator {
         const indicator = this;
         if (indicator.options.volumeDivision.enabled) {
             indicator.posNegVolume(true, true);
-            VBPIndicator_columnProto.drawPoints.apply(indicator, arguments);
+            external_highcharts_src_js_default_Series_types_column_default().prototype.drawPoints.apply(indicator, arguments);
             indicator.posNegVolume(false, false);
         }
-        VBPIndicator_columnProto.drawPoints.apply(indicator, arguments);
+        external_highcharts_src_js_default_Series_types_column_default().prototype.drawPoints.apply(indicator, arguments);
     }
     // Function responsible for dividing volume into positive and negative
     /** @internal */
@@ -8890,7 +8912,7 @@ class VBPIndicator extends VBPIndicator_SMAIndicator {
     translate() {
         const indicator = this, options = indicator.options, chart = indicator.chart, yAxis = indicator.yAxis, yAxisMin = yAxis.min, zoneLinesOptions = indicator.options.zoneLines, priceZones = (indicator.priceZones);
         let yBarOffset = 0, volumeDataArray, maxVolume, primalBarWidth, barHeight, barHeightP, oldBarHeight, barWidth, pointPadding, chartPlotTop, barX, barY;
-        VBPIndicator_columnProto.translate.apply(indicator);
+        external_highcharts_src_js_default_Series_types_column_default().prototype.translate.apply(indicator);
         const indicatorPoints = indicator.points;
         // Do translate operation when points exist
         if (indicatorPoints.length) {
@@ -9170,7 +9192,7 @@ class VBPIndicator extends VBPIndicator_SMAIndicator {
  * @optionparent plotOptions.vbp
  * @internal
  */
-VBPIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(VBPIndicator_SMAIndicator.defaultOptions, {
+VBPIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(SMA_SMAIndicator.defaultOptions, {
     /**
      * @excluding index, period
      */
@@ -9267,8 +9289,8 @@ VBPIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObj
     pointClass: VBP_VBPPoint,
     markerAttribs: VBPIndicator_noop,
     drawGraph: VBPIndicator_noop,
-    getColumnMetrics: VBPIndicator_columnProto.getColumnMetrics,
-    crispCol: VBPIndicator_columnProto.crispCol
+    getColumnMetrics: (external_highcharts_src_js_default_Series_types_column_default()).prototype.getColumnMetrics,
+    crispCol: (external_highcharts_src_js_default_Series_types_column_default()).prototype.crispCol
 });
 external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('vbp', VBPIndicator);
 /* *
@@ -9312,7 +9334,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  * */
 
 
-const { sma: VWAPIndicator_SMAIndicator } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
+
 
 
 /* *
@@ -9328,7 +9350,7 @@ const { sma: VWAPIndicator_SMAIndicator } = (external_highcharts_src_js_default_
  *
  * @augments Highcharts.Series
  */
-class VWAPIndicator extends VWAPIndicator_SMAIndicator {
+class VWAPIndicator extends SMA_SMAIndicator {
     /* *
      *
      *  Functions
@@ -9438,7 +9460,7 @@ class VWAPIndicator extends VWAPIndicator_SMAIndicator {
  * @optionparent plotOptions.vwap
  * @internal
  */
-VWAPIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(VWAPIndicator_SMAIndicator.defaultOptions, {
+VWAPIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(SMA_SMAIndicator.defaultOptions, {
     /**
      * @excluding index
      */
@@ -9491,7 +9513,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
 
 
 
-const { sma: WilliamsRIndicator_SMAIndicator } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
+
 
 /* *
  *
@@ -9506,7 +9528,7 @@ const { sma: WilliamsRIndicator_SMAIndicator } = (external_highcharts_src_js_def
  *
  * @augments Highcharts.Series
  */
-class WilliamsRIndicator extends WilliamsRIndicator_SMAIndicator {
+class WilliamsRIndicator extends SMA_SMAIndicator {
     /* *
      *
      *  Functions
@@ -9572,7 +9594,7 @@ class WilliamsRIndicator extends WilliamsRIndicator_SMAIndicator {
  * @optionparent plotOptions.williamsr
  * @internal
  */
-WilliamsRIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(WilliamsRIndicator_SMAIndicator.defaultOptions, {
+WilliamsRIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(SMA_SMAIndicator.defaultOptions, {
     /**
      * Parameters used in calculation of Williams %R series points.
      * @excluding index
@@ -9630,7 +9652,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  * */
 
 
-const { sma: WMAIndicator_SMAIndicator } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
+
 
 /* *
  *
@@ -9673,7 +9695,7 @@ function WMAIndicator_populateAverage(points, xVal, yVal, i) {
  *
  * @augments Highcharts.Series
  */
-class WMAIndicator extends WMAIndicator_SMAIndicator {
+class WMAIndicator extends SMA_SMAIndicator {
     /* *
      *
      *  Functions
@@ -9737,7 +9759,7 @@ class WMAIndicator extends WMAIndicator_SMAIndicator {
  * @optionparent plotOptions.wma
  * @internal
  */
-WMAIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(WMAIndicator_SMAIndicator.defaultOptions, {
+WMAIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(SMA_SMAIndicator.defaultOptions, {
     params: {
         index: 3,
         period: 9
@@ -9782,7 +9804,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  * */
 
 
-const { sma: ZigzagIndicator_SMAIndicator } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
+
 
 /* *
  *
@@ -9797,7 +9819,7 @@ const { sma: ZigzagIndicator_SMAIndicator } = (external_highcharts_src_js_defaul
  *
  * @augments Highcharts.Series
  */
-class ZigzagIndicator extends ZigzagIndicator_SMAIndicator {
+class ZigzagIndicator extends SMA_SMAIndicator {
     /* *
      *
      *  Functions
@@ -9919,7 +9941,7 @@ class ZigzagIndicator extends ZigzagIndicator_SMAIndicator {
  * @optionparent plotOptions.zigzag
  * @internal
  */
-ZigzagIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(ZigzagIndicator_SMAIndicator.defaultOptions, {
+ZigzagIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(SMA_SMAIndicator.defaultOptions, {
     /**
      * @excluding index, period
      */
@@ -9996,7 +10018,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  * */
 
 
-const { sma: LinearRegressionIndicator_SMAIndicator } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
+
 
 /* *
  *
@@ -10011,7 +10033,7 @@ const { sma: LinearRegressionIndicator_SMAIndicator } = (external_highcharts_src
  *
  * @augments Highcharts.Series
  */
-class LinearRegressionIndicator extends LinearRegressionIndicator_SMAIndicator {
+class LinearRegressionIndicator extends SMA_SMAIndicator {
     /* *
      *
      *  Functions
@@ -10172,7 +10194,7 @@ class LinearRegressionIndicator extends LinearRegressionIndicator_SMAIndicator {
  * @optionparent plotOptions.linearregression
  * @internal
  */
-LinearRegressionIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(LinearRegressionIndicator_SMAIndicator.defaultOptions, {
+LinearRegressionIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(SMA_SMAIndicator.defaultOptions, {
     params: {
         /**
          * Unit (in milliseconds) for the x axis distances used to
@@ -10239,7 +10261,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *  Default Export
  *
  * */
-/* harmony default export */ const LinearRegression_LinearRegressionIndicator = ((/* unused pure expression or super */ null && (LinearRegressionIndicator)));
+/* harmony default export */ const LinearRegression_LinearRegressionIndicator = (LinearRegressionIndicator);
 /* *
  *
  *  API Options
@@ -10273,7 +10295,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  * */
 
 
-const { linearregression: LinearRegressionSlopesIndicator_LinearRegressionIndicator } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
+
 
 /* *
  *
@@ -10288,7 +10310,7 @@ const { linearregression: LinearRegressionSlopesIndicator_LinearRegressionIndica
  *
  * @augments Highcharts.Series
  */
-class LinearRegressionSlopesIndicator extends LinearRegressionSlopesIndicator_LinearRegressionIndicator {
+class LinearRegressionSlopesIndicator extends LinearRegression_LinearRegressionIndicator {
     /* *
      *
      *  Functions
@@ -10319,7 +10341,7 @@ class LinearRegressionSlopesIndicator extends LinearRegressionSlopesIndicator_Li
  * @optionparent plotOptions.linearregressionslope
  * @internal
  */
-LinearRegressionSlopesIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(LinearRegressionSlopesIndicator_LinearRegressionIndicator.defaultOptions);
+LinearRegressionSlopesIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(LinearRegression_LinearRegressionIndicator.defaultOptions);
 (0,external_highcharts_src_js_default_namespaceObject.extend)(LinearRegressionSlopesIndicator.prototype, {
     nameBase: 'Linear Regression Slope Indicator'
 });
@@ -10365,7 +10387,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  * */
 
 
-const { linearregression: LinearRegressionInterceptIndicator_LinearRegressionIndicator } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
+
 
 /* *
  *
@@ -10380,7 +10402,7 @@ const { linearregression: LinearRegressionInterceptIndicator_LinearRegressionInd
  *
  * @augments Highcharts.Series
  */
-class LinearRegressionInterceptIndicator extends LinearRegressionInterceptIndicator_LinearRegressionIndicator {
+class LinearRegressionInterceptIndicator extends LinearRegression_LinearRegressionIndicator {
     /* *
      *
      *  Functions
@@ -10411,7 +10433,7 @@ class LinearRegressionInterceptIndicator extends LinearRegressionInterceptIndica
  * @optionparent plotOptions.linearregressionintercept
  * @internal
  */
-LinearRegressionInterceptIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(LinearRegressionInterceptIndicator_LinearRegressionIndicator.defaultOptions);
+LinearRegressionInterceptIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(LinearRegression_LinearRegressionIndicator.defaultOptions);
 (0,external_highcharts_src_js_default_namespaceObject.extend)(LinearRegressionInterceptIndicator.prototype, {
     nameBase: 'Linear Regression Intercept Indicator'
 });
@@ -10457,7 +10479,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  * */
 
 
-const { linearregression: LinearRegressionAngleIndicator_LinearRegressionIndicator } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
+
 
 /* *
  *
@@ -10472,7 +10494,7 @@ const { linearregression: LinearRegressionAngleIndicator_LinearRegressionIndicat
  *
  * @augments Highcharts.Series
  */
-class LinearRegressionAngleIndicator extends LinearRegressionAngleIndicator_LinearRegressionIndicator {
+class LinearRegressionAngleIndicator extends LinearRegression_LinearRegressionIndicator {
     /* *
      *
      *  Functions
@@ -10513,7 +10535,7 @@ class LinearRegressionAngleIndicator extends LinearRegressionAngleIndicator_Line
  * @optionparent plotOptions.linearregressionangle
  * @internal
  */
-LinearRegressionAngleIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(LinearRegressionAngleIndicator_LinearRegressionIndicator.defaultOptions, {
+LinearRegressionAngleIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(LinearRegression_LinearRegressionIndicator.defaultOptions, {
     tooltip: {
         pointFormat: '<span style="color:{point.color}">\u25CF</span>' +
             '{series.name}: <b>{point.y}°</b><br/>'
@@ -10557,7 +10579,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
 
 
 
-const { sma: ABandsIndicator_SMAIndicator } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
+
 
 /* *
  *
@@ -10590,7 +10612,7 @@ function getPointLB(low, base) {
  *
  * @augments Highcharts.Series
  */
-class ABandsIndicator extends ABandsIndicator_SMAIndicator {
+class ABandsIndicator extends SMA_SMAIndicator {
     /* *
      *
      *  Functions
@@ -10685,7 +10707,7 @@ class ABandsIndicator extends ABandsIndicator_SMAIndicator {
  * @optionparent plotOptions.abands
  * @internal
  */
-ABandsIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(ABandsIndicator_SMAIndicator.defaultOptions, {
+ABandsIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(SMA_SMAIndicator.defaultOptions, {
     /**
      * Option for fill color between lines in Acceleration bands Indicator.
      *
@@ -10777,7 +10799,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  * */
 
 
-const { sma: TrendLineIndicator_SMAIndicator } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
+
 
 /* *
  *
@@ -10792,7 +10814,7 @@ const { sma: TrendLineIndicator_SMAIndicator } = (external_highcharts_src_js_def
  *
  * @augments Highcharts.Series
  */
-class TrendLineIndicator extends TrendLineIndicator_SMAIndicator {
+class TrendLineIndicator extends SMA_SMAIndicator {
     constructor() {
         /* *
          *
@@ -10863,7 +10885,7 @@ class TrendLineIndicator extends TrendLineIndicator_SMAIndicator {
  * @optionparent plotOptions.trendline
  * @internal
  */
-TrendLineIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(TrendLineIndicator_SMAIndicator.defaultOptions, {
+TrendLineIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(SMA_SMAIndicator.defaultOptions, {
     /**
      * @excluding period
      */
@@ -10923,7 +10945,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  * */
 
 
-const { sma: DisparityIndexIndicator_SMAIndicator } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
+
 
 /* *
  *
@@ -10938,7 +10960,7 @@ const { sma: DisparityIndexIndicator_SMAIndicator } = (external_highcharts_src_j
  *
  * @augments Highcharts.Series
  */
-class DisparityIndexIndicator extends DisparityIndexIndicator_SMAIndicator {
+class DisparityIndexIndicator extends SMA_SMAIndicator {
     /* *
      *
      *  Functions
@@ -10949,7 +10971,7 @@ class DisparityIndexIndicator extends DisparityIndexIndicator_SMAIndicator {
         const args = arguments, ctx = this, // Disparity Index indicator
         params = args[1].params, // Options.params
         averageType = params && params.average ? params.average : void 0;
-        ctx.averageIndicator = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes[averageType] || DisparityIndexIndicator_SMAIndicator;
+        ctx.averageIndicator = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes[averageType] || SMA_SMAIndicator;
         ctx.averageIndicator.prototype.init.apply(ctx, args);
     }
     /** @internal */
@@ -11010,7 +11032,7 @@ class DisparityIndexIndicator extends DisparityIndexIndicator_SMAIndicator {
  * @optionparent plotOptions.disparityindex
  * @internal
  */
-DisparityIndexIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(DisparityIndexIndicator_SMAIndicator.defaultOptions, {
+DisparityIndexIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(SMA_SMAIndicator.defaultOptions, {
     params: {
         /**
          * The average used to calculate the Disparity Index indicator.
@@ -11064,7 +11086,10 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  */
 ''; // To include the above in the js output
 
+;// external "../modules/stock.src.js"
+
 ;// ./code/es-modules/masters/indicators/indicators-all.src.js
+
 
 
 

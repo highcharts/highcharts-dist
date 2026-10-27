@@ -15,8 +15,7 @@ import H from '../../Core/Globals.js';
 const { composed, noop } = H;
 import R from '../../Core/Renderer/RendererUtilities.js';
 const { distribute } = R;
-import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-const { series: Series } = SeriesRegistry;
+import Series from '../../Core/Series/Series.js';
 import { arrayMax, clamp, defined, isNumber, pushUnique, relativeLength } from '../../Shared/Utilities.js';
 /* *
  *

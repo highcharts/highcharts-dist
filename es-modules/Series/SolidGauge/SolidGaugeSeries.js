@@ -13,8 +13,9 @@
  * */
 'use strict';
 import { borderRadiusObject } from '../../Extensions/BorderRadius.js';
+import GaugeSeries from '../Gauge/GaugeSeries.js';
+import PieSeries from '../Pie/PieSeries.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-const { gauge: GaugeSeries, pie: PieSeries } = SeriesRegistry.seriesTypes;
 import SolidGaugeAxis from '../../Core/Axis/SolidGaugeAxis.js';
 import SolidGaugeSeriesDefaults from './SolidGaugeSeriesDefaults.js';
 import { clamp, extend, isNumber, merge, relativeLength } from '../../Shared/Utilities.js';

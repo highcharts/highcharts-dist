@@ -1,8 +1,9 @@
 /**
- * Highstock JS v13.1.1-modified (2026-10-26)
+ * Highstock JS v13.1.1-modified (2026-10-27)
  * @module highcharts/indicators/cci
  * @requires highcharts
  * @requires highcharts/modules/stock
+ * @requires highcharts/indicators/indicators
  *
  * Indicator series type for Highcharts Stock
  *
@@ -11,4 +12,4 @@
  *
  * A commercial license may be required depending on use,
  * see www.highcharts.com/license
- */import*as e from"../highcharts.js";let t={};t.n=e=>{let r=e&&e.__esModule?()=>e.default:()=>e;return t.d(r,{a:r}),r},t.d=(e,r)=>{for(var a in r)t.o(r,a)&&!t.o(e,a)&&Object.defineProperty(e,a,{enumerable:!0,get:r[a]})},t.o=(e,t)=>Object.prototype.hasOwnProperty.call(e,t);let r=e.default;var a=t.n(r);let s=e.default.SeriesRegistry;var l=t.n(s);let{sma:n}=l().seriesTypes;class u extends n{getValues(e,t){let a=t.period,s=e.xData,l=e.yData,n=l?l.length:0,u=[],i=[],o=[],p=[],c,d,f=[],h,g=1,y,m,v,x;if(!(s.length<=a)&&(0,r.isArray)(l[0])&&4===l[0].length){for(;g<a;)d=l[g-1],u.push((d[1]+d[2]+d[3])/3),g++;for(x=a;x<=n;x++)m=((d=l[x-1])[1]+d[2]+d[3])/3,h=u.push(m),y=(f=u.slice(h-a)).reduce(function(e,t){return e+t},0)/a,v=function(e,t){let r=e.length,a=0,s;for(s=0;s<r;s++)a+=Math.abs(t-e[s]);return a}(f,y)/a,c=(m-y)/(.015*v),i.push([s[x-1],c]),o.push(s[x-1]),p.push(c);return{values:i,xData:o,yData:p}}}}u.defaultOptions=(0,r.merge)(n.defaultOptions,{params:{index:void 0}}),l().registerSeriesType("cci",u);let i=a();export{i as default};
+ */import*as e from"../highcharts.js";import"../modules/stock.js";import*as t from"./indicators.js";let r={};r.n=e=>{let t=e&&e.__esModule?()=>e.default:()=>e;return r.d(t,{a:t}),t},r.d=(e,t)=>{for(var s in t)r.o(t,s)&&!r.o(e,s)&&Object.defineProperty(e,s,{enumerable:!0,get:t[s]})},r.o=(e,t)=>Object.prototype.hasOwnProperty.call(e,t);let s=e.default;var a=r.n(s);let l=t.default.Series.types.sma;var o=r.n(l);let i=e.default.SeriesRegistry;var n=r.n(i);class u extends o(){getValues(e,t){let r=t.period,a=e.xData,l=e.yData,o=l?l.length:0,i=[],n=[],u=[],c=[],p,d,f=[],h,g=1,m,y,v,j;if(!(a.length<=r)&&(0,s.isArray)(l[0])&&4===l[0].length){for(;g<r;)d=l[g-1],i.push((d[1]+d[2]+d[3])/3),g++;for(j=r;j<=o;j++)y=((d=l[j-1])[1]+d[2]+d[3])/3,h=i.push(y),m=(f=i.slice(h-r)).reduce(function(e,t){return e+t},0)/r,v=function(e,t){let r=e.length,s=0,a;for(a=0;a<r;a++)s+=Math.abs(t-e[a]);return s}(f,m)/r,p=(y-m)/(.015*v),n.push([a[j-1],p]),u.push(a[j-1]),c.push(p);return{values:n,xData:u,yData:c}}}}u.defaultOptions=(0,s.merge)(o().defaultOptions,{params:{index:void 0}}),n().registerSeriesType("cci",u);let c=a();export{c as default};

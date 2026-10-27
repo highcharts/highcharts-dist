@@ -11,8 +11,13 @@
  *
  * */
 'use strict';
-import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-const { xrange: { prototype: { pointClass: XRangePoint } } } = SeriesRegistry.seriesTypes;
+import XRangeSeries from '../XRange/XRangeSeries.js';
+/* *
+ *
+ *  Constants
+ *
+ * */
+const XRangePoint = XRangeSeries.prototype.pointClass;
 /* *
  *
  *  Class

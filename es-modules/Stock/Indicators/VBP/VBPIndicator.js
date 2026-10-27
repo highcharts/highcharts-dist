@@ -14,10 +14,11 @@
 'use strict';
 import VBPPoint from './VBPPoint.js';
 import { animObject } from '../../../Core/Animation/AnimationUtilities.js';
+import ColumnSeries from '../../../Series/Column/ColumnSeries.js';
 import H from '../../../Core/Globals.js';
 const { noop } = H;
+import SMAIndicator from '../SMA/SMAIndicator.js';
 import SeriesRegistry from '../../../Core/Series/SeriesRegistry.js';
-const { column: { prototype: columnProto }, sma: SMAIndicator } = SeriesRegistry.seriesTypes;
 import { addEvent, arrayMax, arrayMin, correctFloat, defined, extend, isArray, merge } from '../../../Shared/Utilities.js';
 import { error } from '../../../Core/Utilities.js';
 /* *
@@ -151,10 +152,10 @@ class VBPIndicator extends SMAIndicator {
         const indicator = this;
         if (indicator.options.volumeDivision.enabled) {
             indicator.posNegVolume(true, true);
-            columnProto.drawPoints.apply(indicator, arguments);
+            ColumnSeries.prototype.drawPoints.apply(indicator, arguments);
             indicator.posNegVolume(false, false);
         }
-        columnProto.drawPoints.apply(indicator, arguments);
+        ColumnSeries.prototype.drawPoints.apply(indicator, arguments);
     }
     // Function responsible for dividing volume into positive and negative
     /** @internal */
@@ -203,7 +204,7 @@ class VBPIndicator extends SMAIndicator {
     translate() {
         const indicator = this, options = indicator.options, chart = indicator.chart, yAxis = indicator.yAxis, yAxisMin = yAxis.min, zoneLinesOptions = indicator.options.zoneLines, priceZones = (indicator.priceZones);
         let yBarOffset = 0, volumeDataArray, maxVolume, primalBarWidth, barHeight, barHeightP, oldBarHeight, barWidth, pointPadding, chartPlotTop, barX, barY;
-        columnProto.translate.apply(indicator);
+        ColumnSeries.prototype.translate.apply(indicator);
         const indicatorPoints = indicator.points;
         // Do translate operation when points exist
         if (indicatorPoints.length) {
@@ -580,8 +581,8 @@ extend(VBPIndicator.prototype, {
     pointClass: VBPPoint,
     markerAttribs: noop,
     drawGraph: noop,
-    getColumnMetrics: columnProto.getColumnMetrics,
-    crispCol: columnProto.crispCol
+    getColumnMetrics: ColumnSeries.prototype.getColumnMetrics,
+    crispCol: ColumnSeries.prototype.crispCol
 });
 SeriesRegistry.registerSeriesType('vbp', VBPIndicator);
 /* *

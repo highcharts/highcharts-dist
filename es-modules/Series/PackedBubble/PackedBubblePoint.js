@@ -12,8 +12,13 @@
 'use strict';
 import Chart from '../../Core/Chart/Chart.js';
 import Point from '../../Core/Series/Point.js';
-import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-const { seriesTypes: { bubble: { prototype: { pointClass: BubblePoint } } } } = SeriesRegistry;
+import BubbleSeries from '../Bubble/BubbleSeries.js';
+/* *
+ *
+ *  Constants
+ *
+ * */
+const BubblePoint = BubbleSeries.prototype.pointClass;
 /* *
  *
  *  Class

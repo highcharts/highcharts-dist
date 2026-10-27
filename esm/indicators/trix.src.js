@@ -1,9 +1,11 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.1.1-modified (2026-10-26)
+ * @license Highstock JS v13.1.1-modified (2026-10-27)
  * @module highcharts/indicators/trix
  * @requires highcharts
  * @requires highcharts/modules/stock
+ * @requires highcharts/indicators/indicators
+ * @requires highcharts/indicators/tema
  *
  * Indicator series type for Highcharts Stock
  *
@@ -14,6 +16,10 @@
  * see www.highcharts.com/license
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
+import "../modules/stock.src.js";
+import "./indicators.src.js";
+import "./tema.src.js";
+import * as __WEBPACK_EXTERNAL_MODULE__tema_src_js_f2c134bb__ from "./tema.src.js";
 /******/ // The require scope
 /******/ const __webpack_require__ = {};
 /******/ 
@@ -46,6 +52,15 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 ;// external ["../highcharts.src.js","default"]
 const external_highcharts_src_js_default_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"];
 var external_highcharts_src_js_default_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_namespaceObject);
+;// external "../modules/stock.src.js"
+
+;// external "./indicators.src.js"
+
+;// external "./tema.src.js"
+
+;// external ["./tema.src.js","default","Series","types","tema"]
+const external_tema_src_js_default_Series_types_tema_namespaceObject = __WEBPACK_EXTERNAL_MODULE__tema_src_js_f2c134bb__["default"].Series.types.tema;
+var external_tema_src_js_default_Series_types_tema_default = /*#__PURE__*/__webpack_require__.n(external_tema_src_js_default_Series_types_tema_namespaceObject);
 ;// external ["../highcharts.src.js","default","SeriesRegistry"]
 const external_highcharts_src_js_default_SeriesRegistry_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].SeriesRegistry;
 var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_SeriesRegistry_namespaceObject);
@@ -60,7 +75,7 @@ var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__w
  * */
 
 
-const { tema: TEMAIndicator } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
+
 
 /* *
  *
@@ -75,7 +90,7 @@ const { tema: TEMAIndicator } = (external_highcharts_src_js_default_SeriesRegist
  *
  * @augments Highcharts.Series
  */
-class TRIXIndicator extends TEMAIndicator {
+class TRIXIndicator extends (external_tema_src_js_default_Series_types_tema_default()) {
     /* *
      *
      *  Functions
@@ -119,7 +134,7 @@ class TRIXIndicator extends TEMAIndicator {
  * @optionparent plotOptions.trix
  * @internal
  */
-TRIXIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(TEMAIndicator.defaultOptions);
+TRIXIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)((external_tema_src_js_default_Series_types_tema_default()).defaultOptions);
 external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('trix', TRIXIndicator);
 /* *
  *
@@ -150,6 +165,9 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
 ''; // To include the above in the js output
 
 ;// ./code/es-modules/masters/indicators/trix.src.js
+
+
+
 
 
 

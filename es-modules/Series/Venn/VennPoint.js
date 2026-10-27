@@ -16,9 +16,14 @@
  *
  * */
 'use strict';
-import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
+import ScatterSeries from '../Scatter/ScatterSeries.js';
 import { isNumber } from '../../Shared/Utilities.js';
-const { scatter: { prototype: { pointClass: ScatterPoint } } } = SeriesRegistry.seriesTypes;
+/* *
+ *
+ *  Constants
+ *
+ * */
+const ScatterPoint = ScatterSeries.prototype.pointClass;
 /* *
  *
  *  Class

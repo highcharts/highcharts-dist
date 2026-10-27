@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.1.1-modified (2026-10-26)
+ * @license Highstock JS v13.1.1-modified (2026-10-27)
  * @module highcharts/indicators/indicators
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -14,6 +14,7 @@
  * see www.highcharts.com/license
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
+import "../modules/stock.src.js";
 /******/ // The require scope
 /******/ const __webpack_require__ = {};
 /******/ 
@@ -586,6 +587,9 @@ class DataTableCore {
 */
 (''); // Keeps doclets above in JS file
 
+;// external ["../highcharts.src.js","default","Series","types","line"]
+const external_highcharts_src_js_default_Series_types_line_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].Series.types.line;
+var external_highcharts_src_js_default_Series_types_line_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_Series_types_line_namespaceObject);
 ;// external ["../highcharts.src.js","default","SeriesRegistry"]
 const external_highcharts_src_js_default_SeriesRegistry_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].SeriesRegistry;
 var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_SeriesRegistry_namespaceObject);
@@ -602,7 +606,7 @@ var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__w
 
 
 
-const { line: LineSeries } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
+
 
 
 /**
@@ -632,7 +636,7 @@ const tableToMultiYData = (series, processed) => {
  * The SMA series type.
  *
  */
-class SMAIndicator extends LineSeries {
+class SMAIndicator extends (external_highcharts_src_js_default_Series_types_line_default()) {
     /* *
      *
      *  Functions
@@ -885,7 +889,7 @@ class SMAIndicator extends LineSeries {
  * @optionparent plotOptions.sma
  * @internal
  */
-SMAIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(LineSeries.defaultOptions, {
+SMAIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)((external_highcharts_src_js_default_Series_types_line_default()).defaultOptions, {
     /**
      * The name of the series as shown in the legend, tooltip etc. If not
      * set, it will be based on a technical indicator type and default
@@ -951,7 +955,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *  Default Export
  *
  * */
-/* harmony default export */ const SMA_SMAIndicator = ((/* unused pure expression or super */ null && (SMAIndicator)));
+/* harmony default export */ const SMA_SMAIndicator = (SMAIndicator);
 /* *
  *
  *  API Options
@@ -981,7 +985,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  * */
 
 
-const { sma: EMAIndicator_SMAIndicator } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
+
 
 /* *
  *
@@ -996,7 +1000,7 @@ const { sma: EMAIndicator_SMAIndicator } = (external_highcharts_src_js_default_S
  *
  * @augments Highcharts.Series
  */
-class EMAIndicator extends EMAIndicator_SMAIndicator {
+class EMAIndicator extends SMA_SMAIndicator {
     /* *
      *
      *  Functions
@@ -1071,7 +1075,7 @@ class EMAIndicator extends EMAIndicator_SMAIndicator {
  * @optionparent plotOptions.ema
  * @internal
  */
-EMAIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(EMAIndicator_SMAIndicator.defaultOptions, {
+EMAIndicator.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(SMA_SMAIndicator.defaultOptions, {
     params: {
         /**
          * The point index which indicator calculations will base. For
@@ -1125,7 +1129,6 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  * */
 
 
-const { sma: { prototype: smaProto } } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
 
 
 /* *
@@ -1285,7 +1288,7 @@ var MultipleLinesComposition;
             indicator.options = (0,external_highcharts_src_js_default_namespaceObject.merge)(mainLinePoints, gappedExtend);
             indicator.graph = indicator.area;
             indicator.fillGraph = true;
-            smaProto.drawGraph.call(indicator);
+            SMA_SMAIndicator.prototype.drawGraph.call(indicator);
             indicator.area = indicator.graph;
             // Clean temporary properties:
             delete indicator.nextPoints;
@@ -1305,7 +1308,7 @@ var MultipleLinesComposition;
                         ' are consistent with your DOCS line names."');
                 }
                 indicator.graph = indicator['graph' + lineName];
-                smaProto.drawGraph.call(indicator);
+                SMA_SMAIndicator.prototype.drawGraph.call(indicator);
                 // Now save lines:
                 indicator['graph' + lineName] = indicator.graph;
             }
@@ -1319,7 +1322,7 @@ var MultipleLinesComposition;
         indicator.points = mainLinePoints;
         indicator.options = mainLineOptions;
         indicator.graph = mainLinePath;
-        smaProto.drawGraph.call(indicator);
+        SMA_SMAIndicator.prototype.drawGraph.call(indicator);
     }
     /**
      * Create the path based on points provided as argument.
@@ -1333,10 +1336,10 @@ var MultipleLinesComposition;
         points = points || this.points;
         // Render Span
         if (this.fillGraph && this.nextPoints) {
-            areaPath = smaProto.getGraphPath.call(this, this.nextPoints);
+            areaPath = SMA_SMAIndicator.prototype.getGraphPath.call(this, this.nextPoints);
             if (areaPath && areaPath.length) {
                 areaPath[0][0] = 'L';
-                path = smaProto.getGraphPath.call(this, points);
+                path = SMA_SMAIndicator.prototype.getGraphPath.call(this, points);
                 higherAreaPath = areaPath.slice(0, path.length);
                 // Reverse points, so that the areaFill will start from the end:
                 for (let i = higherAreaPath.length - 1; i >= 0; i--) {
@@ -1345,7 +1348,7 @@ var MultipleLinesComposition;
             }
         }
         else {
-            path = smaProto.getGraphPath.apply(this, arguments);
+            path = SMA_SMAIndicator.prototype.getGraphPath.apply(this, arguments);
         }
         return path;
     }
@@ -1372,7 +1375,7 @@ var MultipleLinesComposition;
         const pointArrayMap = this.pointArrayMap;
         let LinesNames = [], value;
         LinesNames = getTranslatedLinesNames(this);
-        smaProto.translate.apply(this, arguments);
+        SMA_SMAIndicator.prototype.translate.apply(this, arguments);
         this.points.forEach((point) => {
             pointArrayMap.forEach((propertyName, i) => {
                 value = point[propertyName];
@@ -1395,7 +1398,10 @@ var MultipleLinesComposition;
  * */
 /* harmony default export */ const Indicators_MultipleLinesComposition = (MultipleLinesComposition);
 
+;// external "../modules/stock.src.js"
+
 ;// ./code/es-modules/masters/indicators/indicators.src.js
+
 
 
 

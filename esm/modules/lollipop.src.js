@@ -1,8 +1,10 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-26)
+ * @license Highcharts JS v13.1.1-modified (2026-10-27)
  * @module highcharts/modules/lollipop
  * @requires highcharts
+ * @requires highcharts/highcharts-more
+ * @requires highcharts/modules/dumbbell
  *
  * (c) 2009-2026 Highsoft AS
  * Author: Sebastian Bochan, Rafał Sebestjański
@@ -11,6 +13,9 @@
  * see www.highcharts.com/license
  */
 import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../highcharts.src.js";
+import "../highcharts-more.src.js";
+import "./dumbbell.src.js";
+import * as __WEBPACK_EXTERNAL_MODULE__dumbbell_src_js_eff9cc39__ from "./dumbbell.src.js";
 /******/ // The require scope
 /******/ const __webpack_require__ = {};
 /******/ 
@@ -43,9 +48,19 @@ import * as __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__ from "../hig
 ;// external ["../highcharts.src.js","default"]
 const external_highcharts_src_js_default_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"];
 var external_highcharts_src_js_default_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_namespaceObject);
-;// external ["../highcharts.src.js","default","SeriesRegistry"]
-const external_highcharts_src_js_default_SeriesRegistry_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].SeriesRegistry;
-var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_SeriesRegistry_namespaceObject);
+;// external "../highcharts-more.src.js"
+
+;// external "./dumbbell.src.js"
+
+;// external ["./dumbbell.src.js","default","Series","types","dumbbell"]
+const external_dumbbell_src_js_default_Series_types_dumbbell_namespaceObject = __WEBPACK_EXTERNAL_MODULE__dumbbell_src_js_eff9cc39__["default"].Series.types.dumbbell;
+var external_dumbbell_src_js_default_Series_types_dumbbell_default = /*#__PURE__*/__webpack_require__.n(external_dumbbell_src_js_default_Series_types_dumbbell_namespaceObject);
+;// external ["../highcharts.src.js","default","Series","types","scatter"]
+const external_highcharts_src_js_default_Series_types_scatter_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].Series.types.scatter;
+var external_highcharts_src_js_default_Series_types_scatter_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_Series_types_scatter_namespaceObject);
+;// external ["../highcharts.src.js","default","Series"]
+const external_highcharts_src_js_default_Series_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].Series;
+var external_highcharts_src_js_default_Series_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_Series_namespaceObject);
 ;// ./code/es-modules/Series/Lollipop/LollipopPoint.js
 /* *
  *
@@ -61,7 +76,16 @@ var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__w
 
 
 
-const { series: { prototype: { pointClass: Point } }, seriesTypes: { scatter: { prototype: { pointClass: ScatterPoint } }, dumbbell: { prototype: { pointClass: DumbbellPoint } } } } = (external_highcharts_src_js_default_SeriesRegistry_default());
+
+
+/* *
+ *
+ *  Constants
+ *
+ * */
+const Point = (external_highcharts_src_js_default_Series_default()).prototype.pointClass;
+const ScatterPoint = (external_highcharts_src_js_default_Series_types_scatter_default()).prototype.pointClass;
+const DumbbellPoint = (external_dumbbell_src_js_default_Series_types_dumbbell_default()).prototype.pointClass;
 /* *
  *
  *  Class
@@ -81,9 +105,12 @@ class LollipopPoint extends Point {
  * */
 /* harmony default export */ const Lollipop_LollipopPoint = (LollipopPoint);
 
-;// external ["../highcharts.src.js","default","Series"]
-const external_highcharts_src_js_default_Series_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].Series;
-var external_highcharts_src_js_default_Series_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_Series_namespaceObject);
+;// external ["../highcharts.src.js","default","Series","types","column"]
+const external_highcharts_src_js_default_Series_types_column_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].Series.types.column;
+var external_highcharts_src_js_default_Series_types_column_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_Series_types_column_namespaceObject);
+;// external ["../highcharts.src.js","default","SeriesRegistry"]
+const external_highcharts_src_js_default_SeriesRegistry_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].SeriesRegistry;
+var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_SeriesRegistry_namespaceObject);
 ;// ./code/es-modules/Series/Lollipop/LollipopSeries.js
 /* *
  *
@@ -100,9 +127,8 @@ var external_highcharts_src_js_default_Series_default = /*#__PURE__*/__webpack_r
 
 
 
-const { seriesTypes: { column: { prototype: colProto }, dumbbell: { prototype: dumbbellProto }, 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-scatter: ScatterSeries } } = (external_highcharts_src_js_default_SeriesRegistry_default());
+
+
 
 /* *
  *
@@ -147,7 +173,7 @@ class LollipopSeries extends (external_highcharts_src_js_default_Series_default(
      */
     translate() {
         const series = this;
-        colProto.translate.apply(series, arguments);
+        external_highcharts_src_js_default_Series_types_column_default().prototype.translate.apply(series, arguments);
         // Correct x position
         for (const point of series.points) {
             const { pointWidth, shapeArgs } = point;
@@ -226,12 +252,12 @@ LollipopSeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceO
     pointRange: 1
 });
 (0,external_highcharts_src_js_default_namespaceObject.extend)(LollipopSeries.prototype, {
-    alignDataLabel: colProto.alignDataLabel,
-    crispCol: colProto.crispCol,
-    drawConnector: dumbbellProto.drawConnector,
-    drawDataLabels: colProto.drawDataLabels,
-    getColumnMetrics: colProto.getColumnMetrics,
-    getConnectorAttribs: dumbbellProto.getConnectorAttribs,
+    alignDataLabel: (external_highcharts_src_js_default_Series_types_column_default()).prototype.alignDataLabel,
+    crispCol: (external_highcharts_src_js_default_Series_types_column_default()).prototype.crispCol,
+    drawConnector: (external_dumbbell_src_js_default_Series_types_dumbbell_default()).prototype.drawConnector,
+    drawDataLabels: (external_highcharts_src_js_default_Series_types_column_default()).prototype.drawDataLabels,
+    getColumnMetrics: (external_highcharts_src_js_default_Series_types_column_default()).prototype.getColumnMetrics,
+    getConnectorAttribs: (external_dumbbell_src_js_default_Series_types_dumbbell_default()).prototype.getConnectorAttribs,
     pointClass: Lollipop_LollipopPoint
 });
 external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('lollipop', LollipopSeries);
@@ -326,6 +352,8 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
 (''); // Adds doclets above to transpiled file
 
 ;// ./code/es-modules/masters/modules/lollipop.src.js
+
+
 
 
 

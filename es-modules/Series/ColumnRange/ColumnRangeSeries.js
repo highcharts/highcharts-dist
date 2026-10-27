@@ -12,10 +12,11 @@
 'use strict';
 import ColumnRangePoint from './ColumnRangePoint.js';
 import ColumnRangeSeriesDefaults from './ColumnRangeSeriesDefaults.js';
+import AreaRangeSeries from '../AreaRange/AreaRangeSeries.js';
+import ColumnSeries from '../Column/ColumnSeries.js';
 import H from '../../Core/Globals.js';
 const { noop } = H;
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-const { seriesTypes: { arearange: AreaRangeSeries, column: ColumnSeries, column: { prototype: columnProto } } } = SeriesRegistry;
 import { addEvent, clamp, extend, isNumber, merge } from '../../Shared/Utilities.js';
 /* *
  *
@@ -46,37 +47,45 @@ class ColumnRangeSeries extends AreaRangeSeries {
     // @todo move to compositions
     /** @internal */
     translate() {
-        return columnProto.translate.apply(this);
+        return ColumnSeries.prototype.translate.apply(this);
     }
     // Public crispCol(): BBoxObject {
-    //     return columnProto.crispCol.apply(this, arguments as any);
+    //     return ColumnSeries.prototype.crispCol.apply(this, arguments as any);
     // }
     // public drawPoints(): void {
-    //     return columnProto.drawPoints.apply(this, arguments as any);
+    //     return ColumnSeries.prototype.drawPoints.apply(
+    //         this, arguments as any
+    //     );
     // }
     // public drawTracker(): void {
-    //     return columnProto.drawTracker.apply(this, arguments as any);
+    //     return ColumnSeries.prototype.drawTracker.apply(
+    //         this, arguments as any
+    //     );
     // }
     // public getColumnMetrics(): ColumnMetricsObject {
-    //     return columnProto.getColumnMetrics.apply(this, arguments as any);
+    //     return ColumnSeries.prototype.getColumnMetrics.apply(
+    //         this, arguments as any
+    //     );
     // }
     /** @internal */
     pointAttribs() {
-        return columnProto.pointAttribs.apply(this, arguments);
+        return ColumnSeries.prototype.pointAttribs.apply(this, arguments);
     }
     // Public adjustForMissingColumns(): number {
-    //     return columnProto.adjustForMissingColumns.apply(this, arguments);
+    //     return ColumnSeries.prototype.adjustForMissingColumns.apply(
+    //         this, arguments
+    //     );
     // }
     // public animate(): void {
-    //     return columnProto.animate.apply(this, arguments as any);
+    //     return ColumnSeries.prototype.animate.apply(this, arguments as any);
     // }
     /** @internal */
     translate3dPoints() {
-        return columnProto.translate3dPoints.apply(this, arguments);
+        return ColumnSeries.prototype.translate3dPoints.apply(this, arguments);
     }
     /** @internal */
     translate3dShapes() {
-        return columnProto.translate3dShapes.apply(this, arguments);
+        return ColumnSeries.prototype.translate3dShapes.apply(this, arguments);
     }
     /**
      * Translate data points from raw values x and y to plotX and plotY
@@ -158,14 +167,14 @@ extend(ColumnRangeSeries.prototype, {
     directTouch: true,
     pointClass: ColumnRangePoint,
     trackerGroups: ['group', 'dataLabelsGroup'],
-    adjustForMissingColumns: columnProto.adjustForMissingColumns,
-    animate: columnProto.animate,
-    crispCol: columnProto.crispCol,
+    adjustForMissingColumns: ColumnSeries.prototype.adjustForMissingColumns,
+    animate: ColumnSeries.prototype.animate,
+    crispCol: ColumnSeries.prototype.crispCol,
     drawGraph: noop,
-    drawPoints: columnProto.drawPoints,
+    drawPoints: ColumnSeries.prototype.drawPoints,
     getSymbol: noop,
-    drawTracker: columnProto.drawTracker,
-    getColumnMetrics: columnProto.getColumnMetrics
+    drawTracker: ColumnSeries.prototype.drawTracker,
+    getColumnMetrics: ColumnSeries.prototype.getColumnMetrics
 });
 SeriesRegistry.registerSeriesType('columnrange', ColumnRangeSeries);
 /* *

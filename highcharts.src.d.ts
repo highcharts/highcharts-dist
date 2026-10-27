@@ -6582,8 +6582,8 @@ export interface ChartOptions {
      * **Note:** Because native browser scrollbars are used, they may overlap
      * with fixed chart elements such as credits or the chart border. To avoid
      * this collision, it is recommended to manually add extra space to the
-     * corresponding side using `chart.spacingBottom` (for horizontal
-     * scrollbars) or `chart.spacingRight` (for vertical scrollbars).
+     * corresponding side using chart.spacingBottom (for horizontal scrollbars)
+     * or chart.spacingRight (for vertical scrollbars).
      */
     scrollablePlotArea?: ChartScrollablePlotAreaOptions;
     /**
@@ -7860,8 +7860,8 @@ export interface ChartResetZoomButtonThemeOptions {
  * **Note:** Because native browser scrollbars are used, they may overlap with
  * fixed chart elements such as credits or the chart border. To avoid this
  * collision, it is recommended to manually add extra space to the corresponding
- * side using `chart.spacingBottom` (for horizontal scrollbars) or
- * `chart.spacingRight` (for vertical scrollbars).
+ * side using chart.spacingBottom (for horizontal scrollbars) or
+ * chart.spacingRight (for vertical scrollbars).
  */
 export interface ChartScrollablePlotAreaOptions {
     /**
@@ -9137,6 +9137,7 @@ export interface CreditsOptions {
  */
 export interface CreditsPositionOptions {
     align?: string;
+    relativeTo?: string;
     verticalAlign?: string;
     x?: number;
     y?: number;
@@ -9702,9 +9703,7 @@ SeriesWordcloudDataDataLabelsAnimationOptions|SeriesXrangeDataDataLabelsAnimatio
      */
     position?: AlignValue;
     /**
-     * (Highcharts, Highstock, Gantt) Text rotation in degrees. Note that due to
-     * a more complex structure, backgrounds, borders and padding will be lost
-     * on a rotated data label.
+     * (Highcharts, Highstock, Gantt) Text rotation in degrees.
      */
     rotation?: number;
     /**
@@ -90428,9 +90427,7 @@ export interface NavigatorSeriesDataLabelsOptions {
      */
     position?: AlignValue;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) Text rotation in degrees. Note
-     * that due to a more complex structure, backgrounds, borders and padding
-     * will be lost on a rotated data label.
+     * (Highcharts, Highstock, Highmaps, Gantt) Text rotation in degrees.
      */
     rotation?: number;
     /**
@@ -99270,9 +99267,7 @@ export interface SeriesArcDiagramDataLabelsOptionsObject {
      */
     position?: AlignValue;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) Text rotation in degrees. Note
-     * that due to a more complex structure, backgrounds, borders and padding
-     * will be lost on a rotated data label.
+     * (Highcharts, Highstock, Highmaps, Gantt) Text rotation in degrees.
      */
     rotation?: number;
     /**
@@ -99559,9 +99554,7 @@ PlotLollipopDataLabelsAnimationOptions|Partial<AnimationOptionsObject>);
      */
     position?: AlignValue;
     /**
-     * (Highcharts, Highstock) Text rotation in degrees. Note that due to a more
-     * complex structure, backgrounds, borders and padding will be lost on a
-     * rotated data label.
+     * (Highcharts, Highstock) Text rotation in degrees.
      */
     rotation?: number;
     /**
@@ -100237,9 +100230,7 @@ export interface SeriesFunnelDataLabelsOptionsObject {
      */
     position?: AlignValue;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) Text rotation in degrees. Note
-     * that due to a more complex structure, backgrounds, borders and padding
-     * will be lost on a rotated data label.
+     * (Highcharts, Highstock, Highmaps, Gantt) Text rotation in degrees.
      */
     rotation?: number;
     /**
@@ -100852,9 +100843,7 @@ export interface SeriesNetworkgraphDataLabelsOptionsObject {
      */
     position?: AlignValue;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) Text rotation in degrees. Note
-     * that due to a more complex structure, backgrounds, borders and padding
-     * will be lost on a rotated data label.
+     * (Highcharts, Highstock, Highmaps, Gantt) Text rotation in degrees.
      */
     rotation?: number;
     /**
@@ -101368,9 +101357,7 @@ export interface SeriesOrganizationDataLabelsOptionsObject {
      */
     position?: AlignValue;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) Text rotation in degrees. Note
-     * that due to a more complex structure, backgrounds, borders and padding
-     * will be lost on a rotated data label.
+     * (Highcharts, Highstock, Highmaps, Gantt) Text rotation in degrees.
      */
     rotation?: number;
     /**
@@ -101662,9 +101649,7 @@ export interface SeriesPackedBubbleDataLabelsOptionsObject {
      */
     position?: AlignValue;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) Text rotation in degrees. Note
-     * that due to a more complex structure, backgrounds, borders and padding
-     * will be lost on a rotated data label.
+     * (Highcharts, Highstock, Highmaps, Gantt) Text rotation in degrees.
      */
     rotation?: number;
     /**
@@ -102012,9 +101997,7 @@ export interface SeriesPieDataLabelsOptionsObject {
      */
     position?: AlignValue;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) Text rotation in degrees. Note
-     * that due to a more complex structure, backgrounds, borders and padding
-     * will be lost on a rotated data label.
+     * (Highcharts, Highstock, Highmaps, Gantt) Text rotation in degrees.
      */
     rotation?: number;
     /**
@@ -102324,9 +102307,7 @@ SeriesDependencywheelNodesDataLabelsAnimationOptions|SeriesOrganizationNodesData
      */
     position?: AlignValue;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) Text rotation in degrees. Note
-     * that due to a more complex structure, backgrounds, borders and padding
-     * will be lost on a rotated data label.
+     * (Highcharts, Highstock, Highmaps, Gantt) Text rotation in degrees.
      */
     rotation?: number;
     /**
@@ -103620,9 +103601,7 @@ export interface SeriesSunburstDataLabelsOptionsObject {
      */
     position?: AlignValue;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) Text rotation in degrees. Note
-     * that due to a more complex structure, backgrounds, borders and padding
-     * will be lost on a rotated data label.
+     * (Highcharts, Highstock, Highmaps, Gantt) Text rotation in degrees.
      */
     rotation?: number;
     /**
@@ -104176,9 +104155,7 @@ export interface SeriesTreegraphDataLabelsOptionsObject {
      */
     position?: AlignValue;
     /**
-     * (Highcharts) Text rotation in degrees. Note that due to a more complex
-     * structure, backgrounds, borders and padding will be lost on a rotated
-     * data label.
+     * (Highcharts) Text rotation in degrees.
      */
     rotation?: number;
     /**
@@ -106947,9 +106924,7 @@ export interface TimelineDataLabelsOptionsObject {
      */
     position?: AlignValue;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) Text rotation in degrees. Note
-     * that due to a more complex structure, backgrounds, borders and padding
-     * will be lost on a rotated data label.
+     * (Highcharts, Highstock, Highmaps, Gantt) Text rotation in degrees.
      */
     rotation?: number;
     /**

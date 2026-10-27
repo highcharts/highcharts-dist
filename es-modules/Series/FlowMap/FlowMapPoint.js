@@ -10,9 +10,14 @@
  *
  * */
 'use strict';
-import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
-const { mapline: { prototype: { pointClass: MapLinePoint } } } = SeriesRegistry.seriesTypes;
+import MapLineSeries from '../MapLine/MapLineSeries.js';
 import { isNumber, isString } from '../../Shared/Utilities.js';
+/* *
+ *
+ *  Constants
+ *
+ * */
+const MapLinePoint = MapLineSeries.prototype.pointClass;
 /* *
  *
  *  Class

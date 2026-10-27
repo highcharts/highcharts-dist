@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-26)
+ * @license Highcharts JS v13.1.1-modified (2026-10-27)
  * @module highcharts/modules/sunburst
  * @requires highcharts
  *
@@ -935,9 +935,9 @@ Breadcrumbs.defaultOptions = Breadcrumbs_BreadcrumbsDefaults.options;
 ;// external ["../highcharts.src.js","default","Color"]
 const external_highcharts_src_js_default_Color_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].Color;
 var external_highcharts_src_js_default_Color_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_Color_namespaceObject);
-;// external ["../highcharts.src.js","default","SeriesRegistry"]
-const external_highcharts_src_js_default_SeriesRegistry_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].SeriesRegistry;
-var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_SeriesRegistry_namespaceObject);
+;// external ["../highcharts.src.js","default","Series","types","column"]
+const external_highcharts_src_js_default_Series_types_column_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].Series.types.column;
+var external_highcharts_src_js_default_Series_types_column_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_Series_types_column_namespaceObject);
 ;// external ["../highcharts.src.js","default","SVGElement"]
 const external_highcharts_src_js_default_SVGElement_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].SVGElement;
 var external_highcharts_src_js_default_SVGElement_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_SVGElement_namespaceObject);
@@ -955,7 +955,6 @@ var external_highcharts_src_js_default_SVGElement_default = /*#__PURE__*/__webpa
  * */
 
 
-const { column: { prototype: columnProto } } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
 
 
 /* *
@@ -984,7 +983,7 @@ var ColorMapComposition;
         pointArrayMap: ['value'],
         trackerGroups: ['group', 'markerGroup', 'dataLabelsGroup'],
         colorAttribs: seriesColorAttribs,
-        pointAttribs: columnProto.pointAttribs
+        pointAttribs: (external_highcharts_src_js_default_Series_types_column_default()).prototype.pointAttribs
     };
     /* *
      *
@@ -1076,6 +1075,12 @@ var ColorMapComposition;
 ;// external ["../highcharts.src.js","default","Series"]
 const external_highcharts_src_js_default_Series_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].Series;
 var external_highcharts_src_js_default_Series_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_Series_namespaceObject);
+;// external ["../highcharts.src.js","default","Series","types","scatter"]
+const external_highcharts_src_js_default_Series_types_scatter_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].Series.types.scatter;
+var external_highcharts_src_js_default_Series_types_scatter_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_Series_types_scatter_namespaceObject);
+;// external ["../highcharts.src.js","default","SeriesRegistry"]
+const external_highcharts_src_js_default_SeriesRegistry_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].SeriesRegistry;
+var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_SeriesRegistry_namespaceObject);
 ;// ./code/es-modules/Series/Treemap/TreemapAlgorithmGroup.js
 /* *
  *
@@ -1305,6 +1310,9 @@ const DrawPointUtilities = {
 /** @internal */
 /* harmony default export */ const Series_DrawPointUtilities = (DrawPointUtilities);
 
+;// external ["../highcharts.src.js","default","Series","types","pie"]
+const external_highcharts_src_js_default_Series_types_pie_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].Series.types.pie;
+var external_highcharts_src_js_default_Series_types_pie_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_Series_types_pie_namespaceObject);
 ;// ./code/es-modules/Series/Treemap/TreemapPoint.js
 /* *
  *
@@ -1321,8 +1329,15 @@ const DrawPointUtilities = {
 
 
 
-const { pie: { prototype: { pointClass: PiePoint } }, scatter: { prototype: { pointClass: ScatterPoint } } } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
 
+
+/* *
+ *
+ *  Constants
+ *
+ * */
+const PiePoint = (external_highcharts_src_js_default_Series_types_pie_default()).prototype.pointClass;
+const ScatterPoint = (external_highcharts_src_js_default_Series_types_scatter_default()).prototype.pointClass;
 /* *
  *
  *  Class
@@ -2453,7 +2468,8 @@ const { parse: color } = (external_highcharts_src_js_default_Color_default());
 const { composed: TreemapSeries_composed, noop } = (external_highcharts_src_js_default_default());
 
 
-const { column: ColumnSeries, scatter: ScatterSeries } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
+
+
 
 
 
@@ -2529,7 +2545,7 @@ function onSeriesAfterBindAxes() {
  *
  * @augments Highcharts.Series
  */
-class TreemapSeries extends ScatterSeries {
+class TreemapSeries extends (external_highcharts_src_js_default_Series_types_scatter_default()) {
     constructor() {
         /* *
          *
@@ -2683,7 +2699,7 @@ class TreemapSeries extends ScatterSeries {
     dataLabel, 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     labelOptions) {
-        ColumnSeries.prototype.alignDataLabel.apply(this, arguments);
+        external_highcharts_src_js_default_Series_types_column_default().prototype.alignDataLabel.apply(this, arguments);
         if (point.dataLabel) {
             // `point.node.zIndex` could be undefined (#6956)
             point.dataLabel.attr({ zIndex: (point.node.zIndex || 0) + 1 });
@@ -3670,7 +3686,7 @@ class TreemapSeries extends ScatterSeries {
     }
 }
 /** @internal */
-TreemapSeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(ScatterSeries.defaultOptions, Treemap_TreemapSeriesDefaults);
+TreemapSeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)((external_highcharts_src_js_default_Series_types_scatter_default()).defaultOptions, Treemap_TreemapSeriesDefaults);
 (0,external_highcharts_src_js_default_namespaceObject.extend)(TreemapSeries.prototype, {
     buildKDTree: noop,
     colorAttribs: Series_ColorMapComposition.seriesMembers.colorAttribs,
@@ -3845,8 +3861,15 @@ var CenteredUtilities;
  * */
 
 
-const { series: { prototype: { pointClass: Point } }, seriesTypes: { treemap: { prototype: { pointClass: SunburstPoint_TreemapPoint } } } } = (external_highcharts_src_js_default_SeriesRegistry_default());
 
+
+/* *
+ *
+ *  Constants
+ *
+ * */
+const Point = (external_highcharts_src_js_default_Series_default()).prototype.pointClass;
+const SunburstPoint_TreemapPoint = Treemap_TreemapSeries.prototype.pointClass;
 /* *
  *
  *  Class
@@ -3938,7 +3961,6 @@ class SunburstPoint extends SunburstPoint_TreemapPoint {
  * */
 
 
-const { seriesTypes: { treemap: SunburstUtilities_TreemapSeries } } = (external_highcharts_src_js_default_SeriesRegistry_default());
 
 /* *
  *
@@ -4042,7 +4064,7 @@ const SunburstUtilities = {
     calculateLevelSizes,
     getLevelFromAndTo,
     range,
-    recursive: SunburstUtilities_TreemapSeries.prototype.utils.recursive
+    recursive: Treemap_TreemapSeries.prototype.utils.recursive
 };
 /* harmony default export */ const Sunburst_SunburstUtilities = (SunburstUtilities);
 
@@ -4734,7 +4756,8 @@ const { getCenter, getStartAndEndRadians } = Series_CenteredUtilities;
 
 const { noop: SunburstSeries_noop } = (external_highcharts_src_js_default_default());
 
-const { column: SunburstSeries_ColumnSeries, treemap: SunburstSeries_TreemapSeries } = (external_highcharts_src_js_default_SeriesRegistry_default()).seriesTypes;
+
+
 
 
 
@@ -5034,7 +5057,7 @@ function cbSetTreeValuesBefore(node, options) {
  *  Class
  *
  * */
-class SunburstSeries extends SunburstSeries_TreemapSeries {
+class SunburstSeries extends Treemap_TreemapSeries {
     /* *
      *
      *  Functions
@@ -5179,7 +5202,7 @@ class SunburstSeries extends SunburstSeries_TreemapSeries {
         if (hackDataLabelAnimation && addedHack) {
             series.hasRendered = false;
             series.options.dataLabels.defer = true;
-            SunburstSeries_ColumnSeries.prototype.drawDataLabels.call(series);
+            external_highcharts_src_js_default_Series_types_column_default().prototype.drawDataLabels.call(series);
             series.hasRendered = true;
             // If animateLabels is called before labels were hidden, then call
             // it again.
@@ -5188,7 +5211,7 @@ class SunburstSeries extends SunburstSeries_TreemapSeries {
             }
         }
         else {
-            SunburstSeries_ColumnSeries.prototype.drawDataLabels.call(series);
+            external_highcharts_src_js_default_Series_types_column_default().prototype.drawDataLabels.call(series);
         }
         series.idPreviousRoot = idRoot;
     }
@@ -5348,7 +5371,7 @@ class SunburstSeries extends SunburstSeries_TreemapSeries {
  *
  * */
 /** @internal */
-SunburstSeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(SunburstSeries_TreemapSeries.defaultOptions, Sunburst_SunburstSeriesDefaults);
+SunburstSeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)(Treemap_TreemapSeries.defaultOptions, Sunburst_SunburstSeriesDefaults);
 (0,external_highcharts_src_js_default_namespaceObject.extend)(SunburstSeries.prototype, {
     axisTypes: [],
     drawDataLabels: SunburstSeries_noop, // `drawDataLabels` is called in `drawPoints`
@@ -5356,7 +5379,7 @@ SunburstSeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceO
     isCartesian: false,
     // Mark that the sunburst is supported by the series on point feature.
     onPointSupported: true,
-    pointAttribs: SunburstSeries_ColumnSeries.prototype.pointAttribs,
+    pointAttribs: (external_highcharts_src_js_default_Series_types_column_default()).prototype.pointAttribs,
     pointClass: Sunburst_SunburstPoint,
     NodeClass: Sunburst_SunburstNode,
     utils: Sunburst_SunburstUtilities
