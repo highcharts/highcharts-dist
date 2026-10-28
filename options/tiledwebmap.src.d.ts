@@ -343,14 +343,6 @@ declare module "../highcharts.src" {
         /**
          * Not available
          */
-        colorByPoint?: undefined;
-        /**
-         * Not available
-         */
-        colors?: undefined;
-        /**
-         * Not available
-         */
         nullColor?: undefined;
         /**
          * (Highcharts, Highstock, Highmaps, Gantt) This property is only in

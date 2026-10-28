@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-27)
+ * @license Highcharts JS v13.1.1-modified (2026-10-28)
  * @module highcharts/modules/parallel-coordinates
  * @requires highcharts
  *
@@ -142,7 +142,7 @@ const chartDefaults = {
      */
     parallelCoordinates: false,
     /**
-     * Common options for all yAxes rendered in a parallel coordinates plot.
+     * Common options for all y axes rendered in a parallel coordinates plot.
      * This feature requires `modules/parallel-coordinates.js`.
      *
      * The default options are:
@@ -171,7 +171,7 @@ const chartDefaults = {
      * @since     6.0.0
      * @product   highcharts
      * @excluding alternateGridColor, breaks, id, gridLineColor,
-     *            gridLineDashStyle, gridLineWidth, minorGridLineColor,
+     *            gridLineDashStyle, minorGridLineColor,
      *            minorGridLineDashStyle, minorGridLineWidth, plotBands,
      *            plotLines, angle, gridLineInterpolation, maxColor, maxZoom,
      *            minColor, scrollbar, stackLabels, stops,

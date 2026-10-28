@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-27)
+ * @license Highcharts JS v13.1.1-modified (2026-10-28)
  * @module highcharts/modules/drilldown
  * @requires highcharts
  *
@@ -996,7 +996,7 @@ const DrilldownDefaults = {
      * These drilldown series are hidden by default. The drilldown series is
      * linked to the parent series' point by its `id`.
      *
-     * @type      {Array<Highcharts.SeriesOptionsType>}
+     * @type      {Array<Highcharts.SeriesOptionsType|Highcharts.UnknownSeriesOptions>}
      * @since     3.0.8
      * @product   highcharts highmaps
      * @apioption drilldown.series

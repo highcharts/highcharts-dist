@@ -996,6 +996,20 @@ export type ScreenReaderClickCallbackFunction = (evt: MouseEvent, chart?: Chart,
  */
 export type ScreenReaderFormatterCallbackFunction<T> = (context: T, outerContext?: any) => string;
 /**
+ * Function callback when adding a point
+ *
+ * @param this
+ *        The series where the event occurred.
+ *
+ * @param event
+ *        Event arguments.
+ *
+ * @param ctx
+ *        Since v12.6.0, the series context passed as an extra argument for
+ *        arrow functions.
+ */
+export type SeriesAddPointCallbackFunction = (this: Series, event: SeriesAddPointEventObject, ctx?: Series) => void;
+/**
  * Function callback when a series has been animated.
  *
  * @param this
@@ -1009,6 +1023,20 @@ export type ScreenReaderFormatterCallbackFunction<T> = (context: T, outerContext
  *        arrow functions.
  */
 export type SeriesAfterAnimateCallbackFunction = (this: Series, event: SeriesAfterAnimateEventObject, ctx?: Series) => void;
+/**
+ * Function callback when the series has set its options.
+ *
+ * @param this
+ *        The series where the event occurred.
+ *
+ * @param event
+ *        Event arguments.
+ *
+ * @param ctx
+ *        Since v12.6.0, the series context passed as an extra argument for
+ *        arrow functions.
+ */
+export type SeriesAfterSetOptionsCallbackFunction = (this: Series, event: SeriesAfterSetOptionsEventObject, ctx?: Series) => void;
 /**
  * Function callback when the checkbox next to the series' name in the legend is
  * clicked.
@@ -1951,16 +1979,16 @@ export interface AnnotationLabelAccessibilityOptionsObject {
 export interface AnnotationMockPointOptionsObject {
     /**
      * The x position of the point. Units can be either in axis or chart pixel
-     * coordinates.
+     * coordinates. Date strings can be used for datetime axes.
      */
-    x: number;
+    x: (number|string);
     /**
      * This option defines which `xAxis` the point is connected to. It refers to
      * either the axis id or the index of the axis in the `xAxis` array. If the
      * option is not configured or the axis is not found the point's x
      * coordinate refers to the chart pixels.
      */
-    xAxis: (number|string|null);
+    xAxis?: (number|string|null);
     /**
      * The y position of the point. Units can be either in axis or chart pixel
      * coordinates.
@@ -1972,7 +2000,7 @@ export interface AnnotationMockPointOptionsObject {
      * option is not configured or the axis is not found the point's y
      * coordinate refers to the chart pixels.
      */
-    yAxis: (number|string|null);
+    yAxis?: (number|string|null);
 }
 /**
  * (Highcharts, Highstock, Highmaps, Gantt) Enable or disable the initial
@@ -2242,6 +2270,11 @@ export interface AnnotationsLabelsOptions {
      * callback receives `ctx`.
      */
     formatter?: FormatterCallbackFunction<Point>;
+    /**
+     * (Highcharts, Highstock, Highmaps, Gantt) An id for later identification
+     * of the annotation label.
+     */
+    id?: string;
     /**
      * (Highcharts, Highstock, Highmaps, Gantt) Whether all the labels for an
      * annotation are visible in the exported data table.
@@ -5445,7 +5478,7 @@ export interface AxisPointBreakEventObject {
 }
 export interface AxisSetExtremesEventObject extends ExtremesObject {
     preventDefault: Function;
-    target: SVGElement;
+    target: Axis;
     trigger: (string|AxisExtremesTriggerValue);
     type: "setExtremes";
 }
@@ -6466,7 +6499,7 @@ export interface ChartOptions {
      */
     panning?: ChartPanningOptions;
     /**
-     * (Highcharts) Common options for all yAxes rendered in a parallel
+     * (Highcharts) Common options for all y axes rendered in a parallel
      * coordinates plot. This feature requires
      * `modules/parallel-coordinates.js`.
      *
@@ -6964,9 +6997,10 @@ export interface ChartParallelAxesLabelsOptions {
     reserveSpace?: boolean;
     /**
      * (Highcharts) Rotation of the labels in degrees. When `undefined`, the
-     * `autoRotation` option takes precedence.
+     * `autoRotation` option takes precedence. On radial axes, labels can be
+     * rotated along the axis by setting the rotation to 'auto'.
      */
-    rotation?: number;
+    rotation?: ("auto"|number);
     /**
      * (Highcharts) If enabled, the axis labels will skewed to follow the
      * perspective.
@@ -7037,7 +7071,7 @@ export interface ChartParallelAxesLabelsStyleOptions {
     textOverflow?: string;
 }
 /**
- * (Highcharts) Common options for all yAxes rendered in a parallel coordinates
+ * (Highcharts) Common options for all y axes rendered in a parallel coordinates
  * plot. This feature requires `modules/parallel-coordinates.js`.
  *
  * The default options are: (see online documentation for example)
@@ -7111,6 +7145,12 @@ export interface ChartParallelAxesOptions {
      */
     crossing?: number;
     /**
+     * (Highcharts) A reserved subspace to store options and values for
+     * customized functionality. Here you can add additional data for your own
+     * event callbacks and formatter callbacks.
+     */
+    custom?: Dictionary<any>;
+    /**
      * (Highcharts, Highstock, Gantt) For a datetime axis, the scale will
      * automatically adjust to the appropriate unit. This member gives the
      * default representations used for each unit. For easier data
@@ -7141,6 +7181,18 @@ export interface ChartParallelAxesOptions {
      * computed axis extremes.
      */
     floor?: number;
+    /**
+     * (Highcharts) The width of the grid lines extending the ticks across the
+     * plot area. Defaults to 1 on the Y axis and 0 on the X axis, except for 3d
+     * charts and gauges.
+     *
+     * In gauges, the grid lines are limited to the pane's `size` and
+     * `innerSize`.
+     *
+     * In styled mode, the stroke width is given in the `.highcharts-grid-line`
+     * class.
+     */
+    gridLineWidth?: number;
     /**
      * (Highcharts, Highstock, Gantt) The Z index of the grid lines.
      */
@@ -8260,7 +8312,8 @@ export interface ColorAxisLabelsOptions {
     reserveSpace?: boolean;
     /**
      * (Highcharts, Highstock, Highmaps) Rotation of the labels in degrees. When
-     * `undefined`, the `autoRotation` option takes precedence.
+     * `undefined`, the `autoRotation` option takes precedence. On radial axes,
+     * labels can be rotated along the axis by setting the rotation to 'auto'.
      */
     rotation?: number;
     /**
@@ -8385,6 +8438,12 @@ export interface ColorAxisOptions {
      * applied to group elements for the grid, axis elements and labels.
      */
     className?: string;
+    /**
+     * (Highcharts, Highstock, Highmaps) A reserved subspace to store options
+     * and values for customized functionality. Here you can add additional data
+     * for your own event callbacks and formatter callbacks.
+     */
+    custom?: Dictionary<any>;
     /**
      * (Highcharts, Highstock, Highmaps) Determines how to set each data class'
      * color if no individual color is set. The default value, `tween`, computes
@@ -9195,7 +9254,7 @@ export interface CSSObject {
     /**
      * Font weight of the element text.
      */
-    fontWeight?: string;
+    fontWeight?: (number|string);
     /**
      * Height of the element.
      */
@@ -9257,7 +9316,7 @@ export interface CSSObject {
     /**
      * Width of the element.
      */
-    width?: number;
+    width?: (number|string);
 }
 /**
  * (Gantt) Show an indicator on the axis for the current date and time. Can be a
@@ -10705,7 +10764,7 @@ export interface DrilldownOptions {
      * set. These drilldown series are hidden by default. The drilldown series
      * is linked to the parent series' point by its `id`.
      */
-    series?: Array<SeriesOptionsType>;
+    series?: Array<(SeriesOptionsType|UnknownSeriesOptions)>;
 }
 /**
  * The event arguments when all the series have been drilled up.
@@ -10810,6 +10869,10 @@ export interface ExportingButtonsContextButtonThemeOptions {
      * buttons.
      */
     "stroke-linecap"?: string;
+    /**
+     * (Highcharts, Highstock, Highmaps, Gantt) Stroke width for the buttons
+     */
+    "stroke-width"?: (number|string);
     /**
      * (Highcharts, Highstock, Highmaps, Gantt) CSS styling for the button's
      * text or symbol.
@@ -13752,21 +13815,30 @@ export interface LegendTitleOptions {
  */
 export interface LinearGradientColorObject {
     /**
-     * Start horizontal position of the gradient. Float ranges 0-1.
+     * Units for the gradient. Can be either 'userSpaceOnUse' or
+     * 'objectBoundingBox'.
      */
-    x1: number;
+    gradientUnits?: ('objectBoundingBox'|'userSpaceOnUse');
     /**
-     * End horizontal position of the gradient. Float ranges 0-1.
+     * Start horizontal position of the gradient. Float ranges 0-1 or percentage
+     * strings.
      */
-    x2: number;
+    x1: (number|string);
     /**
-     * Start vertical position of the gradient. Float ranges 0-1.
+     * End horizontal position of the gradient. Float ranges 0-1 or percentage
+     * strings.
      */
-    y1: number;
+    x2: (number|string);
     /**
-     * End vertical position of the gradient. Float ranges 0-1.
+     * Start vertical position of the gradient. Float ranges 0-1 or percentage
+     * strings.
      */
-    y2: number;
+    y1: (number|string);
+    /**
+     * End vertical position of the gradient. Float ranges 0-1 or percentage
+     * strings.
+     */
+    y2: (number|string);
 }
 /**
  * (Highcharts, Highstock, Highmaps, Gantt) The loading options control the
@@ -14580,6 +14652,11 @@ export interface NavigationAnnotationsLabelsOptions {
      * callback receives `ctx`.
      */
     formatter?: FormatterCallbackFunction<Point>;
+    /**
+     * (Highcharts, Highstock, Highmaps, Gantt) An id for later identification
+     * of the annotation label.
+     */
+    id?: string;
     /**
      * (Highcharts, Highstock, Highmaps, Gantt) Whether all the labels for an
      * annotation are visible in the exported data table.
@@ -17737,6 +17814,10 @@ export interface NavigationBindingsArrowInfinityLineAnnotationsLabelsOptions {
      */
     formatter?: FormatterCallbackFunction<Point>;
     /**
+     * (Highstock) An id for later identification of the annotation label.
+     */
+    id?: string;
+    /**
      * (Highstock) Whether all the labels for an annotation are visible in the
      * exported data table.
      */
@@ -20860,6 +20941,10 @@ export interface NavigationBindingsArrowRayAnnotationsLabelsOptions {
      * `ctx`.
      */
     formatter?: FormatterCallbackFunction<Point>;
+    /**
+     * (Highstock) An id for later identification of the annotation label.
+     */
+    id?: string;
     /**
      * (Highstock) Whether all the labels for an annotation are visible in the
      * exported data table.
@@ -23985,6 +24070,10 @@ export interface NavigationBindingsArrowSegmentAnnotationsLabelsOptions {
      */
     formatter?: FormatterCallbackFunction<Point>;
     /**
+     * (Highstock) An id for later identification of the annotation label.
+     */
+    id?: string;
+    /**
      * (Highstock) Whether all the labels for an annotation are visible in the
      * exported data table.
      */
@@ -27108,6 +27197,10 @@ export interface NavigationBindingsCrooked3AnnotationsLabelsOptions {
      * `ctx`.
      */
     formatter?: FormatterCallbackFunction<Point>;
+    /**
+     * (Highstock) An id for later identification of the annotation label.
+     */
+    id?: string;
     /**
      * (Highstock) Whether all the labels for an annotation are visible in the
      * exported data table.
@@ -30234,6 +30327,10 @@ export interface NavigationBindingsCrooked5AnnotationsLabelsOptions {
      */
     formatter?: FormatterCallbackFunction<Point>;
     /**
+     * (Highstock) An id for later identification of the annotation label.
+     */
+    id?: string;
+    /**
      * (Highstock) Whether all the labels for an annotation are visible in the
      * exported data table.
      */
@@ -33357,6 +33454,10 @@ export interface NavigationBindingsElliott3AnnotationsLabelsOptions {
      * `ctx`.
      */
     formatter?: FormatterCallbackFunction<Point>;
+    /**
+     * (Highstock) An id for later identification of the annotation label.
+     */
+    id?: string;
     /**
      * (Highstock) Whether all the labels for an annotation are visible in the
      * exported data table.
@@ -36482,6 +36583,10 @@ export interface NavigationBindingsElliott5AnnotationsLabelsOptions {
      */
     formatter?: FormatterCallbackFunction<Point>;
     /**
+     * (Highstock) An id for later identification of the annotation label.
+     */
+    id?: string;
+    /**
      * (Highstock) Whether all the labels for an annotation are visible in the
      * exported data table.
      */
@@ -39605,6 +39710,10 @@ export interface NavigationBindingsFibonacciAnnotationsLabelsOptions {
      * `ctx`.
      */
     formatter?: FormatterCallbackFunction<Point>;
+    /**
+     * (Highstock) An id for later identification of the annotation label.
+     */
+    id?: string;
     /**
      * (Highstock) Whether all the labels for an annotation are visible in the
      * exported data table.
@@ -42730,6 +42839,10 @@ export interface NavigationBindingsFibonacciTimeZonesAnnotationsLabelsOptions {
      */
     formatter?: FormatterCallbackFunction<Point>;
     /**
+     * (Highstock) An id for later identification of the annotation label.
+     */
+    id?: string;
+    /**
      * (Highstock) Whether all the labels for an annotation are visible in the
      * exported data table.
      */
@@ -45854,6 +45967,10 @@ export interface NavigationBindingsHorizontalLineAnnotationsLabelsOptions {
      */
     formatter?: FormatterCallbackFunction<Point>;
     /**
+     * (Highstock) An id for later identification of the annotation label.
+     */
+    id?: string;
+    /**
      * (Highstock) Whether all the labels for an annotation are visible in the
      * exported data table.
      */
@@ -48976,6 +49093,10 @@ export interface NavigationBindingsInfinityLineAnnotationsLabelsOptions {
      * `ctx`.
      */
     formatter?: FormatterCallbackFunction<Point>;
+    /**
+     * (Highstock) An id for later identification of the annotation label.
+     */
+    id?: string;
     /**
      * (Highstock) Whether all the labels for an annotation are visible in the
      * exported data table.
@@ -52101,6 +52222,10 @@ export interface NavigationBindingsMeasureXAnnotationsLabelsOptions {
      */
     formatter?: FormatterCallbackFunction<Point>;
     /**
+     * (Highstock) An id for later identification of the annotation label.
+     */
+    id?: string;
+    /**
      * (Highstock) Whether all the labels for an annotation are visible in the
      * exported data table.
      */
@@ -55225,6 +55350,10 @@ export interface NavigationBindingsMeasureXYAnnotationsLabelsOptions {
      */
     formatter?: FormatterCallbackFunction<Point>;
     /**
+     * (Highstock) An id for later identification of the annotation label.
+     */
+    id?: string;
+    /**
      * (Highstock) Whether all the labels for an annotation are visible in the
      * exported data table.
      */
@@ -58348,6 +58477,10 @@ export interface NavigationBindingsMeasureYAnnotationsLabelsOptions {
      * `ctx`.
      */
     formatter?: FormatterCallbackFunction<Point>;
+    /**
+     * (Highstock) An id for later identification of the annotation label.
+     */
+    id?: string;
     /**
      * (Highstock) Whether all the labels for an annotation are visible in the
      * exported data table.
@@ -61717,6 +61850,10 @@ export interface NavigationBindingsParallelChannelAnnotationsLabelsOptions {
      */
     formatter?: FormatterCallbackFunction<Point>;
     /**
+     * (Highstock) An id for later identification of the annotation label.
+     */
+    id?: string;
+    /**
      * (Highstock) Whether all the labels for an annotation are visible in the
      * exported data table.
      */
@@ -64840,6 +64977,10 @@ export interface NavigationBindingsPitchforkAnnotationsLabelsOptions {
      * `ctx`.
      */
     formatter?: FormatterCallbackFunction<Point>;
+    /**
+     * (Highstock) An id for later identification of the annotation label.
+     */
+    id?: string;
     /**
      * (Highstock) Whether all the labels for an annotation are visible in the
      * exported data table.
@@ -67965,6 +68106,10 @@ export interface NavigationBindingsRayAnnotationsLabelsOptions {
      */
     formatter?: FormatterCallbackFunction<Point>;
     /**
+     * (Highstock) An id for later identification of the annotation label.
+     */
+    id?: string;
+    /**
      * (Highstock) Whether all the labels for an annotation are visible in the
      * exported data table.
      */
@@ -71088,6 +71233,10 @@ export interface NavigationBindingsSegmentAnnotationsLabelsOptions {
      * `ctx`.
      */
     formatter?: FormatterCallbackFunction<Point>;
+    /**
+     * (Highstock) An id for later identification of the annotation label.
+     */
+    id?: string;
     /**
      * (Highstock) Whether all the labels for an annotation are visible in the
      * exported data table.
@@ -74213,6 +74362,10 @@ export interface NavigationBindingsTimeCyclesAnnotationsLabelsOptions {
      */
     formatter?: FormatterCallbackFunction<Point>;
     /**
+     * (Highstock) An id for later identification of the annotation label.
+     */
+    id?: string;
+    /**
      * (Highstock) Whether all the labels for an annotation are visible in the
      * exported data table.
      */
@@ -77337,6 +77490,10 @@ export interface NavigationBindingsVerticalArrowAnnotationsLabelsOptions {
      * `ctx`.
      */
     formatter?: FormatterCallbackFunction<Point>;
+    /**
+     * (Highstock) An id for later identification of the annotation label.
+     */
+    id?: string;
     /**
      * (Highstock) Whether all the labels for an annotation are visible in the
      * exported data table.
@@ -80464,6 +80621,10 @@ export interface NavigationBindingsVerticalCounterAnnotationsLabelsOptions {
      * `ctx`.
      */
     formatter?: FormatterCallbackFunction<Point>;
+    /**
+     * (Highstock) An id for later identification of the annotation label.
+     */
+    id?: string;
     /**
      * (Highstock) Whether all the labels for an annotation are visible in the
      * exported data table.
@@ -83617,6 +83778,11 @@ export interface NavigationBindingsVerticalLabelAnnotationsLabelsOptions {
      * callback receives `ctx`.
      */
     formatter?: FormatterCallbackFunction<Point>;
+    /**
+     * (Highcharts, Highstock, Highmaps, Gantt) An id for later identification
+     * of the annotation label.
+     */
+    id?: string;
     /**
      * (Highcharts, Highstock, Highmaps, Gantt) Whether all the labels for an
      * annotation are visible in the exported data table.
@@ -86781,6 +86947,10 @@ export interface NavigationBindingsVerticalLineAnnotationsLabelsOptions {
      */
     formatter?: FormatterCallbackFunction<Point>;
     /**
+     * (Highstock) An id for later identification of the annotation label.
+     */
+    id?: string;
+    /**
      * (Highstock) Whether all the labels for an annotation are visible in the
      * exported data table.
      */
@@ -89937,6 +90107,10 @@ export interface NavigationButtonThemeOptions {
      */
     "stroke-linecap"?: string;
     /**
+     * (Highcharts, Highstock, Highmaps, Gantt) Stroke width for the buttons
+     */
+    "stroke-width"?: (number|string);
+    /**
      * (Highcharts, Highstock, Highmaps, Gantt) CSS styling for the button's
      * text or symbol.
      */
@@ -90078,7 +90252,7 @@ export interface NavigatorHandlesOptions {
     /**
      * (Highstock, Gantt) Border radius of the handles.
      */
-    borderRadius?: number;
+    borderRadius?: (number|string);
     /**
      * (Highstock, Gantt) Allows to enable/disable handles.
      */
@@ -90909,9 +91083,10 @@ export interface NavigatorXAxisLabelsOptions {
     reserveSpace?: boolean;
     /**
      * (Highstock, Gantt) Rotation of the labels in degrees. When `undefined`,
-     * the `autoRotation` option takes precedence.
+     * the `autoRotation` option takes precedence. On radial axes, labels can be
+     * rotated along the axis by setting the rotation to 'auto'.
      */
-    rotation?: number;
+    rotation?: ("auto"|number);
     /**
      * (Highstock, Gantt) Horizontal axes only. The number of lines to spread
      * the labels over to make room or tighter labels. 0 disables staggering.
@@ -91060,6 +91235,12 @@ export interface NavigatorXAxisOptions {
      * be a boolean or a configuration object similar to xAxis.plotLines.
      */
     currentDateIndicator?: (boolean|CurrentDateIndicatorOptions|CurrentDateIndicatorOptions);
+    /**
+     * (Highstock, Gantt) A reserved subspace to store options and values for
+     * customized functionality. Here you can add additional data for your own
+     * event callbacks and formatter callbacks.
+     */
+    custom?: Dictionary<any>;
     /**
      * (Highcharts, Highstock, Gantt) For a datetime axis, the scale will
      * automatically adjust to the appropriate unit. This member gives the
@@ -92288,9 +92469,10 @@ export interface NavigatorYAxisLabelsOptions {
     reserveSpace?: boolean;
     /**
      * (Highstock, Gantt) Rotation of the labels in degrees. When `undefined`,
-     * the `autoRotation` option takes precedence.
+     * the `autoRotation` option takes precedence. On radial axes, labels can be
+     * rotated along the axis by setting the rotation to 'auto'.
      */
-    rotation?: number;
+    rotation?: ("auto"|number);
     /**
      * (Highstock, Gantt) Horizontal axes only. The number of lines to spread
      * the labels over to make room or tighter labels. 0 disables staggering.
@@ -92454,6 +92636,12 @@ export interface NavigatorYAxisOptions {
      * this case it is better to place the axes without the `crossing` option.
      */
     crossing?: number;
+    /**
+     * (Highstock, Gantt) A reserved subspace to store options and values for
+     * customized functionality. Here you can add additional data for your own
+     * event callbacks and formatter callbacks.
+     */
+    custom?: Dictionary<any>;
     /**
      * (Highcharts, Highstock, Gantt) For a datetime axis, the scale will
      * automatically adjust to the appropriate unit. This member gives the
@@ -97560,6 +97748,14 @@ export interface PointerEventObject extends PointerEvent {
      * The Y coordinate of the pointer interaction relative to the chart.
      */
     chartY: number;
+    /**
+     * Axis positions on the x-axis, when available for a chart click.
+     */
+    xAxis?: Array<PointerAxisCoordinateObject>;
+    /**
+     * Axis positions on the y-axis, when available for a chart click.
+     */
+    yAxis?: Array<PointerAxisCoordinateObject>;
 }
 /**
  * (Highcharts, Highstock, Gantt) The individual point events.
@@ -98041,6 +98237,10 @@ Array<SeriesSunburstDataLabelsOptionsObject>|Array<SeriesTreegraphDataLabelsOpti
      */
     sets?: Array<string>;
     /**
+     * (Highstock) The shape of an individual flag.
+     */
+    shape?: string;
+    /**
      * (Highcharts, Highmaps) Whether to display a slice offset from the center.
      */
     sliced?: boolean;
@@ -98362,17 +98562,24 @@ export interface PositionObject {
  */
 export interface RadialGradientColorObject {
     /**
-     * Center horizontal position relative to the shape. Float ranges 0-1.
+     * Center horizontal position relative to the shape. Float ranges 0-1 or
+     * percentage strings.
      */
-    cx: number;
+    cx: (number|string);
     /**
-     * Center vertical position relative to the shape. Float ranges 0-1.
+     * Center vertical position relative to the shape. Float ranges 0-1 or
+     * percentage strings.
      */
-    cy: number;
+    cy: (number|string);
     /**
-     * Radius relative to the shape. Float ranges 0-1.
+     * Units for the gradient. Can be either 'userSpaceOnUse' or
+     * 'objectBoundingBox'.
      */
-    r: number;
+    gradientUnits?: ('objectBoundingBox'|'userSpaceOnUse');
+    /**
+     * Radius relative to the shape. Float ranges 0-1 or percentage strings.
+     */
+    r: (number|string);
 }
 /**
  * Describes a range.
@@ -98959,6 +99166,10 @@ export interface SelectEventObject {
      */
     resetSelection?: boolean;
     /**
+     * The Chart that the selection belongs to.
+     */
+    target: Chart;
+    /**
      * Arrays containing the axes of each dimension and each axis' min and max
      * values.
      */
@@ -99037,6 +99248,23 @@ PlotWilliamsrAccessibilityPointOptions|PlotWindbarbAccessibilityPointOptions|Plo
 PlotZigzagAccessibilityPointOptions);
 }
 /**
+ * Event information regarding adding a point to a series.
+ */
+export interface SeriesAddPointEventObject {
+    /**
+     * Point that was added to the series.
+     */
+    point: Point;
+    /**
+     * Series to which the point was added.
+     */
+    target: Series;
+    /**
+     * Event type.
+     */
+    type: "addPoint";
+}
+/**
  * Event information regarding completed animation of a series.
  */
 export interface SeriesAfterAnimateEventObject {
@@ -99048,6 +99276,23 @@ export interface SeriesAfterAnimateEventObject {
      * Event type.
      */
     type: "afterAnimate";
+}
+/**
+ * Event information regarding the options after a series has been set.
+ */
+export interface SeriesAfterSetOptionsEventObject {
+    /**
+     * The final merged series options.
+     */
+    options: SeriesOptionsType;
+    /**
+     * Series whose options were updated.
+     */
+    target: Series;
+    /**
+     * Event type.
+     */
+    type: "afterSetOptions";
 }
 /**
  * (Highcharts, Highstock, Highmaps, Gantt) Options for the data labels
@@ -102418,6 +102663,12 @@ export interface SeriesSankeyNodesOptionsObject {
      */
     column?: number;
     /**
+     * (Highcharts) A reserved subspace to store options and values for
+     * customized functionality. Here you can add additional data for your own
+     * event callbacks and formatter callbacks.
+     */
+    custom?: object;
+    /**
      * (Highcharts, Highstock, Highmaps, Gantt) Individual data label for each
      * node. The options are the same as the ones for series.sankey.dataLabels.
      */
@@ -103855,8 +104106,10 @@ PlotWordcloudTooltipHeaderOptions|PlotXrangeTooltipHeaderOptions|PlotZigzagToolt
      */
     linkFormat?: string;
     /**
-     * (Highcharts) The format string specifying what to show for _nodes_ in
-     * tooltip of a diagram series, as opposed to links.
+     * (Highstock) The format string specifying what to show for _nodes_ in a
+     * network-type data series, like sankey, organization, and dependency
+     * wheel. This is relevant when nodes and links require different
+     * formatting, where the links are formatted by `tooltip.pointFormat`.
      */
     nodeFormat?: string;
     /**
@@ -104539,6 +104792,11 @@ export interface SonificationInstrumentActiveWhenOptions {
      * for example `y` or `x`.
      */
     prop?: string;
+    /**
+     * (Highcharts, Highstock, Highmaps, Gantt) The point property to play
+     * context for when using `valueInterval`.
+     */
+    valueProp?: string;
 }
 /**
  * (Highcharts, Highstock, Highmaps, Gantt) Frequency in Hertz of notes.
@@ -107084,7 +107342,7 @@ export interface TimeOptions {
      *
      * @deprecated 12.0.0
      */
-    useUTC?: string;
+    useUTC?: boolean;
 }
 /**
  * Additional time tick information.
@@ -107493,6 +107751,14 @@ export interface TooltipOptions {
      * wait until the tooltip is hidden when mouse out from a point or chart.
      */
     hideDelay?: number;
+    /**
+     * (Highcharts, Highstock, Highmaps, Gantt) The format string specifying
+     * what to show for _nodes_ in a network-type data series, like sankey,
+     * organization, and dependency wheel. This is relevant when nodes and links
+     * require different formatting, where the links are formatted by
+     * `tooltip.pointFormat`.
+     */
+    nodeFormat?: string;
     /**
      * (Highcharts, Highstock, Highmaps, Gantt) The HTML of the null point's
      * line in the tooltip. Works analogously to pointFormat.
@@ -108092,9 +108358,11 @@ export interface XAxisLabelsOptions {
     reserveSpace?: boolean;
     /**
      * (Highcharts, Highstock, Highmaps, Gantt) Rotation of the labels in
-     * degrees. When `undefined`, the `autoRotation` option takes precedence.
+     * degrees. When `undefined`, the `autoRotation` option takes precedence. On
+     * radial axes, labels can be rotated along the axis by setting the rotation
+     * to 'auto'.
      */
-    rotation?: number;
+    rotation?: ("auto"|number);
     /**
      * (Highcharts) If enabled, the axis labels will skewed to follow the
      * perspective.
@@ -108272,6 +108540,12 @@ export interface XAxisOptions {
      * be a boolean or a configuration object similar to xAxis.plotLines.
      */
     currentDateIndicator?: (boolean|CurrentDateIndicatorOptions|CurrentDateIndicatorOptions);
+    /**
+     * (Highcharts, Highstock, Highmaps, Gantt) A reserved subspace to store
+     * options and values for customized functionality. Here you can add
+     * additional data for your own event callbacks and formatter callbacks.
+     */
+    custom?: Dictionary<any>;
     /**
      * (Highcharts, Highstock, Gantt) For a datetime axis, the scale will
      * automatically adjust to the appropriate unit. This member gives the
@@ -109986,9 +110260,11 @@ export interface YAxisLabelsOptions {
     reserveSpace?: boolean;
     /**
      * (Highcharts, Highstock, Highmaps, Gantt) Rotation of the labels in
-     * degrees. When `undefined`, the `autoRotation` option takes precedence.
+     * degrees. When `undefined`, the `autoRotation` option takes precedence. On
+     * radial axes, labels can be rotated along the axis by setting the rotation
+     * to 'auto'.
      */
-    rotation?: number;
+    rotation?: ("auto"|number);
     /**
      * (Highcharts) If enabled, the axis labels will skewed to follow the
      * perspective.
@@ -110187,6 +110463,12 @@ export interface YAxisOptions {
      * `crossing` option.
      */
     crossing?: number;
+    /**
+     * (Highcharts, Highstock, Highmaps, Gantt) A reserved subspace to store
+     * options and values for customized functionality. Here you can add
+     * additional data for your own event callbacks and formatter callbacks.
+     */
+    custom?: Dictionary<any>;
     /**
      * (Highcharts, Highstock, Gantt) For a datetime axis, the scale will
      * automatically adjust to the appropriate unit. This member gives the
@@ -111894,9 +112176,10 @@ export interface ZAxisLabelsOptions {
     reserveSpace?: boolean;
     /**
      * (Highcharts) Rotation of the labels in degrees. When `undefined`, the
-     * `autoRotation` option takes precedence.
+     * `autoRotation` option takes precedence. On radial axes, labels can be
+     * rotated along the axis by setting the rotation to 'auto'.
      */
-    rotation?: number;
+    rotation?: ("auto"|number);
     /**
      * (Highcharts) If enabled, the axis labels will skewed to follow the
      * perspective.
@@ -112040,6 +112323,12 @@ export interface ZAxisOptions {
      * case it is better to place the axes without the `crossing` option.
      */
     crossing?: number;
+    /**
+     * (Highcharts) A reserved subspace to store options and values for
+     * customized functionality. Here you can add additional data for your own
+     * event callbacks and formatter callbacks.
+     */
+    custom?: Dictionary<any>;
     /**
      * (Highcharts, Highstock, Gantt) For a datetime axis, the scale will
      * automatically adjust to the appropriate unit. This member gives the
@@ -113705,6 +113994,11 @@ export class Chart {
      */
     axes: Array<Axis>;
     /**
+     * The chart caption. The caption has an `update` method that allows
+     * modifying the options directly or indirectly via `chart.update`.
+     */
+    caption: CaptionObject;
+    /**
      * The current pixel height of the chart.
      */
     chartHeight: number;
@@ -114716,7 +115010,7 @@ export class Point {
      * The attributes of the rendered SVG shape like in `column` or `pie`
      * series.
      */
-    readonly shapeArgs?: Readonly<SVGAttributes>;
+    shapeArgs?: SVGAttributes;
     /**
      * Pie series only. Whether to display a slice offset from the center.
      */
@@ -115200,6 +115494,11 @@ export class Series {
      * linkedTo option.
      */
     readonly linkedSeries: Array<Series>;
+    /**
+     * The SVG group containing point marker elements that should not be
+     * clipped.
+     */
+    readonly markerGroup: SVGElement;
     /**
      * The series name as given in the options. Defaults to "Series {n}".
      */

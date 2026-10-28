@@ -668,7 +668,7 @@ declare module "../highcharts" {
         /**
          * (Highcharts, Highstock, Gantt) When using automatic point colors
          * pulled from the global colors or series-specific
-         * plotOptions.column.colors collections, this option determines whether
+         * plotOptions.series.colors collections, this option determines whether
          * the chart should receive one color per series or one color per point.
          *
          * In styled mode, the `colors` or `series.colors` arrays are not
@@ -1036,7 +1036,7 @@ declare module "../highcharts" {
          * These options are merged with options in navigator.series, and will
          * take precedence if the same option is defined both places.
          */
-        navigatorOptions?: Highcharts.PlotSeriesOptions;
+        navigatorOptions?: Highcharts.NavigatorSeriesOptions;
         /**
          * (Highcharts, Highstock) The color for the parts of the graph or
          * points that are below the threshold. Note that `zones` takes

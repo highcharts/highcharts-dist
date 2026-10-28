@@ -425,6 +425,14 @@ var AxisDefaults;
          * @apioption xAxis.crosshair.zIndex
          */
         /**
+         * A reserved subspace to store options and values for customized
+         * functionality. Here you can add additional data for your own event
+         * callbacks and formatter callbacks.
+         *
+         * @type      {Highcharts.Dictionary<*>}
+         * @apioption xAxis.custom
+         */
+        /**
          * The value on a perpendicular axis where this axis should cross. This
          * is typically used on mathematical plots where the axes cross at 0.
          * When `crossing` is set, space will not be reserved at the sides of
@@ -1103,12 +1111,13 @@ var AxisDefaults;
             reserveSpace: void 0,
             /**
              * Rotation of the labels in degrees. When `undefined`, the
-             * `autoRotation` option takes precedence.
+             * `autoRotation` option takes precedence. On radial axes, labels
+             * can be rotated along the axis by setting the rotation to 'auto'.
              *
              * @sample {highcharts} highcharts/xaxis/labels-rotation/
              *         X axis labels rotated 90°
              *
-             * @type      {number}
+             * @type      {number|"auto"}
              * @default   0
              * @apioption xAxis.labels.rotation
              */

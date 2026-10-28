@@ -1,5 +1,5 @@
 /**
- * Highcharts JS v13.1.1-modified (2026-10-27)
+ * Highcharts JS v13.1.1-modified (2026-10-28)
  * @module highcharts/modules/dependency-wheel
  * @requires highcharts
  * @requires highcharts/modules/sankey

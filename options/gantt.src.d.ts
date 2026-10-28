@@ -857,7 +857,7 @@ declare module "../highcharts.src" {
          * These options are merged with options in navigator.series, and will
          * take precedence if the same option is defined both places.
          */
-        navigatorOptions?: Highcharts.PlotSeriesOptions;
+        navigatorOptions?: Highcharts.NavigatorSeriesOptions;
         /**
          * (Gantt) Options for the _Series on point_ feature. Only `pie` and
          * `sunburst` series are supported at this moment.

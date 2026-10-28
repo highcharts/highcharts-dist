@@ -55,7 +55,7 @@ declare module "./highcharts.src" {
     }
     interface AxisSetExtremesEventObject extends ExtremesObject {
         preventDefault: Function;
-        target: SVGElement;
+        target: Axis;
         trigger: (string|AxisExtremesTriggerValue);
         type: "setExtremes";
     }
@@ -144,7 +144,7 @@ declare module "./highcharts.src" {
         cursor?: CursorValue;
         fontFamily?: string;
         fontSize?: (number|string);
-        fontWeight?: string;
+        fontWeight?: (number|string);
         height?: number;
         lineClamp?: number;
         lineWidth?: number;
@@ -159,7 +159,7 @@ declare module "./highcharts.src" {
         top?: string;
         transition?: string;
         whiteSpace?: string;
-        width?: number;
+        width?: (number|string);
     }
     interface DataMappingItemObject {
         column?: (number|string);
@@ -231,10 +231,11 @@ declare module "./highcharts.src" {
         symbol?: SVGElement;
     }
     interface LinearGradientColorObject {
-        x1: number;
-        x2: number;
-        y1: number;
-        y2: number;
+        gradientUnits?: ('objectBoundingBox'|'userSpaceOnUse');
+        x1: (number|string);
+        x2: (number|string);
+        y1: (number|string);
+        y2: (number|string);
     }
     interface OffsetObject {
         left: number;
@@ -258,6 +259,8 @@ declare module "./highcharts.src" {
     interface PointerEventObject extends PointerEvent {
         chartX: number;
         chartY: number;
+        xAxis?: Array<PointerAxisCoordinateObject>;
+        yAxis?: Array<PointerAxisCoordinateObject>;
     }
     interface PointEventsOptionsObject {
         /**
@@ -292,9 +295,10 @@ declare module "./highcharts.src" {
         y: number;
     }
     interface RadialGradientColorObject {
-        cx: number;
-        cy: number;
-        r: number;
+        cx: (number|string);
+        cy: (number|string);
+        gradientUnits?: ('objectBoundingBox'|'userSpaceOnUse');
+        r: (number|string);
     }
     interface RangeObject {
         max: number;
@@ -318,12 +322,23 @@ declare module "./highcharts.src" {
         originalEvent: Event;
         preventDefault: Function;
         resetSelection?: boolean;
+        target: Chart;
         xAxis: Array<SelectDataObject>;
         yAxis: Array<SelectDataObject>;
+    }
+    interface SeriesAddPointEventObject {
+        point: Point;
+        target: Series;
+        type: "addPoint";
     }
     interface SeriesAfterAnimateEventObject {
         target: Series;
         type: "afterAnimate";
+    }
+    interface SeriesAfterSetOptionsEventObject {
+        options: SeriesOptionsType;
+        target: Series;
+        type: "afterSetOptions";
     }
     interface SeriesCheckboxClickEventObject {
         checked: boolean;

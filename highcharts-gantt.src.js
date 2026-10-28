@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Gantt JS v13.1.1-modified (2026-10-27)
+ * @license Highcharts Gantt JS v13.1.1-modified (2026-10-28)
  * @module highcharts/highcharts-gantt
  *
  * (c) 2017-2026 Highsoft AS
@@ -3453,7 +3453,7 @@ if (Utilities_win.jQuery) {
 */ /**
 * Font weight of the element text.
 * @name Highcharts.CSSObject#fontWeight
-* @type {string|undefined}
+* @type {string|number|undefined}
 */ /**
 * Height of the element.
 * @name Highcharts.CSSObject#height
@@ -3515,7 +3515,7 @@ if (Utilities_win.jQuery) {
 */ /**
 * Width of the element.
 * @name Highcharts.CSSObject#width
-* @type {number|undefined}
+* @type {number|string|undefined}
 */
 /**
  * All possible cursor styles.
@@ -5297,6 +5297,7 @@ const defaultOptions = {
          *         False
          *
          * @deprecated 12.0.0
+         * @type     {boolean}
          */
         useUTC: void 0
     },
@@ -7418,6 +7419,20 @@ const defaultOptions = {
          */
         headerFormat: '<span style="font-size: 0.8em">{ucfirst point.key}</span><br/>',
         /**
+         * The
+         * [format string](https://www.highcharts.com/docs/chart-concepts/labels-and-string-formatting)
+         * specifying what to show for _nodes_ in a network-type data series,
+         * like sankey, organization, and dependency wheel. This is relevant
+         * when nodes and links require different formatting, where the links
+         * are formatted by `tooltip.pointFormat`.
+         *
+         * @sample highcharts/plotoptions/sankey-link-datalabels/
+         *         Node and link data labels
+         *
+         * @type      {string}
+         * @apioption tooltip.nodeFormat
+         */
+        /**
          * The HTML of the null point's line in the tooltip. Works analogously
          * to [pointFormat](#tooltip.pointFormat).
          *
@@ -8347,38 +8362,55 @@ Color.None = new Color(''); // Must be last static for init
  *
  * @interface Highcharts.LinearGradientColorObject
  */ /**
-* Start horizontal position of the gradient. Float ranges 0-1.
+* Units for the gradient. Can be either 'userSpaceOnUse' or
+* 'objectBoundingBox'.
+* @name Highcharts.LinearGradientColorObject#gradientUnits
+* @type {'userSpaceOnUse'|'objectBoundingBox'|undefined}
+*/ /**
+* Start horizontal position of the gradient. Float ranges 0-1 or percentage
+* strings.
 * @name Highcharts.LinearGradientColorObject#x1
-* @type {number}
+* @type {number|string}
 */ /**
-* End horizontal position of the gradient. Float ranges 0-1.
+* End horizontal position of the gradient. Float ranges 0-1 or percentage
+* strings.
 * @name Highcharts.LinearGradientColorObject#x2
-* @type {number}
+* @type {number|string}
 */ /**
-* Start vertical position of the gradient. Float ranges 0-1.
+* Start vertical position of the gradient. Float ranges 0-1 or percentage
+* strings.
 * @name Highcharts.LinearGradientColorObject#y1
-* @type {number}
+* @type {number|string}
 */ /**
-* End vertical position of the gradient. Float ranges 0-1.
+* End vertical position of the gradient. Float ranges 0-1 or percentage
+* strings.
 * @name Highcharts.LinearGradientColorObject#y2
-* @type {number}
+* @type {number|string}
 */
 /**
  * Defines the center position and the radius for a gradient.
  *
  * @interface Highcharts.RadialGradientColorObject
  */ /**
-* Center horizontal position relative to the shape. Float ranges 0-1.
+* Units for the gradient. Can be either 'userSpaceOnUse' or
+* 'objectBoundingBox'.
+* @name Highcharts.RadialGradientColorObject#gradientUnits
+* @type {'userSpaceOnUse'|'objectBoundingBox'|undefined}
+*/ /**
+* Center horizontal position relative to the shape. Float ranges 0-1
+* or percentage strings.
 * @name Highcharts.RadialGradientColorObject#cx
-* @type {number}
+* @type {number|string}
 */ /**
-* Center vertical position relative to the shape. Float ranges 0-1.
+* Center vertical position relative to the shape. Float ranges 0-1 or
+* percentage strings.
 * @name Highcharts.RadialGradientColorObject#cy
-* @type {number}
+* @type {number|string}
 */ /**
-* Radius relative to the shape. Float ranges 0-1.
+* Radius relative to the shape. Float ranges 0-1 or percentage
+* strings.
 * @name Highcharts.RadialGradientColorObject#r
-* @type {number}
+* @type {number|string}
 */
 /**
  * @interface Highcharts.RGBA
@@ -16458,6 +16490,14 @@ var AxisDefaults;
          * @apioption xAxis.crosshair.zIndex
          */
         /**
+         * A reserved subspace to store options and values for customized
+         * functionality. Here you can add additional data for your own event
+         * callbacks and formatter callbacks.
+         *
+         * @type      {Highcharts.Dictionary<*>}
+         * @apioption xAxis.custom
+         */
+        /**
          * The value on a perpendicular axis where this axis should cross. This
          * is typically used on mathematical plots where the axes cross at 0.
          * When `crossing` is set, space will not be reserved at the sides of
@@ -17136,12 +17176,13 @@ var AxisDefaults;
             reserveSpace: void 0,
             /**
              * Rotation of the labels in degrees. When `undefined`, the
-             * `autoRotation` option takes precedence.
+             * `autoRotation` option takes precedence. On radial axes, labels
+             * can be rotated along the axis by setting the rotation to 'auto'.
              *
              * @sample {highcharts} highcharts/xaxis/labels-rotation/
              *         X axis labels rotated 90°
              *
-             * @type      {number}
+             * @type      {number|"auto"}
              * @default   0
              * @apioption xAxis.labels.rotation
              */
@@ -23225,7 +23266,7 @@ class Axis {
 * @type {Function}
 */ /**
 * @name Highcharts.AxisSetExtremesEventObject#target
-* @type {Highcharts.SVGElement}
+* @type {Highcharts.Axis}
 */ /**
 * @name Highcharts.AxisSetExtremesEventObject#trigger
 * @type {Highcharts.AxisExtremesTriggerValue|string}
@@ -25371,6 +25412,8 @@ class Tooltip {
                 css(container, {
                     position: 'absolute',
                     top: '1px',
+                    width: 'auto',
+                    height: 'auto',
                     pointerEvents: 'none',
                     zIndex: Math.max(options.style.zIndex || 0, (chartStyle?.zIndex || 0) + 3)
                 });
@@ -26702,9 +26745,8 @@ class Point {
      * The attributes of the rendered SVG shape like in `column` or `pie`
      * series.
      *
-     * @readonly
      * @name Highcharts.Point#shapeArgs
-     * @type {Readonly<Highcharts.SVGAttributes>|undefined}
+     * @type {Highcharts.SVGAttributes|undefined}
      */
     /**
      * Defines the tooltip's position for a data point in a chart. It is an
@@ -29518,6 +29560,16 @@ Pointer.unbindDocumentMouseUp = [];
 *
 * @name Highcharts.PointerEventObject#chartY
 * @type {number}
+*/ /**
+* Axis positions on the x-axis, when available for a chart click.
+*
+* @name Highcharts.PointerEventObject#xAxis
+* @type {Array<Highcharts.PointerAxisCoordinateObject>|undefined}
+*/ /**
+* Axis positions on the y-axis, when available for a chart click.
+*
+* @name Highcharts.PointerEventObject#yAxis
+* @type {Array<Highcharts.PointerAxisCoordinateObject>|undefined}
 */
 /**
  * Axis-specific data of a selection.
@@ -29554,6 +29606,10 @@ Pointer.unbindDocumentMouseUp = [];
 * Indicates a reset event to restore default state.
 * @name Highcharts.SelectEventObject#resetSelection
 * @type {boolean|undefined}
+*/ /**
+* The Chart that the selection belongs to.
+* @name Highcharts.SelectEventObject#target
+* @type {Highcharts.Chart}
 */ /**
 * Arrays containing the axes of each dimension and each axis' min and max
 * values.
@@ -30430,6 +30486,8 @@ const seriesDefaults = {
      *         One specific series
      * @sample {highcharts} highcharts/plotoptions/series-color-area/
      *         Area color
+     * @sample {highcharts} highcharts/plotoptions/column-color-gradient/
+     *         Columns with gradient fill
      * @sample {highcharts} highcharts/series/infographic/
      *         Pattern fill
      * @sample {highmaps} maps/demo/category-map/
@@ -30438,6 +30496,30 @@ const seriesDefaults = {
      * @basic
      * @type      {Highcharts.ColorType}
      * @apioption plotOptions.series.color
+     */
+    /**
+     * When using automatic point colors pulled from the global
+     * [colors](colors) or series-specific
+     * [plotOptions.series.colors](series.colors) collections, this option
+     * determines whether the chart should receive one color per series or
+     * one color per point.
+     *
+     * In styled mode, the `colors` or `series.colors` arrays are not
+     * supported, and instead this option gives the points individual color
+     * class names on the form `highcharts-color-{n}`.
+     *
+     * @see [series colors](#plotOptions.series.colors)
+     *
+     * @sample {highcharts} highcharts/plotoptions/column-colorbypoint-false/
+     *         False by default
+     * @sample {highcharts} highcharts/plotoptions/column-colorbypoint-true/
+     *         True
+     *
+     * @type      {boolean}
+     * @default   false
+     * @since     2.0
+     * @product   highcharts highstock gantt
+     * @apioption plotOptions.series.colorByPoint
      */
     /**
      * Styled mode only. A specific color index to use for the series, so its
@@ -30452,6 +30534,16 @@ const seriesDefaults = {
      * @type      {number}
      * @since     5.0.0
      * @apioption plotOptions.series.colorIndex
+     */
+    /**
+     * A series specific or series type specific color set to apply instead
+     * of the global [colors](#colors) when [colorByPoint](
+     * #plotOptions.series.colorByPoint) is true.
+     *
+     * @type      {Array<Highcharts.ColorType>}
+     * @since     3.0
+     * @product   highcharts highstock gantt
+     * @apioption plotOptions.series.colors
      */
     /**
      * Whether to connect a graph line across null points, or render a gap
@@ -30744,7 +30836,7 @@ const seriesDefaults = {
      *
      * @see [navigator.series](#navigator.series)
      *
-     * @type      {Highcharts.PlotSeriesOptions}
+     * @type      {Highcharts.NavigatorSeriesOptions}
      * @since     5.0.0
      * @product   highstock gantt
      * @apioption plotOptions.series.navigatorOptions
@@ -33048,6 +33140,14 @@ class Series {
      * @readonly
      */
     /**
+     * The SVG group containing point marker elements that should not be
+     * clipped.
+     *
+     * @name Highcharts.Series#markerGroup
+     * @type {Highcharts.SVGElement}
+     * @readonly
+     */
+    /**
      * The series name as given in the options. Defaults to
      * "Series {n}".
      *
@@ -34070,8 +34170,7 @@ class Series {
         const { chart } = this, queueRedraw = () => {
             clearTimeout(chart.redrawTimeout);
             chart.redrawTimeout = setTimeout(() => chart.renderer && chart.redraw(), 0);
-        };
-        addEvent(dataTable, 'afterSetRows', (e) => {
+        }, onSetRow = (e) => {
             const rowIndex = e.rowIndex;
             if (isNumber(rowIndex)) {
                 const row = Data_DataTableCore.prototype.getRowObject.call({ columns }, rowIndex), point = this.data[rowIndex];
@@ -34092,7 +34191,9 @@ class Series {
                     }
                 }
             }
-        });
+        };
+        addEvent(dataTable, 'afterSetCell', onSetRow);
+        addEvent(dataTable, 'afterSetRows', onSetRow);
         addEvent(dataTable, 'afterDeleteRows', (e) => {
             const { rowCount, rowIndex } = e;
             if (isNumber(rowIndex)) {
@@ -36588,6 +36689,70 @@ Series_SeriesRegistry.series = Series;
 * Defaults to the first data table.
 * @name Highcharts.DataMappingItemObject#dataTable
 * @type {number|string|undefined}
+*/
+/**
+ * Function callback when adding a point
+ *
+ * @callback Highcharts.SeriesAddPointCallbackFunction
+ *
+ * @param {Highcharts.Series} this
+ *        The series where the event occurred.
+ *
+ * @param {Highcharts.SeriesAddPointEventObject} event
+ *        Event arguments.
+ *
+ * @param {Highcharts.Series} [ctx]
+ *        Since v12.6.0, the series context passed as an extra argument for
+ *        arrow functions.
+ */
+/**
+ * Event information regarding adding a point to a series.
+ *
+ * @interface Highcharts.SeriesAddPointEventObject
+ */ /**
+* Point that was added to the series.
+* @name Highcharts.SeriesAddPointEventObject#point
+* @type {Highcharts.Point}
+*/ /**
+* Series to which the point was added.
+* @name Highcharts.SeriesAddPointEventObject#target
+* @type {Highcharts.Series}
+*/ /**
+* Event type.
+* @name Highcharts.SeriesAddPointEventObject#type
+* @type {"addPoint"}
+*/
+/**
+ * Function callback when the series has set its options.
+ *
+ * @callback Highcharts.SeriesAfterSetOptionsCallbackFunction
+ *
+ * @param {Highcharts.Series} this
+ *        The series where the event occurred.
+ *
+ * @param {Highcharts.SeriesAfterSetOptionsEventObject} event
+ *        Event arguments.
+ *
+ * @param {Highcharts.Series} [ctx]
+ *        Since v12.6.0, the series context passed as an extra argument for
+ *        arrow functions.
+ */
+/**
+ * Event information regarding the options after a series has been set.
+ *
+ * @interface Highcharts.SeriesAfterSetOptionsEventObject
+ */ /**
+* Series whose options were updated.
+* @name Highcharts.SeriesAfterSetOptionsEventObject#target
+* @type {Highcharts.Series}
+*/ /**
+* The final merged series options.
+* @name Highcharts.SeriesAfterSetOptionsEventObject#options
+* @type {Highcharts.SeriesOptionsType}
+*/ /**
+* Event type.
+* @name Highcharts.SeriesAfterSetOptionsEventObject#type
+* @type {"afterSetOptions"}
 */
 /**
  * Function callback when a series has been animated.
@@ -39170,6 +39335,14 @@ class Chart {
              *
              * @name Highcharts.Chart#subtitle
              * @type {Highcharts.SubtitleObject}
+             */
+            /**
+             * The chart caption. The caption has an `update` method that
+             * allows modifying the options directly or indirectly via
+             * `chart.update`.
+             *
+             * @name Highcharts.Chart#caption
+             * @type {Highcharts.CaptionObject}
              */
             this[key] = elem;
         }
@@ -44088,40 +44261,6 @@ const ColumnSeriesDefaults = {
      * @product highcharts highstock gantt
      */
     borderRadius: 3,
-    /**
-     * When using automatic point colors pulled from the global
-     * [colors](colors) or series-specific
-     * [plotOptions.column.colors](series.colors) collections, this option
-     * determines whether the chart should receive one color per series or
-     * one color per point.
-     *
-     * In styled mode, the `colors` or `series.colors` arrays are not
-     * supported, and instead this option gives the points individual color
-     * class names on the form `highcharts-color-{n}`.
-     *
-     * @see [series colors](#plotOptions.column.colors)
-     *
-     * @sample {highcharts} highcharts/plotoptions/column-colorbypoint-false/
-     *         False by default
-     * @sample {highcharts} highcharts/plotoptions/column-colorbypoint-true/
-     *         True
-     *
-     * @type      {boolean}
-     * @default   false
-     * @since     2.0
-     * @product   highcharts highstock gantt
-     * @apioption plotOptions.column.colorByPoint
-     */
-    /**
-     * A series specific or series type specific color set to apply instead
-     * of the global [colors](#colors) when [colorByPoint](
-     * #plotOptions.column.colorByPoint) is true.
-     *
-     * @type      {Array<Highcharts.ColorType>}
-     * @since     3.0
-     * @product   highcharts highstock gantt
-     * @apioption plotOptions.column.colors
-     */
     /**
      * When `true`, the columns will center in the category, ignoring null
      * or missing points. When `false`, space will be reserved for null or
@@ -49376,7 +49515,7 @@ var Responsive;
 ;// ./code/es-modules/masters/highcharts.src.js
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-27)
+ * @license Highcharts JS v13.1.1-modified (2026-10-28)
  * @module highcharts/highcharts
  *
  * (c) 2009-2026 Highsoft AS
@@ -50823,6 +50962,7 @@ const NavigatorDefaults = {
          * @sample {highstock} stock/navigator/handles-border-radius/
          *      Border radius on the navigator handles.
          *
+         * @type {number|string}
          * @since 11.4.2
          */
         borderRadius: 0,
@@ -58267,7 +58407,7 @@ Pathfinder.prototype.algorithms = PathfinderAlgorithms;
 /* unused harmony import specifier */ var Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Gantt JS v13.1.1-modified (2026-10-27)
+ * @license Highcharts Gantt JS v13.1.1-modified (2026-10-28)
  * @module highcharts/modules/pathfinder
  * @requires highcharts
  *
@@ -58400,7 +58540,7 @@ function chartAdjustHeight() {
 /* unused harmony import specifier */ var static_scale_src_Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Gantt JS v13.1.1-modified (2026-10-27)
+ * @license Highcharts Gantt JS v13.1.1-modified (2026-10-28)
  * @module highcharts/modules/static-scale
  * @requires highcharts
  *
@@ -59229,7 +59369,7 @@ Series_SeriesRegistry.registerSeriesType('xrange', XRangeSeries);
 /* unused harmony import specifier */ var xrange_src_Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-27)
+ * @license Highcharts JS v13.1.1-modified (2026-10-28)
  * @module highcharts/modules/xrange
  * @requires highcharts
  *
@@ -62754,7 +62894,7 @@ Series_SeriesRegistry.registerSeriesType('gantt', GanttSeries);
 /* unused harmony import specifier */ var gantt_src_Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Gantt JS v13.1.1-modified (2026-10-27)
+ * @license Highcharts Gantt JS v13.1.1-modified (2026-10-28)
  * @module highcharts/modules/gantt
  * @requires highcharts
  *

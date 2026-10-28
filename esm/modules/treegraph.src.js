@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-27)
+ * @license Highcharts JS v13.1.1-modified (2026-10-28)
  * Treegraph chart series type
  * @module highcharts/modules/treegraph
  * @requires highcharts
@@ -1271,7 +1271,7 @@ class TreegraphLayout {
  *               colorKey, compare, dataGrouping, endAngle, gapSize, gapUnit,
  *               ignoreHiddenPoint, innerSize, joinBy, legendType, linecap,
  *               minSize, navigatorOptions, pointRange, allowTraversingTree,
- *               alternateStartingDirection, borderRadius, breadcrumbs,
+ *               alternateStartingDirection, breadcrumbs,
  *               interactByLeaf, layoutStartingDirection, levelIsConstant,
  *               lineWidth, negativeColor, nodes, nodeSizeBy, sortIndex,
  *               zoneAxis, zones, cluster

@@ -10,11 +10,6 @@
  *
  * */
 'use strict';
-/* *
-*
-*  Imports
-*
-* */
 import ScatterSeries from '../Scatter/ScatterSeries.js';
 /* *
  *
@@ -27,10 +22,6 @@ const ScatterPoint = ScatterSeries.prototype.pointClass;
  *  Class
  *
  * */
-/**
- * @private
- * @class
- */
 class PointAndFigurePoint extends ScatterPoint {
     /* *
      *
@@ -51,8 +42,7 @@ class PointAndFigurePoint extends ScatterPoint {
     }
     /**
      * Extend the parent method by adding up or down to the class name.
-     * @private
-     * @function Highcharts.seriesTypes.pointandfigure#getClassName
+     * @internal
      */
     getClassName() {
         return super.getClassName.call(this) +

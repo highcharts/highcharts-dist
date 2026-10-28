@@ -42,7 +42,6 @@ const { composed } = H;
 /**
  * The series type
  *
- * @private
  * @class
  * @name Highcharts.seriesTypes.pointandfigure
  *
@@ -56,6 +55,7 @@ class PointAndFigureSeries extends ScatterSeries {
          *
         * */
         super(...arguments);
+        /** @internal */
         this.allowDG = false;
     }
     /* *
@@ -97,7 +97,7 @@ class PointAndFigureSeries extends ScatterSeries {
         let upTrend;
         /**
          * Get the Y value of last data point, from the last PNF group.
-         * @private
+         * @internal
          * @function Highcharts.seriesTypes.pointandfigure#getLastPoint
          */
         function getLastPoint(pnfDataGroups) {
@@ -106,7 +106,7 @@ class PointAndFigureSeries extends ScatterSeries {
         }
         /**
          * Push new data point to the last PNF group.
-         * @private
+         * @internal
          * @function Highcharts.seriesTypes.pointandfigure#pushNewPoint
          */
         function pushNewPoint(y, upTrend, lastPoint) {

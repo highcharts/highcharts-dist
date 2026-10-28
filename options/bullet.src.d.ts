@@ -614,7 +614,7 @@ declare module "../highcharts.src" {
         /**
          * (Highcharts, Highstock, Gantt) When using automatic point colors
          * pulled from the global colors or series-specific
-         * plotOptions.column.colors collections, this option determines whether
+         * plotOptions.series.colors collections, this option determines whether
          * the chart should receive one color per series or one color per point.
          *
          * In styled mode, the `colors` or `series.colors` arrays are not

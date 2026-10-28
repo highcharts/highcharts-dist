@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-27)
+ * @license Highcharts JS v13.1.1-modified (2026-10-28)
  * @module highcharts/modules/pyramid3d
  * @requires highcharts
  * @requires highcharts/highcharts-3d
@@ -97,6 +97,15 @@ var external_highcharts_src_js_default_default = /*#__PURE__*/__webpack_require_
  * @optionparent plotOptions.pyramid3d
  */
 const Pyramid3DSeriesDefaults = {
+    /**
+     * The center of the series. By default, it is centered in the middle
+     * of the plot area, so it fills the plot area height.
+     *
+     * @type    {Array<number|string>}
+     * @default ["50%", "50%"]
+     * @since   7.1.0
+     */
+    center: ['50%', '50%'],
     /**
      * A reversed pyramid3d is funnel3d, but the latter supports neck
      * related options: neckHeight and neckWidth

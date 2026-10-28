@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-27)
+ * @license Highcharts JS v13.1.1-modified (2026-10-28)
  * @module highcharts/modules/annotations
  * @requires highcharts
  *
@@ -682,6 +682,12 @@ const AnnotationDefaults = {
      * @extends annotations.controlPointOptions
      * @type {Array<AnnotationControlPointOptionsObject>}
      * @apioption annotations.labels.controlPoints
+     */
+    /**
+     * An id for later identification of the annotation label.
+     *
+     * @type {string}
+     * @apioption annotations.labels.id
      */
     /**
      * This option defines the point to which the label will be
@@ -2015,10 +2021,10 @@ class MockPoint {
  *
  * @interface Highcharts.AnnotationMockPointOptionsObject
  */ /**
-* The x position of the point. Units can be either in axis
-* or chart pixel coordinates.
+* The x position of the point. Units can be either in axis or chart pixel
+* coordinates. Date strings can be used for datetime axes.
 *
-* @type      {number}
+* @type      {number|string}
 * @name      Highcharts.AnnotationMockPointOptionsObject.x
 */ /**
 * The y position of the point. Units can be either in axis
@@ -2033,7 +2039,7 @@ class MockPoint {
 * is not found the point's x coordinate refers to the chart
 * pixels.
 *
-* @type      {number|string|null}
+* @type      {number|string|null|undefined}
 * @name      Highcharts.AnnotationMockPointOptionsObject.xAxis
 */ /**
 * This option defines which `yAxis` the point is connected to.
@@ -2042,7 +2048,7 @@ class MockPoint {
 * is not found the point's y coordinate refers to the chart
 * pixels.
 *
-* @type      {number|string|null}
+* @type      {number|string|null|undefined}
 * @name      Highcharts.AnnotationMockPointOptionsObject.yAxis
 */
 /**

@@ -68,7 +68,7 @@ const HistogramSeriesDefaults = {
  * specified, it is inherited from [chart.type](#chart.type).
  *
  * @extends   series,plotOptions.histogram
- * @excluding data, boostThreshold, boostBlending
+ * @excluding boostThreshold, boostBlending
  * @product   highcharts
  * @since     6.0.0
  * @requires  modules/histogram-bellcurve

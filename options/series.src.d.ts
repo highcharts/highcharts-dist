@@ -673,6 +673,17 @@ declare module "../highcharts.src" {
          */
         colorAxis?: (boolean|number|string);
         /**
+         * (Highcharts, Highstock, Gantt) When using automatic point colors
+         * pulled from the global colors or series-specific
+         * plotOptions.series.colors collections, this option determines whether
+         * the chart should receive one color per series or one color per point.
+         *
+         * In styled mode, the `colors` or `series.colors` arrays are not
+         * supported, and instead this option gives the points individual color
+         * class names on the form `highcharts-color-{n}`.
+         */
+        colorByPoint?: boolean;
+        /**
          * (Highcharts, Highstock, Highmaps, Gantt) Styled mode only. A specific
          * color index to use for the series, so its graphic representations are
          * given the class name `highcharts-color-{n}`.
@@ -688,6 +699,12 @@ declare module "../highcharts.src" {
          * approximation for data grouping is set to `'sum'`.
          */
         colorKey?: string;
+        /**
+         * (Highcharts, Highstock, Gantt) A series specific or series type
+         * specific color set to apply instead of the global colors when
+         * colorByPoint is true.
+         */
+        colors?: Array<Highcharts.ColorType>;
         /**
          * (Highstock) Compare the values of the series against the first
          * non-null, non- zero value in the visible range. The y axis will show
@@ -1076,7 +1093,7 @@ declare module "../highcharts.src" {
          * These options are merged with options in navigator.series, and will
          * take precedence if the same option is defined both places.
          */
-        navigatorOptions?: Highcharts.PlotSeriesOptions;
+        navigatorOptions?: Highcharts.NavigatorSeriesOptions;
         /**
          * (Highcharts, Highstock, Highmaps, Gantt) The color for the parts of
          * the graph or points that are below the threshold. Note that `zones`

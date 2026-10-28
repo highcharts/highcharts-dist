@@ -969,7 +969,7 @@ declare module "../highcharts.src" {
          * These options are merged with options in navigator.series, and will
          * take precedence if the same option is defined both places.
          */
-        navigatorOptions?: Highcharts.PlotSeriesOptions;
+        navigatorOptions?: Highcharts.NavigatorSeriesOptions;
         /**
          * (Highcharts, Highstock) Whether or not data-points with the value of
          * `null` should be interactive. When this is set to `true`, tooltips

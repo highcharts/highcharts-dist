@@ -582,6 +582,10 @@ declare module "../highcharts" {
          */
         borderColor?: Highcharts.ColorString;
         /**
+         * (Highcharts) The border radius for each treemap item.
+         */
+        borderRadius?: number;
+        /**
          * (Highcharts) The width of the border surrounding each tree map item.
          */
         borderWidth?: number;

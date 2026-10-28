@@ -867,7 +867,7 @@ declare module "../highcharts.src" {
          * These options are merged with options in navigator.series, and will
          * take precedence if the same option is defined both places.
          */
-        navigatorOptions?: Highcharts.PlotSeriesOptions;
+        navigatorOptions?: Highcharts.NavigatorSeriesOptions;
         /**
          * (Highstock) The color for the parts of the graph or points that are
          * below the threshold. Note that `zones` takes precedence over the
@@ -1341,10 +1341,6 @@ declare module "../highcharts.src" {
      *
      */
     interface SeriesFlagsOptions extends Highcharts.PlotFlagsOptions, Highcharts.SeriesOptions {
-        /**
-         * Not available
-         */
-        colorByPoint?: undefined;
         /**
          * (Highstock) An array of data points for the series. For the `flags`
          * series type, points can be given in the following ways:

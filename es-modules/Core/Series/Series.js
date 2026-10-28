@@ -181,6 +181,14 @@ class Series {
      * @readonly
      */
     /**
+     * The SVG group containing point marker elements that should not be
+     * clipped.
+     *
+     * @name Highcharts.Series#markerGroup
+     * @type {Highcharts.SVGElement}
+     * @readonly
+     */
+    /**
      * The series name as given in the options. Defaults to
      * "Series {n}".
      *
@@ -1203,8 +1211,7 @@ class Series {
         const { chart } = this, queueRedraw = () => {
             clearTimeout(chart.redrawTimeout);
             chart.redrawTimeout = setTimeout(() => chart.renderer && chart.redraw(), 0);
-        };
-        addEvent(dataTable, 'afterSetRows', (e) => {
+        }, onSetRow = (e) => {
             const rowIndex = e.rowIndex;
             if (isNumber(rowIndex)) {
                 const row = DataTableCore.prototype.getRowObject.call({ columns }, rowIndex), point = this.data[rowIndex];
@@ -1225,7 +1232,9 @@ class Series {
                     }
                 }
             }
-        });
+        };
+        addEvent(dataTable, 'afterSetCell', onSetRow);
+        addEvent(dataTable, 'afterSetRows', onSetRow);
         addEvent(dataTable, 'afterDeleteRows', (e) => {
             const { rowCount, rowIndex } = e;
             if (isNumber(rowIndex)) {
@@ -3721,6 +3730,70 @@ export default Series;
 * Defaults to the first data table.
 * @name Highcharts.DataMappingItemObject#dataTable
 * @type {number|string|undefined}
+*/
+/**
+ * Function callback when adding a point
+ *
+ * @callback Highcharts.SeriesAddPointCallbackFunction
+ *
+ * @param {Highcharts.Series} this
+ *        The series where the event occurred.
+ *
+ * @param {Highcharts.SeriesAddPointEventObject} event
+ *        Event arguments.
+ *
+ * @param {Highcharts.Series} [ctx]
+ *        Since v12.6.0, the series context passed as an extra argument for
+ *        arrow functions.
+ */
+/**
+ * Event information regarding adding a point to a series.
+ *
+ * @interface Highcharts.SeriesAddPointEventObject
+ */ /**
+* Point that was added to the series.
+* @name Highcharts.SeriesAddPointEventObject#point
+* @type {Highcharts.Point}
+*/ /**
+* Series to which the point was added.
+* @name Highcharts.SeriesAddPointEventObject#target
+* @type {Highcharts.Series}
+*/ /**
+* Event type.
+* @name Highcharts.SeriesAddPointEventObject#type
+* @type {"addPoint"}
+*/
+/**
+ * Function callback when the series has set its options.
+ *
+ * @callback Highcharts.SeriesAfterSetOptionsCallbackFunction
+ *
+ * @param {Highcharts.Series} this
+ *        The series where the event occurred.
+ *
+ * @param {Highcharts.SeriesAfterSetOptionsEventObject} event
+ *        Event arguments.
+ *
+ * @param {Highcharts.Series} [ctx]
+ *        Since v12.6.0, the series context passed as an extra argument for
+ *        arrow functions.
+ */
+/**
+ * Event information regarding the options after a series has been set.
+ *
+ * @interface Highcharts.SeriesAfterSetOptionsEventObject
+ */ /**
+* Series whose options were updated.
+* @name Highcharts.SeriesAfterSetOptionsEventObject#target
+* @type {Highcharts.Series}
+*/ /**
+* The final merged series options.
+* @name Highcharts.SeriesAfterSetOptionsEventObject#options
+* @type {Highcharts.SeriesOptionsType}
+*/ /**
+* Event type.
+* @name Highcharts.SeriesAfterSetOptionsEventObject#type
+* @type {"afterSetOptions"}
 */
 /**
  * Function callback when a series has been animated.

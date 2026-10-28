@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-27)
+ * @license Highcharts JS v13.1.1-modified (2026-10-28)
  * @module highcharts/modules/funnel3d
  * @requires highcharts
  * @requires highcharts/highcharts-3d
@@ -396,10 +396,10 @@ class SVGElement3DFunnel extends SVG_SVGElement3D {
             for (const sideGroupName of funnel3d.sideGroups) {
                 const box = funnel3d[sideGroupName].gradientBox, gradient = fillColor.linearGradient, alteredGradient = (0,external_highcharts_src_js_default_namespaceObject.merge)(fillColor, {
                     linearGradient: {
-                        x1: box.x + gradient.x1 * box.width,
-                        y1: box.y + gradient.y1 * box.height,
-                        x2: box.x + gradient.x2 * box.width,
-                        y2: box.y + gradient.y2 * box.height
+                        x1: box.x + Number(gradient.x1) * box.width,
+                        y1: box.y + Number(gradient.y1) * box.height,
+                        x2: box.x + Number(gradient.x2) * box.width,
+                        y2: box.y + Number(gradient.y2) * box.height
                     }
                 });
                 for (const partName of funnel3d.sideParts[sideGroupName]) {
@@ -697,7 +697,14 @@ function rendererFunnel3dPath(shapeArgs) {
  */
 const Funnel3DSeriesDefaults = {
     animation: false,
-    /** @ignore-option */
+    /**
+     * The center of the series. By default, it is centered in the middle
+     * of the plot area, so it fills the plot area height.
+     *
+     * @type    {Array<number|string>}
+     * @default ["50%", "50%"]
+     * @since   7.1.0
+     */
     center: ['50%', '50%'],
     colorByPoint: true,
     dataLabels: {

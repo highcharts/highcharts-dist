@@ -444,7 +444,7 @@ declare module "../highcharts.src" {
         /**
          * (Highcharts, Highstock, Gantt) When using automatic point colors
          * pulled from the global colors or series-specific
-         * plotOptions.column.colors collections, this option determines whether
+         * plotOptions.series.colors collections, this option determines whether
          * the chart should receive one color per series or one color per point.
          *
          * In styled mode, the `colors` or `series.colors` arrays are not
@@ -725,11 +725,16 @@ declare module "../highcharts.src" {
          */
         nodePadding?: number;
         /**
-         * (Highcharts) In a horizontal chart, the width of the nodes in pixels.
+         * (Highcharts) In a horizontal chart, the width of the nodes.
+         *
+         * A number signifies pixels, a percentage string specifies a percentage
+         * of the plot area width. When 'auto', the nodes are evenly distributed
+         * across the width of the plot area.
+         *
          * Note that most organization charts are inverted (vertical), so the
          * name of this option is counterintuitive.
          */
-        nodeWidth?: number;
+        nodeWidth?: (number|string);
         /**
          * (Highcharts, Highstock) Whether or not data-points with the value of
          * `null` should be interactive. When this is set to `true`, tooltips

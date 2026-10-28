@@ -662,7 +662,7 @@ declare module "../highcharts.src" {
         /**
          * (Highcharts, Highstock, Gantt) When using automatic point colors
          * pulled from the global colors or series-specific
-         * plotOptions.column.colors collections, this option determines whether
+         * plotOptions.series.colors collections, this option determines whether
          * the chart should receive one color per series or one color per point.
          *
          * In styled mode, the `colors` or `series.colors` arrays are not
@@ -1375,10 +1375,6 @@ declare module "../highcharts.src" {
          * series, or a string representing the id of the series.
          */
         baseSeries?: (number|string);
-        /**
-         * Not available
-         */
-        data?: undefined;
         /**
          * (Highcharts, Highstock, Highmaps, Gantt) This property is only in
          * TypeScript non-optional and might be `undefined` in series objects

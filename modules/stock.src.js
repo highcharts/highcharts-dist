@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.1.1-modified (2026-10-27)
+ * @license Highstock JS v13.1.1-modified (2026-10-28)
  * @module highcharts/modules/stock
  * @requires highcharts
  *
@@ -1179,6 +1179,7 @@ const NavigatorDefaults = {
          * @sample {highstock} stock/navigator/handles-border-radius/
          *      Border radius on the navigator handles.
          *
+         * @type {number|string}
          * @since 11.4.2
          */
         borderRadius: 0,
@@ -11641,6 +11642,13 @@ const FlagsSeriesDefaults = {
  * @apioption series.flags.data.fillColor
  */
 /**
+ * The shape of an individual flag.
+ *
+ * @type      {string}
+ * @product   highstock
+ * @apioption series.flags.data.shape
+ */
+/**
  * The longer text to be shown in the flag's tooltip.
  *
  * @type      {string}
@@ -12916,7 +12924,7 @@ var BrokenAxis;
 /* unused harmony import specifier */ var Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-27)
+ * @license Highcharts JS v13.1.1-modified (2026-10-28)
  * @module highcharts/modules/broken-axis
  * @requires highcharts
  *
@@ -14593,7 +14601,7 @@ const DataGroupingComposition = {
 /* unused harmony import specifier */ var datagrouping_src_Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.1.1-modified (2026-10-27)
+ * @license Highstock JS v13.1.1-modified (2026-10-28)
  * @module highcharts/modules/datagrouping
  * @requires highcharts
  *
@@ -14958,7 +14966,7 @@ const MouseWheelZoomComposition = {
 /* unused harmony import specifier */ var mouse_wheel_zoom_src_Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-27)
+ * @license Highcharts JS v13.1.1-modified (2026-10-28)
  * @module highcharts/modules/mouse-wheel-zoom
  * @requires highcharts
  *

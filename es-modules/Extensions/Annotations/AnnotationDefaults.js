@@ -365,6 +365,12 @@ const AnnotationDefaults = {
      * @apioption annotations.labels.controlPoints
      */
     /**
+     * An id for later identification of the annotation label.
+     *
+     * @type {string}
+     * @apioption annotations.labels.id
+     */
+    /**
      * This option defines the point to which the label will be
      * connected. It can be either the point which exists in the
      * series - it is referenced by the point's id - or a new point

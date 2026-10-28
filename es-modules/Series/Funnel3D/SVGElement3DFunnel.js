@@ -137,10 +137,10 @@ class SVGElement3DFunnel extends SVGElement3D {
             for (const sideGroupName of funnel3d.sideGroups) {
                 const box = funnel3d[sideGroupName].gradientBox, gradient = fillColor.linearGradient, alteredGradient = merge(fillColor, {
                     linearGradient: {
-                        x1: box.x + gradient.x1 * box.width,
-                        y1: box.y + gradient.y1 * box.height,
-                        x2: box.x + gradient.x2 * box.width,
-                        y2: box.y + gradient.y2 * box.height
+                        x1: box.x + Number(gradient.x1) * box.width,
+                        y1: box.y + Number(gradient.y1) * box.height,
+                        x2: box.x + Number(gradient.x2) * box.width,
+                        y2: box.y + Number(gradient.y2) * box.height
                     }
                 });
                 for (const partName of funnel3d.sideParts[sideGroupName]) {

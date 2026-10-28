@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-27)
+ * @license Highcharts JS v13.1.1-modified (2026-10-28)
  * Organization chart series type
  * @module highcharts/modules/organization
  * @requires highcharts
@@ -563,12 +563,17 @@ const OrganizationSeriesDefaults = {
      */
     minNodeLength: 10,
     /**
-     * In a horizontal chart, the width of the nodes in pixels. Note that
-     * most organization charts are inverted (vertical), so the name of this
-     * option is counterintuitive.
+     * In a horizontal chart, the width of the nodes.
+     *
+     * A number signifies pixels, a percentage string specifies a percentage of
+     * the [plot area](#chart.plotWidth) width. When 'auto', the nodes are evenly
+     * distributed across the width of the plot area.
+     *
+     * Note that most organization charts are inverted (vertical), so the name
+     * of this option is counterintuitive.
      *
      * @see [minNodeLength](#plotOptions.organization.minNodeLength)
-     *
+     * @type {number|string}
      * @private
      */
     nodeWidth: 50,

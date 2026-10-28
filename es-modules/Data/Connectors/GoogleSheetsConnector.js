@@ -126,7 +126,7 @@ class GoogleSheetsConnector extends DataConnector {
             });
             // Polling
             if (enablePolling) {
-                setTimeout(() => connector.load(), Math.max(dataRefreshRate || 0, 1) * 1000);
+                setTimeout(() => connector.load(), DataConnector.getPollingInterval(dataRefreshRate));
             }
             return connector;
         })['catch']((error) => {

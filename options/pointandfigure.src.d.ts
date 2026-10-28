@@ -674,6 +674,17 @@ declare module "../highcharts.src" {
          */
         colorAxis?: (boolean|number|string);
         /**
+         * (Highcharts, Highstock, Gantt) When using automatic point colors
+         * pulled from the global colors or series-specific
+         * plotOptions.series.colors collections, this option determines whether
+         * the chart should receive one color per series or one color per point.
+         *
+         * In styled mode, the `colors` or `series.colors` arrays are not
+         * supported, and instead this option gives the points individual color
+         * class names on the form `highcharts-color-{n}`.
+         */
+        colorByPoint?: boolean;
+        /**
          * (Highstock) Styled mode only. A specific color index to use for the
          * series, so its graphic representations are given the class name
          * `highcharts-color-{n}`.
@@ -689,6 +700,12 @@ declare module "../highcharts.src" {
          * approximation for data grouping is set to `'sum'`.
          */
         colorKey?: string;
+        /**
+         * (Highcharts, Highstock, Gantt) A series specific or series type
+         * specific color set to apply instead of the global colors when
+         * colorByPoint is true.
+         */
+        colors?: Array<Highcharts.ColorType>;
         /**
          * (Highcharts, Highstock) Whether to connect a graph line across null
          * points, or render a gap between the two points on either side of the
@@ -954,20 +971,12 @@ declare module "../highcharts.src" {
          */
         linkedTo?: string;
         /**
-         * (Highstock) Options for the point markers of line and scatter-like
-         * series. Properties like `fillColor`, `lineColor` and `lineWidth`
-         * define the visual appearance of the markers. The `symbol` option
-         * defines the shape. Other series types, like column series, don't have
-         * markers, but have visual options on the series level instead.
-         *
-         * In styled mode, the markers can be styled with the
-         * `.highcharts-point`, `.highcharts-point-hover` and
-         * `.highcharts-point-select` class names.
+         * (Highstock) Marker options for the down direction column.
          */
         marker?: Highcharts.PointMarkerOptionsObject;
         /**
-         * (Highstock) Marker options for the up direction column, inherited
-         * from `series.marker` options.
+         * (Highstock) Marker options for the up direction column, used instead
+         * of `marker` for rising columns.
          */
         markerUp?: Highcharts.PointMarkerOptionsObject;
         /**
@@ -978,7 +987,7 @@ declare module "../highcharts.src" {
          * These options are merged with options in navigator.series, and will
          * take precedence if the same option is defined both places.
          */
-        navigatorOptions?: Highcharts.PlotSeriesOptions;
+        navigatorOptions?: Highcharts.NavigatorSeriesOptions;
         /**
          * (Highstock) The color for the parts of the graph or points that are
          * below the threshold. Note that `zones` takes precedence over the

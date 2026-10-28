@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.1.1-modified (2026-10-27)
+ * @license Highstock JS v13.1.1-modified (2026-10-28)
  * @module highcharts/modules/pointandfigure
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -603,11 +603,6 @@ var external_highcharts_src_js_default_Series_types_scatter_default = /*#__PURE_
  *
  * */
 
-/* *
-*
-*  Imports
-*
-* */
 
 /* *
  *
@@ -620,10 +615,6 @@ const ScatterPoint = (external_highcharts_src_js_default_Series_types_scatter_de
  *  Class
  *
  * */
-/**
- * @private
- * @class
- */
 class PointAndFigurePoint extends ScatterPoint {
     /* *
      *
@@ -644,8 +635,7 @@ class PointAndFigurePoint extends ScatterPoint {
     }
     /**
      * Extend the parent method by adding up or down to the class name.
-     * @private
-     * @function Highcharts.seriesTypes.pointandfigure#getClassName
+     * @internal
      */
     getClassName() {
         return super.getClassName.call(this) +
@@ -692,12 +682,28 @@ class PointAndFigurePoint extends ScatterPoint {
  * @product      highstock
  * @excluding    boostBlending, boostThreshold, compare, compareBase,
  *               compareStart, cumulative, cumulativeStart, dataGrouping,
- *               dataGrouping, dragDrop
+ *               dragDrop
  * @requires     modules/pointandfigure
  * @optionparent plotOptions.pointandfigure
  */
 const PointAndFigureSeriesDefaults = {
+    /**
+     * Price increment that determines if a new point should be added to the
+     * column.
+     *
+     * @type    {string|number}
+     * @since   12.0.0
+     * @product highstock
+     */
     boxSize: '1%',
+    /**
+     * Threshold that should be met to create a new column in opposite
+     * direction.
+     *
+     * @type    {number}
+     * @since   12.0.0
+     * @product highstock
+     */
     reversalAmount: 3,
     tooltip: {
         pointFormat: '<span style="color:{point.color}">\u25CF</span> ' +
@@ -712,11 +718,24 @@ const PointAndFigureSeriesDefaults = {
     dataGrouping: {
         enabled: false
     },
+    /**
+     * Marker options for the up direction column, used instead of `marker`
+     * for rising columns.
+     *
+     * @extends plotOptions.series.marker
+     * @product highstock
+     */
     markerUp: {
         symbol: 'cross',
         lineColor: '#00FF00',
         lineWidth: 2
     },
+    /**
+     * Marker options for the down direction column.
+     *
+     * @extends plotOptions.series.marker
+     * @product highstock
+     */
     marker: {
         symbol: 'circle',
         fillColor: 'transparent',
@@ -740,7 +759,7 @@ const PointAndFigureSeriesDefaults = {
  * @product   highstock
  * @excluding boostBlending, boostThreshold, compare, compareBase,
  *            compareStart, cumulative, cumulativeStart, dataGrouping,
- *            dataGrouping, dragDrop
+ *            dragDrop
  * @requires  modules/pointandfigure
  * @apioption series.pointandfigure
  */
@@ -772,32 +791,6 @@ const PointAndFigureSeriesDefaults = {
  * @extends   series.scatter.data
  * @product   highstock
  * @apioption series.pointandfigure.data
- */
-/**
- * Price increment that determines if a new point should be added to the column.
- *
- *
- * @type      {string|number}
- * @since 12.0.0
- * @product   highstock
- * @apioption plotOptions.pointandfigure.boxSize
- */
-/**
- * Threshold that should be met to create a new column in opposite direction.
- *
- *
- * @type      {number}
- * @since 12.0.0
- * @product   highstock
- * @apioption plotOptions.pointandfigure.reversalAmount
- */
-/**
- * Marker options for the up direction column, inherited from `series.marker`
- * options.
- *
- * @extends   plotOptions.series.marker
- * @product   highstock
- * @apioption plotOptions.pointandfigure.markerUp
  */
 ''; // Keeps doclets above detached
 /* *
@@ -923,7 +916,6 @@ const { composed: PointAndFigureSeries_composed } = (external_highcharts_src_js_
 /**
  * The series type
  *
- * @private
  * @class
  * @name Highcharts.seriesTypes.pointandfigure
  *
@@ -937,6 +929,7 @@ class PointAndFigureSeries extends (external_highcharts_src_js_default_Series_ty
          *
         * */
         super(...arguments);
+        /** @internal */
         this.allowDG = false;
     }
     /* *
@@ -978,7 +971,7 @@ class PointAndFigureSeries extends (external_highcharts_src_js_default_Series_ty
         let upTrend;
         /**
          * Get the Y value of last data point, from the last PNF group.
-         * @private
+         * @internal
          * @function Highcharts.seriesTypes.pointandfigure#getLastPoint
          */
         function getLastPoint(pnfDataGroups) {
@@ -987,7 +980,7 @@ class PointAndFigureSeries extends (external_highcharts_src_js_default_Series_ty
         }
         /**
          * Push new data point to the last PNF group.
-         * @private
+         * @internal
          * @function Highcharts.seriesTypes.pointandfigure#pushNewPoint
          */
         function pushNewPoint(y, upTrend, lastPoint) {

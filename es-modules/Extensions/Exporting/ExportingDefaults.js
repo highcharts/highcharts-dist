@@ -843,6 +843,12 @@ const navigation = {
              * @apioption navigation.buttonOptions.theme.style
              */
             /**
+             * Stroke width for the buttons
+             *
+             * @type      {number|string}
+             * @apioption navigation.buttonOptions.theme.stroke-width
+             */
+            /**
              * Default stroke for the buttons.
              *
              * @type {Highcharts.ColorString}

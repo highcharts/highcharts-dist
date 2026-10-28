@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-27)
+ * @license Highcharts JS v13.1.1-modified (2026-10-28)
  * @module highcharts/modules/sankey
  * @requires highcharts
  *
@@ -948,6 +948,15 @@ const SankeySeriesDefaults = {
  * @since     6.0.5
  * @product   highcharts
  * @apioption series.sankey.nodes.column
+ */
+/**
+ * A reserved subspace to store options and values for customized
+ * functionality. Here you can add additional data for your own event
+ * callbacks and formatter callbacks.
+ * @apioption series.sankey.nodes.custom
+ * @type      {Highcharts.Dictionary<*>}
+ * @product   highcharts
+ * @since     next
  */
 /**
  * Individual data label for each node. The options are the same as

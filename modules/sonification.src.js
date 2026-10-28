@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-27)
+ * @license Highcharts JS v13.1.1-modified (2026-10-28)
  * @module highcharts/modules/sonification
  * @requires highcharts
  *
@@ -516,6 +516,14 @@ const Options = {
              *
              * @type      {string}
              * @apioption sonification.defaultInstrumentOptions.activeWhen.prop
+             */
+            /**
+             * The point property to play context for when using
+             * `valueInterval`.
+             *
+             * @type      {string}
+             * @default   "x"
+             * @apioption sonification.defaultInstrumentOptions.activeWhen.valueProp
              */
             /**
              * Instrument to use for playing.

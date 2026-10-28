@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-27)
+ * @license Highcharts JS v13.1.1-modified (2026-10-28)
  * @module highcharts/modules/pictorial
  * @requires highcharts
  *
@@ -1353,6 +1353,44 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *
  * */
 /**
+ * The paths include options describing the series image. For further details on
+ * preparing the SVG image, please refer to the [pictorial
+ * documentation](https://www.highcharts.com/docs/chart-and-series-types/pictorial).
+ *
+ * @declare   Highcharts.SeriesPictorialPathsOptionsObject
+ * @type      {Array<*>}
+ *
+ * @sample    {highcharts} highcharts/demo/pictorial/
+ *            Pictorial chart
+ *
+ * @since     11.0.0
+ * @product   highcharts
+ * @apioption plotOptions.pictorial.paths
+ */
+/**
+ * The definition defines a path to be drawn. It corresponds `d` SVG attribute.
+ *
+ * @type      {string}
+ *
+ * @sample    {highcharts} highcharts/demo/pictorial/
+ *            Pictorial chart
+ *
+ * @product   highcharts
+ * @apioption plotOptions.pictorial.paths.definition
+ */
+/**
+ * The max option determines height of the image. It is the ratio of
+ * `yAxis.max` to the `paths.max`.
+ *
+ * @sample {highcharts} highcharts/series-pictorial/paths-max
+ *         Pictorial max option
+ *
+ * @type      {number}
+ * @default   yAxis.max
+ * @product   highcharts
+ * @apioption plotOptions.pictorial.paths.max
+ */
+/**
  * A `pictorial` series. If the [type](#series.pictorial.type) option is not
  * specified, it is inherited from [chart.type](#chart.type).
  *
@@ -1421,44 +1459,6 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  * @since 11.0.0
  * @product   highcharts
  * @apioption series.pictorial.data
- */
-/**
- * The paths include options describing the series image. For further details on
- * preparing the SVG image, please refer to the [pictorial
- * documentation](https://www.highcharts.com/docs/chart-and-series-types/pictorial).
- *
- * @declare   Highcharts.SeriesPictorialPathsOptionsObject
- * @type      {Array<*>}
- *
- * @sample    {highcharts} highcharts/demo/pictorial/
- *            Pictorial chart
- *
- * @since     11.0.0
- * @product   highcharts
- * @apioption series.pictorial.paths
- */
-/**
- * The definition defines a path to be drawn. It corresponds `d` SVG attribute.
- *
- * @type      {string}
- *
- * @sample    {highcharts} highcharts/demo/pictorial/
- *            Pictorial chart
- *
- * @product   highcharts
- * @apioption series.pictorial.paths.definition
- */
-/**
- * The max option determines height of the image. It is the ratio of
- * `yAxis.max` to the `paths.max`.
- *
- * @sample {highcharts} highcharts/series-pictorial/paths-max
- *         Pictorial max option
- *
- * @type      {number}
- * @default   yAxis.max
- * @product   highcharts
- * @apioption series.pictorial.paths.max
  */
 /**
  * Relevant only for pictorial series. The `stackShadow` forms the background of

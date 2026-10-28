@@ -84,9 +84,11 @@ class FilterModifier extends DataModifier {
         switch (op) {
             case 'contains':
                 return (row) => str(row[col]).includes(str(value));
-            default:
+            case 'startsWith':
+            case 'endsWith':
                 return (row) => str(row[col])[op](str(value));
         }
+        return () => false;
     }
     /* *
      *

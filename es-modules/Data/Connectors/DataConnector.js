@@ -51,6 +51,22 @@ class DataConnector {
             !!(DataConnector.types[key] = DataConnectorClass));
     }
     /**
+     * Converts a data refresh rate in seconds into a polling interval in
+     * milliseconds. Invalid values fall back to one second.
+     *
+     * @param {unknown} dataRefreshRate
+     * Data refresh rate in seconds.
+     *
+     * @return {number}
+     * Polling interval in milliseconds.
+     */
+    static getPollingInterval(dataRefreshRate) {
+        const refreshSeconds = Number(dataRefreshRate);
+        return (Number.isFinite(refreshSeconds) ?
+            Math.max(refreshSeconds, 1) :
+            1) * 1000;
+    }
+    /**
      * Whether the connector is currently polling for new data.
      */
     get polling() {
@@ -204,8 +220,9 @@ class DataConnector {
         if ('enablePolling' in newOptions || 'dataRefreshRate' in newOptions) {
             if ('enablePolling' in options && options.enablePolling) {
                 this.stopPolling();
-                this.startPolling(('dataRefreshRate' in options &&
-                    typeof options.dataRefreshRate === 'number') ? Math.max(options.dataRefreshRate, 1) * 1000 : 1000);
+                this.startPolling(DataConnector.getPollingInterval('dataRefreshRate' in options ?
+                    options.dataRefreshRate :
+                    void 0));
             }
             else {
                 this.stopPolling();
@@ -258,6 +275,9 @@ class DataConnector {
      */
     startPolling(refreshTime = 1000) {
         const connector = this;
+        const pollingInterval = Number.isFinite(refreshTime) ?
+            refreshTime :
+            1000;
         // Assign a new abort controller.
         this.pollingController = new AbortController();
         // Clear the polling timeout.
@@ -271,9 +291,9 @@ class DataConnector {
         }))
             .then(() => {
             if (connector._polling) {
-                connector.startPolling(refreshTime);
+                connector.startPolling(pollingInterval);
             }
-        }), refreshTime);
+        }), pollingInterval);
     }
     /**
      * Stops polling data. Shouldn't be performed if polling is already stopped.

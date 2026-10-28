@@ -632,6 +632,17 @@ declare module "../highcharts" {
          */
         color?: Highcharts.ColorType;
         /**
+         * (Highcharts, Highstock, Gantt) When using automatic point colors
+         * pulled from the global colors or series-specific
+         * plotOptions.series.colors collections, this option determines whether
+         * the chart should receive one color per series or one color per point.
+         *
+         * In styled mode, the `colors` or `series.colors` arrays are not
+         * supported, and instead this option gives the points individual color
+         * class names on the form `highcharts-color-{n}`.
+         */
+        colorByPoint?: boolean;
+        /**
          * (Highstock) Styled mode only. A specific color index to use for the
          * series, so its graphic representations are given the class name
          * `highcharts-color-{n}`.
@@ -647,6 +658,12 @@ declare module "../highcharts" {
          * approximation for data grouping is set to `'sum'`.
          */
         colorKey?: string;
+        /**
+         * (Highcharts, Highstock, Gantt) A series specific or series type
+         * specific color set to apply instead of the global colors when
+         * colorByPoint is true.
+         */
+        colors?: Array<Highcharts.ColorType>;
         /**
          * (Highstock) Defines if comparison should start from the first point
          * within the visible range or should start from the last point

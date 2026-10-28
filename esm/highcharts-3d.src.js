@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-27)
+ * @license Highcharts JS v13.1.1-modified (2026-10-28)
  * @module highcharts/highcharts-3d
  * @requires highcharts
  *
@@ -2059,6 +2059,22 @@ const Area3DSeries = {
 };
 /** @internal */
 /* harmony default export */ const Area3D_Area3DSeries = (Area3DSeries);
+/* *
+ *
+ *  API Options
+ *
+ * */
+/**
+ * The z-axis offset of a 3D area series.
+ *
+ * @type      {number}
+ * @default   0
+ * @since     4.0
+ * @product   highcharts
+ * @requires  highcharts-3d
+ * @apioption plotOptions.area.depth
+ */
+''; // Keeps doclets above after transpilation
 
 ;// ./code/es-modules/Core/Axis/Axis3DDefaults.js
 /* *

@@ -343,7 +343,7 @@ if (win.jQuery) {
 */ /**
 * Font weight of the element text.
 * @name Highcharts.CSSObject#fontWeight
-* @type {string|undefined}
+* @type {string|number|undefined}
 */ /**
 * Height of the element.
 * @name Highcharts.CSSObject#height
@@ -405,7 +405,7 @@ if (win.jQuery) {
 */ /**
 * Width of the element.
 * @name Highcharts.CSSObject#width
-* @type {number|undefined}
+* @type {number|string|undefined}
 */
 /**
  * All possible cursor styles.

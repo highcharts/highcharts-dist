@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highmaps JS v13.1.1-modified (2026-10-27)
+ * @license Highmaps JS v13.1.1-modified (2026-10-28)
  * @module highcharts/modules/contour
  * @requires highcharts
  * @requires highcharts/modules/coloraxis

@@ -242,7 +242,7 @@ function getRangeValues(range, table) {
         .slice(range.beginColumn, range.endColumn + 1), values = [];
     for (let i = 0, iEnd = columnIds.length, cell; i < iEnd; ++i) {
         const cells = table.getColumn(columnIds[i], true) || [];
-        for (let j = range.beginRow, jEnd = range.endRow + 1; j < jEnd; ++j) {
+        for (let j = range.beginRow, jEnd = Math.min(range.endRow + 1, cells.length); j < jEnd; ++j) {
             cell = cells[j];
             if (typeof cell === 'string' &&
                 cell[0] === '=' &&

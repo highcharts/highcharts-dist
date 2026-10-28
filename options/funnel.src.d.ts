@@ -579,6 +579,11 @@ declare module "../highcharts.src" {
          */
         borderWidth?: number;
         /**
+         * (Highcharts) The center of the series. By default, it is centered in
+         * the middle of the plot area, so it fills the plot area height.
+         */
+        center?: Array<(number|string)>;
+        /**
          * (Highcharts, Highstock, Gantt) When `true`, the columns will center
          * in the category, ignoring null or missing points. When `false`, space
          * will be reserved for null or missing points.
@@ -616,7 +621,7 @@ declare module "../highcharts.src" {
         /**
          * (Highcharts, Highstock, Gantt) When using automatic point colors
          * pulled from the global colors or series-specific
-         * plotOptions.column.colors collections, this option determines whether
+         * plotOptions.series.colors collections, this option determines whether
          * the chart should receive one color per series or one color per point.
          *
          * In styled mode, the `colors` or `series.colors` arrays are not
@@ -1664,6 +1669,17 @@ declare module "../highcharts.src" {
          * instead of a boolean flag.
          */
         colorAxis?: (boolean|number|string);
+        /**
+         * (Highcharts, Highstock, Gantt) When using automatic point colors
+         * pulled from the global colors or series-specific
+         * plotOptions.series.colors collections, this option determines whether
+         * the chart should receive one color per series or one color per point.
+         *
+         * In styled mode, the `colors` or `series.colors` arrays are not
+         * supported, and instead this option gives the points individual color
+         * class names on the form `highcharts-color-{n}`.
+         */
+        colorByPoint?: boolean;
         /**
          * (Highcharts) Styled mode only. A specific color index to use for the
          * series, so its graphic representations are given the class name

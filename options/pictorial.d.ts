@@ -545,7 +545,7 @@ declare module "../highcharts" {
         /**
          * (Highcharts, Highstock, Gantt) When using automatic point colors
          * pulled from the global colors or series-specific
-         * plotOptions.column.colors collections, this option determines whether
+         * plotOptions.series.colors collections, this option determines whether
          * the chart should receive one color per series or one color per point.
          *
          * In styled mode, the `colors` or `series.colors` arrays are not
@@ -824,6 +824,12 @@ declare module "../highcharts" {
          * dataLabels.
          */
         opacity?: number;
+        /**
+         * (Highcharts) The paths include options describing the series image.
+         * For further details on preparing the SVG image, please refer to the
+         * pictorial documentation.
+         */
+        paths?: Array<Highcharts.SeriesPictorialPathsOptionsObject>;
         /**
          * (Highcharts) Properties for each single point.
          */
@@ -1344,12 +1350,6 @@ declare module "../highcharts" {
          * Not available
          */
         dataAsColumns?: undefined;
-        /**
-         * (Highcharts) The paths include options describing the series image.
-         * For further details on preparing the SVG image, please refer to the
-         * pictorial documentation.
-         */
-        paths?: Array<Highcharts.SeriesPictorialPathsOptionsObject>;
         /**
          * (Highcharts, Highstock, Highmaps, Gantt) This property is only in
          * TypeScript non-optional and might be `undefined` in series objects

@@ -1,5 +1,5 @@
 /**
- * Highstock JS v13.1.1-modified (2026-10-27)
+ * Highstock JS v13.1.1-modified (2026-10-28)
  * @module highcharts/indicators/acceleration-bands
  * @requires highcharts
  * @requires highcharts/modules/stock

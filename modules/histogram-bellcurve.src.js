@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-27)
+ * @license Highcharts JS v13.1.1-modified (2026-10-28)
  * @module highcharts/modules/histogram-bellcurve
  * @requires highcharts
  *
@@ -325,7 +325,7 @@ const HistogramSeriesDefaults = {
  * specified, it is inherited from [chart.type](#chart.type).
  *
  * @extends   series,plotOptions.histogram
- * @excluding data, boostThreshold, boostBlending
+ * @excluding boostThreshold, boostBlending
  * @product   highcharts
  * @since     6.0.0
  * @requires  modules/histogram-bellcurve
@@ -615,7 +615,7 @@ const BellcurveSeriesDefaults = {
  * @extends   series,plotOptions.bellcurve
  * @since     6.0.0
  * @product   highcharts
- * @excluding data, boostThreshold, boostBlending
+ * @excluding boostThreshold, boostBlending
  * @requires  modules/histogram-bellcurve
  * @apioption series.bellcurve
  */

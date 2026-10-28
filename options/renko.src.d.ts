@@ -876,7 +876,7 @@ declare module "../highcharts.src" {
          * These options are merged with options in navigator.series, and will
          * take precedence if the same option is defined both places.
          */
-        navigatorOptions?: (Highcharts.PlotRenkoNavigatorOptions|Highcharts.PlotSeriesOptions);
+        navigatorOptions?: (Highcharts.NavigatorSeriesOptions|Highcharts.PlotRenkoNavigatorOptions);
         /**
          * (Highstock) The color for the parts of the graph or points that are
          * below the threshold. Note that `zones` takes precedence over the

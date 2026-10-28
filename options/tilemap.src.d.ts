@@ -602,6 +602,12 @@ declare module "../highcharts.src" {
          */
         colorKey?: string;
         /**
+         * (Highcharts, Highstock, Gantt) A series specific or series type
+         * specific color set to apply instead of the global colors when
+         * colorByPoint is true.
+         */
+        colors?: Array<Highcharts.ColorType>;
+        /**
          * (Highcharts, Highmaps) The column size - how many X axis units each
          * column in the tilemap should span. Works as in Heatmaps.
          */

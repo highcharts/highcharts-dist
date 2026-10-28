@@ -30,7 +30,7 @@
  *               colorKey, compare, dataGrouping, endAngle, gapSize, gapUnit,
  *               ignoreHiddenPoint, innerSize, joinBy, legendType, linecap,
  *               minSize, navigatorOptions, pointRange, allowTraversingTree,
- *               alternateStartingDirection, borderRadius, breadcrumbs,
+ *               alternateStartingDirection, breadcrumbs,
  *               interactByLeaf, layoutStartingDirection, levelIsConstant,
  *               lineWidth, negativeColor, nodes, nodeSizeBy, sortIndex,
  *               zoneAxis, zones, cluster

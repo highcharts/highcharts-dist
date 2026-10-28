@@ -616,17 +616,6 @@ declare module "../highcharts.src" {
          */
         colorAxis?: (boolean|number|string);
         /**
-         * (Highmaps) When using automatic point colors pulled from the global
-         * colors or series-specific plotOptions.bubble.colors collections, this
-         * option determines whether the chart should receive one color per
-         * series or one color per point.
-         *
-         * In styled mode, the `colors` or `series.colors` arrays are not
-         * supported, and instead this option gives the points individual color
-         * class names on the form `highcharts-color-{n}`.
-         */
-        colorByPoint?: boolean;
-        /**
          * (Highmaps) Styled mode only. A specific color index to use for the
          * series, so its graphic representations are given the class name
          * `highcharts-color-{n}`.

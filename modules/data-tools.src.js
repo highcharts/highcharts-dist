@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-27)
+ * @license Highcharts JS v13.1.1-modified (2026-10-28)
  * @module highcharts/modules/data-tools
  * @requires highcharts
  *
@@ -1886,6 +1886,22 @@ class DataConnector {
             !!(DataConnector.types[key] = DataConnectorClass));
     }
     /**
+     * Converts a data refresh rate in seconds into a polling interval in
+     * milliseconds. Invalid values fall back to one second.
+     *
+     * @param {unknown} dataRefreshRate
+     * Data refresh rate in seconds.
+     *
+     * @return {number}
+     * Polling interval in milliseconds.
+     */
+    static getPollingInterval(dataRefreshRate) {
+        const refreshSeconds = Number(dataRefreshRate);
+        return (Number.isFinite(refreshSeconds) ?
+            Math.max(refreshSeconds, 1) :
+            1) * 1000;
+    }
+    /**
      * Whether the connector is currently polling for new data.
      */
     get polling() {
@@ -2039,8 +2055,9 @@ class DataConnector {
         if ('enablePolling' in newOptions || 'dataRefreshRate' in newOptions) {
             if ('enablePolling' in options && options.enablePolling) {
                 this.stopPolling();
-                this.startPolling(('dataRefreshRate' in options &&
-                    typeof options.dataRefreshRate === 'number') ? Math.max(options.dataRefreshRate, 1) * 1000 : 1000);
+                this.startPolling(DataConnector.getPollingInterval('dataRefreshRate' in options ?
+                    options.dataRefreshRate :
+                    void 0));
             }
             else {
                 this.stopPolling();
@@ -2093,6 +2110,9 @@ class DataConnector {
      */
     startPolling(refreshTime = 1000) {
         const connector = this;
+        const pollingInterval = Number.isFinite(refreshTime) ?
+            refreshTime :
+            1000;
         // Assign a new abort controller.
         this.pollingController = new AbortController();
         // Clear the polling timeout.
@@ -2106,9 +2126,9 @@ class DataConnector {
         }))
             .then(() => {
             if (connector._polling) {
-                connector.startPolling(refreshTime);
+                connector.startPolling(pollingInterval);
             }
-        }), refreshTime);
+        }), pollingInterval);
     }
     /**
      * Stops polling data. Shouldn't be performed if polling is already stopped.
@@ -4293,7 +4313,7 @@ function getRangeValues(range, table) {
         .slice(range.beginColumn, range.endColumn + 1), values = [];
     for (let i = 0, iEnd = columnIds.length, cell; i < iEnd; ++i) {
         const cells = table.getColumn(columnIds[i], true) || [];
-        for (let j = range.beginRow, jEnd = range.endRow + 1; j < jEnd; ++j) {
+        for (let j = range.beginRow, jEnd = Math.min(range.endRow + 1, cells.length); j < jEnd; ++j) {
             cell = cells[j];
             if (typeof cell === 'string' &&
                 cell[0] === '=' &&
@@ -6411,7 +6431,7 @@ class CSVConnector extends Connectors_DataConnector {
         super(mergedOptions);
         this.options = mergedOptions;
         if (mergedOptions.enablePolling) {
-            this.startPolling(Math.max(mergedOptions.dataRefreshRate || 0, 1) * 1000);
+            this.startPolling(Connectors_DataConnector.getPollingInterval(mergedOptions.dataRefreshRate));
         }
     }
     /* *
@@ -6801,7 +6821,7 @@ class JSONConnector extends Connectors_DataConnector {
         super(mergedOptions);
         this.options = mergedOptions;
         if (mergedOptions.enablePolling) {
-            this.startPolling(Math.max(mergedOptions.dataRefreshRate || 0, 1) * 1000);
+            this.startPolling(Connectors_DataConnector.getPollingInterval(mergedOptions.dataRefreshRate));
         }
     }
     /* *
@@ -7180,7 +7200,7 @@ class GoogleSheetsConnector extends Connectors_DataConnector {
             });
             // Polling
             if (enablePolling) {
-                setTimeout(() => connector.load(), Math.max(dataRefreshRate || 0, 1) * 1000);
+                setTimeout(() => connector.load(), Connectors_DataConnector.getPollingInterval(dataRefreshRate));
             }
             return connector;
         })['catch']((error) => {
@@ -8232,7 +8252,9 @@ class MathModifier extends Modifiers_DataModifier {
      */
     processColumnFormula(formula, table, rowStart = 0, rowEnd = table.getRowCount()) {
         rowStart = rowStart >= 0 ? rowStart : 0;
-        rowEnd = rowEnd >= 0 ? rowEnd : table.getRowCount() + rowEnd;
+        rowEnd = rowEnd >= 0 ?
+            Math.min(rowEnd, table.getRowCount()) :
+            table.getRowCount() + rowEnd;
         const column = [], modified = table.getModified();
         for (let i = 0, iEnd = (rowEnd - rowStart); i < iEnd; ++i) {
             try {
@@ -8626,9 +8648,11 @@ class FilterModifier extends Modifiers_DataModifier {
         switch (op) {
             case 'contains':
                 return (row) => str(row[col]).includes(str(value));
-            default:
+            case 'startsWith':
+            case 'endsWith':
                 return (row) => str(row[col])[op](str(value));
         }
+        return () => false;
     }
     /* *
      *

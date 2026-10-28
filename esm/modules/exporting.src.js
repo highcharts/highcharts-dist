@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-27)
+ * @license Highcharts JS v13.1.1-modified (2026-10-28)
  * @module highcharts/modules/exporting
  * @requires highcharts
  *
@@ -1190,6 +1190,12 @@ const navigation = {
              *
              * @type      {Highcharts.CSSObject}
              * @apioption navigation.buttonOptions.theme.style
+             */
+            /**
+             * Stroke width for the buttons
+             *
+             * @type      {number|string}
+             * @apioption navigation.buttonOptions.theme.stroke-width
              */
             /**
              * Default stroke for the buttons.
