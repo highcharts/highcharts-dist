@@ -1,5 +1,5 @@
 /**
- * Highcharts JS v13.1.1-modified (2026-10-29)
+ * Highcharts JS v13.1.1-modified (2026-10-30)
  * @module highcharts/themes/adaptive
  * @requires highcharts
  *

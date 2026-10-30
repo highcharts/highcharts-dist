@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.1.1-modified (2026-10-29)
+ * @license Highstock JS v13.1.1-modified (2026-10-30)
  * @module highcharts/indicators/indicators
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -873,6 +873,30 @@ class SMAIndicator extends (highcharts_Series_types_line_commonjs_highcharts_Ser
             !indicator.hasGroupedData &&
             indicator.visible &&
             indicator.points) {
+            const oldX = indicator.getColumn('x'), newX = processedData.xData, overlapLast = Math.min(oldDataLength, newX.length) - 1;
+            let isIncrementalUpdate = Math.abs(newX.length - oldDataLength) === 1 &&
+                overlapLast >= 0 &&
+                oldX[overlapLast] === newX[overlapLast];
+            // If x only grew/shrank by one point, also check that y
+            // (and other value columns) are unchanged in the overlap.
+            // Otherwise setData that rewrites values is mistaken for an
+            // incremental add/remove (#22081).
+            if (isIncrementalUpdate) {
+                for (const key of pointArrayMap) {
+                    const oldColumn = indicator.getColumn(key), newColumn = valueColumns[key];
+                    if (newColumn && oldColumn) {
+                        for (let i = 0; i <= overlapLast; i++) {
+                            if (newColumn[i] !== oldColumn[i]) {
+                                isIncrementalUpdate = false;
+                                break;
+                            }
+                        }
+                        if (!isIncrementalUpdate) {
+                            break;
+                        }
+                    }
+                }
+            }
             // When data is cropped update only available points (#9493)
             if (indicator.cropped) {
                 if (indicator.xAxis) {
@@ -883,9 +907,8 @@ class SMAIndicator extends (highcharts_Series_types_line_commonjs_highcharts_Ser
                 indicator.setData(croppedData.modified, false);
             }
             else if (indicator.updateAllPoints || // #18710
-                // Omit addPoint() and removePoint() cases
-                processedData.xData.length !== oldDataLength - 1 &&
-                    processedData.xData.length !== oldDataLength + 1) {
+                // Distinguish edge add/remove points from setData (#22081).
+                !isIncrementalUpdate) {
                 overwriteData = false;
                 this.setData(new Data_DataTableCore({
                     columns: {
