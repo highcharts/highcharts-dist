@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-30)
+ * @license Highcharts JS v13.1.1-modified (2026-11-01)
  * @module highcharts/standalone-navigator
  *
  * Standalone Navigator for Highcharts.

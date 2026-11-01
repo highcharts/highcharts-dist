@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-30)
+ * @license Highcharts JS v13.1.1-modified (2026-11-01)
  * @module highcharts/modules/accessibility
  * @requires highcharts
  *
@@ -3606,10 +3606,10 @@ function scrollLegendToItem(legend, itemIx) {
 }
 /** @internal */
 function shouldDoLegendA11y(chart) {
-    const items = chart.legend && chart.legend.allItems, legendA11yOptions = (chart.options.legend.accessibility || {}), unsupportedColorAxis = chart.colorAxis && chart.colorAxis.some((c) => !c.dataClasses || !c.dataClasses.length);
+    const items = chart.legend && chart.legend.allItems, legendA11yOptions = chart.options.legend?.accessibility, unsupportedColorAxis = chart.colorAxis && chart.colorAxis.some((c) => !c.dataClasses || !c.dataClasses.length);
     return !!(items && items.length &&
         !unsupportedColorAxis &&
-        legendA11yOptions.enabled !== false);
+        legendA11yOptions?.enabled !== false);
 }
 /** @internal */
 function setLegendItemHoverState(hoverActive, item) {
@@ -4891,6 +4891,7 @@ const NavigatorDefaults = {
 (''); // Keeps doclets above in JS file
 
 ;// ./code/es-modules/Extensions/BorderRadius.js
+/* unused harmony import specifier */ var defaultOptions;
 /* unused harmony import specifier */ var relativeLength;
 /* unused harmony import specifier */ var isObject;
 /* unused harmony import specifier */ var extend;
@@ -4909,7 +4910,6 @@ const NavigatorDefaults = {
  * */
 
 
-const { defaultOptions } = (external_highcharts_src_js_default_default());
 
 const { noop } = (external_highcharts_src_js_default_default());
 
@@ -12098,7 +12098,9 @@ class ZoomComponent extends Accessibility_AccessibilityComponent {
 
 const { doc: HighContrastMode_doc, isMS, win: HighContrastMode_win } = (external_highcharts_src_js_default_default());
 
-const systemColorKeywords = new Set([
+// The annotation marks the call as side-effect free, so the minifier can drop
+// the set in bundles importing only `isHighContrastModeActive`, like Grid.
+const systemColorKeywords = /* #__PURE__ */ new Set([
     'accentcolor',
     'accentcolortext',
     'activetext',
@@ -12159,8 +12161,6 @@ function isAuthorColor(color) {
  *
  * @function Highcharts#isHighContrastModeActive
  * @return {boolean} Returns true if the browser is in High Contrast mode.
- *
- * @internal
  */
 function isHighContrastModeActive() {
     // Test BG image for IE

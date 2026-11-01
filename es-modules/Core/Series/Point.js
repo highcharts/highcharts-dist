@@ -12,8 +12,7 @@
 'use strict';
 import AST from '../Renderer/HTML/AST.js';
 import { animObject } from '../Animation/AnimationUtilities.js';
-import D from '../Defaults.js';
-const { defaultOptions } = D;
+import { defaultOptions } from '../Defaults.js';
 import F from '../Templating.js';
 const { format } = F;
 import { addEvent, crisp, erase, extend, fireEvent, getNestedProperty, isArray, isFunction, isNumber, isObject, isString, merge, removeEvent } from '../../Shared/Utilities.js';

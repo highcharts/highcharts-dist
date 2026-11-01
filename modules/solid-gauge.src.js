@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-30)
+ * @license Highcharts JS v13.1.1-modified (2026-11-01)
  * @module highcharts/modules/solid-gauge
  * @requires highcharts
  * @requires highcharts/highcharts-more
@@ -124,6 +124,7 @@ __webpack_require__.d(__webpack_exports__, {
 var highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_ = __webpack_require__(944);
 var highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default = /*#__PURE__*/__webpack_require__.n(highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_);
 ;// ./code/es-modules/Extensions/BorderRadius.js
+/* unused harmony import specifier */ var defaultOptions;
 /* unused harmony import specifier */ var relativeLength;
 /* unused harmony import specifier */ var isObject;
 /* unused harmony import specifier */ var extend;
@@ -142,7 +143,6 @@ var highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default 
  * */
 
 
-const { defaultOptions } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 
 const { noop } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 

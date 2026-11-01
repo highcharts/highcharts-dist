@@ -1,5 +1,5 @@
 let t;/**
- * Highmaps JS v13.1.1-modified (2026-10-30)
+ * Highmaps JS v13.1.1-modified (2026-11-01)
  * @module highcharts/modules/map
  * @requires highcharts
  *

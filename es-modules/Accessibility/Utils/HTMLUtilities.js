@@ -203,7 +203,7 @@ function getFakeMouseEvent(type, position, relatedTarget) {
  *
  * @internal
  */
-function getHeadingTagNameForElement(element) {
+export function getHeadingTagNameForElement(element) {
     const getIncreasedHeadingLevel = (tagName) => {
         const headingLevel = parseInt(tagName.slice(1), 10), newLevel = Math.min(6, headingLevel + 1);
         return 'h' + newLevel;

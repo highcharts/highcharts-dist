@@ -11,8 +11,7 @@
  * */
 'use strict';
 import H from '../Globals.js';
-import D from '../Defaults.js';
-const { defaultOptions } = D;
+import { defaultOptions } from '../Defaults.js';
 import Point from './Point.js';
 import { extend, extendClass, merge } from '../../Shared/Utilities.js';
 /* *

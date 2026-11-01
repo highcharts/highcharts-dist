@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-30)
+ * @license Highcharts JS v13.1.1-modified (2026-11-01)
  * @module highcharts/modules/funnel
  * @requires highcharts
  *
@@ -340,6 +340,7 @@ const FunnelSeriesDefaults = {
 /* harmony default export */ const Funnel_FunnelSeriesDefaults = (FunnelSeriesDefaults);
 
 ;// ./code/es-modules/Extensions/BorderRadius.js
+/* unused harmony import specifier */ var defaultOptions;
 /* unused harmony import specifier */ var relativeLength;
 /* unused harmony import specifier */ var isObject;
 /* unused harmony import specifier */ var extend;
@@ -358,7 +359,6 @@ const FunnelSeriesDefaults = {
  * */
 
 
-const { defaultOptions } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 
 const { noop } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
 

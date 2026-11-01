@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-30)
+ * @license Highcharts JS v13.1.1-modified (2026-11-01)
  * @module highcharts/modules/solid-gauge
  * @requires highcharts
  * @requires highcharts/highcharts-more
@@ -51,6 +51,7 @@ var external_highcharts_src_js_default_default = /*#__PURE__*/__webpack_require_
 ;// external "../highcharts-more.src.js"
 
 ;// ./code/es-modules/Extensions/BorderRadius.js
+/* unused harmony import specifier */ var defaultOptions;
 /* unused harmony import specifier */ var relativeLength;
 /* unused harmony import specifier */ var isObject;
 /* unused harmony import specifier */ var extend;
@@ -69,7 +70,6 @@ var external_highcharts_src_js_default_default = /*#__PURE__*/__webpack_require_
  * */
 
 
-const { defaultOptions } = (external_highcharts_src_js_default_default());
 
 const { noop } = (external_highcharts_src_js_default_default());
 

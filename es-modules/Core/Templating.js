@@ -10,8 +10,8 @@
  *
  * */
 'use strict';
-import D from './Defaults.js';
-const { defaultOptions, defaultTime } = D;
+import langDefaults from './LangDefaults.js';
+import { defaultTime } from './TimeDefaults.js';
 import G from './Globals.js';
 const { pageLang } = G;
 import { correctFloat, extend, getNestedProperty, isArray, isNumber, isObject, isString, ucfirst } from '../Shared/Utilities.js';
@@ -136,7 +136,7 @@ function format(str = '', ctx, owner) {
     // The sub expression regex is the same as the top expression regex,
     // but except parens and block helpers (#), and surrounded by parens
     // instead of curly brackets.
-    subRegex = /\(([^()]+)\)/g, matches = [], floatRegex = /f$/, decRegex = /\.(\d)/, lang = owner?.options?.lang || defaultOptions.lang, time = owner?.time || defaultTime, numberFormatter = owner?.numberFormatter || numberFormat.bind(owner);
+    subRegex = /\(([^()]+)\)/g, matches = [], floatRegex = /f$/, decRegex = /\.(\d)/, lang = owner?.options?.lang || langDefaults, time = owner?.time || defaultTime, numberFormatter = owner?.numberFormatter || numberFormat.bind(owner);
     /*
      * Get a literal or variable value inside a template expression. May be
      * extended with other types like string or null if needed, but keep it
@@ -324,7 +324,7 @@ function numberFormat(number, decimals, decimalPoint, thousandsSep) {
     number = +number || 0;
     decimals = +decimals;
     let ret, fractionDigits, [mantissa, exp] = number.toString().split('e').map(Number);
-    const lang = this?.options?.lang || defaultOptions.lang, origDec = (number.toString().split('.')[1] || '').split('e')[0].length, firstDecimals = decimals, options = {};
+    const lang = this?.options?.lang || langDefaults, origDec = (number.toString().split('.')[1] || '').split('e')[0].length, firstDecimals = decimals, options = {};
     decimalPoint ?? (decimalPoint = lang.decimalPoint);
     thousandsSep ?? (thousandsSep = lang.thousandsSep);
     if (decimals === -1) {

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-30)
+ * @license Highcharts JS v13.1.1-modified (2026-11-01)
  * @module highcharts/highcharts-more
  * @requires highcharts
  *
@@ -1881,6 +1881,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
 ''; // Adds doclets above to transpiled file
 
 ;// ./code/es-modules/Extensions/BorderRadius.js
+/* unused harmony import specifier */ var BorderRadius_defaultOptions;
 /* unused harmony import specifier */ var relativeLength;
 /* unused harmony import specifier */ var isObject;
 /* unused harmony import specifier */ var extend;
@@ -1899,7 +1900,6 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  * */
 
 
-const { defaultOptions: BorderRadius_defaultOptions } = (external_highcharts_src_js_default_default());
 
 const { noop: BorderRadius_noop } = (external_highcharts_src_js_default_default());
 

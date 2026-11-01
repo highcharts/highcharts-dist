@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highmaps JS v13.1.1-modified (2026-10-30)
+ * @license Highmaps JS v13.1.1-modified (2026-11-01)
  * @module highcharts/modules/contour
  * @requires highcharts
  * @requires highcharts/modules/coloraxis
@@ -1153,9 +1153,9 @@ class ColorAxis extends (highcharts_Axis_commonjs_highcharts_Axis_commonjs2_high
      */
     init(chart, userOptions) {
         const axis = this;
-        const legend = chart.options.legend || {}, horiz = userOptions.layout ?
+        const horiz = userOptions.layout ?
             userOptions.layout !== 'vertical' :
-            legend.layout !== 'vertical';
+            chart.options.legend?.layout !== 'vertical';
         axis.reversed = userOptions.reversed;
         axis.opposite = !horiz;
         super.init(chart, userOptions, 'colorAxis');
@@ -1204,7 +1204,7 @@ class ColorAxis extends (highcharts_Axis_commonjs_highcharts_Axis_commonjs2_high
      * @internal
      */
     setOptions(userOptions) {
-        const legend = this.chart.options.legend || {}, theme = defaultOptions.colorAxis, layout = userOptions.layout || legend.layout || theme.layout, horiz = layout !== 'vertical';
+        const legend = this.chart.options.legend, theme = defaultOptions.colorAxis, layout = userOptions.layout || legend?.layout || theme.layout, horiz = layout !== 'vertical';
         const sideSpecific = horiz ? { title: { rotation: 0 } } :
             {
                 title: {
@@ -1216,7 +1216,7 @@ class ColorAxis extends (highcharts_Axis_commonjs_highcharts_Axis_commonjs2_high
         // Forced options
         {
             showEmpty: false,
-            visible: this.chart.options.legend.enabled &&
+            visible: legend?.enabled &&
                 userOptions.visible !== false
         });
         const marker = options.marker || {};
@@ -1613,7 +1613,7 @@ class ColorAxis extends (highcharts_Axis_commonjs_highcharts_Axis_commonjs2_high
     getDataClassLegendSymbols() {
         const axis = this, chart = axis.chart, legendItems = (axis.legendItem &&
             axis.legendItem.labels ||
-            []), legendOptions = chart.options.legend, valueDecimals = (legendOptions.valueDecimals ?? -1), valueSuffix = (legendOptions.valueSuffix ?? '');
+            []), legendOptions = chart.options.legend, valueDecimals = (legendOptions?.valueDecimals ?? -1), valueSuffix = (legendOptions?.valueSuffix ?? '');
         const getPointsInDataClass = (i) => axis.series.reduce((points, s) => {
             points.push(...s.points.filter((point) => point.dataClass === i));
             return points;
@@ -1726,7 +1726,7 @@ ColorAxis.defaultLegendLength = 200;
 /* unused harmony import specifier */ var Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-30)
+ * @license Highcharts JS v13.1.1-modified (2026-11-01)
  * @module highcharts/modules/color-axis
  * @requires highcharts
  *

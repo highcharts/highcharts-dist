@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Gantt JS v13.1.1-modified (2026-10-30)
+ * @license Highcharts Gantt JS v13.1.1-modified (2026-11-01)
  * @module highcharts/modules/gantt
  * @requires highcharts
  *
@@ -1745,6 +1745,7 @@ const NavigatorDefaults = {
 (''); // Keeps doclets above in JS file
 
 ;// ./code/es-modules/Extensions/BorderRadius.js
+/* unused harmony import specifier */ var BorderRadius_defaultOptions;
 /* unused harmony import specifier */ var relativeLength;
 /* unused harmony import specifier */ var isObject;
 /* unused harmony import specifier */ var extend;
@@ -1763,7 +1764,6 @@ const NavigatorDefaults = {
  * */
 
 
-const { defaultOptions: BorderRadius_defaultOptions } = (external_highcharts_src_js_default_default());
 
 const { noop } = (external_highcharts_src_js_default_default());
 

@@ -230,6 +230,12 @@ declare module "../highcharts" {
      */
     function diamond(x: number, y: number, w: number, h: number): SVGPathArray;
     /**
+     * Detect WHCM in the browser.
+     *
+     * @return Returns true if the browser is in High Contrast mode.
+     */
+    function isHighContrastModeActive(): boolean;
+    /**
      * Rect symbol path.
      *
      * @param x

@@ -37,10 +37,10 @@ function scrollLegendToItem(legend, itemIx) {
 }
 /** @internal */
 function shouldDoLegendA11y(chart) {
-    const items = chart.legend && chart.legend.allItems, legendA11yOptions = (chart.options.legend.accessibility || {}), unsupportedColorAxis = chart.colorAxis && chart.colorAxis.some((c) => !c.dataClasses || !c.dataClasses.length);
+    const items = chart.legend && chart.legend.allItems, legendA11yOptions = chart.options.legend?.accessibility, unsupportedColorAxis = chart.colorAxis && chart.colorAxis.some((c) => !c.dataClasses || !c.dataClasses.length);
     return !!(items && items.length &&
         !unsupportedColorAxis &&
-        legendA11yOptions.enabled !== false);
+        legendA11yOptions?.enabled !== false);
 }
 /** @internal */
 function setLegendItemHoverState(hoverActive, item) {

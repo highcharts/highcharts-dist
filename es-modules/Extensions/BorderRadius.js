@@ -11,8 +11,7 @@
  *
  * */
 'use strict';
-import D from '../Core/Defaults.js';
-const { defaultOptions } = D;
+import { defaultOptions } from '../Core/Defaults.js';
 import H from '../Core/Globals.js';
 const { noop } = H;
 import { addEvent, extend, isObject, merge, relativeLength } from '../Shared/Utilities.js';

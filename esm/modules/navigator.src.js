@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-10-30)
+ * @license Highcharts JS v13.1.1-modified (2026-11-01)
  * @module highcharts/modules/navigator
  * @requires highcharts
  *
@@ -1381,6 +1381,7 @@ const NavigatorDefaults = {
 (''); // Keeps doclets above in JS file
 
 ;// ./code/es-modules/Extensions/BorderRadius.js
+/* unused harmony import specifier */ var defaultOptions;
 /* unused harmony import specifier */ var relativeLength;
 /* unused harmony import specifier */ var isObject;
 /* unused harmony import specifier */ var extend;
@@ -1399,7 +1400,6 @@ const NavigatorDefaults = {
  * */
 
 
-const { defaultOptions } = (external_highcharts_src_js_default_default());
 
 const { noop } = (external_highcharts_src_js_default_default());
 
