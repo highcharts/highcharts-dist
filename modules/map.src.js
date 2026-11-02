@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highmaps JS v13.1.1-modified (2026-11-01)
+ * @license Highmaps JS v13.1.1-modified (2026-11-02)
  * @module highcharts/modules/map
  * @requires highcharts
  *
@@ -1771,7 +1771,7 @@ ColorAxis.defaultLegendLength = 200;
 /* unused harmony import specifier */ var Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-01)
+ * @license Highcharts JS v13.1.1-modified (2026-11-02)
  * @module highcharts/modules/color-axis
  * @requires highcharts
  *

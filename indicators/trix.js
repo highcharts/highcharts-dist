@@ -1,5 +1,5 @@
 !/**
- * Highstock JS v13.1.1-modified (2026-11-01)
+ * Highstock JS v13.1.1-modified (2026-11-02)
  * @module highcharts/indicators/trix
  * @requires highcharts
  * @requires highcharts/modules/stock

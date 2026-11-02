@@ -1,5 +1,5 @@
 let r;/**
- * Highcharts JS v13.1.1-modified (2026-11-01)
+ * Highcharts JS v13.1.1-modified (2026-11-02)
  * @module highcharts/modules/arrow-symbols
  * @requires highcharts
  *

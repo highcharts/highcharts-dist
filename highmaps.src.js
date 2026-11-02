@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Maps v13.1.1-modified (2026-11-01)
+ * @license Highcharts Maps v13.1.1-modified (2026-11-02)
  * @module highcharts/highmaps
  *
  * (c) 2011-2026 Highsoft AS
@@ -49592,7 +49592,7 @@ var Responsive;
 ;// ./code/es-modules/masters/highcharts.src.js
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-01)
+ * @license Highcharts JS v13.1.1-modified (2026-11-02)
  * @module highcharts/highcharts
  *
  * (c) 2009-2026 Highsoft AS
@@ -51357,7 +51357,7 @@ extend(ColorAxis.prototype, Color_ColorAxisBase);
 /* unused harmony import specifier */ var Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-01)
+ * @license Highcharts JS v13.1.1-modified (2026-11-02)
  * @module highcharts/modules/color-axis
  * @requires highcharts
  *
@@ -61350,7 +61350,7 @@ Series_SeriesRegistry.registerSeriesType('heatmap', HeatmapSeries);
 /* unused harmony import specifier */ var map_src_Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highmaps JS v13.1.1-modified (2026-11-01)
+ * @license Highmaps JS v13.1.1-modified (2026-11-02)
  * @module highcharts/modules/map
  * @requires highcharts
  *
