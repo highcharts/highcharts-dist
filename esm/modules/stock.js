@@ -1,5 +1,5 @@
 let t,e;/**
- * Highstock JS v13.1.1-modified (2026-11-02)
+ * Highstock JS v13.1.1-modified (2026-11-03)
  * @module highcharts/modules/stock
  * @requires highcharts
  *
