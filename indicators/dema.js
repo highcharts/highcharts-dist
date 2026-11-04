@@ -1,5 +1,5 @@
 !/**
- * Highstock JS v13.1.1-modified (2026-11-03)
+ * Highstock JS v13.1.1-modified (2026-11-04)
  * @module highcharts/indicators/dema
  * @requires highcharts
  * @requires highcharts/modules/stock

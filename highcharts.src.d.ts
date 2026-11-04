@@ -90334,7 +90334,7 @@ export interface NavigatorOptions {
     /**
      * (Highstock, Gantt) The color of the mask covering the areas of the
      * navigator series that are currently not visible in the main series. The
-     * default color is bluish with an opacity of 0.3 to see the series below.
+     * default color is semi-transparent to see the series below.
      */
     maskFill?: ColorType;
     /**
@@ -99084,8 +99084,8 @@ export interface ScrollbarOptions {
     /**
      * (Highstock, Gantt) Whether to redraw the main chart as the scrollbar or
      * the navigator zoomed window is moved. Defaults to `true` for modern
-     * browsers and `false` for legacy IE browsers as well as mobile devices.
-     * This option works regardless of whether the scrollbar is enabled or not.
+     * browsers and `false` for mobile devices. This option works regardless of
+     * whether the scrollbar is enabled or not.
      */
     liveRedraw?: boolean;
     /**
@@ -109578,8 +109578,8 @@ export interface XAxisScrollbarOptions {
     /**
      * (Highstock) Whether to redraw the main chart as the scrollbar or the
      * navigator zoomed window is moved. Defaults to `true` for modern browsers
-     * and `false` for legacy IE browsers as well as mobile devices. This option
-     * works regardless of whether the scrollbar is enabled or not.
+     * and `false` for mobile devices. This option works regardless of whether
+     * the scrollbar is enabled or not.
      */
     liveRedraw?: boolean;
     /**
@@ -111629,8 +111629,8 @@ export interface YAxisScrollbarOptions {
     /**
      * (Highstock) Whether to redraw the main chart as the scrollbar or the
      * navigator zoomed window is moved. Defaults to `true` for modern browsers
-     * and `false` for legacy IE browsers as well as mobile devices. This option
-     * works regardless of whether the scrollbar is enabled or not.
+     * and `false` for mobile devices. This option works regardless of whether
+     * the scrollbar is enabled or not.
      */
     liveRedraw?: boolean;
     /**

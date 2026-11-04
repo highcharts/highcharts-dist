@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Stock v13.1.1-modified (2026-11-03)
+ * @license Highcharts Stock v13.1.1-modified (2026-11-04)
  * @module highcharts/highstock
  *
  * (c) 2009-2026 Highsoft AS
@@ -49592,7 +49592,7 @@ var Responsive;
 ;// ./code/es-modules/masters/highcharts.src.js
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-03)
+ * @license Highcharts JS v13.1.1-modified (2026-11-04)
  * @module highcharts/highcharts
  *
  * (c) 2009-2026 Highsoft AS
@@ -50835,7 +50835,7 @@ const NavigatorDefaults = {
     /**
      * The color of the mask covering the areas of the navigator series
      * that are currently not visible in the main series. The default
-     * color is bluish with an opacity of 0.3 to see the series below.
+     * color is semi-transparent to see the series below.
      *
      * @see In styled mode, the mask is styled with the
      *      `.highcharts-navigator-mask` and
@@ -51645,8 +51645,8 @@ const ScrollbarDefaults = {
     /**
      * Whether to redraw the main chart as the scrollbar or the navigator
      * zoomed window is moved. Defaults to `true` for modern browsers and
-     * `false` for legacy IE browsers as well as mobile devices. This option
-     * works regardless of whether the scrollbar is enabled or not.
+     * `false` for mobile devices. This option works regardless of whether the
+     * scrollbar is enabled or not.
      *
      * @sample stock/scrollbar/liveredraw
      *         Setting live redraw to false
@@ -61026,7 +61026,7 @@ var BrokenAxis;
 /* unused harmony import specifier */ var Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-03)
+ * @license Highcharts JS v13.1.1-modified (2026-11-04)
  * @module highcharts/modules/broken-axis
  * @requires highcharts
  *
@@ -62516,7 +62516,7 @@ const DataGroupingComposition = {
 /* unused harmony import specifier */ var datagrouping_src_Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.1.1-modified (2026-11-03)
+ * @license Highstock JS v13.1.1-modified (2026-11-04)
  * @module highcharts/modules/datagrouping
  * @requires highcharts
  *
@@ -62881,7 +62881,7 @@ const MouseWheelZoomComposition = {
 /* unused harmony import specifier */ var mouse_wheel_zoom_src_Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-03)
+ * @license Highcharts JS v13.1.1-modified (2026-11-04)
  * @module highcharts/modules/mouse-wheel-zoom
  * @requires highcharts
  *
@@ -62905,7 +62905,7 @@ mouse_wheel_zoom_src_G.MouseWheelZoom.compose(mouse_wheel_zoom_src_G.Chart);
 /* unused harmony import specifier */ var stock_src_Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.1.1-modified (2026-11-03)
+ * @license Highstock JS v13.1.1-modified (2026-11-04)
  * @module highcharts/modules/stock
  * @requires highcharts
  *

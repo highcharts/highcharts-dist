@@ -1,5 +1,5 @@
 /**
- * Highcharts JS v13.1.1-modified (2026-11-03)
+ * Highcharts JS v13.1.1-modified (2026-11-04)
  * @module highcharts/modules/textpath
  * @requires highcharts
  *
