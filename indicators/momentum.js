@@ -1,5 +1,5 @@
 !/**
- * Highstock JS v13.1.1-modified (2026-11-04)
+ * Highstock JS v13.1.1-modified (2026-11-05)
  * @module highcharts/indicators/momentum
  * @requires highcharts
  * @requires highcharts/modules/stock

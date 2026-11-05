@@ -201,9 +201,12 @@ declare module "../highcharts" {
      * @param h
      *        Height
      *
+     * @param options
+     *        Options
+     *
      * @return Path
      */
-    function circle(x: number, y: number, w: number, h: number): SVGPathArray;
+    function circle(x: number, y: number, w: number, h: number, options?: SymbolOptions): SVGPathArray;
     /**
      * Put accessible info on series and points of a series.
      *

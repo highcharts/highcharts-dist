@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Gantt JS v13.1.1-modified (2026-11-04)
+ * @license Highcharts Gantt JS v13.1.1-modified (2026-11-05)
  * @module highcharts/modules/gantt
  * @requires highcharts
  *
@@ -2178,18 +2178,19 @@ function roundedRect(x, y, width, height, options = {}) {
 function Symbols_arc(cx, cy, w, h, options) {
     const arc = [];
     if (options) {
-        let start = options.start || 0, end = options.end || 0;
-        const rx = (options.r ?? w), ry = (options.r ?? (h || w)), 
-        // Subtract a small number to prevent cos and sin of start and end
-        // from becoming equal on 360 arcs (#1561). See "Arc proximity"
-        // tests at samples/unit-tests/svgrenderer/symbol/demo.js
-        proximity = 0.0001, fullCircle = (Math.abs(end - start - 2 * Math.PI) <
-            proximity);
-        if (fullCircle) {
-            start = Math.PI / 2;
-            end = Math.PI * 2.5 - proximity;
+        const start = options.start || 0, end = options.end || 0, rx = (options.r ?? w), ry = (options.r ?? (h || w)), 
+        // Treat arcs this close to 360 degrees as full circles (#1561).
+        // See "Arc proximity" tests at
+        // samples/unit-tests/svgrenderer/symbol/demo.js
+        proximity = 0.0001, innerRadius = options.innerR, clockwise = options.clockwise ?? 1;
+        // A single arc can't end where it starts, so draw full circles with the
+        // circle symbol, the inner one in the opposite direction to leave a
+        // hole (#25600).
+        if (Math.abs(end - start - 2 * Math.PI) < proximity) {
+            const path = circle(cx - rx, cy - ry, 2 * rx, 2 * ry);
+            return innerRadius ? path.concat(circle(cx - innerRadius, cy - innerRadius, 2 * innerRadius, 2 * innerRadius, { clockwise: 0 })) : path;
         }
-        const innerRadius = options.innerR, open = (options.open ?? fullCircle), cosStart = fullCircle ? 0 : Math.cos(start), sinStart = fullCircle ? 1 : Math.sin(start), cosEnd = fullCircle ? 0 : Math.cos(end), sinEnd = fullCircle ? 1 : Math.sin(end), 
+        const open = options.open, cosStart = Math.cos(start), sinStart = Math.sin(start), cosEnd = Math.cos(end), sinEnd = Math.sin(end), 
         // Proximity takes care of rounding errors around PI (#6971)
         longArc = options.longArc ??
             (end - start - Math.PI < proximity ? 0 : 1);
@@ -2199,9 +2200,8 @@ function Symbols_arc(cx, cy, w, h, options) {
             ry, // Y radius
             0, // Slanting
             longArc, // Long or short arc
-            (options.clockwise ?? 1), // Clockwise
-            // Use a static pixel offset for full circle (#21701)
-            cx + (fullCircle ? 0.001 : rx * cosEnd),
+            clockwise, // Clockwise
+            cx + rx * cosEnd,
             cy + ry * sinEnd
         ];
         arcSegment.params = { start, end, cx, cy }; // Memo for border radius
@@ -2218,8 +2218,8 @@ function Symbols_arc(cx, cy, w, h, options) {
                 0, // Slanting
                 longArc, // Long or short arc
                 // Clockwise - opposite to the outer arc clockwise
-                (0,external_highcharts_src_js_default_namespaceObject.defined)(options.clockwise) ? 1 - options.clockwise : 0,
-                cx + (fullCircle ? -0.001 : innerRadius * cosStart),
+                clockwise ? 0 : 1,
+                cx + innerRadius * cosStart,
                 cy + innerRadius * sinStart
             ];
             // Memo for border radius
@@ -2331,16 +2331,22 @@ function callout(x, y, w, h, options) {
  * Width
  * @param {number} h
  * Height
+ * @param {Highcharts.SymbolOptions} [options]
+ * Options
  * @return {Highcharts.SVGPathArray}
  * Path
  */
-function circle(x, y, w, h) {
-    // Return a full arc
-    return Symbols_arc(x + w / 2, y + h / 2, w / 2, h / 2, {
-        start: Math.PI * 0.5,
-        end: Math.PI * 2.5,
-        open: false
-    });
+function circle(x, y, w, h, options) {
+    const cx = x + w / 2, rx = w / 2, ry = h / 2, clockwise = options?.clockwise ?? 1;
+    // Draw two half arcs. A full arc needs its end point offset from the
+    // start point, and browsers lose that offset on large coordinates due
+    // to floating point errors (#21701, #23601).
+    return [
+        ['M', cx, y + h],
+        ['A', rx, ry, 0, 0, clockwise, cx, y],
+        ['A', rx, ry, 0, 0, clockwise, cx, y + h],
+        ['Z']
+    ];
 }
 /**
  * Diamond symbol path.

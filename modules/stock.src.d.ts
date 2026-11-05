@@ -232,9 +232,12 @@ declare module "../highcharts.src" {
      * @param h
      *        Height
      *
+     * @param options
+     *        Options
+     *
      * @return Path
      */
-    function circle(x: number, y: number, w: number, h: number): SVGPathArray;
+    function circle(x: number, y: number, w: number, h: number, options?: SymbolOptions): SVGPathArray;
     /**
      * Diamond symbol path.
      *

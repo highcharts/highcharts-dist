@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-04)
+ * @license Highcharts JS v13.1.1-modified (2026-11-05)
  * @module highcharts/modules/wordcloud
  * @requires highcharts
  *

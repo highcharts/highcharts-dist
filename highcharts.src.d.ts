@@ -117916,9 +117916,12 @@ export function centerImage(): void;
  * @param h
  *        Height
  *
+ * @param options
+ *        Options
+ *
  * @return Path
  */
-export function circle(x: number, y: number, w: number, h: number): SVGPathArray;
+export function circle(x: number, y: number, w: number, h: number, options?: SymbolOptions): SVGPathArray;
 /**
  * Shorthand to get a cached `Intl.DateTimeFormat` instance.
  */
