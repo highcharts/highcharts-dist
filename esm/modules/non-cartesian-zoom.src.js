@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-05)
+ * @license Highcharts JS v13.1.1-modified (2026-11-06)
  * @module highcharts/modules/mouse-wheel-zoom
  * @requires highcharts
  *
@@ -86,8 +86,10 @@ function onTransform(params) {
                 params.hasZoomed = true;
                 const { plotWidth = 0, plotHeight = 0 } = chart;
                 if (trigger === 'pan' && series.zooming) {
-                    series.zooming.panX -= (to.x || 0) / plotWidth;
-                    series.zooming.panY -= (to.y || 0) / plotHeight;
+                    series.zooming.panX -=
+                        ((to.x || 0) - (from.x || 0)) / plotWidth;
+                    series.zooming.panY -=
+                        ((to.y || 0) - (from.y || 0)) / plotHeight;
                 }
                 else {
                     if (Object.keys(from).length) {

@@ -27,18 +27,18 @@ const { archimedeanSpiral, extendPlayingField, getBoundingBoxFromPolygon, getPla
  *
  * */
 /**
- * @private
  * @class
  * @name Highcharts.seriesTypes.wordcloud
  *
  * @augments Highcharts.Series
  */
 class WordcloudSeries extends ColumnSeries {
-    /**
+    /* *
      *
      * Functions
      *
-     */
+     * */
+    /** @internal */
     pointAttribs(point, state) {
         const attribs = H.seriesTypes.column.prototype
             .pointAttribs.call(this, point, state);
@@ -49,7 +49,7 @@ class WordcloudSeries extends ColumnSeries {
     /**
      * Calculates the fontSize of a word based on its weight.
      *
-     * @private
+     * @internal
      * @function Highcharts.Series#deriveFontSize
      *
      * @param {number} [relativeWeight=0]

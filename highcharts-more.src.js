@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-05)
+ * @license Highcharts JS v13.1.1-modified (2026-11-06)
  * @module highcharts/highcharts-more
  * @requires highcharts
  *
@@ -13257,7 +13257,7 @@ const WaterfallSeriesDefaults = {
  * */
 /**
  * Returns true if the key is a direct property of the object.
- * @private
+ * @internal
  * @param {*} obj
  * Object with property to test
  * @param {string} key
@@ -13276,7 +13276,6 @@ function ownProp(obj, key) {
 /**
  * Waterfall series type.
  *
- * @private
  */
 class WaterfallSeries extends (highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_default()) {
     /* *

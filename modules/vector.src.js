@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-05)
+ * @license Highcharts JS v13.1.1-modified (2026-11-06)
  * @module highcharts/modules/vector
  * @requires highcharts
  *
@@ -313,7 +313,6 @@ const VectorSeriesDefaults = {
 /**
  * The vector series class.
  *
- * @private
  * @class
  * @name Highcharts.seriesTypes.vector
  *
@@ -327,7 +326,7 @@ class VectorSeries extends (highcharts_Series_types_scatter_commonjs_highcharts_
      * */
     /**
      * Fade in the arrows on initializing series.
-     * @private
+     * @internal
      */
     animate(init) {
         if (init) {
@@ -344,7 +343,7 @@ class VectorSeries extends (highcharts_Series_types_scatter_commonjs_highcharts_
     /**
      * Create a single arrow. It is later rotated around the zero
      * centerpoint.
-     * @private
+     * @internal
      */
     arrow(point) {
         const fraction = point.length / this.lengthMax, u = fraction * this.options.vectorLength / 20, o = {
@@ -390,7 +389,7 @@ class VectorSeries extends (highcharts_Series_types_scatter_commonjs_highcharts_
     },
     */
     /**
-     * @private
+     * @internal
      */
     drawPoints() {
         const chart = this.chart;
@@ -425,7 +424,7 @@ class VectorSeries extends (highcharts_Series_types_scatter_commonjs_highcharts_
     }
     /**
      * Get presentational attributes.
-     * @private
+     * @internal
      */
     pointAttribs(point, state) {
         const options = this.options;
@@ -441,7 +440,7 @@ class VectorSeries extends (highcharts_Series_types_scatter_commonjs_highcharts_
         };
     }
     /**
-     * @private
+     * @internal
      */
     translate() {
         highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_default().prototype.translate.call(this);

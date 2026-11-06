@@ -24,7 +24,6 @@ import { addEvent, arrayMax, arrayMin, crisp, extend, merge } from '../../Shared
  *
  * */
 /**
- * @private
  * @class
  * @name Highcharts.seriesTypes.variwide
  *
@@ -58,7 +57,7 @@ class VariwideSeries extends ColumnSeries {
      * Translate an x value inside a given category index into the distorted
      * axis translation.
      *
-     * @private
+     * @internal
      * @function Highcharts.Series#postTranslate
      *
      * @param {number} index
@@ -100,7 +99,7 @@ class VariwideSeries extends ColumnSeries {
     }
     /**
      * Function that corrects stack labels positions
-     * @private
+     * @internal
      */
     correctStackLabels() {
         const series = this, options = series.options, yAxis = series.yAxis;
@@ -136,6 +135,7 @@ class VariwideSeries extends ColumnSeries {
  *  Static Properties
  *
  * */
+/** @internal */
 VariwideSeries.compose = VariwideComposition.compose;
 /** @internal */
 VariwideSeries.defaultOptions = merge(ColumnSeries.defaultOptions, VariwideSeriesDefaults);

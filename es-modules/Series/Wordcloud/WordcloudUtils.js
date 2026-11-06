@@ -22,7 +22,7 @@ import { extend, find, isNumber, isObject, merge } from '../../Shared/Utilities.
 /**
  * Detects if there is a collision between two rectangles.
  *
- * @private
+ * @internal
  * @function isRectanglesIntersecting
  *
  * @param {Highcharts.PolygonBoxObject} r1
@@ -43,7 +43,7 @@ function isRectanglesIntersecting(r1, r2) {
 /**
  * Calculates the normals to a line between two points.
  *
- * @private
+ * @internal
  * @function getNormals
  * @param {Highcharts.PolygonPointObject} p1
  *        Start point for the line. Array of x and y value.
@@ -61,7 +61,7 @@ function getNormals(p1, p2) {
     ];
 }
 /**
- * @private
+ * @internal
  */
 function getAxesFromPolygon(polygon) {
     let points, axes = polygon.axes || [];
@@ -85,7 +85,7 @@ function getAxesFromPolygon(polygon) {
 /**
  * Projects a polygon onto a coordinate.
  *
- * @private
+ * @internal
  * @function project
  * @param {Highcharts.PolygonObject} polygon
  * Array of points in a polygon.
@@ -103,7 +103,7 @@ function project(polygon, target) {
     };
 }
 /**
- * @private
+ * @internal
  */
 function isPolygonsOverlappingOnAxis(axis, polygon1, polygon2) {
     const projection1 = project(polygon1, axis), projection2 = project(polygon2, axis), isOverlapping = !(projection2.min > projection1.max ||
@@ -114,7 +114,7 @@ function isPolygonsOverlappingOnAxis(axis, polygon1, polygon2) {
  * Checks whether two convex polygons are colliding by using the Separating
  * Axis Theorem.
  *
- * @private
+ * @internal
  * @function isPolygonsColliding
  * @param {Highcharts.PolygonObject} polygon1
  *        First polygon.
@@ -133,7 +133,7 @@ function isPolygonsColliding(polygon1, polygon2) {
 /**
  * Detects if a word collides with any previously placed words.
  *
- * @private
+ * @internal
  * @function intersectsAnyWord
  *
  * @param {Highcharts.Point} point
@@ -181,7 +181,7 @@ function intersectsAnyWord(point, points) {
 /**
  * Gives a set of coordinates for an Archimedean Spiral.
  *
- * @private
+ * @internal
  * @function archimedeanSpiral
  *
  * @param {number} attempt
@@ -212,7 +212,7 @@ function archimedeanSpiral(attempt, params) {
 /**
  * Gives a set of coordinates for an rectangular spiral.
  *
- * @private
+ * @internal
  * @function squareSpiral
  *
  * @param {number} attempt
@@ -268,7 +268,7 @@ params) {
 /**
  * Gives a set of coordinates for an rectangular spiral.
  *
- * @private
+ * @internal
  * @function rectangularSpiral
  *
  * @param {number} attempt
@@ -290,7 +290,7 @@ function rectangularSpiral(attempt, params) {
     return result;
 }
 /**
- * @private
+ * @internal
  * @function getRandomPosition
  *
  * @param {number} size
@@ -305,7 +305,7 @@ function getRandomPosition(size) {
 /**
  * Calculates the proper scale to fit the cloud inside the plotting area.
  *
- * @private
+ * @internal
  * @function getScale
  *
  * @param {number} targetWidth
@@ -330,7 +330,7 @@ function getScale(targetWidth, targetHeight, field) {
  * all the words are allowed to be positioned within. The area is
  * proportioned to match the target aspect ratio.
  *
- * @private
+ * @internal
  * @function getPlayingField
  *
  * @param {number} targetWidth
@@ -382,7 +382,7 @@ function getPlayingField(targetWidth, targetHeight, data) {
  * Calculates a number of degrees to rotate, based upon a number of
  * orientations within a range from-to.
  *
- * @private
+ * @internal
  * @function getRotation
  *
  * @param {number} [orientations]
@@ -422,7 +422,7 @@ function getRotation(orientations, index, from, to) {
 /**
  * Calculates the spiral positions and store them in scope for quick access.
  *
- * @private
+ * @internal
  * @function getSpiral
  *
  * @param {Function} fn
@@ -445,7 +445,7 @@ function getSpiral(fn, params) {
 /**
  * Detects if a word is placed outside the playing field.
  *
- * @private
+ * @internal
  * @function outsidePlayingField
  *
  * @param {Highcharts.PolygonBoxObject} rect
@@ -470,7 +470,7 @@ function outsidePlayingField(rect, field) {
         playingField.bottom > rect.bottom);
 }
 /**
- * @private
+ * @internal
  */
 function movePolygon(deltaX, deltaY, polygon) {
     return polygon.map(function (point) {
@@ -485,7 +485,7 @@ function movePolygon(deltaX, deltaY, polygon) {
  * outside the field boundaries. If a collision, then try to adjusts the
  * position.
  *
- * @private
+ * @internal
  * @function intersectionTesting
  *
  * @param {Highcharts.Point} point
@@ -532,7 +532,7 @@ function intersectionTesting(point, options) {
 /**
  * Extends the playing field to have enough space to fit a given word.
  *
- * @private
+ * @internal
  * @function extendPlayingField
  *
  * @param {Highcharts.WordcloudFieldObject} field
@@ -576,7 +576,7 @@ function extendPlayingField(field, rectangle) {
  * is adjusted accordingly. Modifies the field object which is passed as the
  * first parameter.
  *
- * @private
+ * @internal
  * @function updateFieldBoundaries
  *
  * @param {Highcharts.WordcloudFieldObject} field
@@ -608,7 +608,7 @@ function updateFieldBoundaries(field, rectangle) {
  * Alternative solution to correctFloat.
  * E.g Highcharts.correctFloat(123, 2) returns 120, when it should be 123.
  *
- * @private
+ * @internal
  * @function correctFloat
  */
 function correctFloat(number, precision) {
@@ -616,7 +616,7 @@ function correctFloat(number, precision) {
     return Math.round(number * magnitude) / magnitude;
 }
 /**
- * @private
+ * @internal
  */
 function getBoundingBoxFromPolygon(points) {
     return points.reduce(function (obj, point) {
@@ -634,7 +634,7 @@ function getBoundingBoxFromPolygon(points) {
     });
 }
 /**
- * @private
+ * @internal
  */
 function getPolygon(x, y, width, height, rotation) {
     const origin = [x, y], left = x - (width / 2), right = x + (width / 2), top = y - (height / 2), bottom = y + (height / 2), polygon = [
@@ -650,7 +650,7 @@ function getPolygon(x, y, width, height, rotation) {
 /**
  * Rotates a point clockwise around the origin.
  *
- * @private
+ * @internal
  * @function rotate2DToOrigin
  * @param {Highcharts.PolygonPointObject} point
  *        The x and y coordinates for the point.
@@ -669,7 +669,7 @@ function rotate2DToOrigin(point, angle) {
 /**
  * Rotate a point clockwise around another point.
  *
- * @private
+ * @internal
  * @function rotate2DToPoint
  * @param {Highcharts.PolygonPointObject} point
  *        The x and y coordinates for the point.
@@ -692,6 +692,7 @@ function rotate2DToPoint(point, origin, angle) {
  *  Default Export
  *
  * */
+/** @internal */
 const WordcloudUtils = {
     archimedeanSpiral,
     extendPlayingField,
@@ -711,4 +712,5 @@ const WordcloudUtils = {
     squareSpiral,
     updateFieldBoundaries
 };
+/** @internal */
 export default WordcloudUtils;

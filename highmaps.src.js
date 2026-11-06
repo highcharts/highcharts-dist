@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Maps v13.1.1-modified (2026-11-05)
+ * @license Highcharts Maps v13.1.1-modified (2026-11-06)
  * @module highcharts/highmaps
  *
  * (c) 2011-2026 Highsoft AS
@@ -28221,7 +28221,7 @@ class Pointer {
      * @function Highcharts.Pointer#drag
      */
     drag(e) {
-        const { chart } = this, { mouseDownX = 0, mouseDownY = 0 } = chart, chartOptions = chart.options, { panning, panKey, selectionMarkerFill } = chartOptions.chart, plotLeft = chart.plotLeft, plotTop = chart.plotTop, plotWidth = chart.plotWidth, plotHeight = chart.plotHeight, panningEnabled = isObject(panning) ?
+        const { chart } = this, { lastPanX = 0, lastPanY = 0 } = chart, chartOptions = chart.options, { panning, panKey, selectionMarkerFill } = chartOptions.chart, plotLeft = chart.plotLeft, plotTop = chart.plotTop, plotWidth = chart.plotWidth, plotHeight = chart.plotHeight, panningEnabled = isObject(panning) ?
             panning.enabled :
             panning, panKeyPressed = panKey && e[`${panKey}Key`];
         let chartX = e.chartX, chartY = e.chartY, clickedInside, selectionMarker = this.selectionMarker;
@@ -28245,11 +28245,11 @@ class Pointer {
         else if (chartY > plotTop + plotHeight) {
             chartY = plotTop + plotHeight;
         }
-        // Determine if the mouse has moved more than 10px
-        this.hasDragged = Math.sqrt(Math.pow(mouseDownX - chartX, 2) +
-            Math.pow(mouseDownY - chartY, 2));
+        // Determine if the mouse has moved more than 10px since the last pan
+        this.hasDragged = Math.sqrt(Math.pow(lastPanX - chartX, 2) +
+            Math.pow(lastPanY - chartY, 2));
         if (this.hasDragged > 10) {
-            clickedInside = chart.isInsidePlot(mouseDownX - plotLeft, mouseDownY - plotTop, {
+            clickedInside = chart.isInsidePlot(lastPanX - plotLeft, lastPanY - plotTop, {
                 visiblePlotOnly: true
             });
             const { shapeType, attrs } = this.getSelectionMarkerAttrs(chartX, chartY);
@@ -28293,8 +28293,8 @@ class Pointer {
         // Record the start position
         chart.mouseIsDown = e.type;
         chart.cancelClick = false;
-        chart.mouseDownX = e.chartX;
-        chart.mouseDownY = e.chartY;
+        chart.mouseDownX = chart.lastPanX = e.chartX;
+        chart.mouseDownY = chart.lastPanY = e.chartY;
     }
     /**
      * Get selection box to calculate extremes
@@ -28951,7 +28951,7 @@ class Pointer {
         if (e.type === 'touchstart') {
             pointer.pinchDown = touches;
             pointer.res = true; // Reset on next move
-            chart.mouseDownX = e.chartX;
+            chart.mouseDownX = chart.lastPanX = e.chartX;
             // Optionally move the tooltip on touchmove
         }
         else if (followTouchMove) {
@@ -41291,12 +41291,17 @@ class Chart {
             chartOptions.panning = panningOptions;
         }
         fireEvent(this, 'pan', { originalEvent: event }, () => {
+            const { lastPanX = 0, lastPanY = 0, mouseDownX = 0, mouseDownY = 0 } = chart;
             chart.transform({
                 axes,
                 event,
+                // Zero-size boxes, like a one-finger touch pan
+                from: { x: mouseDownX, y: mouseDownY, width: 0, height: 0 },
                 to: {
-                    x: event.chartX - (chart.mouseDownX || 0),
-                    y: event.chartY - (chart.mouseDownY || 0)
+                    x: mouseDownX + event.chartX - lastPanX,
+                    y: mouseDownY + event.chartY - lastPanY,
+                    width: 0,
+                    height: 0
                 },
                 trigger: 'pan'
             });
@@ -41337,8 +41342,10 @@ class Chart {
                 1 :
                 -1, minPx = move;
             // Zooming in multiple panes, zoom only in the pane that receives
-            // the input
-            if (!reset && (fromCenter < 0 || fromCenter > axis.len)) {
+            // the input. Radial axes are not linear in screen space (#21809).
+            if (!reset &&
+                !axis.isRadial &&
+                (fromCenter < 0 || fromCenter > len)) {
                 continue;
             }
             // Adjust offset to ensure selection zoom triggers correctly
@@ -41442,7 +41449,7 @@ class Chart {
                     displayButton = allowResetButton;
                 }
                 if (event) {
-                    this[horiz ? 'mouseDownX' : 'mouseDownY'] =
+                    this[horiz ? 'lastPanX' : 'lastPanY'] =
                         event[horiz ? 'chartX' : 'chartY'];
                 }
             }
@@ -49604,7 +49611,7 @@ var Responsive;
 ;// ./code/es-modules/masters/highcharts.src.js
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-05)
+ * @license Highcharts JS v13.1.1-modified (2026-11-06)
  * @module highcharts/highcharts
  *
  * (c) 2009-2026 Highsoft AS
@@ -50131,6 +50138,23 @@ var ColorAxisComposition;
                 (colorAxis && typeof value !== 'undefined') ?
                     colorAxis.toColor(value, point) :
                     point.color || series.color);
+            // Points created while their data class is toggled off in the
+            // legend must inherit its hidden state (#25083)
+            const item = colorAxis?.legendItem?.labels?.[point.dataClass], hidden = item?.visible === false, 
+            // Only take back the points that were hidden this way
+            visible = !hidden &&
+                !!(point.visible || point.hiddenInDataClass);
+            if (item) {
+                item.isDirtyPoints = hidden;
+            }
+            if (point.visible !== visible) {
+                point.hiddenInDataClass = hidden;
+                point.visible = point.options.visible = visible;
+                if (visible) {
+                    // Hidden by a legend click, drawPoints won't show it
+                    point.graphic?.show();
+                }
+            }
             if (color && point.color !== color) {
                 point.color = color;
                 if (series.options.legendType === 'point' &&
@@ -51312,9 +51336,18 @@ class ColorAxis extends Axis_Axis {
                             }
                         }
                         chart.legend.colorizeItem(this, vis);
+                        const redraw = vis && this.isDirtyPoints;
                         affectedSeries.forEach((series) => {
                             fireEvent(series, 'afterDataClassLegendClick');
+                            // Points hidden in a data class have no
+                            // graphic or data label yet (#25083)
+                            if (redraw) {
+                                series.isDirty = true;
+                            }
                         });
+                        if (redraw) {
+                            chart.redraw(false);
+                        }
                     }
                 }, dataClass));
             });
@@ -51369,7 +51402,7 @@ extend(ColorAxis.prototype, Color_ColorAxisBase);
 /* unused harmony import specifier */ var Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-05)
+ * @license Highcharts JS v13.1.1-modified (2026-11-06)
  * @module highcharts/modules/color-axis
  * @requires highcharts
  *
@@ -61362,7 +61395,7 @@ Series_SeriesRegistry.registerSeriesType('heatmap', HeatmapSeries);
 /* unused harmony import specifier */ var map_src_Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highmaps JS v13.1.1-modified (2026-11-05)
+ * @license Highmaps JS v13.1.1-modified (2026-11-06)
  * @module highcharts/modules/map
  * @requires highcharts
  *

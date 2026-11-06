@@ -32,7 +32,7 @@ import { extend, isArray, isObject, isNumber, isString } from '../../Shared/Util
  * value for each relation where this set is included. The property
  * `overlapping` is a map of how much this set is overlapping another set.
  * NOTE: This algorithm ignores relations consisting of more than 2 sets.
- * @private
+ * @internal
  * @param {Array<Highcharts.VennRelationObject>} relations
  * The list of relations that should be sorted.
  * @return {Array<Highcharts.VennRelationObject>}
@@ -128,7 +128,7 @@ function bisect(f, a, b, tolerance, maxIterations) {
     return x;
 }
 /**
- * @private
+ * @internal
  */
 function getCentroid(simplex) {
     const arr = simplex.slice(0, -1), length = arr.length, result = [], sum = (data, point) => {
@@ -145,7 +145,7 @@ function getCentroid(simplex) {
  * between two circles too get the desired overlap.
  * Currently there is no known formula to calculate the distance from the
  * area of overlap, which makes the bisection method preferred.
- * @private
+ * @internal
  * @param {number} r1
  * Radius of the first circle.
  * @param {number} r2
@@ -182,7 +182,7 @@ function getDistanceBetweenCirclesByOverlap(r1, r2, overlap) {
  * finding the largest distance, which is inside all internal circles, and
  * outside all external circles.
  *
- * @private
+ * @internal
  * @param {Highcharts.PositionObject} pos
  * The x and y coordinate of the label.
  * @param {Array<Highcharts.CircleObject>} internal
@@ -215,7 +215,7 @@ function getLabelWidth(pos, internal, external) {
  * Calculates a margin for a point based on the internal and external
  * circles. The margin describes if the point is well placed within the
  * internal circles, and away from the external.
- * @private
+ * @internal
  * @todo add unit tests.
  * @param {Highcharts.PositionObject} point
  * The point to evaluate.
@@ -239,7 +239,7 @@ function getMarginFromCircles(point, internal, external) {
 }
 /**
  * Calculates the area of overlap between a list of circles.
- * @private
+ * @internal
  * @todo add support for calculating overlap between more than 2 circles.
  * @param {Array<Highcharts.CircleObject>} circles
  * List of circles with their given positions.
@@ -294,7 +294,7 @@ function isValidSet(x) {
 /**
  * Uses a greedy approach to position all the sets. Works well with a small
  * number of sets, and are in these cases a good choice aesthetically.
- * @private
+ * @internal
  * @param {Array<object>} relations List of the overlap between two or more
  * sets, or the size of a single set.
  * @return {Array<object>} List of circles and their calculated positions.
@@ -314,7 +314,7 @@ function layoutGreedyVenn(relations) {
     /**
      * Takes a set and updates the position, and add the set to the list of
      * positioned sets.
-     * @private
+     * @internal
      * @param {Object} set
      * The set to add to its final position.
      * @param {Object} coordinates
@@ -407,7 +407,7 @@ function layoutGreedyVenn(relations) {
 /**
  * Calculates the difference between the desired overlap and the actual
  * overlap between two circles.
- * @private
+ * @internal
  * @param {Dictionary<Highcharts.CircleObject>} mapOfIdToCircle
  * Map from id to circle.
  * @param {Array<Highcharts.VennRelationObject>} relations
@@ -440,7 +440,7 @@ function loss(mapOfIdToCircle, relations) {
  * Finds an optimal position for a given point.
  * @todo add unit tests.
  * @todo add constraints to optimize the algorithm.
- * @private
+ * @internal
  * @param {Highcharts.NelderMeadTestFunction} fn
  *        The function to test a point.
  * @param {Highcharts.NelderMeadPointArray} initial
@@ -457,11 +457,11 @@ function nelderMead(fn, initial) {
     pOCon = pCon * pRef, // Outwards contraction parameter
     pShrink = 0.5; // Shrink parameter
     /**
-     * @private
+     * @internal
      */
     const weightedSum = (weight1, v1, weight2, v2) => v1.map((x, i) => weight1 * x + weight2 * v2[i]);
     /**
-     * @private
+     * @internal
      */
     const getSimplex = (initial) => {
         const n = initial.length, simplex = new Array(n + 1);
@@ -548,7 +548,7 @@ function nelderMead(fn, initial) {
  * Filter out sets, or intersections that includes sets, that are missing in
  * the data or has (value < 1). Adds missing relations between sets in the
  * data as value = 0.
- * @private
+ * @internal
  * @param {DataTableCore} dataTable The raw input data.
  * @return {Array<object>} Returns an array of valid venn data.
  */
@@ -605,7 +605,7 @@ function processVennData(dataTable, splitter) {
 }
 /**
  * Takes two sets and finds the one with the largest total overlap.
- * @private
+ * @internal
  * @param {Object} a
  * The first set to compare.
  * @param {Object} b
@@ -625,6 +625,7 @@ function sortByTotalOverlap(a, b) {
  *  Default Export
  *
  * */
+/** @internal */
 const VennUtils = {
     geometry: GU,
     geometryCircles: CU,
@@ -640,4 +641,5 @@ const VennUtils = {
     processVennData,
     sortByTotalOverlap
 };
+/** @internal */
 export default VennUtils;

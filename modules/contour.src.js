@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highmaps JS v13.1.1-modified (2026-11-05)
+ * @license Highmaps JS v13.1.1-modified (2026-11-06)
  * @module highcharts/modules/contour
  * @requires highcharts
  * @requires highcharts/modules/coloraxis
@@ -485,6 +485,23 @@ var ColorAxisComposition;
                 (colorAxis && typeof value !== 'undefined') ?
                     colorAxis.toColor(value, point) :
                     point.color || series.color);
+            // Points created while their data class is toggled off in the
+            // legend must inherit its hidden state (#25083)
+            const item = colorAxis?.legendItem?.labels?.[point.dataClass], hidden = item?.visible === false, 
+            // Only take back the points that were hidden this way
+            visible = !hidden &&
+                !!(point.visible || point.hiddenInDataClass);
+            if (item) {
+                item.isDirtyPoints = hidden;
+            }
+            if (point.visible !== visible) {
+                point.hiddenInDataClass = hidden;
+                point.visible = point.options.visible = visible;
+                if (visible) {
+                    // Hidden by a legend click, drawPoints won't show it
+                    point.graphic?.show();
+                }
+            }
             if (color && point.color !== color) {
                 point.color = color;
                 if (series.options.legendType === 'point' &&
@@ -1669,9 +1686,18 @@ class ColorAxis extends (highcharts_Axis_commonjs_highcharts_Axis_commonjs2_high
                             }
                         }
                         chart.legend.colorizeItem(this, vis);
+                        const redraw = vis && this.isDirtyPoints;
                         affectedSeries.forEach((series) => {
                             (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.fireEvent)(series, 'afterDataClassLegendClick');
+                            // Points hidden in a data class have no
+                            // graphic or data label yet (#25083)
+                            if (redraw) {
+                                series.isDirty = true;
+                            }
                         });
+                        if (redraw) {
+                            chart.redraw(false);
+                        }
                     }
                 }, dataClass));
             });
@@ -1726,7 +1752,7 @@ ColorAxis.defaultLegendLength = 200;
 /* unused harmony import specifier */ var Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-05)
+ * @license Highcharts JS v13.1.1-modified (2026-11-06)
  * @module highcharts/modules/color-axis
  * @requires highcharts
  *

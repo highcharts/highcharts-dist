@@ -597,9 +597,18 @@ class ColorAxis extends Axis {
                             }
                         }
                         chart.legend.colorizeItem(this, vis);
+                        const redraw = vis && this.isDirtyPoints;
                         affectedSeries.forEach((series) => {
                             fireEvent(series, 'afterDataClassLegendClick');
+                            // Points hidden in a data class have no
+                            // graphic or data label yet (#25083)
+                            if (redraw) {
+                                series.isDirty = true;
+                            }
                         });
+                        if (redraw) {
+                            chart.redraw(false);
+                        }
                     }
                 }, dataClass));
             });

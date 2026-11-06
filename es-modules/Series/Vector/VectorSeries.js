@@ -27,7 +27,6 @@ import { arrayMax, extend, merge } from '../../Shared/Utilities.js';
 /**
  * The vector series class.
  *
- * @private
  * @class
  * @name Highcharts.seriesTypes.vector
  *
@@ -41,7 +40,7 @@ class VectorSeries extends ScatterSeries {
      * */
     /**
      * Fade in the arrows on initializing series.
-     * @private
+     * @internal
      */
     animate(init) {
         if (init) {
@@ -58,7 +57,7 @@ class VectorSeries extends ScatterSeries {
     /**
      * Create a single arrow. It is later rotated around the zero
      * centerpoint.
-     * @private
+     * @internal
      */
     arrow(point) {
         const fraction = point.length / this.lengthMax, u = fraction * this.options.vectorLength / 20, o = {
@@ -104,7 +103,7 @@ class VectorSeries extends ScatterSeries {
     },
     */
     /**
-     * @private
+     * @internal
      */
     drawPoints() {
         const chart = this.chart;
@@ -139,7 +138,7 @@ class VectorSeries extends ScatterSeries {
     }
     /**
      * Get presentational attributes.
-     * @private
+     * @internal
      */
     pointAttribs(point, state) {
         const options = this.options;
@@ -155,7 +154,7 @@ class VectorSeries extends ScatterSeries {
         };
     }
     /**
-     * @private
+     * @internal
      */
     translate() {
         Series.prototype.translate.call(this);

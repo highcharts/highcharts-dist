@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-05)
+ * @license Highcharts JS v13.1.1-modified (2026-11-06)
  * @module highcharts/modules/windbarb
  * @requires highcharts
  * @requires highcharts/modules/datagrouping
@@ -559,7 +559,7 @@ const WindbarbSeriesDefaults = {
  * be called anywhere (not necessarily in the translate function), but must
  * happen after the data grouping module is loaded and before the
  * wind barb series uses it.
- * @private
+ * @internal
  */
 function registerApproximation() {
     if (!(external_datagrouping_src_js_default_dataGrouping_approximations_default()).windbarb) {
@@ -584,7 +584,6 @@ function registerApproximation() {
  *
  * */
 /**
- * @private
  * @class
  * @name Highcharts.seriesTypes.windbarb
  *

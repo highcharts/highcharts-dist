@@ -1,5 +1,5 @@
 let t;/**
- * Highcharts Gantt JS v13.1.1-modified (2026-11-05)
+ * Highcharts Gantt JS v13.1.1-modified (2026-11-06)
  * @module highcharts/modules/pathfinder
  * @requires highcharts
  *

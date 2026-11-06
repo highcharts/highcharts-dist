@@ -24,7 +24,7 @@ import { addEvent, arrayMax, arrayMin, correctFloat, crisp, extend, isNumber, is
  * */
 /**
  * Returns true if the key is a direct property of the object.
- * @private
+ * @internal
  * @param {*} obj
  * Object with property to test
  * @param {string} key
@@ -43,7 +43,6 @@ function ownProp(obj, key) {
 /**
  * Waterfall series type.
  *
- * @private
  */
 class WaterfallSeries extends ColumnSeries {
     /* *

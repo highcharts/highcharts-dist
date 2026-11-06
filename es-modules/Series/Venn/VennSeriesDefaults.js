@@ -69,15 +69,12 @@ const VennSeriesDefaults = {
     inactiveOtherPoints: true,
     /**
      * @ignore-option
-     * @private
      */
     marker: false,
     opacity: 0.75,
     showInLegend: false,
     /**
      * @ignore-option
-     *
-     * @private
      */
     legendType: 'point',
     states: {

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.1.1-modified (2026-11-05)
+ * @license Highstock JS v13.1.1-modified (2026-11-06)
  * @module highcharts/indicators/aroon-oscillator
  * @requires highcharts
  * @requires highcharts/modules/stock

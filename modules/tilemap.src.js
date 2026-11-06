@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highmaps JS v13.1.1-modified (2026-11-05)
+ * @license Highmaps JS v13.1.1-modified (2026-11-06)
  * @module highcharts/modules/tilemap
  * @requires highcharts
  * @requires highcharts/modules/map
@@ -356,6 +356,23 @@ var ColorAxisComposition;
                 (colorAxis && typeof value !== 'undefined') ?
                     colorAxis.toColor(value, point) :
                     point.color || series.color);
+            // Points created while their data class is toggled off in the
+            // legend must inherit its hidden state (#25083)
+            const item = colorAxis?.legendItem?.labels?.[point.dataClass], hidden = item?.visible === false, 
+            // Only take back the points that were hidden this way
+            visible = !hidden &&
+                !!(point.visible || point.hiddenInDataClass);
+            if (item) {
+                item.isDirtyPoints = hidden;
+            }
+            if (point.visible !== visible) {
+                point.hiddenInDataClass = hidden;
+                point.visible = point.options.visible = visible;
+                if (visible) {
+                    // Hidden by a legend click, drawPoints won't show it
+                    point.graphic?.show();
+                }
+            }
             if (color && point.color !== color) {
                 point.color = color;
                 if (series.options.legendType === 'point' &&

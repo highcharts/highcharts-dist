@@ -1,5 +1,5 @@
 let t,e;/**
- * Highcharts JS v13.1.1-modified (2026-11-05)
+ * Highcharts JS v13.1.1-modified (2026-11-06)
  * @module highcharts/modules/boost-canvas
  * @requires highcharts
  *

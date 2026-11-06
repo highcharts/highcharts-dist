@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Stock v13.1.1-modified (2026-11-05)
+ * @license Highcharts Stock v13.1.1-modified (2026-11-06)
  * @module highcharts/highstock
  *
  * (c) 2009-2026 Highsoft AS
@@ -28221,7 +28221,7 @@ class Pointer {
      * @function Highcharts.Pointer#drag
      */
     drag(e) {
-        const { chart } = this, { mouseDownX = 0, mouseDownY = 0 } = chart, chartOptions = chart.options, { panning, panKey, selectionMarkerFill } = chartOptions.chart, plotLeft = chart.plotLeft, plotTop = chart.plotTop, plotWidth = chart.plotWidth, plotHeight = chart.plotHeight, panningEnabled = isObject(panning) ?
+        const { chart } = this, { lastPanX = 0, lastPanY = 0 } = chart, chartOptions = chart.options, { panning, panKey, selectionMarkerFill } = chartOptions.chart, plotLeft = chart.plotLeft, plotTop = chart.plotTop, plotWidth = chart.plotWidth, plotHeight = chart.plotHeight, panningEnabled = isObject(panning) ?
             panning.enabled :
             panning, panKeyPressed = panKey && e[`${panKey}Key`];
         let chartX = e.chartX, chartY = e.chartY, clickedInside, selectionMarker = this.selectionMarker;
@@ -28245,11 +28245,11 @@ class Pointer {
         else if (chartY > plotTop + plotHeight) {
             chartY = plotTop + plotHeight;
         }
-        // Determine if the mouse has moved more than 10px
-        this.hasDragged = Math.sqrt(Math.pow(mouseDownX - chartX, 2) +
-            Math.pow(mouseDownY - chartY, 2));
+        // Determine if the mouse has moved more than 10px since the last pan
+        this.hasDragged = Math.sqrt(Math.pow(lastPanX - chartX, 2) +
+            Math.pow(lastPanY - chartY, 2));
         if (this.hasDragged > 10) {
-            clickedInside = chart.isInsidePlot(mouseDownX - plotLeft, mouseDownY - plotTop, {
+            clickedInside = chart.isInsidePlot(lastPanX - plotLeft, lastPanY - plotTop, {
                 visiblePlotOnly: true
             });
             const { shapeType, attrs } = this.getSelectionMarkerAttrs(chartX, chartY);
@@ -28293,8 +28293,8 @@ class Pointer {
         // Record the start position
         chart.mouseIsDown = e.type;
         chart.cancelClick = false;
-        chart.mouseDownX = e.chartX;
-        chart.mouseDownY = e.chartY;
+        chart.mouseDownX = chart.lastPanX = e.chartX;
+        chart.mouseDownY = chart.lastPanY = e.chartY;
     }
     /**
      * Get selection box to calculate extremes
@@ -28951,7 +28951,7 @@ class Pointer {
         if (e.type === 'touchstart') {
             pointer.pinchDown = touches;
             pointer.res = true; // Reset on next move
-            chart.mouseDownX = e.chartX;
+            chart.mouseDownX = chart.lastPanX = e.chartX;
             // Optionally move the tooltip on touchmove
         }
         else if (followTouchMove) {
@@ -41291,12 +41291,17 @@ class Chart {
             chartOptions.panning = panningOptions;
         }
         fireEvent(this, 'pan', { originalEvent: event }, () => {
+            const { lastPanX = 0, lastPanY = 0, mouseDownX = 0, mouseDownY = 0 } = chart;
             chart.transform({
                 axes,
                 event,
+                // Zero-size boxes, like a one-finger touch pan
+                from: { x: mouseDownX, y: mouseDownY, width: 0, height: 0 },
                 to: {
-                    x: event.chartX - (chart.mouseDownX || 0),
-                    y: event.chartY - (chart.mouseDownY || 0)
+                    x: mouseDownX + event.chartX - lastPanX,
+                    y: mouseDownY + event.chartY - lastPanY,
+                    width: 0,
+                    height: 0
                 },
                 trigger: 'pan'
             });
@@ -41337,8 +41342,10 @@ class Chart {
                 1 :
                 -1, minPx = move;
             // Zooming in multiple panes, zoom only in the pane that receives
-            // the input
-            if (!reset && (fromCenter < 0 || fromCenter > axis.len)) {
+            // the input. Radial axes are not linear in screen space (#21809).
+            if (!reset &&
+                !axis.isRadial &&
+                (fromCenter < 0 || fromCenter > len)) {
                 continue;
             }
             // Adjust offset to ensure selection zoom triggers correctly
@@ -41442,7 +41449,7 @@ class Chart {
                     displayButton = allowResetButton;
                 }
                 if (event) {
-                    this[horiz ? 'mouseDownX' : 'mouseDownY'] =
+                    this[horiz ? 'lastPanX' : 'lastPanY'] =
                         event[horiz ? 'chartX' : 'chartY'];
                 }
             }
@@ -49604,7 +49611,7 @@ var Responsive;
 ;// ./code/es-modules/masters/highcharts.src.js
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-05)
+ * @license Highcharts JS v13.1.1-modified (2026-11-06)
  * @module highcharts/highcharts
  *
  * (c) 2009-2026 Highsoft AS
@@ -54314,11 +54321,11 @@ var OrdinalAxis;
             xAxis.series.length &&
             // On touch devices, let default function handle the pinching
             (!e.touches || e.touches.length <= 1)) {
-            const mouseDownX = chart.mouseDownX, extremes = xAxis.getExtremes(), dataMin = extremes.dataMin, dataMax = extremes.dataMax, min = extremes.min, max = extremes.max, hoverPoints = chart.hoverPoints, closestPointRange = (xAxis.closestPointRange ||
+            const { lastPanX = 0 } = chart, extremes = xAxis.getExtremes(), dataMin = extremes.dataMin, dataMax = extremes.dataMax, min = extremes.min, max = extremes.max, hoverPoints = chart.hoverPoints, closestPointRange = (xAxis.closestPointRange ||
                 xAxis.ordinal?.overscrollPointsRange), pointPixelWidth = (xAxis.translationSlope *
                 (xAxis.ordinal.slope || closestPointRange)), 
             // How many ordinal units did we move?
-            movedUnits = Math.round((mouseDownX - chartX) / pointPixelWidth), 
+            movedUnits = Math.round((lastPanX - chartX) / pointPixelWidth), 
             // Get index of all the chart's points
             extendedOrdinalPositions = xAxis.ordinal.getExtendedPositions(), extendedAxis = {
                 ordinal: {
@@ -54383,7 +54390,7 @@ var OrdinalAxis;
                     trimmedRange.max <= Math.max(ordinalPositions[ordinalPositions.length - 1], max) + overscroll) {
                     xAxis.setExtremes(trimmedRange.min, trimmedRange.max, true, false, { trigger: 'pan' });
                 }
-                chart.mouseDownX = chartX; // Set new reference for next run
+                chart.lastPanX = chartX; // Set new reference for next run
                 css(chart.container, { cursor: 'move' });
             }
         }
@@ -61038,7 +61045,7 @@ var BrokenAxis;
 /* unused harmony import specifier */ var Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-05)
+ * @license Highcharts JS v13.1.1-modified (2026-11-06)
  * @module highcharts/modules/broken-axis
  * @requires highcharts
  *
@@ -62528,7 +62535,7 @@ const DataGroupingComposition = {
 /* unused harmony import specifier */ var datagrouping_src_Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.1.1-modified (2026-11-05)
+ * @license Highstock JS v13.1.1-modified (2026-11-06)
  * @module highcharts/modules/datagrouping
  * @requires highcharts
  *
@@ -62893,7 +62900,7 @@ const MouseWheelZoomComposition = {
 /* unused harmony import specifier */ var mouse_wheel_zoom_src_Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-05)
+ * @license Highcharts JS v13.1.1-modified (2026-11-06)
  * @module highcharts/modules/mouse-wheel-zoom
  * @requires highcharts
  *
@@ -62917,7 +62924,7 @@ mouse_wheel_zoom_src_G.MouseWheelZoom.compose(mouse_wheel_zoom_src_G.Chart);
 /* unused harmony import specifier */ var stock_src_Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.1.1-modified (2026-11-05)
+ * @license Highstock JS v13.1.1-modified (2026-11-06)
  * @module highcharts/modules/stock
  * @requires highcharts
  *

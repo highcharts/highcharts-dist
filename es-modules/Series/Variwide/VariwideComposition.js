@@ -21,7 +21,7 @@ import { addEvent, pushUnique, wrap } from '../../Shared/Utilities.js';
  *
  * */
 /**
- * @private
+ * @internal
  */
 function compose(AxisClass, TickClass) {
     if (pushUnique(composed, 'Variwide')) {
@@ -35,7 +35,7 @@ function compose(AxisClass, TickClass) {
 }
 /**
  * Same width as the category (#8083)
- * @private
+ * @internal
  */
 function onAxisAfterDrawCrosshair(e) {
     if (this.variwide && this.cross) {
@@ -44,7 +44,7 @@ function onAxisAfterDrawCrosshair(e) {
 }
 /**
  * On a vertical axis, apply anti-collision logic to the labels.
- * @private
+ * @internal
  */
 function onAxisAfterRender() {
     const axis = this;
@@ -59,7 +59,7 @@ function onAxisAfterRender() {
     });
 }
 /**
- * @private
+ * @internal
  */
 function onTickAfterGetPosition(e) {
     const axis = this.axis, xOrY = axis.horiz ? 'x' : 'y';
@@ -69,7 +69,7 @@ function onTickAfterGetPosition(e) {
     }
 }
 /**
- * @private
+ * @internal
  */
 function tickPostTranslate(xy, xOrY, index) {
     const axis = this.axis;
@@ -87,7 +87,7 @@ function tickPostTranslate(xy, xOrY, index) {
     }
 }
 /**
- * @private
+ * @internal
  */
 function wrapTickGetLabelPosition(proceed, _x, _y, _label, horiz, 
 /* eslint-disable @typescript-eslint/no-unused-vars */
@@ -112,7 +112,9 @@ _labelOptions, _tickmarkOffset, _index
  *  Default Export
  *
  * */
+/** @internal */
 const VariwideComposition = {
     compose
 };
+/** @internal */
 export default VariwideComposition;

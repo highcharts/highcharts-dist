@@ -170,7 +170,7 @@ class Pointer {
      * @function Highcharts.Pointer#drag
      */
     drag(e) {
-        const { chart } = this, { mouseDownX = 0, mouseDownY = 0 } = chart, chartOptions = chart.options, { panning, panKey, selectionMarkerFill } = chartOptions.chart, plotLeft = chart.plotLeft, plotTop = chart.plotTop, plotWidth = chart.plotWidth, plotHeight = chart.plotHeight, panningEnabled = isObject(panning) ?
+        const { chart } = this, { lastPanX = 0, lastPanY = 0 } = chart, chartOptions = chart.options, { panning, panKey, selectionMarkerFill } = chartOptions.chart, plotLeft = chart.plotLeft, plotTop = chart.plotTop, plotWidth = chart.plotWidth, plotHeight = chart.plotHeight, panningEnabled = isObject(panning) ?
             panning.enabled :
             panning, panKeyPressed = panKey && e[`${panKey}Key`];
         let chartX = e.chartX, chartY = e.chartY, clickedInside, selectionMarker = this.selectionMarker;
@@ -194,11 +194,11 @@ class Pointer {
         else if (chartY > plotTop + plotHeight) {
             chartY = plotTop + plotHeight;
         }
-        // Determine if the mouse has moved more than 10px
-        this.hasDragged = Math.sqrt(Math.pow(mouseDownX - chartX, 2) +
-            Math.pow(mouseDownY - chartY, 2));
+        // Determine if the mouse has moved more than 10px since the last pan
+        this.hasDragged = Math.sqrt(Math.pow(lastPanX - chartX, 2) +
+            Math.pow(lastPanY - chartY, 2));
         if (this.hasDragged > 10) {
-            clickedInside = chart.isInsidePlot(mouseDownX - plotLeft, mouseDownY - plotTop, {
+            clickedInside = chart.isInsidePlot(lastPanX - plotLeft, lastPanY - plotTop, {
                 visiblePlotOnly: true
             });
             const { shapeType, attrs } = this.getSelectionMarkerAttrs(chartX, chartY);
@@ -242,8 +242,8 @@ class Pointer {
         // Record the start position
         chart.mouseIsDown = e.type;
         chart.cancelClick = false;
-        chart.mouseDownX = e.chartX;
-        chart.mouseDownY = e.chartY;
+        chart.mouseDownX = chart.lastPanX = e.chartX;
+        chart.mouseDownY = chart.lastPanY = e.chartY;
     }
     /**
      * Get selection box to calculate extremes
@@ -900,7 +900,7 @@ class Pointer {
         if (e.type === 'touchstart') {
             pointer.pinchDown = touches;
             pointer.res = true; // Reset on next move
-            chart.mouseDownX = e.chartX;
+            chart.mouseDownX = chart.lastPanX = e.chartX;
             // Optionally move the tooltip on touchmove
         }
         else if (followTouchMove) {

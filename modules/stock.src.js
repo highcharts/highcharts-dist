@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.1.1-modified (2026-11-05)
+ * @license Highstock JS v13.1.1-modified (2026-11-06)
  * @module highcharts/modules/stock
  * @requires highcharts
  *
@@ -6191,11 +6191,11 @@ var OrdinalAxis;
             xAxis.series.length &&
             // On touch devices, let default function handle the pinching
             (!e.touches || e.touches.length <= 1)) {
-            const mouseDownX = chart.mouseDownX, extremes = xAxis.getExtremes(), dataMin = extremes.dataMin, dataMax = extremes.dataMax, min = extremes.min, max = extremes.max, hoverPoints = chart.hoverPoints, closestPointRange = (xAxis.closestPointRange ||
+            const { lastPanX = 0 } = chart, extremes = xAxis.getExtremes(), dataMin = extremes.dataMin, dataMax = extremes.dataMax, min = extremes.min, max = extremes.max, hoverPoints = chart.hoverPoints, closestPointRange = (xAxis.closestPointRange ||
                 xAxis.ordinal?.overscrollPointsRange), pointPixelWidth = (xAxis.translationSlope *
                 (xAxis.ordinal.slope || closestPointRange)), 
             // How many ordinal units did we move?
-            movedUnits = Math.round((mouseDownX - chartX) / pointPixelWidth), 
+            movedUnits = Math.round((lastPanX - chartX) / pointPixelWidth), 
             // Get index of all the chart's points
             extendedOrdinalPositions = xAxis.ordinal.getExtendedPositions(), extendedAxis = {
                 ordinal: {
@@ -6260,7 +6260,7 @@ var OrdinalAxis;
                     trimmedRange.max <= Math.max(ordinalPositions[ordinalPositions.length - 1], max) + overscroll) {
                     xAxis.setExtremes(trimmedRange.min, trimmedRange.max, true, false, { trigger: 'pan' });
                 }
-                chart.mouseDownX = chartX; // Set new reference for next run
+                chart.lastPanX = chartX; // Set new reference for next run
                 (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.css)(chart.container, { cursor: 'move' });
             }
         }
@@ -12930,7 +12930,7 @@ var BrokenAxis;
 /* unused harmony import specifier */ var Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-05)
+ * @license Highcharts JS v13.1.1-modified (2026-11-06)
  * @module highcharts/modules/broken-axis
  * @requires highcharts
  *
@@ -14607,7 +14607,7 @@ const DataGroupingComposition = {
 /* unused harmony import specifier */ var datagrouping_src_Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.1.1-modified (2026-11-05)
+ * @license Highstock JS v13.1.1-modified (2026-11-06)
  * @module highcharts/modules/datagrouping
  * @requires highcharts
  *
@@ -14972,7 +14972,7 @@ const MouseWheelZoomComposition = {
 /* unused harmony import specifier */ var mouse_wheel_zoom_src_Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-05)
+ * @license Highcharts JS v13.1.1-modified (2026-11-06)
  * @module highcharts/modules/mouse-wheel-zoom
  * @requires highcharts
  *

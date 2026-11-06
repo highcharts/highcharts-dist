@@ -1,5 +1,5 @@
 !/**
- * Highstock JS v13.1.1-modified (2026-11-05)
+ * Highstock JS v13.1.1-modified (2026-11-06)
  * @module highcharts/indicators/chaikin
  * @requires highcharts
  * @requires highcharts/modules/stock

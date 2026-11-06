@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-05)
+ * @license Highcharts JS v13.1.1-modified (2026-11-06)
  * @module highcharts/modules/variable-pie
  * @requires highcharts
  *
@@ -279,15 +279,6 @@ const VariablePieSeriesDefaults = {
  * @product   highcharts
  * @apioption series.variablepie.data
  */
-/**
-* The z value of the point.
-*
-* @type {(number| null)}
-*
-* @product highcharts
-*
-* @apioption series.variablepie.data.z
-*/
 ''; // Keeps doclets above separate
 /* *
  *
@@ -323,7 +314,6 @@ const VariablePieSeriesDefaults = {
 /**
  * The variablepie series type.
  *
- * @private
  * @class
  * @name Highcharts.seriesTypes.variablepie
  *
@@ -338,7 +328,7 @@ class VariablePieSeries extends (highcharts_Series_types_pie_commonjs_highcharts
     /**
      * Before standard translate method for pie chart it is needed to calculate
      * min/max radius of each pie slice based on its Z value.
-     * @private
+     * @internal
      */
     calculateExtremes() {
         const series = this, chart = series.chart, plotWidth = chart.plotWidth, plotHeight = chart.plotHeight, seriesOptions = series.options, slicingRoom = 2 * (seriesOptions.slicedOffset || 0), zData = [...this.getColumn('z', false, true)], smallestSize = Math.min(plotWidth, plotHeight) - slicingRoom, 
@@ -370,7 +360,7 @@ class VariablePieSeries extends (highcharts_Series_types_pie_commonjs_highcharts
      * Finding radius of series points based on their Z value and min/max Z
      * value for all series.
      *
-     * @private
+     * @internal
      * @function Highcharts.Series#getRadii
      *
      * @param {number} zMin
@@ -416,13 +406,13 @@ class VariablePieSeries extends (highcharts_Series_types_pie_commonjs_highcharts
     /**
      * It is needed to null series.center on chart redraw. Probably good idea
      * will be to add this option in directly in pie series.
-     * @private
+     * @internal
      */
     redraw() {
         this.center = null;
         super.redraw();
     }
-    /** @private */
+    /** @internal */
     getDataLabelPosition(point, distance) {
         const { center, options } = this, angle = point.angle || 0, r = this.radii[point.index], x = center[0] + Math.cos(angle) * r, y = center[1] + Math.sin(angle) * r, connectorOffset = (options.slicedOffset || 0) +
             (options.borderWidth || 0), 
@@ -460,7 +450,7 @@ class VariablePieSeries extends (highcharts_Series_types_pie_commonjs_highcharts
     /**
      * Extend translate by updating radius for each pie slice instead of using
      * one global radius.
-     * @private
+     * @internal
      */
     translate(positions) {
         this.generatePoints();
@@ -531,7 +521,7 @@ class VariablePieSeries extends (highcharts_Series_types_pie_commonjs_highcharts
      * For arrayMin and arrayMax calculations array shouldn't have
      * null/undefined/string values. In this case it is needed to check if
      * points Z value is a Number.
-     * @private
+     * @internal
      */
     zValEval(zVal) {
         if (typeof zVal === 'number' && !isNaN(zVal)) {

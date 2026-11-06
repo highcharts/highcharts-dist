@@ -1,5 +1,5 @@
 !/**
- * Highcharts JS v13.1.1-modified (2026-11-05)
+ * Highcharts JS v13.1.1-modified (2026-11-06)
  * @module highcharts/modules/export-data
  * @requires highcharts
  * @requires highcharts/modules/exporting

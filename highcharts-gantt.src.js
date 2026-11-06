@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Gantt JS v13.1.1-modified (2026-11-05)
+ * @license Highcharts Gantt JS v13.1.1-modified (2026-11-06)
  * @module highcharts/highcharts-gantt
  *
  * (c) 2017-2026 Highsoft AS
@@ -28227,7 +28227,7 @@ class Pointer {
      * @function Highcharts.Pointer#drag
      */
     drag(e) {
-        const { chart } = this, { mouseDownX = 0, mouseDownY = 0 } = chart, chartOptions = chart.options, { panning, panKey, selectionMarkerFill } = chartOptions.chart, plotLeft = chart.plotLeft, plotTop = chart.plotTop, plotWidth = chart.plotWidth, plotHeight = chart.plotHeight, panningEnabled = isObject(panning) ?
+        const { chart } = this, { lastPanX = 0, lastPanY = 0 } = chart, chartOptions = chart.options, { panning, panKey, selectionMarkerFill } = chartOptions.chart, plotLeft = chart.plotLeft, plotTop = chart.plotTop, plotWidth = chart.plotWidth, plotHeight = chart.plotHeight, panningEnabled = isObject(panning) ?
             panning.enabled :
             panning, panKeyPressed = panKey && e[`${panKey}Key`];
         let chartX = e.chartX, chartY = e.chartY, clickedInside, selectionMarker = this.selectionMarker;
@@ -28251,11 +28251,11 @@ class Pointer {
         else if (chartY > plotTop + plotHeight) {
             chartY = plotTop + plotHeight;
         }
-        // Determine if the mouse has moved more than 10px
-        this.hasDragged = Math.sqrt(Math.pow(mouseDownX - chartX, 2) +
-            Math.pow(mouseDownY - chartY, 2));
+        // Determine if the mouse has moved more than 10px since the last pan
+        this.hasDragged = Math.sqrt(Math.pow(lastPanX - chartX, 2) +
+            Math.pow(lastPanY - chartY, 2));
         if (this.hasDragged > 10) {
-            clickedInside = chart.isInsidePlot(mouseDownX - plotLeft, mouseDownY - plotTop, {
+            clickedInside = chart.isInsidePlot(lastPanX - plotLeft, lastPanY - plotTop, {
                 visiblePlotOnly: true
             });
             const { shapeType, attrs } = this.getSelectionMarkerAttrs(chartX, chartY);
@@ -28299,8 +28299,8 @@ class Pointer {
         // Record the start position
         chart.mouseIsDown = e.type;
         chart.cancelClick = false;
-        chart.mouseDownX = e.chartX;
-        chart.mouseDownY = e.chartY;
+        chart.mouseDownX = chart.lastPanX = e.chartX;
+        chart.mouseDownY = chart.lastPanY = e.chartY;
     }
     /**
      * Get selection box to calculate extremes
@@ -28957,7 +28957,7 @@ class Pointer {
         if (e.type === 'touchstart') {
             pointer.pinchDown = touches;
             pointer.res = true; // Reset on next move
-            chart.mouseDownX = e.chartX;
+            chart.mouseDownX = chart.lastPanX = e.chartX;
             // Optionally move the tooltip on touchmove
         }
         else if (followTouchMove) {
@@ -41297,12 +41297,17 @@ class Chart {
             chartOptions.panning = panningOptions;
         }
         fireEvent(this, 'pan', { originalEvent: event }, () => {
+            const { lastPanX = 0, lastPanY = 0, mouseDownX = 0, mouseDownY = 0 } = chart;
             chart.transform({
                 axes,
                 event,
+                // Zero-size boxes, like a one-finger touch pan
+                from: { x: mouseDownX, y: mouseDownY, width: 0, height: 0 },
                 to: {
-                    x: event.chartX - (chart.mouseDownX || 0),
-                    y: event.chartY - (chart.mouseDownY || 0)
+                    x: mouseDownX + event.chartX - lastPanX,
+                    y: mouseDownY + event.chartY - lastPanY,
+                    width: 0,
+                    height: 0
                 },
                 trigger: 'pan'
             });
@@ -41343,8 +41348,10 @@ class Chart {
                 1 :
                 -1, minPx = move;
             // Zooming in multiple panes, zoom only in the pane that receives
-            // the input
-            if (!reset && (fromCenter < 0 || fromCenter > axis.len)) {
+            // the input. Radial axes are not linear in screen space (#21809).
+            if (!reset &&
+                !axis.isRadial &&
+                (fromCenter < 0 || fromCenter > len)) {
                 continue;
             }
             // Adjust offset to ensure selection zoom triggers correctly
@@ -41448,7 +41455,7 @@ class Chart {
                     displayButton = allowResetButton;
                 }
                 if (event) {
-                    this[horiz ? 'mouseDownX' : 'mouseDownY'] =
+                    this[horiz ? 'lastPanX' : 'lastPanY'] =
                         event[horiz ? 'chartX' : 'chartY'];
                 }
             }
@@ -49610,7 +49617,7 @@ var Responsive;
 ;// ./code/es-modules/masters/highcharts.src.js
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-05)
+ * @license Highcharts JS v13.1.1-modified (2026-11-06)
  * @module highcharts/highcharts
  *
  * (c) 2009-2026 Highsoft AS
@@ -58503,7 +58510,7 @@ Pathfinder.prototype.algorithms = PathfinderAlgorithms;
 /* unused harmony import specifier */ var Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Gantt JS v13.1.1-modified (2026-11-05)
+ * @license Highcharts Gantt JS v13.1.1-modified (2026-11-06)
  * @module highcharts/modules/pathfinder
  * @requires highcharts
  *
@@ -58636,7 +58643,7 @@ function chartAdjustHeight() {
 /* unused harmony import specifier */ var static_scale_src_Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Gantt JS v13.1.1-modified (2026-11-05)
+ * @license Highcharts Gantt JS v13.1.1-modified (2026-11-06)
  * @module highcharts/modules/static-scale
  * @requires highcharts
  *
@@ -58901,7 +58908,7 @@ class XRangePoint extends ColumnPoint {
     /**
      * Return color of a point based on its category.
      *
-     * @private
+     * @internal
      * @function getColorByCategory
      *
      * @param {object} series
@@ -58929,7 +58936,7 @@ class XRangePoint extends ColumnPoint {
      *
      * */
     /**
-     * @private
+     * @internal
      */
     resolveColor() {
         const series = this.series;
@@ -58950,7 +58957,7 @@ class XRangePoint extends ColumnPoint {
     /**
      * Extend init to have y default to 0.
      *
-     * @private
+     * @internal
      */
     constructor(series, options, x) {
         super(series, options, x);
@@ -58959,7 +58966,7 @@ class XRangePoint extends ColumnPoint {
     /**
      * Extend applyOptions to handle time strings for x2
      *
-     * @private
+     * @internal
      */
     applyOptions(options, x) {
         super.applyOptions(options, x);
@@ -58969,14 +58976,14 @@ class XRangePoint extends ColumnPoint {
         return this;
     }
     /**
-     * @private
+     * @internal
      */
     setState() {
         super.setState.apply(this, arguments);
         this.series.drawPoint(this, this.series.getAnimationVerb());
     }
     /**
-     * @private
+     * @internal
      */
     isValid() {
         return typeof this.x === 'number' &&
@@ -59050,7 +59057,7 @@ const { parse: XRangeSeries_color } = Color_Color;
  * */
 /**
  * Max x2 should be considered in xAxis extremes
- * @private
+ * @internal
  */
 function onAxisAfterGetSeriesExtremes() {
     const time = this.chart.time;
@@ -59082,7 +59089,6 @@ function onAxisAfterGetSeriesExtremes() {
  *
  * */
 /**
- * @private
  * @class
  * @name Highcharts.seriesTypes.xrange
  *
@@ -59106,7 +59112,7 @@ class XRangeSeries extends Column_ColumnSeries {
      *
      * */
     /**
-     * @private
+     * @internal
      */
     init() {
         super.init.apply(this, arguments);
@@ -59115,7 +59121,6 @@ class XRangeSeries extends Column_ColumnSeries {
     /**
      * Borrow the column series metrics, but with swapped axes. This gives
      * free access to features like groupPadding, grouping, pointWidth etc.
-     * @private
      * @internal
      */
     getColumnMetrics() {
@@ -59134,7 +59139,7 @@ class XRangeSeries extends Column_ColumnSeries {
     /**
      * Override cropData to show a point where x or x2 is outside visible range,
      * but one of them is inside.
-     * @private
+     * @internal
      */
     cropData(table, min, max) {
         // Replace xData with x2Data to find the appropriate cropStart
@@ -59149,7 +59154,7 @@ class XRangeSeries extends Column_ColumnSeries {
      * Finds the index of an existing point that matches the given point
      * options.
      *
-     * @private
+     * @internal
      *
      * @param {Highcharts.XRangePointOptions} options
      *        The options of the point.
@@ -59194,7 +59199,7 @@ class XRangeSeries extends Column_ColumnSeries {
         point.plotX = oldPlotX;
     }
     /**
-     * @private
+     * @internal
      */
     translatePoint(point) {
         const xAxis = this.xAxis, yAxis = this.yAxis, metrics = this.columnMetrics, options = this.options, minPointLength = options.minPointLength || 0, oldColWidth = (point.shapeArgs?.width || 0) / 2, seriesXOffset = this.pointXOffset = metrics.offset, posX = point.x2 ?? (point.x + (point.len || 0)), borderRadius = options.borderRadius, plotTop = this.chart.plotTop, plotLeft = this.chart.plotLeft;
@@ -59310,7 +59315,7 @@ class XRangeSeries extends Column_ColumnSeries {
         point.yCategory = yAxis.categories?.[point.y ?? -1];
     }
     /**
-     * @private
+     * @internal
      */
     translate() {
         super.translate.apply(this, arguments);
@@ -59324,7 +59329,7 @@ class XRangeSeries extends Column_ColumnSeries {
      * This override turns point.graphic into a group containing the
      * original graphic and an overlay displaying the partial fill.
      *
-     * @private
+     * @internal
      *
      * @param {Highcharts.Point} point
      *        An instance of Point in the series.
@@ -59397,7 +59402,7 @@ class XRangeSeries extends Column_ColumnSeries {
         }
     }
     /**
-     * @private
+     * @internal
      */
     drawPoints() {
         const verb = this.getAnimationVerb();
@@ -59410,7 +59415,7 @@ class XRangeSeries extends Column_ColumnSeries {
      * Returns "animate", or "attr" if the number of points is above the
      * animation limit.
      *
-     * @private
+     * @internal
      */
     getAnimationVerb() {
         return (this.chart.pointCount < (this.options.animationLimit || 250) ?
@@ -59418,7 +59423,7 @@ class XRangeSeries extends Column_ColumnSeries {
             'attr');
     }
     /**
-     * @private
+     * @internal
      */
     isPointInside(point) {
         const shapeArgs = point.shapeArgs, plotX = point.plotX, plotY = point.plotY;
@@ -59465,7 +59470,7 @@ Series_SeriesRegistry.registerSeriesType('xrange', XRangeSeries);
 /* unused harmony import specifier */ var xrange_src_Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-05)
+ * @license Highcharts JS v13.1.1-modified (2026-11-06)
  * @module highcharts/modules/xrange
  * @requires highcharts
  *
@@ -62990,7 +62995,7 @@ Series_SeriesRegistry.registerSeriesType('gantt', GanttSeries);
 /* unused harmony import specifier */ var gantt_src_Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Gantt JS v13.1.1-modified (2026-11-05)
+ * @license Highcharts Gantt JS v13.1.1-modified (2026-11-06)
  * @module highcharts/modules/gantt
  * @requires highcharts
  *

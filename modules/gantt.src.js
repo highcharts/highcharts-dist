@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Gantt JS v13.1.1-modified (2026-11-05)
+ * @license Highcharts Gantt JS v13.1.1-modified (2026-11-06)
  * @module highcharts/modules/gantt
  * @requires highcharts
  *
@@ -9850,7 +9850,7 @@ Pathfinder.prototype.algorithms = PathfinderAlgorithms;
 /* unused harmony import specifier */ var Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Gantt JS v13.1.1-modified (2026-11-05)
+ * @license Highcharts Gantt JS v13.1.1-modified (2026-11-06)
  * @module highcharts/modules/pathfinder
  * @requires highcharts
  *
@@ -9983,7 +9983,7 @@ function chartAdjustHeight() {
 /* unused harmony import specifier */ var static_scale_src_Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Gantt JS v13.1.1-modified (2026-11-05)
+ * @license Highcharts Gantt JS v13.1.1-modified (2026-11-06)
  * @module highcharts/modules/static-scale
  * @requires highcharts
  *
@@ -10254,7 +10254,7 @@ class XRangePoint extends ColumnPoint {
     /**
      * Return color of a point based on its category.
      *
-     * @private
+     * @internal
      * @function getColorByCategory
      *
      * @param {object} series
@@ -10282,7 +10282,7 @@ class XRangePoint extends ColumnPoint {
      *
      * */
     /**
-     * @private
+     * @internal
      */
     resolveColor() {
         const series = this.series;
@@ -10303,7 +10303,7 @@ class XRangePoint extends ColumnPoint {
     /**
      * Extend init to have y default to 0.
      *
-     * @private
+     * @internal
      */
     constructor(series, options, x) {
         super(series, options, x);
@@ -10312,7 +10312,7 @@ class XRangePoint extends ColumnPoint {
     /**
      * Extend applyOptions to handle time strings for x2
      *
-     * @private
+     * @internal
      */
     applyOptions(options, x) {
         super.applyOptions(options, x);
@@ -10322,14 +10322,14 @@ class XRangePoint extends ColumnPoint {
         return this;
     }
     /**
-     * @private
+     * @internal
      */
     setState() {
         super.setState.apply(this, arguments);
         this.series.drawPoint(this, this.series.getAnimationVerb());
     }
     /**
-     * @private
+     * @internal
      */
     isValid() {
         return typeof this.x === 'number' &&
@@ -10403,7 +10403,7 @@ const { parse: color } = (highcharts_Color_commonjs_highcharts_Color_commonjs2_h
  * */
 /**
  * Max x2 should be considered in xAxis extremes
- * @private
+ * @internal
  */
 function onAxisAfterGetSeriesExtremes() {
     const time = this.chart.time;
@@ -10435,7 +10435,6 @@ function onAxisAfterGetSeriesExtremes() {
  *
  * */
 /**
- * @private
  * @class
  * @name Highcharts.seriesTypes.xrange
  *
@@ -10459,7 +10458,7 @@ class XRangeSeries extends (highcharts_Series_types_column_commonjs_highcharts_S
      *
      * */
     /**
-     * @private
+     * @internal
      */
     init() {
         super.init.apply(this, arguments);
@@ -10468,7 +10467,6 @@ class XRangeSeries extends (highcharts_Series_types_column_commonjs_highcharts_S
     /**
      * Borrow the column series metrics, but with swapped axes. This gives
      * free access to features like groupPadding, grouping, pointWidth etc.
-     * @private
      * @internal
      */
     getColumnMetrics() {
@@ -10487,7 +10485,7 @@ class XRangeSeries extends (highcharts_Series_types_column_commonjs_highcharts_S
     /**
      * Override cropData to show a point where x or x2 is outside visible range,
      * but one of them is inside.
-     * @private
+     * @internal
      */
     cropData(table, min, max) {
         // Replace xData with x2Data to find the appropriate cropStart
@@ -10502,7 +10500,7 @@ class XRangeSeries extends (highcharts_Series_types_column_commonjs_highcharts_S
      * Finds the index of an existing point that matches the given point
      * options.
      *
-     * @private
+     * @internal
      *
      * @param {Highcharts.XRangePointOptions} options
      *        The options of the point.
@@ -10547,7 +10545,7 @@ class XRangeSeries extends (highcharts_Series_types_column_commonjs_highcharts_S
         point.plotX = oldPlotX;
     }
     /**
-     * @private
+     * @internal
      */
     translatePoint(point) {
         const xAxis = this.xAxis, yAxis = this.yAxis, metrics = this.columnMetrics, options = this.options, minPointLength = options.minPointLength || 0, oldColWidth = (point.shapeArgs?.width || 0) / 2, seriesXOffset = this.pointXOffset = metrics.offset, posX = point.x2 ?? (point.x + (point.len || 0)), borderRadius = options.borderRadius, plotTop = this.chart.plotTop, plotLeft = this.chart.plotLeft;
@@ -10663,7 +10661,7 @@ class XRangeSeries extends (highcharts_Series_types_column_commonjs_highcharts_S
         point.yCategory = yAxis.categories?.[point.y ?? -1];
     }
     /**
-     * @private
+     * @internal
      */
     translate() {
         super.translate.apply(this, arguments);
@@ -10677,7 +10675,7 @@ class XRangeSeries extends (highcharts_Series_types_column_commonjs_highcharts_S
      * This override turns point.graphic into a group containing the
      * original graphic and an overlay displaying the partial fill.
      *
-     * @private
+     * @internal
      *
      * @param {Highcharts.Point} point
      *        An instance of Point in the series.
@@ -10750,7 +10748,7 @@ class XRangeSeries extends (highcharts_Series_types_column_commonjs_highcharts_S
         }
     }
     /**
-     * @private
+     * @internal
      */
     drawPoints() {
         const verb = this.getAnimationVerb();
@@ -10763,7 +10761,7 @@ class XRangeSeries extends (highcharts_Series_types_column_commonjs_highcharts_S
      * Returns "animate", or "attr" if the number of points is above the
      * animation limit.
      *
-     * @private
+     * @internal
      */
     getAnimationVerb() {
         return (this.chart.pointCount < (this.options.animationLimit || 250) ?
@@ -10771,7 +10769,7 @@ class XRangeSeries extends (highcharts_Series_types_column_commonjs_highcharts_S
             'attr');
     }
     /**
-     * @private
+     * @internal
      */
     isPointInside(point) {
         const shapeArgs = point.shapeArgs, plotX = point.plotX, plotY = point.plotY;
@@ -10818,7 +10816,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
 /* unused harmony import specifier */ var xrange_src_Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-05)
+ * @license Highcharts JS v13.1.1-modified (2026-11-06)
  * @module highcharts/modules/xrange
  * @requires highcharts
  *

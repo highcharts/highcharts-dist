@@ -34,7 +34,7 @@ class XRangePoint extends ColumnPoint {
     /**
      * Return color of a point based on its category.
      *
-     * @private
+     * @internal
      * @function getColorByCategory
      *
      * @param {object} series
@@ -62,7 +62,7 @@ class XRangePoint extends ColumnPoint {
      *
      * */
     /**
-     * @private
+     * @internal
      */
     resolveColor() {
         const series = this.series;
@@ -83,7 +83,7 @@ class XRangePoint extends ColumnPoint {
     /**
      * Extend init to have y default to 0.
      *
-     * @private
+     * @internal
      */
     constructor(series, options, x) {
         super(series, options, x);
@@ -92,7 +92,7 @@ class XRangePoint extends ColumnPoint {
     /**
      * Extend applyOptions to handle time strings for x2
      *
-     * @private
+     * @internal
      */
     applyOptions(options, x) {
         super.applyOptions(options, x);
@@ -102,14 +102,14 @@ class XRangePoint extends ColumnPoint {
         return this;
     }
     /**
-     * @private
+     * @internal
      */
     setState() {
         super.setState.apply(this, arguments);
         this.series.drawPoint(this, this.series.getAnimationVerb());
     }
     /**
-     * @private
+     * @internal
      */
     isValid() {
         return typeof this.x === 'number' &&

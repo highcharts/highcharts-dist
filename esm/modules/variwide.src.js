@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-05)
+ * @license Highcharts JS v13.1.1-modified (2026-11-06)
  * @module highcharts/modules/variwide
  * @requires highcharts
  *
@@ -75,7 +75,7 @@ const { composed } = (external_highcharts_src_js_default_default());
  *
  * */
 /**
- * @private
+ * @internal
  */
 function compose(AxisClass, TickClass) {
     if ((0,external_highcharts_src_js_default_namespaceObject.pushUnique)(composed, 'Variwide')) {
@@ -89,7 +89,7 @@ function compose(AxisClass, TickClass) {
 }
 /**
  * Same width as the category (#8083)
- * @private
+ * @internal
  */
 function onAxisAfterDrawCrosshair(e) {
     if (this.variwide && this.cross) {
@@ -98,7 +98,7 @@ function onAxisAfterDrawCrosshair(e) {
 }
 /**
  * On a vertical axis, apply anti-collision logic to the labels.
- * @private
+ * @internal
  */
 function onAxisAfterRender() {
     const axis = this;
@@ -113,7 +113,7 @@ function onAxisAfterRender() {
     });
 }
 /**
- * @private
+ * @internal
  */
 function onTickAfterGetPosition(e) {
     const axis = this.axis, xOrY = axis.horiz ? 'x' : 'y';
@@ -123,7 +123,7 @@ function onTickAfterGetPosition(e) {
     }
 }
 /**
- * @private
+ * @internal
  */
 function tickPostTranslate(xy, xOrY, index) {
     const axis = this.axis;
@@ -141,7 +141,7 @@ function tickPostTranslate(xy, xOrY, index) {
     }
 }
 /**
- * @private
+ * @internal
  */
 function wrapTickGetLabelPosition(proceed, _x, _y, _label, horiz, 
 /* eslint-disable @typescript-eslint/no-unused-vars */
@@ -166,9 +166,11 @@ _labelOptions, _tickmarkOffset, _index
  *  Default Export
  *
  * */
+/** @internal */
 const VariwideComposition = {
     compose
 };
+/** @internal */
 /* harmony default export */ const Variwide_VariwideComposition = (VariwideComposition);
 
 ;// ./code/es-modules/Series/Variwide/VariwidePoint.js
@@ -378,7 +380,6 @@ const VariwideSeriesDefaults = {
  *
  * */
 /**
- * @private
  * @class
  * @name Highcharts.seriesTypes.variwide
  *
@@ -412,7 +413,7 @@ class VariwideSeries extends (external_highcharts_src_js_default_Series_types_co
      * Translate an x value inside a given category index into the distorted
      * axis translation.
      *
-     * @private
+     * @internal
      * @function Highcharts.Series#postTranslate
      *
      * @param {number} index
@@ -454,7 +455,7 @@ class VariwideSeries extends (external_highcharts_src_js_default_Series_types_co
     }
     /**
      * Function that corrects stack labels positions
-     * @private
+     * @internal
      */
     correctStackLabels() {
         const series = this, options = series.options, yAxis = series.yAxis;
@@ -490,6 +491,7 @@ class VariwideSeries extends (external_highcharts_src_js_default_Series_types_co
  *  Static Properties
  *
  * */
+/** @internal */
 VariwideSeries.compose = Variwide_VariwideComposition.compose;
 /** @internal */
 VariwideSeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)((external_highcharts_src_js_default_Series_types_column_default()).defaultOptions, Variwide_VariwideSeriesDefaults);
