@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Maps v13.1.1-modified (2026-11-06)
+ * @license Highcharts Maps v13.1.1-modified (2026-11-07)
  * @module highcharts/highmaps
  *
  * (c) 2011-2026 Highsoft AS
@@ -26989,6 +26989,10 @@ class Point {
              * @internal
              */
             const destroyPoint = () => {
+                const i = series.condemnedPoints?.indexOf(point) ?? -1;
+                if (i > -1) {
+                    series.condemnedPoints.splice(i, 1);
+                }
                 // Remove all events and elements
                 if (point.graphic ||
                     point.graphics ||
@@ -28426,6 +28430,8 @@ class Pointer {
                 s.options.findNearestPointBy.indexOf('y') < 0), point = s.searchPoint(e, compareX);
             if ( // Check that we actually found a point on the series.
             isObject(point, true) && point.series &&
+                // Skip points that are condemned for removal (#25063)
+                !point.condemned &&
                 // Use the new point if it is closer.
                 (!isObject(closest, true) ||
                     (sort(closest, point) > 0))) {
@@ -28548,73 +28554,65 @@ class Pointer {
      * hoverPoints.
      */
     getHoverData(existingHoverPoint, existingHoverSeries, series, isDirectTouch, shared, e) {
-        const hoverPoints = [], useExisting = !!(isDirectTouch && existingHoverPoint), filter = function (s) {
-            return (s.visible &&
-                !(!shared && s.directTouch) && // #3821
-                (s.options.enableMouseTracking ?? true));
-        };
-        let hoverSeries = existingHoverSeries, 
-        // Which series to look in for the hover point
-        searchSeries, 
+        const hoverPoints = [], filter = (s) => (s.visible &&
+            !(!shared && s.directTouch) && // #3821
+            (s.options.enableMouseTracking ?? true)), 
         // Parameters needed for beforeGetHoverData event.
         eventArgs = {
-            chartX: e ? e.chartX : void 0,
-            chartY: e ? e.chartY : void 0,
-            shared: shared
+            chartX: e?.chartX,
+            chartY: e?.chartY,
+            shared
         };
         // Find chart.hoverPane and update filter method in polar.
         fireEvent(this, 'beforeGetHoverData', eventArgs);
-        const notSticky = hoverSeries && !hoverSeries.stickyTracking;
-        searchSeries = notSticky ?
-            // Only search on hovered series if it has stickyTracking false
-            [hoverSeries] :
-            // Filter what series to look in.
-            series.filter((s) => s.stickyTracking &&
-                (eventArgs.filter || filter)(s));
-        // Use existing hovered point or find the one closest to coordinates.
-        const hoverPoint = useExisting || !e ?
+        // Use the existing point, unless it has been removed (#25063)
+        let hoverPoint = existingHoverPoint?.series &&
+            !existingHoverPoint.condemned ?
             existingHoverPoint :
-            this.findNearestKDPoint(searchSeries, shared, e);
-        // Assign hover series
-        hoverSeries = hoverPoint?.series;
-        // If we have a hoverPoint, assign hoverPoints.
+            void 0;
+        // Find the closest point, unless the pointer touches the existing one
+        if (e && !(isDirectTouch && hoverPoint)) {
+            hoverPoint = this.findNearestKDPoint(
+            // Only search the hovered series if it has stickyTracking false
+            existingHoverSeries && !existingHoverSeries.stickyTracking ?
+                [existingHoverSeries] :
+                series.filter((s) => (s.stickyTracking && (eventArgs.filter || filter)(s))), shared, e);
+        }
         if (hoverPoint) {
             // When tooltip is shared, it displays more than one point
-            if (shared && !hoverSeries.noSharedTooltip) {
-                searchSeries = series.filter(function (s) {
-                    return eventArgs.filter ?
-                        eventArgs.filter(s) : filter(s) && !s.noSharedTooltip;
-                });
+            if (shared && !hoverPoint.series.noSharedTooltip) {
+                const { x } = hoverPoint;
                 // Get all points with the same x value as the hoverPoint
-                searchSeries.forEach(function (s) {
-                    const nullInteraction = s.options?.nullInteraction;
-                    let point = find(s.points, function (p) {
-                        return (p.x === hoverPoint.x && (!p.isNull ||
-                            !!nullInteraction));
-                    });
-                    if (isObject(point)) {
-                        /*
-                        * Boost returns a minimal point. Convert it to a usable
-                        * point for tooltip and states.
-                        */
-                        if (s.boosted && s.boost) {
-                            point = s.boost.getPoint(point);
+                for (const s of series) {
+                    if (eventArgs.filter ?
+                        eventArgs.filter(s) :
+                        filter(s) && !s.noSharedTooltip) {
+                        const nullInteraction = s.options?.nullInteraction;
+                        let point = find(s.points, (p) => (p.x === x &&
+                            !p.condemned && // #25063
+                            (!p.isNull || !!nullInteraction)));
+                        if (isObject(point)) {
+                            // Boost returns a minimal point. Convert it to a
+                            // usable point for tooltip and states.
+                            if (s.boosted && s.boost) {
+                                point = s.boost.getPoint(point);
+                            }
+                            hoverPoints.push(point);
                         }
-                        hoverPoints.push(point);
                     }
-                });
+                }
             }
             else {
                 hoverPoints.push(hoverPoint);
             }
         }
         // Check whether the hoverPoint is inside pane we are hovering over.
-        eventArgs = { hoverPoint: hoverPoint };
-        fireEvent(this, 'afterGetHoverData', eventArgs);
+        const afterArgs = { hoverPoint };
+        fireEvent(this, 'afterGetHoverData', afterArgs);
         return {
-            hoverPoint: eventArgs.hoverPoint,
-            hoverSeries: hoverSeries,
-            hoverPoints: hoverPoints
+            hoverPoint: afterArgs.hoverPoint,
+            hoverSeries: hoverPoint?.series,
+            hoverPoints
         };
     }
     /** @internal */
@@ -29270,8 +29268,9 @@ class Pointer {
             if (chart.hoverPoint) {
                 chart.hoverPoint.firePointEvent('mouseOut');
             }
-            // Hover point may have been destroyed in the event handlers (#7127)
-            if (!hoverPoint.series) {
+            // Hover point may have been destroyed (#7127) or condemned (#25063)
+            // in the event handlers.
+            if (!hoverPoint.series || hoverPoint.condemned) {
                 return;
             }
             /**
@@ -49611,7 +49610,7 @@ var Responsive;
 ;// ./code/es-modules/masters/highcharts.src.js
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-06)
+ * @license Highcharts JS v13.1.1-modified (2026-11-07)
  * @module highcharts/highcharts
  *
  * (c) 2009-2026 Highsoft AS
@@ -51402,7 +51401,7 @@ extend(ColorAxis.prototype, Color_ColorAxisBase);
 /* unused harmony import specifier */ var Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-06)
+ * @license Highcharts JS v13.1.1-modified (2026-11-07)
  * @module highcharts/modules/color-axis
  * @requires highcharts
  *
@@ -61395,7 +61394,7 @@ Series_SeriesRegistry.registerSeriesType('heatmap', HeatmapSeries);
 /* unused harmony import specifier */ var map_src_Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highmaps JS v13.1.1-modified (2026-11-06)
+ * @license Highmaps JS v13.1.1-modified (2026-11-07)
  * @module highcharts/modules/map
  * @requires highcharts
  *

@@ -363,6 +363,10 @@ class Point {
              * @internal
              */
             const destroyPoint = () => {
+                const i = series.condemnedPoints?.indexOf(point) ?? -1;
+                if (i > -1) {
+                    series.condemnedPoints.splice(i, 1);
+                }
                 // Remove all events and elements
                 if (point.graphic ||
                     point.graphics ||

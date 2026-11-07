@@ -1,5 +1,5 @@
 !/**
- * Highstock JS v13.1.1-modified (2026-11-06)
+ * Highstock JS v13.1.1-modified (2026-11-07)
  * @module highcharts/indicators/pivot-points
  * @requires highcharts
  * @requires highcharts/modules/stock

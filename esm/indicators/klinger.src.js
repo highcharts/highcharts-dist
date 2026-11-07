@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Stock JS v13.1.1-modified (2026-11-06)
+ * @license Highcharts Stock JS v13.1.1-modified (2026-11-07)
  * @module highcharts/indicators/klinger
  * @requires highcharts
  * @requires highcharts/modules/stock
