@@ -1,5 +1,5 @@
 !/**
- * Highcharts JS v13.1.1-modified (2026-11-07)
+ * Highcharts JS v13.1.1-modified (2026-11-09)
  * @module highcharts/modules/no-data-to-display
  * @requires highcharts
  *

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Stock v13.1.1-modified (2026-11-07)
+ * @license Highcharts Stock v13.1.1-modified (2026-11-09)
  * @module highcharts/highstock
  *
  * (c) 2009-2026 Highsoft AS
@@ -49610,7 +49610,7 @@ var Responsive;
 ;// ./code/es-modules/masters/highcharts.src.js
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-07)
+ * @license Highcharts JS v13.1.1-modified (2026-11-09)
  * @module highcharts/highcharts
  *
  * (c) 2009-2026 Highsoft AS
@@ -61044,7 +61044,7 @@ var BrokenAxis;
 /* unused harmony import specifier */ var Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-07)
+ * @license Highcharts JS v13.1.1-modified (2026-11-09)
  * @module highcharts/modules/broken-axis
  * @requires highcharts
  *
@@ -62534,7 +62534,7 @@ const DataGroupingComposition = {
 /* unused harmony import specifier */ var datagrouping_src_Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.1.1-modified (2026-11-07)
+ * @license Highstock JS v13.1.1-modified (2026-11-09)
  * @module highcharts/modules/datagrouping
  * @requires highcharts
  *
@@ -62899,7 +62899,7 @@ const MouseWheelZoomComposition = {
 /* unused harmony import specifier */ var mouse_wheel_zoom_src_Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-07)
+ * @license Highcharts JS v13.1.1-modified (2026-11-09)
  * @module highcharts/modules/mouse-wheel-zoom
  * @requires highcharts
  *
@@ -62923,7 +62923,7 @@ mouse_wheel_zoom_src_G.MouseWheelZoom.compose(mouse_wheel_zoom_src_G.Chart);
 /* unused harmony import specifier */ var stock_src_Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.1.1-modified (2026-11-07)
+ * @license Highstock JS v13.1.1-modified (2026-11-09)
  * @module highcharts/modules/stock
  * @requires highcharts
  *

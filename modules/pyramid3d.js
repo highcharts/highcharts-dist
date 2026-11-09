@@ -1,5 +1,5 @@
 !/**
- * Highcharts JS v13.1.1-modified (2026-11-07)
+ * Highcharts JS v13.1.1-modified (2026-11-09)
  * @module highcharts/modules/pyramid3d
  * @requires highcharts
  * @requires highcharts/highcharts-3d
