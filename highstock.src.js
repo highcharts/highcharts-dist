@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Stock v13.1.1-modified (2026-11-09)
+ * @license Highcharts Stock v13.1.1-modified (2026-11-10)
  * @module highcharts/highstock
  *
  * (c) 2009-2026 Highsoft AS
@@ -17,7 +17,7 @@
 		(root["_Highcharts"] = factory(),exports["highcharts"] = root["_Highcharts"]);
 	else
 		((root["Highcharts"] && root["Highcharts"].error(16, true)), root["Highcharts"] = factory());
-})(typeof window === 'undefined' ? this : window, () => {
+})(typeof window === 'undefined' ? this || {} : window, () => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	// The require scope
@@ -49610,7 +49610,7 @@ var Responsive;
 ;// ./code/es-modules/masters/highcharts.src.js
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-09)
+ * @license Highcharts JS v13.1.1-modified (2026-11-10)
  * @module highcharts/highcharts
  *
  * (c) 2009-2026 Highsoft AS
@@ -53693,7 +53693,8 @@ class Navigator {
                 mergedNavSeriesOptions.data = userSeriesOptions.data;
                 mergedNavSeriesOptions.dataTable = userSeriesOptions.dataTable;
                 if (mergedNavSeriesOptions.data ||
-                    mergedNavSeriesOptions.dataTable) {
+                    mergedNavSeriesOptions.dataTable ||
+                    (chart.dataTable.length && !baseSeries?.length)) {
                     navigator.hasNavigatorData = true;
                     navigatorSeries.push(chart.initSeries(mergedNavSeriesOptions));
                 }
@@ -61044,7 +61045,7 @@ var BrokenAxis;
 /* unused harmony import specifier */ var Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-09)
+ * @license Highcharts JS v13.1.1-modified (2026-11-10)
  * @module highcharts/modules/broken-axis
  * @requires highcharts
  *
@@ -62534,7 +62535,7 @@ const DataGroupingComposition = {
 /* unused harmony import specifier */ var datagrouping_src_Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.1.1-modified (2026-11-09)
+ * @license Highstock JS v13.1.1-modified (2026-11-10)
  * @module highcharts/modules/datagrouping
  * @requires highcharts
  *
@@ -62899,7 +62900,7 @@ const MouseWheelZoomComposition = {
 /* unused harmony import specifier */ var mouse_wheel_zoom_src_Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-09)
+ * @license Highcharts JS v13.1.1-modified (2026-11-10)
  * @module highcharts/modules/mouse-wheel-zoom
  * @requires highcharts
  *
@@ -62923,7 +62924,7 @@ mouse_wheel_zoom_src_G.MouseWheelZoom.compose(mouse_wheel_zoom_src_G.Chart);
 /* unused harmony import specifier */ var stock_src_Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.1.1-modified (2026-11-09)
+ * @license Highstock JS v13.1.1-modified (2026-11-10)
  * @module highcharts/modules/stock
  * @requires highcharts
  *

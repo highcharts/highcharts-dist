@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-09)
+ * @license Highcharts JS v13.1.1-modified (2026-11-10)
  * @module highcharts/modules/series-on-point
  * @requires highcharts
  *
@@ -21,7 +21,7 @@
 		exports["highcharts/modules/series-on-point"] = factory(root["_Highcharts"]["Point"], root["_Highcharts"]["SVGRenderer"], root["_Highcharts"]["Series"]["types"]["bubble"], root["_Highcharts"]);
 	else
 		root["Highcharts"] = factory(root["Highcharts"]["Point"], root["Highcharts"]["SVGRenderer"], root["Highcharts"]["Series"]["types"]["bubble"], root["Highcharts"]);
-})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__260__, __WEBPACK_EXTERNAL_MODULE__540__, __WEBPACK_EXTERNAL_MODULE__992__, __WEBPACK_EXTERNAL_MODULE__944__) => {
+})(typeof window === 'undefined' ? this || {} : window, (__WEBPACK_EXTERNAL_MODULE__260__, __WEBPACK_EXTERNAL_MODULE__540__, __WEBPACK_EXTERNAL_MODULE__992__, __WEBPACK_EXTERNAL_MODULE__944__) => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({

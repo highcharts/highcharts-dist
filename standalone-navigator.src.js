@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-09)
+ * @license Highcharts JS v13.1.1-modified (2026-11-10)
  * @module highcharts/standalone-navigator
  *
  * Standalone Navigator for Highcharts.
@@ -19,7 +19,7 @@
 		(root["_Highcharts"] = factory(),exports["highcharts"] = root["_Highcharts"]);
 	else
 		((root["Highcharts"] && root["Highcharts"].error(16, true)), root["Highcharts"] = factory());
-})(typeof window === 'undefined' ? this : window, () => {
+})(typeof window === 'undefined' ? this || {} : window, () => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	// The require scope
@@ -49612,7 +49612,7 @@ var Responsive;
 ;// ./code/es-modules/masters/highcharts.src.js
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-09)
+ * @license Highcharts JS v13.1.1-modified (2026-11-10)
  * @module highcharts/highcharts
  *
  * (c) 2009-2026 Highsoft AS
@@ -53606,7 +53606,8 @@ class Navigator {
                 mergedNavSeriesOptions.data = userSeriesOptions.data;
                 mergedNavSeriesOptions.dataTable = userSeriesOptions.dataTable;
                 if (mergedNavSeriesOptions.data ||
-                    mergedNavSeriesOptions.dataTable) {
+                    mergedNavSeriesOptions.dataTable ||
+                    (chart.dataTable.length && !baseSeries?.length)) {
                     navigator.hasNavigatorData = true;
                     navigatorSeries.push(chart.initSeries(mergedNavSeriesOptions));
                 }
@@ -53886,7 +53887,7 @@ class Navigator {
 /* unused harmony import specifier */ var Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-09)
+ * @license Highcharts JS v13.1.1-modified (2026-11-10)
  * @module highcharts/modules/navigator
  * @requires highcharts
  *

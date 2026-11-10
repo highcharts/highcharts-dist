@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-09)
+ * @license Highcharts JS v13.1.1-modified (2026-11-10)
  * @module highcharts/modules/accessibility
  * @requires highcharts
  *
@@ -8326,7 +8326,8 @@ class Navigator {
                 mergedNavSeriesOptions.data = userSeriesOptions.data;
                 mergedNavSeriesOptions.dataTable = userSeriesOptions.dataTable;
                 if (mergedNavSeriesOptions.data ||
-                    mergedNavSeriesOptions.dataTable) {
+                    mergedNavSeriesOptions.dataTable ||
+                    (chart.dataTable.length && !baseSeries?.length)) {
                     navigator.hasNavigatorData = true;
                     navigatorSeries.push(chart.initSeries(mergedNavSeriesOptions));
                 }

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-09)
+ * @license Highcharts JS v13.1.1-modified (2026-11-10)
  * @module highcharts/modules/tiledwebmap
  * @requires highcharts
  * @requires highcharts/modules/map
@@ -19,7 +19,7 @@
 		exports["highcharts/modules/tiledwebmap"] = factory(root["_Highcharts"]["Fx"], root["_Highcharts"]["MapView"], root["_Highcharts"]["Series"]["types"]["map"], root["_Highcharts"]["SeriesRegistry"], root["_Highcharts"]);
 	else
 		root["Highcharts"] = factory(root["Highcharts"]["Fx"], root["Highcharts"]["MapView"], root["Highcharts"]["Series"]["types"]["map"], root["Highcharts"]["SeriesRegistry"], root["Highcharts"]);
-})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__168__, __WEBPACK_EXTERNAL_MODULE__12__, __WEBPACK_EXTERNAL_MODULE__468__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__944__) => {
+})(typeof window === 'undefined' ? this || {} : window, (__WEBPACK_EXTERNAL_MODULE__168__, __WEBPACK_EXTERNAL_MODULE__12__, __WEBPACK_EXTERNAL_MODULE__468__, __WEBPACK_EXTERNAL_MODULE__512__, __WEBPACK_EXTERNAL_MODULE__944__) => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({

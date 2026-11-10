@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-09)
+ * @license Highcharts JS v13.1.1-modified (2026-11-10)
  * @module highcharts/modules/data-tools
  * @requires highcharts
  *
@@ -20,7 +20,7 @@
 		exports["highcharts/modules/data-tools"] = factory(root["_Highcharts"]);
 	else
 		root["Highcharts"] = factory(root["Highcharts"]);
-})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__944__) => {
+})(typeof window === 'undefined' ? this || {} : window, (__WEBPACK_EXTERNAL_MODULE__944__) => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
@@ -6238,7 +6238,7 @@ class CSVConverter extends Converters_DataConverter {
             read(i);
             if (c === '#') {
                 // If there are hexvalues remaining (#13283)
-                if (!/^#[A-F\d]{3,3}|[A-F\d]{6,6}/i.test(columnStr.substring(i))) {
+                if (!/^#[A-F\d]{3}/i.test(columnStr.substring(i))) {
                     // The rest of the row is a comment
                     push();
                     return;

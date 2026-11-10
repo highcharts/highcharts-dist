@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Gantt JS v13.1.1-modified (2026-11-09)
+ * @license Highcharts Gantt JS v13.1.1-modified (2026-11-10)
  * @module highcharts/modules/pathfinder
  * @requires highcharts
  *
@@ -21,7 +21,7 @@
 		exports["highcharts/modules/pathfinder"] = factory(root["_Highcharts"]["Point"], root["_Highcharts"]);
 	else
 		root["Highcharts"] = factory(root["Highcharts"]["Point"], root["Highcharts"]);
-})(typeof window === 'undefined' ? this : window, (__WEBPACK_EXTERNAL_MODULE__260__, __WEBPACK_EXTERNAL_MODULE__944__) => {
+})(typeof window === 'undefined' ? this || {} : window, (__WEBPACK_EXTERNAL_MODULE__260__, __WEBPACK_EXTERNAL_MODULE__944__) => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({

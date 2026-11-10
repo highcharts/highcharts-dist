@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Gantt JS v13.1.1-modified (2026-11-09)
+ * @license Highcharts Gantt JS v13.1.1-modified (2026-11-10)
  * @module highcharts/modules/treegrid
  * @requires highcharts
  *

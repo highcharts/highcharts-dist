@@ -1,5 +1,5 @@
 let e;/**
- * Highcharts Gantt JS v13.1.1-modified (2026-11-09)
+ * Highcharts Gantt JS v13.1.1-modified (2026-11-10)
  * @module highcharts/modules/treegrid
  * @requires highcharts
  *

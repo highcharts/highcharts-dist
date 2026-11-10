@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-09)
+ * @license Highcharts JS v13.1.1-modified (2026-11-10)
  * @module highcharts/highcharts-autoload
  *
  * (c) 2009-2024 Torstein Honsi
@@ -16,7 +16,7 @@
 		(root["_Highcharts"] = factory(),exports["highcharts"] = root["_Highcharts"]);
 	else
 		((root["Highcharts"] && root["Highcharts"].error(16, true)), root["Highcharts"] = factory());
-})(typeof window === 'undefined' ? this : window, () => {
+})(typeof window === 'undefined' ? this || {} : window, () => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	// The require scope
@@ -49610,7 +49610,7 @@ var Responsive;
 ;// ./code/es-modules/masters/highcharts.src.js
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-09)
+ * @license Highcharts JS v13.1.1-modified (2026-11-10)
  * @module highcharts/highcharts
  *
  * (c) 2009-2026 Highsoft AS
