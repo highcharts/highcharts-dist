@@ -22,6 +22,7 @@ import { defined, pushUnique, stableSort } from '../Shared/Utilities.js';
  *  Composition
  *
  * */
+/** @internal */
 var OnSeriesComposition;
 (function (OnSeriesComposition) {
     /* *
@@ -35,7 +36,7 @@ var OnSeriesComposition;
      *
      * */
     /**
-     * @private
+     * @internal
      */
     function compose(SeriesClass) {
         if (pushUnique(composed, 'OnSeries')) {
@@ -50,7 +51,7 @@ var OnSeriesComposition;
      * Override getPlotBox. If the onSeries option is valid, return the plot box
      * of the onSeries, otherwise proceed as usual.
      *
-     * @private
+     * @internal
      */
     function getPlotBox(name) {
         return seriesProto.getPlotBox.call((this.options.onSeries &&
@@ -60,7 +61,7 @@ var OnSeriesComposition;
     /**
      * Extend the translate method by placing the point on the related series
      *
-     * @private
+     * @internal
      */
     function translate() {
         columnProto.translate.apply(this);
@@ -210,4 +211,5 @@ var OnSeriesComposition;
  *  Default Export
  *
  * */
+/** @internal */
 export default OnSeriesComposition;

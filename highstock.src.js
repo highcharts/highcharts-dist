@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Stock v13.1.1-modified (2026-11-10)
+ * @license Highcharts Stock v13.1.1-modified (2026-11-11)
  * @module highcharts/highstock
  *
  * (c) 2009-2026 Highsoft AS
@@ -27148,7 +27148,7 @@ class Point {
      *         The zone item, or `undefined` if the series has no zones.
      */
     getZone() {
-        const series = this.series, zones = series.zones, zoneAxis = series.zoneAxis || 'y';
+        const { zoneAxis = 'y', zones } = this.series;
         let zone, i = 0;
         zone = zones[i];
         while (i < zones.length &&
@@ -27156,15 +27156,10 @@ class Point {
             zone = zones[++i];
         }
         // For resetting or reusing the point (#8100)
-        if (!this.nonZonedColor) {
-            this.nonZonedColor = this.color;
-        }
-        if (zone?.color && !this.options.color) {
-            this.color = zone.color;
-        }
-        else {
-            this.color = this.nonZonedColor;
-        }
+        this.nonZonedColor || (this.nonZonedColor = this.color);
+        this.color = zone?.color && !this.options.color ?
+            zone.color :
+            this.nonZonedColor;
         return zone;
     }
     /**
@@ -27173,10 +27168,8 @@ class Point {
      * @internal
      */
     hasNewShapeType() {
-        const point = this;
-        const oldShapeType = point.graphic &&
-            (point.graphic.symbolName || point.graphic.element.nodeName);
-        return oldShapeType !== this.shapeType;
+        const { graphic } = this;
+        return (graphic?.symbolName || graphic?.element.nodeName) !== this.shapeType;
     }
     /**
      * Determine if point is valid.
@@ -33909,7 +33902,9 @@ class Series {
         }
         else if (equalLength && !dataSorting?.enabled) {
             for (i = 0; i < dataTable.rowCount; i++) {
-                if (!oldData[i].destroyed && !oldData[i].condemned) {
+                if (oldData[i] &&
+                    !oldData[i].destroyed &&
+                    !oldData[i].condemned) {
                     const pOptions = dataTable.getRowObject(i);
                     if (pOptions) {
                         // Remove undefined properties, but preserve explicit
@@ -34284,7 +34279,8 @@ class Series {
             }
         });
         addEvent(dataTable, 'afterSetColumns', (e) => {
-            this.setData(e.target);
+            this.setData(e.target, false);
+            queueRedraw();
         });
         this.hasBoundDataTableEvents = true;
     }
@@ -49610,7 +49606,7 @@ var Responsive;
 ;// ./code/es-modules/masters/highcharts.src.js
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-10)
+ * @license Highcharts JS v13.1.1-modified (2026-11-11)
  * @module highcharts/highcharts
  *
  * (c) 2009-2026 Highsoft AS
@@ -59925,6 +59921,7 @@ const { prototype: seriesProto } = Series_Series;
  *  Composition
  *
  * */
+/** @internal */
 var OnSeriesComposition;
 (function (OnSeriesComposition) {
     /* *
@@ -59938,7 +59935,7 @@ var OnSeriesComposition;
      *
      * */
     /**
-     * @private
+     * @internal
      */
     function compose(SeriesClass) {
         if (pushUnique(OnSeriesComposition_composed, 'OnSeries')) {
@@ -59953,7 +59950,7 @@ var OnSeriesComposition;
      * Override getPlotBox. If the onSeries option is valid, return the plot box
      * of the onSeries, otherwise proceed as usual.
      *
-     * @private
+     * @internal
      */
     function getPlotBox(name) {
         return seriesProto.getPlotBox.call((this.options.onSeries &&
@@ -59963,7 +59960,7 @@ var OnSeriesComposition;
     /**
      * Extend the translate method by placing the point on the related series
      *
-     * @private
+     * @internal
      */
     function translate() {
         columnProto.translate.apply(this);
@@ -60113,6 +60110,7 @@ var OnSeriesComposition;
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const Series_OnSeriesComposition = (OnSeriesComposition);
 
 ;// ./code/es-modules/Series/Flags/FlagsSeries.js
@@ -61045,7 +61043,7 @@ var BrokenAxis;
 /* unused harmony import specifier */ var Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-10)
+ * @license Highcharts JS v13.1.1-modified (2026-11-11)
  * @module highcharts/modules/broken-axis
  * @requires highcharts
  *
@@ -62535,7 +62533,7 @@ const DataGroupingComposition = {
 /* unused harmony import specifier */ var datagrouping_src_Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.1.1-modified (2026-11-10)
+ * @license Highstock JS v13.1.1-modified (2026-11-11)
  * @module highcharts/modules/datagrouping
  * @requires highcharts
  *
@@ -62900,7 +62898,7 @@ const MouseWheelZoomComposition = {
 /* unused harmony import specifier */ var mouse_wheel_zoom_src_Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-10)
+ * @license Highcharts JS v13.1.1-modified (2026-11-11)
  * @module highcharts/modules/mouse-wheel-zoom
  * @requires highcharts
  *
@@ -62924,7 +62922,7 @@ mouse_wheel_zoom_src_G.MouseWheelZoom.compose(mouse_wheel_zoom_src_G.Chart);
 /* unused harmony import specifier */ var stock_src_Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.1.1-modified (2026-11-10)
+ * @license Highstock JS v13.1.1-modified (2026-11-11)
  * @module highcharts/modules/stock
  * @requires highcharts
  *

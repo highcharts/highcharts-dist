@@ -21,7 +21,6 @@
  * The QuadTree node class. Used in Networkgraph chart as a base for Barnes-Hut
  * approximation.
  *
- * @private
  * @class
  * @name Highcharts.QuadTreeNode
  *
@@ -34,6 +33,7 @@ class QuadTreeNode {
      *  Constructor
      *
      * */
+    /** @internal */
     constructor(box) {
         /* *
          *
@@ -46,6 +46,7 @@ class QuadTreeNode {
          *
          * @name Highcharts.QuadTreeNode#body
          * @type {boolean|Highcharts.Point}
+         * @internal
          */
         this.body = false;
         /**
@@ -55,6 +56,7 @@ class QuadTreeNode {
          *
          * @name Highcharts.QuadTreeNode#isEmpty
          * @type {boolean}
+         * @internal
          */
         this.isEmpty = false;
         /**
@@ -64,6 +66,7 @@ class QuadTreeNode {
          *
          * @name Highcharts.QuadTreeNode#isInternal
          * @type {boolean}
+         * @internal
          */
         this.isInternal = false;
         /**
@@ -73,6 +76,7 @@ class QuadTreeNode {
          *
          * @name Highcharts.QuadTreeNode#nodes
          * @type {Array<Highcharts.QuadTreeNode>}
+         * @internal
          */
         this.nodes = [];
         /**
@@ -111,6 +115,7 @@ class QuadTreeNode {
      * |           |               |     |     |
      * -------------               -------------
      * ```
+     * @internal
      */
     divideBox() {
         const halfWidth = this.box.width / 2, halfHeight = this.box.height / 2;
@@ -146,7 +151,7 @@ class QuadTreeNode {
     /**
      * Determine which of the quadrants should be used when placing node in
      * the QuadTree. Returned index is always in range `< 0 , 3 >`.
-     * @private
+     * @internal
      */
     getBoxPosition(point) {
         const left = point.plotX < this.box.left + this.box.width / 2, top = point.plotY < this.box.top + this.box.height / 2;
@@ -181,6 +186,7 @@ class QuadTreeNode {
      *        Point/node to be inserted
      * @param {number} depth
      *        Max depth of the QuadTree
+     * @internal
      */
     insert(point, depth) {
         let newQuadTreeNode;
@@ -236,6 +242,7 @@ class QuadTreeNode {
     /**
      * Each quad node requires it's mass and center position. That mass and
      * position is used to imitate real node in the layout by approximation.
+     * @internal
      */
     updateMassAndCenter() {
         let mass = 0, plotX = 0, plotY = 0;

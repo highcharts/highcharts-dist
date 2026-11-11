@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-10)
+ * @license Highcharts JS v13.1.1-modified (2026-11-11)
  * @module highcharts/modules/networkgraph
  * @requires highcharts
  *
@@ -471,6 +471,7 @@ var highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_roo
  *  Composition
  *
  * */
+/** @internal */
 var NodesComposition;
 (function (NodesComposition) {
     /* *
@@ -484,7 +485,7 @@ var NodesComposition;
      *
      * */
     /**
-     * @private
+     * @internal
      */
     function compose(PointClass, SeriesClass) {
         const pointProto = PointClass.prototype, seriesProto = SeriesClass.prototype;
@@ -499,7 +500,7 @@ var NodesComposition;
     NodesComposition.compose = compose;
     /**
      * Destroy data labels on nodes.
-     * @private
+     * @internal
      */
     function afterUpdate() {
         if (!this.hasDataLabels?.() && this.nodes) { // #23385
@@ -511,7 +512,7 @@ var NodesComposition;
     /**
      * Create a single node that holds information on incoming and outgoing
      * links.
-     * @private
+     * @internal
      */
     function createNode(id) {
         const PointClass = this.pointClass, findById = (nodes, id) => (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.find)(nodes, (node) => node.id === id);
@@ -528,7 +529,7 @@ var NodesComposition;
             newNode.linksFrom = [];
             /**
              * Return the largest sum of either the incoming or outgoing links.
-             * @private
+             * @internal
              */
             newNode.getSum = function () {
                 let sumTo = 0, sumFrom = 0;
@@ -542,7 +543,7 @@ var NodesComposition;
             };
             /**
              * Get the offset in weight values of a point/link.
-             * @private
+             * @internal
              */
             newNode.offset = function (point, coll) {
                 let offset = 0;
@@ -581,7 +582,7 @@ var NodesComposition;
     NodesComposition.createNode = createNode;
     /**
      * Destroy all nodes and links.
-     * @private
+     * @internal
      */
     function destroy() {
         // Nodes must also be destroyed (#8682, #9300)
@@ -593,7 +594,7 @@ var NodesComposition;
     /**
      * Extend generatePoints by adding the nodes, which are Point objects but
      * pushed to the this.nodes array.
-     * @private
+     * @internal
      */
     function generatePoints() {
         const chart = this.chart, nodeLookup = {};
@@ -642,7 +643,7 @@ var NodesComposition;
     NodesComposition.generatePoints = generatePoints;
     /**
      * Destroy all nodes on setting new data
-     * @private
+     * @internal
      */
     function setData() {
         if (this.nodes) {
@@ -656,7 +657,7 @@ var NodesComposition;
     /**
      * When hovering node, highlight all connected links. When hovering a link,
      * highlight all connected nodes.
-     * @private
+     * @internal
      */
     function setNodeState(state) {
         const args = arguments, others = this.isNode ? this.linksTo.concat(this.linksFrom) :
@@ -682,7 +683,7 @@ var NodesComposition;
     /**
      * When updating a node, don't update `series.options.data`, but
      * `series.options.nodes`
-     * @private
+     * @internal
      */
     function updateNode(options, redraw, animation, runEvent) {
         const nodes = this.series.options.nodes, data = this.series.options.data, dataLength = data?.length || 0, linkConfig = data?.[this.index];
@@ -730,6 +731,7 @@ var NodesComposition;
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const Series_NodesComposition = (NodesComposition);
 
 ;// ./code/es-modules/Series/Networkgraph/NetworkgraphPoint.js
@@ -770,7 +772,7 @@ class NetworkgraphPoint extends Point {
     /**
      * Destroy point. If it's a node, remove all links coming out of this
      * node. Then remove point from the layout.
-     * @private
+     * @internal
      */
     destroy() {
         if (this.isNode) {
@@ -788,7 +790,7 @@ class NetworkgraphPoint extends Point {
     /**
      * Return degree of a node. If node has no connections, it still has
      * deg=1.
-     * @private
+     * @internal
      */
     getDegree() {
         const deg = this.isNode ?
@@ -798,7 +800,7 @@ class NetworkgraphPoint extends Point {
     }
     /**
      * Get presentational attributes of link connecting two nodes.
-     * @private
+     * @internal
      */
     getLinkAttributes() {
         const linkOptions = this.series.options.link, pointOptions = this.options;
@@ -811,7 +813,7 @@ class NetworkgraphPoint extends Point {
     }
     /**
      * Get link path connecting two nodes.
-     * @private
+     * @internal
      * @return {Array<Highcharts.SVGPathArray>}
      *         Path: `['M', x, y, 'L', x, y]`
      */
@@ -844,7 +846,7 @@ class NetworkgraphPoint extends Point {
      * Get mass fraction applied on two nodes connected to each other. By
      * default, when mass is equal to `1`, mass fraction for both nodes
      * equal to 0.5.
-     * @private
+     * @internal
      * @return {Highcharts.Dictionary<number>}
      *         For example `{ fromNode: 0.5, toNode: 0.5 }`
      */
@@ -858,7 +860,7 @@ class NetworkgraphPoint extends Point {
     /**
      * Basic `point.init()` and additional styles applied when
      * `series.draggable` is enabled.
-     * @private
+     * @internal
      */
     constructor(series, options, x) {
         super(series, options, x);
@@ -873,14 +875,14 @@ class NetworkgraphPoint extends Point {
         }
     }
     /**
-     * @private
+     * @internal
      */
     isValid() {
         return !this.isNode || (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.defined)(this.id);
     }
     /**
      * Redraw link's path.
-     * @private
+     * @internal
      */
     redrawLink() {
         const path = this.getLinkPath();
@@ -914,7 +916,7 @@ class NetworkgraphPoint extends Point {
      * Common method for removing points and nodes in networkgraph. To
      * remove `link`, use `series.data[index].remove()`. To remove `node`
      * with all connections, use `series.nodes[index].remove()`.
-     * @private
+     * @internal
      * @param {boolean} [redraw=true]
      *        Whether to redraw the chart or wait for an explicit call. When
      *        doing more operations on the chart, for example running
@@ -978,7 +980,7 @@ class NetworkgraphPoint extends Point {
     }
     /**
      * Render link and add it to the DOM.
-     * @private
+     * @internal
      */
     renderLink() {
         let attribs;
@@ -1619,7 +1621,7 @@ const NetworkgraphSeriesDefaults = {
  * In Euler integration, force is stored in a node, not changing it's
  * position. Later, in `integrate()` forces are applied on nodes.
  *
- * @private
+ * @internal
  * @param {Highcharts.Point} link
  *        Link that connects two nodes
  * @param {number} force
@@ -1652,7 +1654,7 @@ function attractive(link, force, distanceXY, distanceR) {
  * basic, not recommended:
  *    `function (d, k) { return d / k }`
  *
- * @private
+ * @internal
  * @param {number} d current distance between two nodes
  * @param {number} k expected distance between two nodes
  * @return {number} force
@@ -1667,7 +1669,7 @@ function attractiveForceFunction(d, k) {
  * In Euler integration, force is stored in a node, not changing it's
  * position. Later, in `integrate()` forces are applied on nodes.
  *
- * @private
+ * @internal
  */
 function barycenter() {
     const gravitationalConstant = this.options.gravitationalConstant, xFactor = this.barycenter.xFactor, yFactor = this.barycenter.yFactor;
@@ -1686,7 +1688,7 @@ function barycenter() {
 /**
  * Estimate the best possible distance between two nodes, making graph
  * readable.
- * @private
+ * @internal
  */
 function getK(layout) {
     return Math.pow(layout.box.width * layout.box.height / layout.nodes.length, 0.3);
@@ -1717,7 +1719,7 @@ function getK(layout) {
  * Note:
  * Actually `min(v(n), temperature(n))` replaces simulated annealing.
  *
- * @private
+ * @internal
  * @param {Highcharts.NetworkgraphLayout} layout
  *        Layout object
  * @param {Highcharts.Point} node
@@ -1742,7 +1744,7 @@ function integrate(layout, node) {
 /**
  * Repulsive force.
  *
- * @private
+ * @internal
  * @param {Highcharts.Point} node
  *        Node that should be translated by force.
  * @param {number} force
@@ -1771,7 +1773,7 @@ function repulsive(node, force, distanceXY, distanceR) {
  * grid-variant:
  *    `function (d, k) { return k * k / d * (2 * k - d > 0 ? 1 : 0) }`
  *
- * @private
+ * @internal
  * @param {number} d current distance between two nodes
  * @param {number} k expected distance between two nodes
  * @return {number} force
@@ -1819,7 +1821,6 @@ const EulerIntegration = {
  * The QuadTree node class. Used in Networkgraph chart as a base for Barnes-Hut
  * approximation.
  *
- * @private
  * @class
  * @name Highcharts.QuadTreeNode
  *
@@ -1832,6 +1833,7 @@ class QuadTreeNode {
      *  Constructor
      *
      * */
+    /** @internal */
     constructor(box) {
         /* *
          *
@@ -1844,6 +1846,7 @@ class QuadTreeNode {
          *
          * @name Highcharts.QuadTreeNode#body
          * @type {boolean|Highcharts.Point}
+         * @internal
          */
         this.body = false;
         /**
@@ -1853,6 +1856,7 @@ class QuadTreeNode {
          *
          * @name Highcharts.QuadTreeNode#isEmpty
          * @type {boolean}
+         * @internal
          */
         this.isEmpty = false;
         /**
@@ -1862,6 +1866,7 @@ class QuadTreeNode {
          *
          * @name Highcharts.QuadTreeNode#isInternal
          * @type {boolean}
+         * @internal
          */
         this.isInternal = false;
         /**
@@ -1871,6 +1876,7 @@ class QuadTreeNode {
          *
          * @name Highcharts.QuadTreeNode#nodes
          * @type {Array<Highcharts.QuadTreeNode>}
+         * @internal
          */
         this.nodes = [];
         /**
@@ -1909,6 +1915,7 @@ class QuadTreeNode {
      * |           |               |     |     |
      * -------------               -------------
      * ```
+     * @internal
      */
     divideBox() {
         const halfWidth = this.box.width / 2, halfHeight = this.box.height / 2;
@@ -1944,7 +1951,7 @@ class QuadTreeNode {
     /**
      * Determine which of the quadrants should be used when placing node in
      * the QuadTree. Returned index is always in range `< 0 , 3 >`.
-     * @private
+     * @internal
      */
     getBoxPosition(point) {
         const left = point.plotX < this.box.left + this.box.width / 2, top = point.plotY < this.box.top + this.box.height / 2;
@@ -1979,6 +1986,7 @@ class QuadTreeNode {
      *        Point/node to be inserted
      * @param {number} depth
      *        Max depth of the QuadTree
+     * @internal
      */
     insert(point, depth) {
         let newQuadTreeNode;
@@ -2034,6 +2042,7 @@ class QuadTreeNode {
     /**
      * Each quad node requires it's mass and center position. That mass and
      * position is used to imitate real node in the layout by approximation.
+     * @internal
      */
     updateMassAndCenter() {
         let mass = 0, plotX = 0, plotY = 0;
@@ -2093,7 +2102,6 @@ class QuadTreeNode {
  * The QuadTree class. Used in Networkgraph chart as a base for Barnes-Hut
  * approximation.
  *
- * @private
  * @class
  * @name Highcharts.QuadTree
  *
@@ -2112,6 +2120,7 @@ class QuadTree {
      *  Constructor
      *
      * */
+    /** @internal */
     constructor(x, y, width, height) {
         // Boundary rectangle:
         this.box = {
@@ -2133,6 +2142,7 @@ class QuadTree {
      * */
     /**
      * Calculate mass of the each QuadNode in the tree.
+     * @internal
      */
     calculateMassAndCenter() {
         this.visitNodeRecursive(null, null, function (node) {
@@ -2144,6 +2154,7 @@ class QuadTree {
      *
      * @param {Array<Highcharts.Point>} points
      *        Points as nodes
+     * @internal
      */
     insertNodes(points) {
         for (const point of points) {
@@ -2172,6 +2183,7 @@ class QuadTree {
      *        Function to be called before visiting children nodes.
      * @param {Function} [afterCallback]
      *        Function to be called after visiting children nodes.
+     * @internal
      */
     visitNodeRecursive(node, beforeCallback, afterCallback) {
         let goFurther;
@@ -2241,7 +2253,7 @@ class QuadTree {
  * In Verlet integration, force is applied on a node immediately to it's
  * `plotX` and `plotY` position.
  *
- * @private
+ * @internal
  * @param {Highcharts.Point} link
  *        Link that connects two nodes
  * @param {number} force
@@ -2268,7 +2280,7 @@ function VerletIntegration_attractive(link, force, distanceXY) {
  * Attractive force function. Can be replaced by API's
  * `layoutAlgorithm.attractiveForce`
  *
- * @private
+ * @internal
  * @param {number} d current distance between two nodes
  * @param {number} k expected distance between two nodes
  * @return {number} force
@@ -2284,7 +2296,7 @@ function VerletIntegration_attractiveForceFunction(d, k) {
  * In Verlet integration, force is applied on a node immediately to it's
  * `plotX` and `plotY` position.
  *
- * @private
+ * @internal
  */
 function VerletIntegration_barycenter() {
     const gravitationalConstant = this.options.gravitationalConstant || 0, xFactor = (this.barycenter.xFactor -
@@ -2302,7 +2314,7 @@ function VerletIntegration_barycenter() {
 /**
  * Estimate the best possible distance between two nodes, making graph
  * readable.
- * @private
+ * @internal
  */
 function VerletIntegration_getK(layout) {
     return Math.pow(layout.box.width * layout.box.height / layout.nodes.length, 0.5);
@@ -2334,7 +2346,7 @@ function VerletIntegration_getK(layout) {
  * forces. Or even Time-Corrected Verlet by Jonathan
  * "lonesock" Dummer
  *
- * @private
+ * @internal
  * @param {Highcharts.NetworkgraphLayout} layout layout object
  * @param {Highcharts.Point} node node that should be translated
  */
@@ -2364,7 +2376,7 @@ function VerletIntegration_integrate(layout, node) {
  * In Verlet integration, force is applied on a node immediately to it's
  * `plotX` and `plotY` position.
  *
- * @private
+ * @internal
  * @param {Highcharts.Point} node
  *        Node that should be translated by force.
  * @param {number} force
@@ -2383,7 +2395,7 @@ function VerletIntegration_repulsive(node, force, distanceXY) {
  * Repulsive force function. Can be replaced by API's
  * `layoutAlgorithm.repulsiveForce`
  *
- * @private
+ * @internal
  * @param {number} d current distance between two nodes
  * @param {number} k expected distance between two nodes
  * @return {number} force
@@ -2438,7 +2450,6 @@ const { win } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highch
 /**
  * Reingold-Fruchterman algorithm from
  * "Graph Drawing by Force-directed Placement" paper.
- * @private
  */
 class ReingoldFruchtermanLayout {
     constructor() {
@@ -2447,14 +2458,22 @@ class ReingoldFruchtermanLayout {
          *  Static Functions
          *
          * */
+        /** @internal */
         this.box = {};
+        /** @internal */
         this.currentStep = 0;
+        /** @internal */
         this.initialRendering = true;
+        /** @internal */
         this.links = [];
+        /** @internal */
         this.nodes = [];
+        /** @internal */
         this.series = [];
+        /** @internal */
         this.simulation = false;
     }
+    /** @internal */
     static compose(ChartClass) {
         Series_GraphLayoutComposition.compose(ChartClass);
         Series_GraphLayoutComposition.integrations.euler = Networkgraph_EulerIntegration;
@@ -2462,6 +2481,7 @@ class ReingoldFruchtermanLayout {
         Series_GraphLayoutComposition.layouts['reingold-fruchterman'] =
             ReingoldFruchtermanLayout;
     }
+    /** @internal */
     init(options) {
         this.options = options;
         this.nodes = [];
@@ -2485,9 +2505,11 @@ class ReingoldFruchtermanLayout {
                 this.integration.repulsiveForceFunction;
         this.approximation = options.approximation;
     }
+    /** @internal */
     updateSimulation(enable) {
         this.enableSimulation = (enable ?? this.options.enableSimulation);
     }
+    /** @internal */
     start() {
         const layout = this, series = this.series, options = this.options;
         layout.currentStep = 0;
@@ -2507,6 +2529,7 @@ class ReingoldFruchtermanLayout {
             layout.step();
         }
     }
+    /** @internal */
     step() {
         const anyLayout = this, allSeries = this.series;
         // Algorithm:
@@ -2547,11 +2570,13 @@ class ReingoldFruchtermanLayout {
             }
         }
     }
+    /** @internal */
     stop() {
         if (this.simulation) {
             win.cancelAnimationFrame(this.simulation);
         }
     }
+    /** @internal */
     setArea(x, y, w, h) {
         this.box = {
             left: x,
@@ -2560,11 +2585,13 @@ class ReingoldFruchtermanLayout {
             height: h
         };
     }
+    /** @internal */
     setK() {
         // Optimal distance between nodes,
         // available space around the node:
         this.k = this.options.linkLength || this.integration.getK(this);
     }
+    /** @internal */
     addElementsToCollection(elements, collection) {
         for (const element of elements) {
             if (collection.indexOf(element) === -1) {
@@ -2572,18 +2599,21 @@ class ReingoldFruchtermanLayout {
             }
         }
     }
+    /** @internal */
     removeElementFromCollection(element, collection) {
         const index = collection.indexOf(element);
         if (index !== -1) {
             collection.splice(index, 1);
         }
     }
+    /** @internal */
     clear() {
         this.nodes.length = 0;
         this.links.length = 0;
         this.series.length = 0;
         this.resetSimulation();
     }
+    /** @internal */
     resetSimulation() {
         this.forcedStop = false;
         this.systemTemperature = 0;
@@ -2591,6 +2621,7 @@ class ReingoldFruchtermanLayout {
         this.setTemperature();
         this.setDiffTemperature();
     }
+    /** @internal */
     restartSimulation() {
         if (!this.simulation) {
             // When dragging nodes, we don't need to calculate
@@ -2615,24 +2646,30 @@ class ReingoldFruchtermanLayout {
             this.resetSimulation();
         }
     }
+    /** @internal */
     setMaxIterations(maxIterations) {
         this.maxIterations = (maxIterations ?? this.options.maxIterations);
     }
+    /** @internal */
     setTemperature() {
         this.temperature = this.startTemperature =
             Math.sqrt(this.nodes.length);
     }
+    /** @internal */
     setDiffTemperature() {
         this.diffTemperature = this.startTemperature /
             (this.options.maxIterations + 1);
     }
+    /** @internal */
     setInitialRendering(enable) {
         this.initialRendering = enable;
     }
+    /** @internal */
     createQuadTree() {
         this.quadTree = new Networkgraph_QuadTree(this.box.left, this.box.top, this.box.width, this.box.height);
         this.quadTree.insertNodes(this.nodes);
     }
+    /** @internal */
     initPositions() {
         const initialPositions = this.options.initialPositions;
         if ((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.isFunction)(initialPositions)) {
@@ -2655,6 +2692,7 @@ class ReingoldFruchtermanLayout {
             this.setRandomPositions();
         }
     }
+    /** @internal */
     setCircularPositions() {
         const box = this.box, nodes = this.nodes, nodesLength = nodes.length + 1, angle = 2 * Math.PI / nodesLength, rootNodes = nodes.filter(function (node) {
             return node.linksTo.length === 0;
@@ -2702,12 +2740,13 @@ class ReingoldFruchtermanLayout {
             node.dispY = 0;
         }
     }
+    /** @internal */
     setRandomPositions() {
         const box = this.box, nodes = this.nodes, nodesLength = nodes.length + 1, 
         /**
          * Return a repeatable, quasi-random number based on an integer
          * input. For the initial positions
-         * @private
+         * @internal
          */
         unrandom = (n) => {
             let rand = n * n / Math.PI;
@@ -2725,13 +2764,16 @@ class ReingoldFruchtermanLayout {
             node.dispY = 0;
         }
     }
+    /** @internal */
     force(name, ...args) {
         this.integration[name].apply(this, args);
     }
+    /** @internal */
     barycenterForces() {
         this.getBarycenter();
         this.force('barycenter');
     }
+    /** @internal */
     getBarycenter() {
         let systemMass = 0, cx = 0, cy = 0;
         for (const node of this.nodes) {
@@ -2747,6 +2789,7 @@ class ReingoldFruchtermanLayout {
         };
         return this.barycenter;
     }
+    /** @internal */
     barnesHutApproximation(node, quadNode) {
         const distanceXY = this.getDistXY(node, quadNode), distanceR = this.vectorLength(distanceXY);
         let goDeeper, force;
@@ -2774,6 +2817,7 @@ class ReingoldFruchtermanLayout {
         }
         return goDeeper;
     }
+    /** @internal */
     repulsiveForces() {
         if (this.approximation === 'barnes-hut') {
             for (const node of this.nodes) {
@@ -2802,6 +2846,7 @@ class ReingoldFruchtermanLayout {
             }
         }
     }
+    /** @internal */
     attractiveForces() {
         let distanceXY, distanceR, force;
         for (const link of this.links) {
@@ -2815,6 +2860,7 @@ class ReingoldFruchtermanLayout {
             }
         }
     }
+    /** @internal */
     applyLimits() {
         const nodes = this.nodes;
         for (const node of nodes) {
@@ -2831,7 +2877,7 @@ class ReingoldFruchtermanLayout {
     /**
      * External box that nodes should fall. When hitting an edge, node
      * should stop or bounce.
-     * @private
+     * @internal
      */
     applyLimitBox(node, box) {
         const radius = node.radius;
@@ -2875,7 +2921,7 @@ class ReingoldFruchtermanLayout {
     /**
      * From "A comparison of simulated annealing cooling strategies" by
      * Nourani and Andresen work.
-     * @private
+     * @internal
      */
     coolDown(temperature, temperatureStep, currentStep) {
         // Logarithmic:
@@ -2894,10 +2940,12 @@ class ReingoldFruchtermanLayout {
         // Linear:
         return temperature - temperatureStep * currentStep;
     }
+    /** @internal */
     isStable() {
         return Math.abs(this.systemTemperature -
             this.prevSystemTemperature) < 0.00001 || this.temperature <= 0;
     }
+    /** @internal */
     getSystemTemperature() {
         let value = 0;
         for (const node of this.nodes) {
@@ -2905,13 +2953,16 @@ class ReingoldFruchtermanLayout {
         }
         return value;
     }
+    /** @internal */
     vectorLength(vector) {
         return Math.sqrt(vector.x * vector.x + vector.y * vector.y);
     }
+    /** @internal */
     getDistR(nodeA, nodeB) {
         const distance = this.getDistXY(nodeA, nodeB);
         return this.vectorLength(distance);
     }
+    /** @internal */
     getDistXY(nodeA, nodeB) {
         const xDist = nodeA.plotX - nodeB.plotX, yDist = nodeA.plotY - nodeB.plotY;
         return {
@@ -3325,7 +3376,6 @@ composeTextPath((highcharts_SVGElement_commonjs_highcharts_SVGElement_commonjs2_
  *
  * */
 /**
- * @private
  * @class
  * @name Highcharts.seriesTypes.networkgraph
  *
@@ -3366,7 +3416,7 @@ class NetworkgraphSeries extends (highcharts_Series_commonjs_highcharts_Series_c
      * Note:
      * Animation is done through `requestAnimationFrame` directly, without
      * `Highcharts.animate()` use.
-     * @private
+     * @internal
      */
     deferLayout() {
         const layoutOptions = this.options.layoutAlgorithm, chartOptions = this.chart.options.chart;
@@ -3396,7 +3446,7 @@ class NetworkgraphSeries extends (highcharts_Series_commonjs_highcharts_Series_c
         layout.addElementsToCollection(this.points, layout.links);
     }
     /**
-     * @private
+     * @internal
      */
     destroy() {
         if (this.layout) {
@@ -3407,7 +3457,7 @@ class NetworkgraphSeries extends (highcharts_Series_commonjs_highcharts_Series_c
     /**
      * Networkgraph has two separate collections of nodes and lines, render
      * dataLabels for both sets:
-     * @private
+     * @internal
      */
     drawDataLabels() {
         // We defer drawing the dataLabels
@@ -3436,7 +3486,7 @@ class NetworkgraphSeries extends (highcharts_Series_commonjs_highcharts_Series_c
     /**
      * Extend generatePoints by adding the nodes, which are Point objects
      * but pushed to the this.nodes array.
-     * @private
+     * @internal
      */
     generatePoints() {
         let node, i;
@@ -3472,7 +3522,7 @@ class NetworkgraphSeries extends (highcharts_Series_commonjs_highcharts_Series_c
     /**
      * In networkgraph, series.points refers to links,
      * but series.nodes refers to actual points.
-     * @private
+     * @internal
      */
     getPointsCollection() {
         return this.nodes || [];
@@ -3481,7 +3531,7 @@ class NetworkgraphSeries extends (highcharts_Series_commonjs_highcharts_Series_c
      * Set index for each node. Required for proper `node.update()`.
      * Note that links are indexed out of the box in `generatePoints()`.
      *
-     * @private
+     * @internal
      */
     indexateNodes() {
         this.nodes.forEach(function (node, index) {
@@ -3491,7 +3541,7 @@ class NetworkgraphSeries extends (highcharts_Series_commonjs_highcharts_Series_c
     /**
      * Extend init with base event, which should stop simulation during
      * update. After data is updated, `chart.render` resumes the simulation.
-     * @private
+     * @internal
      */
     init(chart, options) {
         super.init(chart, options);
@@ -3521,7 +3571,7 @@ class NetworkgraphSeries extends (highcharts_Series_commonjs_highcharts_Series_c
      * Extend the default marker attribs by using a non-rounded X position,
      * otherwise the nodes will jump from pixel to pixel which looks a bit
      * jaggy when approaching equilibrium.
-     * @private
+     * @internal
      */
     markerAttribs(point, state) {
         const attribs = highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_default().prototype.markerAttribs.call(this, point, state);
@@ -3534,7 +3584,7 @@ class NetworkgraphSeries extends (highcharts_Series_commonjs_highcharts_Series_c
     }
     /**
      * Return the presentational attributes.
-     * @private
+     * @internal
      */
     pointAttribs(point, state) {
         // By default, only `selected` state is passed on
@@ -3562,7 +3612,7 @@ class NetworkgraphSeries extends (highcharts_Series_commonjs_highcharts_Series_c
     /**
      * Extend the render function to also render this.nodes together with
      * the points.
-     * @private
+     * @internal
      */
     render() {
         const series = this, points = series.points, hoverPoint = series.chart.hoverPoint, dataLabels = [];
@@ -3592,7 +3642,7 @@ class NetworkgraphSeries extends (highcharts_Series_commonjs_highcharts_Series_c
     /**
      * When state should be passed down to all points, concat nodes and
      * links and apply this state to all of them.
-     * @private
+     * @internal
      */
     setState(state, inherit) {
         if (inherit) {
@@ -3610,7 +3660,7 @@ class NetworkgraphSeries extends (highcharts_Series_commonjs_highcharts_Series_c
     }
     /**
      * Run pre-translation and register nodes&links to the deferred layout.
-     * @private
+     * @internal
      */
     translate() {
         this.generatePoints();
@@ -3626,6 +3676,7 @@ class NetworkgraphSeries extends (highcharts_Series_commonjs_highcharts_Series_c
         });
     }
 }
+/** @internal */
 NetworkgraphSeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)((highcharts_Series_commonjs_highcharts_Series_commonjs2_highcharts_Series_root_Highcharts_Series_default()).defaultOptions, Networkgraph_NetworkgraphSeriesDefaults);
 (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.extend)(NetworkgraphSeries.prototype, {
     pointClass: Networkgraph_NetworkgraphPoint,

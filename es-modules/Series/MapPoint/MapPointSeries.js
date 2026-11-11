@@ -27,7 +27,6 @@ import { extend, fireEvent, isNumber, merge } from '../../Shared/Utilities.js';
  *
  * */
 /**
- * @private
  * @class
  * @name Highcharts.seriesTypes.mappoint
  *
@@ -41,6 +40,7 @@ class MapPointSeries extends ScatterSeries {
          *
          * */
         super(...arguments);
+        /** @internal */
         this.clearBounds = MapSeries.prototype.clearBounds;
     }
     /* *
@@ -59,7 +59,7 @@ class MapPointSeries extends ScatterSeries {
      * Resolve `lon`, `lat` or `geometry` options and project the resulted
      * coordinates.
      *
-     * @private
+     * @internal
      */
     projectPoint(pointOptions) {
         const mapView = this.chart.mapView;
@@ -145,18 +145,12 @@ MapPointSeries.defaultOptions = merge(ScatterSeries.defaultOptions, MapPointSeri
  * Extra
  *
  * */
-/* *
+/**
  * The mapmarker symbol
+ *
+ * @internal
  */
-const mapmarker = (
-/** @internal */
-x, 
-/** @internal */
-y, 
-/** @internal */
-w, 
-/** @internal */
-h, options) => {
+const mapmarker = (x, y, w, h, options) => {
     const isLegendSymbol = options && options.context === 'legend';
     let anchorX, anchorY;
     if (isLegendSymbol) {

@@ -36,7 +36,6 @@ composeTextPath(SVGElement);
  *
  * */
 /**
- * @private
  * @class
  * @name Highcharts.seriesTypes.networkgraph
  *
@@ -77,7 +76,7 @@ class NetworkgraphSeries extends Series {
      * Note:
      * Animation is done through `requestAnimationFrame` directly, without
      * `Highcharts.animate()` use.
-     * @private
+     * @internal
      */
     deferLayout() {
         const layoutOptions = this.options.layoutAlgorithm, chartOptions = this.chart.options.chart;
@@ -107,7 +106,7 @@ class NetworkgraphSeries extends Series {
         layout.addElementsToCollection(this.points, layout.links);
     }
     /**
-     * @private
+     * @internal
      */
     destroy() {
         if (this.layout) {
@@ -118,7 +117,7 @@ class NetworkgraphSeries extends Series {
     /**
      * Networkgraph has two separate collections of nodes and lines, render
      * dataLabels for both sets:
-     * @private
+     * @internal
      */
     drawDataLabels() {
         // We defer drawing the dataLabels
@@ -147,7 +146,7 @@ class NetworkgraphSeries extends Series {
     /**
      * Extend generatePoints by adding the nodes, which are Point objects
      * but pushed to the this.nodes array.
-     * @private
+     * @internal
      */
     generatePoints() {
         let node, i;
@@ -183,7 +182,7 @@ class NetworkgraphSeries extends Series {
     /**
      * In networkgraph, series.points refers to links,
      * but series.nodes refers to actual points.
-     * @private
+     * @internal
      */
     getPointsCollection() {
         return this.nodes || [];
@@ -192,7 +191,7 @@ class NetworkgraphSeries extends Series {
      * Set index for each node. Required for proper `node.update()`.
      * Note that links are indexed out of the box in `generatePoints()`.
      *
-     * @private
+     * @internal
      */
     indexateNodes() {
         this.nodes.forEach(function (node, index) {
@@ -202,7 +201,7 @@ class NetworkgraphSeries extends Series {
     /**
      * Extend init with base event, which should stop simulation during
      * update. After data is updated, `chart.render` resumes the simulation.
-     * @private
+     * @internal
      */
     init(chart, options) {
         super.init(chart, options);
@@ -232,7 +231,7 @@ class NetworkgraphSeries extends Series {
      * Extend the default marker attribs by using a non-rounded X position,
      * otherwise the nodes will jump from pixel to pixel which looks a bit
      * jaggy when approaching equilibrium.
-     * @private
+     * @internal
      */
     markerAttribs(point, state) {
         const attribs = Series.prototype.markerAttribs.call(this, point, state);
@@ -245,7 +244,7 @@ class NetworkgraphSeries extends Series {
     }
     /**
      * Return the presentational attributes.
-     * @private
+     * @internal
      */
     pointAttribs(point, state) {
         // By default, only `selected` state is passed on
@@ -273,7 +272,7 @@ class NetworkgraphSeries extends Series {
     /**
      * Extend the render function to also render this.nodes together with
      * the points.
-     * @private
+     * @internal
      */
     render() {
         const series = this, points = series.points, hoverPoint = series.chart.hoverPoint, dataLabels = [];
@@ -303,7 +302,7 @@ class NetworkgraphSeries extends Series {
     /**
      * When state should be passed down to all points, concat nodes and
      * links and apply this state to all of them.
-     * @private
+     * @internal
      */
     setState(state, inherit) {
         if (inherit) {
@@ -321,7 +320,7 @@ class NetworkgraphSeries extends Series {
     }
     /**
      * Run pre-translation and register nodes&links to the deferred layout.
-     * @private
+     * @internal
      */
     translate() {
         this.generatePoints();
@@ -337,6 +336,7 @@ class NetworkgraphSeries extends Series {
         });
     }
 }
+/** @internal */
 NetworkgraphSeries.defaultOptions = merge(Series.defaultOptions, NetworkgraphSeriesDefaults);
 extend(NetworkgraphSeries.prototype, {
     pointClass: NetworkgraphPoint,

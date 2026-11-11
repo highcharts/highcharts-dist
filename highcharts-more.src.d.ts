@@ -26,6 +26,51 @@ declare module "./highcharts.src" {
         low?: number;
     }
     /**
+     * The QuadTree class. Used in Networkgraph chart as a base for Barnes-Hut
+     * approximation.
+     */
+    class QuadTree {
+        /**
+         * The QuadTree class. Used in Networkgraph chart as a base for
+         * Barnes-Hut approximation.
+         *
+         * @param x
+         *        Left position of the plotting area
+         *
+         * @param y
+         *        Top position of the plotting area
+         *
+         * @param width
+         *        Width of the plotting area
+         *
+         * @param height
+         *        Height of the plotting area
+         */
+        constructor(x: number, y: number, width: number, height: number);
+    }
+    /**
+     * The QuadTree node class. Used in Networkgraph chart as a base for
+     * Barnes-Hut approximation.
+     */
+    class QuadTreeNode {
+        /**
+         * The QuadTree node class. Used in Networkgraph chart as a base for
+         * Barnes-Hut approximation.
+         *
+         * @param box
+         *        Available space for the node
+         */
+        constructor(box: Dictionary<number>);
+        /**
+         * Read only. The available space for node.
+         */
+        box: Dictionary<number>;
+        /**
+         * Read only. The minium of width and height values.
+         */
+        boxSize: number;
+    }
+    /**
      * Merge the default options with custom options and return the new options
      * structure. Commonly used for defining reusable templates.
      *

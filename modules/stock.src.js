@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.1.1-modified (2026-11-10)
+ * @license Highstock JS v13.1.1-modified (2026-11-11)
  * @module highcharts/modules/stock
  * @requires highcharts
  *
@@ -11808,6 +11808,7 @@ const { prototype: seriesProto } = (highcharts_Series_commonjs_highcharts_Series
  *  Composition
  *
  * */
+/** @internal */
 var OnSeriesComposition;
 (function (OnSeriesComposition) {
     /* *
@@ -11821,7 +11822,7 @@ var OnSeriesComposition;
      *
      * */
     /**
-     * @private
+     * @internal
      */
     function compose(SeriesClass) {
         if ((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pushUnique)(OnSeriesComposition_composed, 'OnSeries')) {
@@ -11836,7 +11837,7 @@ var OnSeriesComposition;
      * Override getPlotBox. If the onSeries option is valid, return the plot box
      * of the onSeries, otherwise proceed as usual.
      *
-     * @private
+     * @internal
      */
     function getPlotBox(name) {
         return seriesProto.getPlotBox.call((this.options.onSeries &&
@@ -11846,7 +11847,7 @@ var OnSeriesComposition;
     /**
      * Extend the translate method by placing the point on the related series
      *
-     * @private
+     * @internal
      */
     function translate() {
         columnProto.translate.apply(this);
@@ -11996,6 +11997,7 @@ var OnSeriesComposition;
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const Series_OnSeriesComposition = (OnSeriesComposition);
 
 ;// ./code/es-modules/Series/Flags/FlagsSeries.js
@@ -12931,7 +12933,7 @@ var BrokenAxis;
 /* unused harmony import specifier */ var Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-10)
+ * @license Highcharts JS v13.1.1-modified (2026-11-11)
  * @module highcharts/modules/broken-axis
  * @requires highcharts
  *
@@ -14608,7 +14610,7 @@ const DataGroupingComposition = {
 /* unused harmony import specifier */ var datagrouping_src_Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.1.1-modified (2026-11-10)
+ * @license Highstock JS v13.1.1-modified (2026-11-11)
  * @module highcharts/modules/datagrouping
  * @requires highcharts
  *
@@ -14973,7 +14975,7 @@ const MouseWheelZoomComposition = {
 /* unused harmony import specifier */ var mouse_wheel_zoom_src_Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-10)
+ * @license Highcharts JS v13.1.1-modified (2026-11-11)
  * @module highcharts/modules/mouse-wheel-zoom
  * @requires highcharts
  *

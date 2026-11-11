@@ -27,7 +27,6 @@ composeTextPath(SVGElement);
  *
  * */
 /**
- * @private
  * @class
  * @name Highcharts.seriesTypes.organization
  *
@@ -282,6 +281,7 @@ class OrganizationSeries extends SankeySeries {
  *  Static Properties
  *
  * */
+/** @internal */
 OrganizationSeries.defaultOptions = merge(SankeySeries.defaultOptions, OrganizationSeriesDefaults);
 extend(OrganizationSeries.prototype, {
     pointClass: OrganizationPoint,

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-10)
+ * @license Highcharts JS v13.1.1-modified (2026-11-11)
  * @module highcharts/highcharts-more
  * @requires highcharts
  *
@@ -7576,7 +7576,7 @@ const PackedBubbleSeriesDefaults = {
  * In Verlet integration, force is applied on a node immediately to it's
  * `plotX` and `plotY` position.
  *
- * @private
+ * @internal
  * @param {Highcharts.Point} link
  *        Link that connects two nodes
  * @param {number} force
@@ -7603,7 +7603,7 @@ function attractive(link, force, distanceXY) {
  * Attractive force function. Can be replaced by API's
  * `layoutAlgorithm.attractiveForce`
  *
- * @private
+ * @internal
  * @param {number} d current distance between two nodes
  * @param {number} k expected distance between two nodes
  * @return {number} force
@@ -7619,7 +7619,7 @@ function attractiveForceFunction(d, k) {
  * In Verlet integration, force is applied on a node immediately to it's
  * `plotX` and `plotY` position.
  *
- * @private
+ * @internal
  */
 function barycenter() {
     const gravitationalConstant = this.options.gravitationalConstant || 0, xFactor = (this.barycenter.xFactor -
@@ -7637,7 +7637,7 @@ function barycenter() {
 /**
  * Estimate the best possible distance between two nodes, making graph
  * readable.
- * @private
+ * @internal
  */
 function getK(layout) {
     return Math.pow(layout.box.width * layout.box.height / layout.nodes.length, 0.5);
@@ -7669,7 +7669,7 @@ function getK(layout) {
  * forces. Or even Time-Corrected Verlet by Jonathan
  * "lonesock" Dummer
  *
- * @private
+ * @internal
  * @param {Highcharts.NetworkgraphLayout} layout layout object
  * @param {Highcharts.Point} node node that should be translated
  */
@@ -7699,7 +7699,7 @@ function integrate(layout, node) {
  * In Verlet integration, force is applied on a node immediately to it's
  * `plotX` and `plotY` position.
  *
- * @private
+ * @internal
  * @param {Highcharts.Point} node
  *        Node that should be translated by force.
  * @param {number} force
@@ -7718,7 +7718,7 @@ function repulsive(node, force, distanceXY) {
  * Repulsive force function. Can be replaced by API's
  * `layoutAlgorithm.repulsiveForce`
  *
- * @private
+ * @internal
  * @param {number} d current distance between two nodes
  * @param {number} k expected distance between two nodes
  * @return {number} force
@@ -7860,7 +7860,7 @@ const PackedBubbleIntegration = {
  * In Euler integration, force is stored in a node, not changing it's
  * position. Later, in `integrate()` forces are applied on nodes.
  *
- * @private
+ * @internal
  * @param {Highcharts.Point} link
  *        Link that connects two nodes
  * @param {number} force
@@ -7893,7 +7893,7 @@ function EulerIntegration_attractive(link, force, distanceXY, distanceR) {
  * basic, not recommended:
  *    `function (d, k) { return d / k }`
  *
- * @private
+ * @internal
  * @param {number} d current distance between two nodes
  * @param {number} k expected distance between two nodes
  * @return {number} force
@@ -7908,7 +7908,7 @@ function EulerIntegration_attractiveForceFunction(d, k) {
  * In Euler integration, force is stored in a node, not changing it's
  * position. Later, in `integrate()` forces are applied on nodes.
  *
- * @private
+ * @internal
  */
 function EulerIntegration_barycenter() {
     const gravitationalConstant = this.options.gravitationalConstant, xFactor = this.barycenter.xFactor, yFactor = this.barycenter.yFactor;
@@ -7927,7 +7927,7 @@ function EulerIntegration_barycenter() {
 /**
  * Estimate the best possible distance between two nodes, making graph
  * readable.
- * @private
+ * @internal
  */
 function EulerIntegration_getK(layout) {
     return Math.pow(layout.box.width * layout.box.height / layout.nodes.length, 0.3);
@@ -7958,7 +7958,7 @@ function EulerIntegration_getK(layout) {
  * Note:
  * Actually `min(v(n), temperature(n))` replaces simulated annealing.
  *
- * @private
+ * @internal
  * @param {Highcharts.NetworkgraphLayout} layout
  *        Layout object
  * @param {Highcharts.Point} node
@@ -7983,7 +7983,7 @@ function EulerIntegration_integrate(layout, node) {
 /**
  * Repulsive force.
  *
- * @private
+ * @internal
  * @param {Highcharts.Point} node
  *        Node that should be translated by force.
  * @param {number} force
@@ -8012,7 +8012,7 @@ function EulerIntegration_repulsive(node, force, distanceXY, distanceR) {
  * grid-variant:
  *    `function (d, k) { return k * k / d * (2 * k - d > 0 ? 1 : 0) }`
  *
- * @private
+ * @internal
  * @param {number} d current distance between two nodes
  * @param {number} k expected distance between two nodes
  * @return {number} force
@@ -8060,7 +8060,6 @@ const EulerIntegration = {
  * The QuadTree node class. Used in Networkgraph chart as a base for Barnes-Hut
  * approximation.
  *
- * @private
  * @class
  * @name Highcharts.QuadTreeNode
  *
@@ -8073,6 +8072,7 @@ class QuadTreeNode {
      *  Constructor
      *
      * */
+    /** @internal */
     constructor(box) {
         /* *
          *
@@ -8085,6 +8085,7 @@ class QuadTreeNode {
          *
          * @name Highcharts.QuadTreeNode#body
          * @type {boolean|Highcharts.Point}
+         * @internal
          */
         this.body = false;
         /**
@@ -8094,6 +8095,7 @@ class QuadTreeNode {
          *
          * @name Highcharts.QuadTreeNode#isEmpty
          * @type {boolean}
+         * @internal
          */
         this.isEmpty = false;
         /**
@@ -8103,6 +8105,7 @@ class QuadTreeNode {
          *
          * @name Highcharts.QuadTreeNode#isInternal
          * @type {boolean}
+         * @internal
          */
         this.isInternal = false;
         /**
@@ -8112,6 +8115,7 @@ class QuadTreeNode {
          *
          * @name Highcharts.QuadTreeNode#nodes
          * @type {Array<Highcharts.QuadTreeNode>}
+         * @internal
          */
         this.nodes = [];
         /**
@@ -8150,6 +8154,7 @@ class QuadTreeNode {
      * |           |               |     |     |
      * -------------               -------------
      * ```
+     * @internal
      */
     divideBox() {
         const halfWidth = this.box.width / 2, halfHeight = this.box.height / 2;
@@ -8185,7 +8190,7 @@ class QuadTreeNode {
     /**
      * Determine which of the quadrants should be used when placing node in
      * the QuadTree. Returned index is always in range `< 0 , 3 >`.
-     * @private
+     * @internal
      */
     getBoxPosition(point) {
         const left = point.plotX < this.box.left + this.box.width / 2, top = point.plotY < this.box.top + this.box.height / 2;
@@ -8220,6 +8225,7 @@ class QuadTreeNode {
      *        Point/node to be inserted
      * @param {number} depth
      *        Max depth of the QuadTree
+     * @internal
      */
     insert(point, depth) {
         let newQuadTreeNode;
@@ -8275,6 +8281,7 @@ class QuadTreeNode {
     /**
      * Each quad node requires it's mass and center position. That mass and
      * position is used to imitate real node in the layout by approximation.
+     * @internal
      */
     updateMassAndCenter() {
         let mass = 0, plotX = 0, plotY = 0;
@@ -8334,7 +8341,6 @@ class QuadTreeNode {
  * The QuadTree class. Used in Networkgraph chart as a base for Barnes-Hut
  * approximation.
  *
- * @private
  * @class
  * @name Highcharts.QuadTree
  *
@@ -8353,6 +8359,7 @@ class QuadTree {
      *  Constructor
      *
      * */
+    /** @internal */
     constructor(x, y, width, height) {
         // Boundary rectangle:
         this.box = {
@@ -8374,6 +8381,7 @@ class QuadTree {
      * */
     /**
      * Calculate mass of the each QuadNode in the tree.
+     * @internal
      */
     calculateMassAndCenter() {
         this.visitNodeRecursive(null, null, function (node) {
@@ -8385,6 +8393,7 @@ class QuadTree {
      *
      * @param {Array<Highcharts.Point>} points
      *        Points as nodes
+     * @internal
      */
     insertNodes(points) {
         for (const point of points) {
@@ -8413,6 +8422,7 @@ class QuadTree {
      *        Function to be called before visiting children nodes.
      * @param {Function} [afterCallback]
      *        Function to be called after visiting children nodes.
+     * @internal
      */
     visitNodeRecursive(node, beforeCallback, afterCallback) {
         let goFurther;
@@ -8486,7 +8496,6 @@ const { win } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highch
 /**
  * Reingold-Fruchterman algorithm from
  * "Graph Drawing by Force-directed Placement" paper.
- * @private
  */
 class ReingoldFruchtermanLayout {
     constructor() {
@@ -8495,14 +8504,22 @@ class ReingoldFruchtermanLayout {
          *  Static Functions
          *
          * */
+        /** @internal */
         this.box = {};
+        /** @internal */
         this.currentStep = 0;
+        /** @internal */
         this.initialRendering = true;
+        /** @internal */
         this.links = [];
+        /** @internal */
         this.nodes = [];
+        /** @internal */
         this.series = [];
+        /** @internal */
         this.simulation = false;
     }
+    /** @internal */
     static compose(ChartClass) {
         Series_GraphLayoutComposition.compose(ChartClass);
         Series_GraphLayoutComposition.integrations.euler = Networkgraph_EulerIntegration;
@@ -8510,6 +8527,7 @@ class ReingoldFruchtermanLayout {
         Series_GraphLayoutComposition.layouts['reingold-fruchterman'] =
             ReingoldFruchtermanLayout;
     }
+    /** @internal */
     init(options) {
         this.options = options;
         this.nodes = [];
@@ -8533,9 +8551,11 @@ class ReingoldFruchtermanLayout {
                 this.integration.repulsiveForceFunction;
         this.approximation = options.approximation;
     }
+    /** @internal */
     updateSimulation(enable) {
         this.enableSimulation = (enable ?? this.options.enableSimulation);
     }
+    /** @internal */
     start() {
         const layout = this, series = this.series, options = this.options;
         layout.currentStep = 0;
@@ -8555,6 +8575,7 @@ class ReingoldFruchtermanLayout {
             layout.step();
         }
     }
+    /** @internal */
     step() {
         const anyLayout = this, allSeries = this.series;
         // Algorithm:
@@ -8595,11 +8616,13 @@ class ReingoldFruchtermanLayout {
             }
         }
     }
+    /** @internal */
     stop() {
         if (this.simulation) {
             win.cancelAnimationFrame(this.simulation);
         }
     }
+    /** @internal */
     setArea(x, y, w, h) {
         this.box = {
             left: x,
@@ -8608,11 +8631,13 @@ class ReingoldFruchtermanLayout {
             height: h
         };
     }
+    /** @internal */
     setK() {
         // Optimal distance between nodes,
         // available space around the node:
         this.k = this.options.linkLength || this.integration.getK(this);
     }
+    /** @internal */
     addElementsToCollection(elements, collection) {
         for (const element of elements) {
             if (collection.indexOf(element) === -1) {
@@ -8620,18 +8645,21 @@ class ReingoldFruchtermanLayout {
             }
         }
     }
+    /** @internal */
     removeElementFromCollection(element, collection) {
         const index = collection.indexOf(element);
         if (index !== -1) {
             collection.splice(index, 1);
         }
     }
+    /** @internal */
     clear() {
         this.nodes.length = 0;
         this.links.length = 0;
         this.series.length = 0;
         this.resetSimulation();
     }
+    /** @internal */
     resetSimulation() {
         this.forcedStop = false;
         this.systemTemperature = 0;
@@ -8639,6 +8667,7 @@ class ReingoldFruchtermanLayout {
         this.setTemperature();
         this.setDiffTemperature();
     }
+    /** @internal */
     restartSimulation() {
         if (!this.simulation) {
             // When dragging nodes, we don't need to calculate
@@ -8663,24 +8692,30 @@ class ReingoldFruchtermanLayout {
             this.resetSimulation();
         }
     }
+    /** @internal */
     setMaxIterations(maxIterations) {
         this.maxIterations = (maxIterations ?? this.options.maxIterations);
     }
+    /** @internal */
     setTemperature() {
         this.temperature = this.startTemperature =
             Math.sqrt(this.nodes.length);
     }
+    /** @internal */
     setDiffTemperature() {
         this.diffTemperature = this.startTemperature /
             (this.options.maxIterations + 1);
     }
+    /** @internal */
     setInitialRendering(enable) {
         this.initialRendering = enable;
     }
+    /** @internal */
     createQuadTree() {
         this.quadTree = new Networkgraph_QuadTree(this.box.left, this.box.top, this.box.width, this.box.height);
         this.quadTree.insertNodes(this.nodes);
     }
+    /** @internal */
     initPositions() {
         const initialPositions = this.options.initialPositions;
         if ((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.isFunction)(initialPositions)) {
@@ -8703,6 +8738,7 @@ class ReingoldFruchtermanLayout {
             this.setRandomPositions();
         }
     }
+    /** @internal */
     setCircularPositions() {
         const box = this.box, nodes = this.nodes, nodesLength = nodes.length + 1, angle = 2 * Math.PI / nodesLength, rootNodes = nodes.filter(function (node) {
             return node.linksTo.length === 0;
@@ -8750,12 +8786,13 @@ class ReingoldFruchtermanLayout {
             node.dispY = 0;
         }
     }
+    /** @internal */
     setRandomPositions() {
         const box = this.box, nodes = this.nodes, nodesLength = nodes.length + 1, 
         /**
          * Return a repeatable, quasi-random number based on an integer
          * input. For the initial positions
-         * @private
+         * @internal
          */
         unrandom = (n) => {
             let rand = n * n / Math.PI;
@@ -8773,13 +8810,16 @@ class ReingoldFruchtermanLayout {
             node.dispY = 0;
         }
     }
+    /** @internal */
     force(name, ...args) {
         this.integration[name].apply(this, args);
     }
+    /** @internal */
     barycenterForces() {
         this.getBarycenter();
         this.force('barycenter');
     }
+    /** @internal */
     getBarycenter() {
         let systemMass = 0, cx = 0, cy = 0;
         for (const node of this.nodes) {
@@ -8795,6 +8835,7 @@ class ReingoldFruchtermanLayout {
         };
         return this.barycenter;
     }
+    /** @internal */
     barnesHutApproximation(node, quadNode) {
         const distanceXY = this.getDistXY(node, quadNode), distanceR = this.vectorLength(distanceXY);
         let goDeeper, force;
@@ -8822,6 +8863,7 @@ class ReingoldFruchtermanLayout {
         }
         return goDeeper;
     }
+    /** @internal */
     repulsiveForces() {
         if (this.approximation === 'barnes-hut') {
             for (const node of this.nodes) {
@@ -8850,6 +8892,7 @@ class ReingoldFruchtermanLayout {
             }
         }
     }
+    /** @internal */
     attractiveForces() {
         let distanceXY, distanceR, force;
         for (const link of this.links) {
@@ -8863,6 +8906,7 @@ class ReingoldFruchtermanLayout {
             }
         }
     }
+    /** @internal */
     applyLimits() {
         const nodes = this.nodes;
         for (const node of nodes) {
@@ -8879,7 +8923,7 @@ class ReingoldFruchtermanLayout {
     /**
      * External box that nodes should fall. When hitting an edge, node
      * should stop or bounce.
-     * @private
+     * @internal
      */
     applyLimitBox(node, box) {
         const radius = node.radius;
@@ -8923,7 +8967,7 @@ class ReingoldFruchtermanLayout {
     /**
      * From "A comparison of simulated annealing cooling strategies" by
      * Nourani and Andresen work.
-     * @private
+     * @internal
      */
     coolDown(temperature, temperatureStep, currentStep) {
         // Logarithmic:
@@ -8942,10 +8986,12 @@ class ReingoldFruchtermanLayout {
         // Linear:
         return temperature - temperatureStep * currentStep;
     }
+    /** @internal */
     isStable() {
         return Math.abs(this.systemTemperature -
             this.prevSystemTemperature) < 0.00001 || this.temperature <= 0;
     }
+    /** @internal */
     getSystemTemperature() {
         let value = 0;
         for (const node of this.nodes) {
@@ -8953,13 +8999,16 @@ class ReingoldFruchtermanLayout {
         }
         return value;
     }
+    /** @internal */
     vectorLength(vector) {
         return Math.sqrt(vector.x * vector.x + vector.y * vector.y);
     }
+    /** @internal */
     getDistR(nodeA, nodeB) {
         const distance = this.getDistXY(nodeA, nodeB);
         return this.vectorLength(distance);
     }
+    /** @internal */
     getDistXY(nodeA, nodeB) {
         const xDist = nodeA.plotX - nodeB.plotX, yDist = nodeA.plotY - nodeB.plotY;
         return {

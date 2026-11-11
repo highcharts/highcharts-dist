@@ -22,7 +22,6 @@ import QuadTreeNode from './QuadTreeNode.js';
  * The QuadTree class. Used in Networkgraph chart as a base for Barnes-Hut
  * approximation.
  *
- * @private
  * @class
  * @name Highcharts.QuadTree
  *
@@ -41,6 +40,7 @@ class QuadTree {
      *  Constructor
      *
      * */
+    /** @internal */
     constructor(x, y, width, height) {
         // Boundary rectangle:
         this.box = {
@@ -62,6 +62,7 @@ class QuadTree {
      * */
     /**
      * Calculate mass of the each QuadNode in the tree.
+     * @internal
      */
     calculateMassAndCenter() {
         this.visitNodeRecursive(null, null, function (node) {
@@ -73,6 +74,7 @@ class QuadTree {
      *
      * @param {Array<Highcharts.Point>} points
      *        Points as nodes
+     * @internal
      */
     insertNodes(points) {
         for (const point of points) {
@@ -101,6 +103,7 @@ class QuadTree {
      *        Function to be called before visiting children nodes.
      * @param {Function} [afterCallback]
      *        Function to be called after visiting children nodes.
+     * @internal
      */
     visitNodeRecursive(node, beforeCallback, afterCallback) {
         let goFurther;

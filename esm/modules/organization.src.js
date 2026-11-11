@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-10)
+ * @license Highcharts JS v13.1.1-modified (2026-11-11)
  * Organization chart series type
  * @module highcharts/modules/organization
  * @requires highcharts
@@ -82,7 +82,7 @@ const SankeyPointClass = (external_sankey_src_js_default_Series_types_sankey_def
  * */
 /**
  * Get columns offset including all sibling and cousins etc.
- * @private
+ * @internal
  */
 function getOffset(node) {
     let offset = node.linksFrom.length;
@@ -110,6 +110,7 @@ class OrganizationPoint extends SankeyPointClass {
      *  Functions
      *
      * */
+    /** @internal */
     constructor(series, options, x) {
         super(series, options, x);
         if (!this.isNode) {
@@ -119,14 +120,14 @@ class OrganizationPoint extends SankeyPointClass {
     }
     /**
      * All nodes in an org chart are equal width.
-     * @private
+     * @internal
      */
     getSum() {
         return 1;
     }
     /**
      * Set node.column for hanging layout
-     * @private
+     * @internal
      */
     setNodeColumn() {
         super.setNodeColumn();
@@ -1122,7 +1123,6 @@ composeTextPath((external_highcharts_src_js_default_SVGElement_default()));
  *
  * */
 /**
- * @private
  * @class
  * @name Highcharts.seriesTypes.organization
  *
@@ -1377,6 +1377,7 @@ class OrganizationSeries extends (external_sankey_src_js_default_Series_types_sa
  *  Static Properties
  *
  * */
+/** @internal */
 OrganizationSeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)((external_sankey_src_js_default_Series_types_sankey_default()).defaultOptions, Organization_OrganizationSeriesDefaults);
 (0,external_highcharts_src_js_default_namespaceObject.extend)(OrganizationSeries.prototype, {
     pointClass: Organization_OrganizationPoint,

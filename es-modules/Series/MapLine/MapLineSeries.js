@@ -20,7 +20,6 @@ import { extend, merge } from '../../Shared/Utilities.js';
  *
  * */
 /**
- * @private
  * @class
  * @name Highcharts.seriesTypes.mapline
  *
@@ -34,7 +33,7 @@ class MapLineSeries extends MapSeries {
      * */
     /**
      * Get presentational attributes
-     * @private
+     * @internal
      * @function Highcharts.seriesTypes.mapline#pointAttribs
      */
     pointAttribs(point, state) {

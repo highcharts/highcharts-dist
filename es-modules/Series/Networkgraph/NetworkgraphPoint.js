@@ -35,7 +35,7 @@ class NetworkgraphPoint extends Point {
     /**
      * Destroy point. If it's a node, remove all links coming out of this
      * node. Then remove point from the layout.
-     * @private
+     * @internal
      */
     destroy() {
         if (this.isNode) {
@@ -53,7 +53,7 @@ class NetworkgraphPoint extends Point {
     /**
      * Return degree of a node. If node has no connections, it still has
      * deg=1.
-     * @private
+     * @internal
      */
     getDegree() {
         const deg = this.isNode ?
@@ -63,7 +63,7 @@ class NetworkgraphPoint extends Point {
     }
     /**
      * Get presentational attributes of link connecting two nodes.
-     * @private
+     * @internal
      */
     getLinkAttributes() {
         const linkOptions = this.series.options.link, pointOptions = this.options;
@@ -76,7 +76,7 @@ class NetworkgraphPoint extends Point {
     }
     /**
      * Get link path connecting two nodes.
-     * @private
+     * @internal
      * @return {Array<Highcharts.SVGPathArray>}
      *         Path: `['M', x, y, 'L', x, y]`
      */
@@ -109,7 +109,7 @@ class NetworkgraphPoint extends Point {
      * Get mass fraction applied on two nodes connected to each other. By
      * default, when mass is equal to `1`, mass fraction for both nodes
      * equal to 0.5.
-     * @private
+     * @internal
      * @return {Highcharts.Dictionary<number>}
      *         For example `{ fromNode: 0.5, toNode: 0.5 }`
      */
@@ -123,7 +123,7 @@ class NetworkgraphPoint extends Point {
     /**
      * Basic `point.init()` and additional styles applied when
      * `series.draggable` is enabled.
-     * @private
+     * @internal
      */
     constructor(series, options, x) {
         super(series, options, x);
@@ -138,14 +138,14 @@ class NetworkgraphPoint extends Point {
         }
     }
     /**
-     * @private
+     * @internal
      */
     isValid() {
         return !this.isNode || defined(this.id);
     }
     /**
      * Redraw link's path.
-     * @private
+     * @internal
      */
     redrawLink() {
         const path = this.getLinkPath();
@@ -179,7 +179,7 @@ class NetworkgraphPoint extends Point {
      * Common method for removing points and nodes in networkgraph. To
      * remove `link`, use `series.data[index].remove()`. To remove `node`
      * with all connections, use `series.nodes[index].remove()`.
-     * @private
+     * @internal
      * @param {boolean} [redraw=true]
      *        Whether to redraw the chart or wait for an explicit call. When
      *        doing more operations on the chart, for example running
@@ -243,7 +243,7 @@ class NetworkgraphPoint extends Point {
     }
     /**
      * Render link and add it to the DOM.
-     * @private
+     * @internal
      */
     renderLink() {
         let attribs;

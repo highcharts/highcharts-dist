@@ -11,6 +11,7 @@ import { addEvent, defined, extend, find, merge } from '../Shared/Utilities.js';
  *  Composition
  *
  * */
+/** @internal */
 var NodesComposition;
 (function (NodesComposition) {
     /* *
@@ -24,7 +25,7 @@ var NodesComposition;
      *
      * */
     /**
-     * @private
+     * @internal
      */
     function compose(PointClass, SeriesClass) {
         const pointProto = PointClass.prototype, seriesProto = SeriesClass.prototype;
@@ -39,7 +40,7 @@ var NodesComposition;
     NodesComposition.compose = compose;
     /**
      * Destroy data labels on nodes.
-     * @private
+     * @internal
      */
     function afterUpdate() {
         if (!this.hasDataLabels?.() && this.nodes) { // #23385
@@ -51,7 +52,7 @@ var NodesComposition;
     /**
      * Create a single node that holds information on incoming and outgoing
      * links.
-     * @private
+     * @internal
      */
     function createNode(id) {
         const PointClass = this.pointClass, findById = (nodes, id) => find(nodes, (node) => node.id === id);
@@ -68,7 +69,7 @@ var NodesComposition;
             newNode.linksFrom = [];
             /**
              * Return the largest sum of either the incoming or outgoing links.
-             * @private
+             * @internal
              */
             newNode.getSum = function () {
                 let sumTo = 0, sumFrom = 0;
@@ -82,7 +83,7 @@ var NodesComposition;
             };
             /**
              * Get the offset in weight values of a point/link.
-             * @private
+             * @internal
              */
             newNode.offset = function (point, coll) {
                 let offset = 0;
@@ -121,7 +122,7 @@ var NodesComposition;
     NodesComposition.createNode = createNode;
     /**
      * Destroy all nodes and links.
-     * @private
+     * @internal
      */
     function destroy() {
         // Nodes must also be destroyed (#8682, #9300)
@@ -133,7 +134,7 @@ var NodesComposition;
     /**
      * Extend generatePoints by adding the nodes, which are Point objects but
      * pushed to the this.nodes array.
-     * @private
+     * @internal
      */
     function generatePoints() {
         const chart = this.chart, nodeLookup = {};
@@ -182,7 +183,7 @@ var NodesComposition;
     NodesComposition.generatePoints = generatePoints;
     /**
      * Destroy all nodes on setting new data
-     * @private
+     * @internal
      */
     function setData() {
         if (this.nodes) {
@@ -196,7 +197,7 @@ var NodesComposition;
     /**
      * When hovering node, highlight all connected links. When hovering a link,
      * highlight all connected nodes.
-     * @private
+     * @internal
      */
     function setNodeState(state) {
         const args = arguments, others = this.isNode ? this.linksTo.concat(this.linksFrom) :
@@ -222,7 +223,7 @@ var NodesComposition;
     /**
      * When updating a node, don't update `series.options.data`, but
      * `series.options.nodes`
-     * @private
+     * @internal
      */
     function updateNode(options, redraw, animation, runEvent) {
         const nodes = this.series.options.nodes, data = this.series.options.data, dataLength = data?.length || 0, linkConfig = data?.[this.index];
@@ -270,4 +271,5 @@ var NodesComposition;
  *  Default Export
  *
  * */
+/** @internal */
 export default NodesComposition;

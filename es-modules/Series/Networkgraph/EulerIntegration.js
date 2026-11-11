@@ -23,7 +23,7 @@
  * In Euler integration, force is stored in a node, not changing it's
  * position. Later, in `integrate()` forces are applied on nodes.
  *
- * @private
+ * @internal
  * @param {Highcharts.Point} link
  *        Link that connects two nodes
  * @param {number} force
@@ -56,7 +56,7 @@ function attractive(link, force, distanceXY, distanceR) {
  * basic, not recommended:
  *    `function (d, k) { return d / k }`
  *
- * @private
+ * @internal
  * @param {number} d current distance between two nodes
  * @param {number} k expected distance between two nodes
  * @return {number} force
@@ -71,7 +71,7 @@ function attractiveForceFunction(d, k) {
  * In Euler integration, force is stored in a node, not changing it's
  * position. Later, in `integrate()` forces are applied on nodes.
  *
- * @private
+ * @internal
  */
 function barycenter() {
     const gravitationalConstant = this.options.gravitationalConstant, xFactor = this.barycenter.xFactor, yFactor = this.barycenter.yFactor;
@@ -90,7 +90,7 @@ function barycenter() {
 /**
  * Estimate the best possible distance between two nodes, making graph
  * readable.
- * @private
+ * @internal
  */
 function getK(layout) {
     return Math.pow(layout.box.width * layout.box.height / layout.nodes.length, 0.3);
@@ -121,7 +121,7 @@ function getK(layout) {
  * Note:
  * Actually `min(v(n), temperature(n))` replaces simulated annealing.
  *
- * @private
+ * @internal
  * @param {Highcharts.NetworkgraphLayout} layout
  *        Layout object
  * @param {Highcharts.Point} node
@@ -146,7 +146,7 @@ function integrate(layout, node) {
 /**
  * Repulsive force.
  *
- * @private
+ * @internal
  * @param {Highcharts.Point} node
  *        Node that should be translated by force.
  * @param {number} force
@@ -175,7 +175,7 @@ function repulsive(node, force, distanceXY, distanceR) {
  * grid-variant:
  *    `function (d, k) { return k * k / d * (2 * k - d > 0 ? 1 : 0) }`
  *
- * @private
+ * @internal
  * @param {number} d current distance between two nodes
  * @param {number} k expected distance between two nodes
  * @return {number} force

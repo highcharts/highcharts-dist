@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-10)
+ * @license Highcharts JS v13.1.1-modified (2026-11-11)
  * @module highcharts/standalone-navigator
  *
  * Standalone Navigator for Highcharts.
@@ -27150,7 +27150,7 @@ class Point {
      *         The zone item, or `undefined` if the series has no zones.
      */
     getZone() {
-        const series = this.series, zones = series.zones, zoneAxis = series.zoneAxis || 'y';
+        const { zoneAxis = 'y', zones } = this.series;
         let zone, i = 0;
         zone = zones[i];
         while (i < zones.length &&
@@ -27158,15 +27158,10 @@ class Point {
             zone = zones[++i];
         }
         // For resetting or reusing the point (#8100)
-        if (!this.nonZonedColor) {
-            this.nonZonedColor = this.color;
-        }
-        if (zone?.color && !this.options.color) {
-            this.color = zone.color;
-        }
-        else {
-            this.color = this.nonZonedColor;
-        }
+        this.nonZonedColor || (this.nonZonedColor = this.color);
+        this.color = zone?.color && !this.options.color ?
+            zone.color :
+            this.nonZonedColor;
         return zone;
     }
     /**
@@ -27175,10 +27170,8 @@ class Point {
      * @internal
      */
     hasNewShapeType() {
-        const point = this;
-        const oldShapeType = point.graphic &&
-            (point.graphic.symbolName || point.graphic.element.nodeName);
-        return oldShapeType !== this.shapeType;
+        const { graphic } = this;
+        return (graphic?.symbolName || graphic?.element.nodeName) !== this.shapeType;
     }
     /**
      * Determine if point is valid.
@@ -33911,7 +33904,9 @@ class Series {
         }
         else if (equalLength && !dataSorting?.enabled) {
             for (i = 0; i < dataTable.rowCount; i++) {
-                if (!oldData[i].destroyed && !oldData[i].condemned) {
+                if (oldData[i] &&
+                    !oldData[i].destroyed &&
+                    !oldData[i].condemned) {
                     const pOptions = dataTable.getRowObject(i);
                     if (pOptions) {
                         // Remove undefined properties, but preserve explicit
@@ -34286,7 +34281,8 @@ class Series {
             }
         });
         addEvent(dataTable, 'afterSetColumns', (e) => {
-            this.setData(e.target);
+            this.setData(e.target, false);
+            queueRedraw();
         });
         this.hasBoundDataTableEvents = true;
     }
@@ -49612,7 +49608,7 @@ var Responsive;
 ;// ./code/es-modules/masters/highcharts.src.js
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-10)
+ * @license Highcharts JS v13.1.1-modified (2026-11-11)
  * @module highcharts/highcharts
  *
  * (c) 2009-2026 Highsoft AS
@@ -53887,7 +53883,7 @@ class Navigator {
 /* unused harmony import specifier */ var Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-10)
+ * @license Highcharts JS v13.1.1-modified (2026-11-11)
  * @module highcharts/modules/navigator
  * @requires highcharts
  *

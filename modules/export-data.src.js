@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-10)
+ * @license Highcharts JS v13.1.1-modified (2026-11-11)
  * @module highcharts/modules/export-data
  * @requires highcharts
  * @requires highcharts/modules/exporting
@@ -916,7 +916,8 @@ var ExportData;
             while (j--) {
                 val = row[j];
                 if (typeof val === 'string') {
-                    val = `"${val}"`;
+                    // Escape embedded quotes by doubling them, #25571
+                    val = `"${val.replace(/"/g, '""')}"`;
                 }
                 if (typeof val === 'number') {
                     if (decimalPoint !== '.') {

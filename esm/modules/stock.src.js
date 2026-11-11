@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.1.1-modified (2026-11-10)
+ * @license Highstock JS v13.1.1-modified (2026-11-11)
  * @module highcharts/modules/stock
  * @requires highcharts
  *
@@ -11692,6 +11692,7 @@ const { prototype: seriesProto } = (external_highcharts_src_js_default_Series_de
  *  Composition
  *
  * */
+/** @internal */
 var OnSeriesComposition;
 (function (OnSeriesComposition) {
     /* *
@@ -11705,7 +11706,7 @@ var OnSeriesComposition;
      *
      * */
     /**
-     * @private
+     * @internal
      */
     function compose(SeriesClass) {
         if ((0,external_highcharts_src_js_default_namespaceObject.pushUnique)(OnSeriesComposition_composed, 'OnSeries')) {
@@ -11720,7 +11721,7 @@ var OnSeriesComposition;
      * Override getPlotBox. If the onSeries option is valid, return the plot box
      * of the onSeries, otherwise proceed as usual.
      *
-     * @private
+     * @internal
      */
     function getPlotBox(name) {
         return seriesProto.getPlotBox.call((this.options.onSeries &&
@@ -11730,7 +11731,7 @@ var OnSeriesComposition;
     /**
      * Extend the translate method by placing the point on the related series
      *
-     * @private
+     * @internal
      */
     function translate() {
         columnProto.translate.apply(this);
@@ -11880,6 +11881,7 @@ var OnSeriesComposition;
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const Series_OnSeriesComposition = (OnSeriesComposition);
 
 ;// ./code/es-modules/Series/Flags/FlagsSeries.js

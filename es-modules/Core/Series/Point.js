@@ -522,7 +522,7 @@ class Point {
      *         The zone item, or `undefined` if the series has no zones.
      */
     getZone() {
-        const series = this.series, zones = series.zones, zoneAxis = series.zoneAxis || 'y';
+        const { zoneAxis = 'y', zones } = this.series;
         let zone, i = 0;
         zone = zones[i];
         while (i < zones.length &&
@@ -530,15 +530,10 @@ class Point {
             zone = zones[++i];
         }
         // For resetting or reusing the point (#8100)
-        if (!this.nonZonedColor) {
-            this.nonZonedColor = this.color;
-        }
-        if (zone?.color && !this.options.color) {
-            this.color = zone.color;
-        }
-        else {
-            this.color = this.nonZonedColor;
-        }
+        this.nonZonedColor || (this.nonZonedColor = this.color);
+        this.color = zone?.color && !this.options.color ?
+            zone.color :
+            this.nonZonedColor;
         return zone;
     }
     /**
@@ -547,10 +542,8 @@ class Point {
      * @internal
      */
     hasNewShapeType() {
-        const point = this;
-        const oldShapeType = point.graphic &&
-            (point.graphic.symbolName || point.graphic.element.nodeName);
-        return oldShapeType !== this.shapeType;
+        const { graphic } = this;
+        return (graphic?.symbolName || graphic?.element.nodeName) !== this.shapeType;
     }
     /**
      * Determine if point is valid.

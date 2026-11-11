@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-10)
+ * @license Highcharts JS v13.1.1-modified (2026-11-11)
  * @module highcharts/modules/funnel3d
  * @requires highcharts
  * @requires highcharts/highcharts-3d
@@ -822,6 +822,7 @@ const Funnel3DSeriesDefaults = {
      * @sample  {highcharts} highcharts/demo/funnel3d/ Funnel3d demo
      */
     height: '100%',
+    ignoreHiddenPoint: false,
     /**
      * The height of the neck, the lower part of the funnel. A number
      * defines pixel width, a percentage string defines a percentage

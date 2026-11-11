@@ -1,5 +1,5 @@
 let e;/**
- * Highcharts JS v13.1.1-modified (2026-11-10)
+ * Highcharts JS v13.1.1-modified (2026-11-11)
  * @module highcharts/modules/accessibility
  * @requires highcharts
  *

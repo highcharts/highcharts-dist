@@ -838,6 +838,7 @@ declare module "../highcharts.src" {
          * of the plot area height.
          */
         height?: (number|string);
+        ignoreHiddenPoint?: boolean;
         /**
          * (Highcharts) Highlight only the hovered point and fade the remaining
          * points.

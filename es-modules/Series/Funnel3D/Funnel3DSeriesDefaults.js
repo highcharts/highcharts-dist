@@ -67,6 +67,7 @@ const Funnel3DSeriesDefaults = {
      * @sample  {highcharts} highcharts/demo/funnel3d/ Funnel3d demo
      */
     height: '100%',
+    ignoreHiddenPoint: false,
     /**
      * The height of the neck, the lower part of the funnel. A number
      * defines pixel width, a percentage string defines a percentage

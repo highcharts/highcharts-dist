@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-10)
+ * @license Highcharts JS v13.1.1-modified (2026-11-11)
  * @module highcharts/modules/lollipop
  * @requires highcharts
  * @requires highcharts/highcharts-more
@@ -105,17 +105,12 @@ class LollipopPoint extends Point {
  * */
 /* harmony default export */ const Lollipop_LollipopPoint = (LollipopPoint);
 
-;// external ["../highcharts.src.js","default","Series","types","column"]
-const external_highcharts_src_js_default_Series_types_column_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].Series.types.column;
-var external_highcharts_src_js_default_Series_types_column_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_Series_types_column_namespaceObject);
-;// external ["../highcharts.src.js","default","SeriesRegistry"]
-const external_highcharts_src_js_default_SeriesRegistry_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].SeriesRegistry;
-var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_SeriesRegistry_namespaceObject);
-;// ./code/es-modules/Series/Lollipop/LollipopSeries.js
+;// ./code/es-modules/Series/Lollipop/LollipopSeriesDefaults.js
 /* *
  *
  *  (c) 2010-2026 Highsoft AS
- *  Author: Sebastian Bochan, Rafał Sebestjański
+ *
+ *  Author: Sebastian Domas
  *
  *  Integration of this software requires a license.
  *  - For commercial use, see www.highcharts.com/license
@@ -124,69 +119,9 @@ var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__w
  *
  * */
 
-
-
-
-
-
-
 /* *
  *
- *  Class
- *
- * */
-/**
- * Lollipop series type
- *
- * @private
- * @class
- * @name Highcharts.seriesTypes.lollipop
- *
- * @augments Highcharts.Series
- *
- */
-class LollipopSeries extends (external_highcharts_src_js_default_Series_default()) {
-    /**
-     * Extend the series' drawPoints method by applying a connector
-     * and coloring markers.
-     * @private
-     *
-     * @function Highcharts.Series#drawPoints
-     */
-    drawPoints() {
-        const series = this, pointLength = series.points.length;
-        let i = 0, point;
-        super.drawPoints.apply(series, arguments);
-        // Draw connectors
-        while (i < pointLength) {
-            point = series.points[i];
-            series.drawConnector(point);
-            i++;
-        }
-    }
-    /**
-     * Extend the series' translate method to use grouping option.
-     * @private
-     *
-     * @function Highcharts.Series#translate
-     *
-     */
-    translate() {
-        const series = this;
-        external_highcharts_src_js_default_Series_types_column_default().prototype.translate.apply(series, arguments);
-        // Correct x position
-        for (const point of series.points) {
-            const { pointWidth, shapeArgs } = point;
-            if (shapeArgs?.x) {
-                shapeArgs.x += pointWidth / 2;
-                point.plotX = shapeArgs.x || 0;
-            }
-        }
-    }
-}
-/* *
- *
- *  Static Properties
+ *  API Options
  *
  * */
 /**
@@ -207,7 +142,7 @@ class LollipopSeries extends (external_highcharts_src_js_default_Series_default(
  * @since        8.0.0
  * @optionparent plotOptions.lollipop
  */
-LollipopSeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)((external_highcharts_src_js_default_Series_default()).defaultOptions, {
+const LollipopSeriesDefaults = {
     /** @ignore-option */
     threshold: 0,
     /** @ignore-option */
@@ -250,7 +185,100 @@ LollipopSeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceO
         verticalAlign: void 0
     },
     pointRange: 1
-});
+};
+/* *
+ *
+ *  Default Export
+ *
+ * */
+/* harmony default export */ const Lollipop_LollipopSeriesDefaults = (LollipopSeriesDefaults);
+
+;// external ["../highcharts.src.js","default","Series","types","column"]
+const external_highcharts_src_js_default_Series_types_column_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].Series.types.column;
+var external_highcharts_src_js_default_Series_types_column_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_Series_types_column_namespaceObject);
+;// external ["../highcharts.src.js","default","SeriesRegistry"]
+const external_highcharts_src_js_default_SeriesRegistry_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].SeriesRegistry;
+var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_SeriesRegistry_namespaceObject);
+;// ./code/es-modules/Series/Lollipop/LollipopSeries.js
+/* *
+ *
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Sebastian Bochan, Rafał Sebestjański
+ *
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
+ *
+ *
+ * */
+
+
+
+
+
+
+
+
+/* *
+ *
+ *  Class
+ *
+ * */
+/**
+ * Lollipop series type
+ *
+ * @class
+ * @name Highcharts.seriesTypes.lollipop
+ *
+ * @augments Highcharts.Series
+ *
+ */
+class LollipopSeries extends (external_highcharts_src_js_default_Series_default()) {
+    /**
+     * Extend the series' drawPoints method by applying a connector
+     * and coloring markers.
+     * @internal
+     *
+     * @function Highcharts.Series#drawPoints
+     */
+    drawPoints() {
+        const series = this, pointLength = series.points.length;
+        let i = 0, point;
+        super.drawPoints.apply(series, arguments);
+        // Draw connectors
+        while (i < pointLength) {
+            point = series.points[i];
+            series.drawConnector(point);
+            i++;
+        }
+    }
+    /**
+     * Extend the series' translate method to use grouping option.
+     * @internal
+     *
+     * @function Highcharts.Series#translate
+     *
+     */
+    translate() {
+        const series = this;
+        external_highcharts_src_js_default_Series_types_column_default().prototype.translate.apply(series, arguments);
+        // Correct x position
+        for (const point of series.points) {
+            const { pointWidth, shapeArgs } = point;
+            if (shapeArgs?.x) {
+                shapeArgs.x += pointWidth / 2;
+                point.plotX = shapeArgs.x || 0;
+            }
+        }
+    }
+}
+/* *
+ *
+ *  Static Properties
+ *
+ * */
+/** @internal */
+LollipopSeries.defaultOptions = (0,external_highcharts_src_js_default_namespaceObject.merge)((external_highcharts_src_js_default_Series_default()).defaultOptions, Lollipop_LollipopSeriesDefaults);
 (0,external_highcharts_src_js_default_namespaceObject.extend)(LollipopSeries.prototype, {
     alignDataLabel: (external_highcharts_src_js_default_Series_types_column_default()).prototype.alignDataLabel,
     crispCol: (external_highcharts_src_js_default_Series_types_column_default()).prototype.crispCol,

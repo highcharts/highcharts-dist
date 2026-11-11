@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Maps v13.1.1-modified (2026-11-10)
+ * @license Highcharts Maps v13.1.1-modified (2026-11-11)
  * @module highcharts/highmaps
  *
  * (c) 2011-2026 Highsoft AS
@@ -27148,7 +27148,7 @@ class Point {
      *         The zone item, or `undefined` if the series has no zones.
      */
     getZone() {
-        const series = this.series, zones = series.zones, zoneAxis = series.zoneAxis || 'y';
+        const { zoneAxis = 'y', zones } = this.series;
         let zone, i = 0;
         zone = zones[i];
         while (i < zones.length &&
@@ -27156,15 +27156,10 @@ class Point {
             zone = zones[++i];
         }
         // For resetting or reusing the point (#8100)
-        if (!this.nonZonedColor) {
-            this.nonZonedColor = this.color;
-        }
-        if (zone?.color && !this.options.color) {
-            this.color = zone.color;
-        }
-        else {
-            this.color = this.nonZonedColor;
-        }
+        this.nonZonedColor || (this.nonZonedColor = this.color);
+        this.color = zone?.color && !this.options.color ?
+            zone.color :
+            this.nonZonedColor;
         return zone;
     }
     /**
@@ -27173,10 +27168,8 @@ class Point {
      * @internal
      */
     hasNewShapeType() {
-        const point = this;
-        const oldShapeType = point.graphic &&
-            (point.graphic.symbolName || point.graphic.element.nodeName);
-        return oldShapeType !== this.shapeType;
+        const { graphic } = this;
+        return (graphic?.symbolName || graphic?.element.nodeName) !== this.shapeType;
     }
     /**
      * Determine if point is valid.
@@ -33909,7 +33902,9 @@ class Series {
         }
         else if (equalLength && !dataSorting?.enabled) {
             for (i = 0; i < dataTable.rowCount; i++) {
-                if (!oldData[i].destroyed && !oldData[i].condemned) {
+                if (oldData[i] &&
+                    !oldData[i].destroyed &&
+                    !oldData[i].condemned) {
                     const pOptions = dataTable.getRowObject(i);
                     if (pOptions) {
                         // Remove undefined properties, but preserve explicit
@@ -34284,7 +34279,8 @@ class Series {
             }
         });
         addEvent(dataTable, 'afterSetColumns', (e) => {
-            this.setData(e.target);
+            this.setData(e.target, false);
+            queueRedraw();
         });
         this.hasBoundDataTableEvents = true;
     }
@@ -49610,7 +49606,7 @@ var Responsive;
 ;// ./code/es-modules/masters/highcharts.src.js
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-10)
+ * @license Highcharts JS v13.1.1-modified (2026-11-11)
  * @module highcharts/highcharts
  *
  * (c) 2009-2026 Highsoft AS
@@ -51401,7 +51397,7 @@ extend(ColorAxis.prototype, Color_ColorAxisBase);
 /* unused harmony import specifier */ var Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-10)
+ * @license Highcharts JS v13.1.1-modified (2026-11-11)
  * @module highcharts/modules/color-axis
  * @requires highcharts
  *
@@ -52625,7 +52621,6 @@ class MapPoint extends ScatterPoint {
     /**
      * Get the projected path based on the geometry. May also be called on
      * mapData options (not point instances), hence static.
-     * @private
      * @internal
      */
     static getProjectedPath(point, projection) {
@@ -52649,7 +52644,7 @@ class MapPoint extends ScatterPoint {
      * */
     /**
      * Extend the Point object to split paths.
-     * @private
+     * @internal
      */
     applyOptions(options, x, isMock) {
         const series = this.series, point = super.applyOptions(options, x, isMock), joinBy = series.joinBy;
@@ -52671,7 +52666,6 @@ class MapPoint extends ScatterPoint {
     }
     /**
      * Get the bounds in terms of projected units
-     * @private
      * @internal
      */
     getProjectedBounds(projection) {
@@ -52703,7 +52697,7 @@ class MapPoint extends ScatterPoint {
     }
     /**
      * Stop the fade-out
-     * @private
+     * @internal
      */
     onMouseOver(e) {
         internalClearTimeout(this.colorInterval);
@@ -56624,7 +56618,6 @@ const { splitPath } = Chart_MapChart;
  *
  * */
 /**
- * @private
  * @class
  * @name Highcharts.seriesTypes.map
  *
@@ -56638,6 +56631,7 @@ class MapSeries extends Scatter_ScatterSeries {
          *
          * */
         super(...arguments);
+        /** @internal */
         this.tupleKey = 'hc-key';
     }
     /* *
@@ -56648,7 +56642,7 @@ class MapSeries extends Scatter_ScatterSeries {
     /**
      * The initial animation for the map series. By default, animation is
      * disabled.
-     * @private
+     * @internal
      */
     animate(init) {
         const { chart, group } = this, animation = animObject(this.options.animation);
@@ -56684,7 +56678,7 @@ class MapSeries extends Scatter_ScatterSeries {
     /**
      * Allow a quick redraw by just translating the area group. Used for zooming
      * and panning in capable browsers.
-     * @private
+     * @internal
      */
     doFullTranslate() {
         return Boolean(this.isDirtyData ||
@@ -56694,7 +56688,7 @@ class MapSeries extends Scatter_ScatterSeries {
     /**
      * Draw the data labels. Special for maps is the time that the data labels
      * are drawn (after points), and the clipping of the dataLabelsGroup.
-     * @private
+     * @internal
      */
     drawMapDataLabels() {
         super.drawDataLabels();
@@ -56703,7 +56697,7 @@ class MapSeries extends Scatter_ScatterSeries {
     /**
      * Use the drawPoints method of column, that is able to handle simple
      * shapeArgs. Extend it by assigning the tooltip position.
-     * @private
+     * @internal
      */
     drawPoints() {
         const series = this, { chart, group, transformGroups = [] } = this, { mapView, renderer } = chart;
@@ -56940,7 +56934,7 @@ class MapSeries extends Scatter_ScatterSeries {
      * object. This function is used by both the map series where the
      * `borderWidth` sets the stroke-width, and the mapline series where the
      * `lineWidth` sets the stroke-width.
-     * @private
+     * @internal
      */
     getStrokeWidth(options) {
         const pointAttrToOptions = this.pointAttrToOptions;
@@ -56949,7 +56943,7 @@ class MapSeries extends Scatter_ScatterSeries {
     /**
      * Define hasData function for non-cartesian series. Returns true if the
      * series has points at all.
-     * @private
+     * @internal
      */
     hasData() {
         return !!this.dataTable.getModified().rowCount;
@@ -56958,7 +56952,7 @@ class MapSeries extends Scatter_ScatterSeries {
      * Get presentational attributes. In the maps series this runs in both
      * styled and non-styled mode, because colors hold data when a colorAxis is
      * used.
-     * @private
+     * @internal
      */
     pointAttribs(point, state) {
         const { mapView, styledMode } = (point?.series || this).chart;
@@ -57015,7 +57009,7 @@ class MapSeries extends Scatter_ScatterSeries {
     }
     /**
      * Extend setData to call processData and generatePoints immediately.
-     * @private
+     * @internal
      */
     setData(data, redraw = true, animation, updatePoints) {
         delete this.bounds;
@@ -57036,7 +57030,7 @@ class MapSeries extends Scatter_ScatterSeries {
      * all areas from the mapData are used, and those that don't correspond to a
      * data value are given null values. The results are stored in a modified
      * data table in order to avoid mutating `data`.
-     * @private
+     * @internal
      */
     processData() {
         const options = this.options, dataTable = this.dataTable, chart = this.chart, chartOptions = chart.options.chart, joinBy = this.joinBy, dataUsed = [], mapMap = {}, mapView = this.chart.mapView, mapDataObject = mapView && (
@@ -57126,7 +57120,7 @@ class MapSeries extends Scatter_ScatterSeries {
     /**
      * Extend setOptions by picking up the joinBy option and applying it to a
      * series property.
-     * @private
+     * @internal
      */
     setOptions(itemOptions) {
         const options = super.setOptions(itemOptions);
@@ -57145,7 +57139,7 @@ class MapSeries extends Scatter_ScatterSeries {
     /**
      * Add the path option for data points. Find the max value for color
      * calculation.
-     * @private
+     * @internal
      */
     translate() {
         const series = this, doFullTranslate = series.doFullTranslate(), mapView = this.chart.mapView, projection = mapView?.projection;
@@ -57221,6 +57215,7 @@ class MapSeries extends Scatter_ScatterSeries {
         super.update.apply(this, arguments);
     }
 }
+/** @internal */
 MapSeries.defaultOptions = merge(Scatter_ScatterSeries.defaultOptions, Map_MapSeriesDefaults);
 extend(MapSeries.prototype, {
     type: 'map',
@@ -57423,7 +57418,6 @@ const MapLineSeriesDefaults = {
  *
  * */
 /**
- * @private
  * @class
  * @name Highcharts.seriesTypes.mapline
  *
@@ -57437,7 +57431,7 @@ class MapLineSeries extends Map_MapSeries {
      * */
     /**
      * Get presentational attributes
-     * @private
+     * @internal
      * @function Highcharts.seriesTypes.mapline#pointAttribs
      */
     pointAttribs(point, state) {
@@ -57752,7 +57746,6 @@ const { noop: MapPointSeries_noop } = Core_Globals;
  *
  * */
 /**
- * @private
  * @class
  * @name Highcharts.seriesTypes.mappoint
  *
@@ -57766,6 +57759,7 @@ class MapPointSeries extends Scatter_ScatterSeries {
          *
          * */
         super(...arguments);
+        /** @internal */
         this.clearBounds = Map_MapSeries.prototype.clearBounds;
     }
     /* *
@@ -57784,7 +57778,7 @@ class MapPointSeries extends Scatter_ScatterSeries {
      * Resolve `lon`, `lat` or `geometry` options and project the resulted
      * coordinates.
      *
-     * @private
+     * @internal
      */
     projectPoint(pointOptions) {
         const mapView = this.chart.mapView;
@@ -57870,18 +57864,12 @@ MapPointSeries.defaultOptions = merge(Scatter_ScatterSeries.defaultOptions, MapP
  * Extra
  *
  * */
-/* *
+/**
  * The mapmarker symbol
+ *
+ * @internal
  */
-const mapmarker = (
-/** @internal */
-x, 
-/** @internal */
-y, 
-/** @internal */
-w, 
-/** @internal */
-h, options) => {
+const mapmarker = (x, y, w, h, options) => {
     const isLegendSymbol = options && options.context === 'legend';
     let anchorX, anchorY;
     if (isLegendSymbol) {
@@ -59878,10 +59866,11 @@ extend(MapBubblePoint.prototype, {
  * */
 /* harmony default export */ const MapBubble_MapBubblePoint = (MapBubblePoint);
 
-;// ./code/es-modules/Series/MapBubble/MapBubbleSeries.js
+;// ./code/es-modules/Series/MapBubble/MapBubbleSeriesDefaults.js
 /* *
  *
  *  (c) 2010-2026 Highsoft AS
+ *
  *  Author: Torstein Hønsi
  *
  *  Integration of this software requires a license.
@@ -59891,51 +59880,11 @@ extend(MapBubblePoint.prototype, {
  *
  * */
 
-
-
-
-
-
-
 /* *
  *
- *  Class
+ *  API Options
  *
  * */
-/**
- * @private
- * @class
- * @name Highcharts.seriesTypes.mapbubble
- *
- * @augments Highcharts.Series
- *
- * @requires BubbleSeries
- * @requires MapPointSeries
- */
-class MapBubbleSeries extends Bubble_BubbleSeries {
-    constructor() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
-        super(...arguments);
-        this.clearBounds = Map_MapSeries.prototype.clearBounds;
-    }
-    /** @internal */
-    searchPoint(e, compareX) {
-        return this.searchKDTree({
-            plotX: e.chartX - this.chart.plotLeft,
-            plotY: e.chartY - this.chart.plotTop
-        }, compareX, e);
-    }
-    /** @internal */
-    translate() {
-        MapPoint_MapPointSeries.prototype.translate.call(this);
-        this.getRadii();
-        this.translateBubble();
-    }
-}
 /**
  * A map bubble series is a bubble series laid out on top of a map
  * series, where each bubble is tied to a specific map area.
@@ -59947,7 +59896,7 @@ class MapBubbleSeries extends Bubble_BubbleSeries {
  * @product      highmaps
  * @optionparent plotOptions.mapbubble
  */
-MapBubbleSeries.defaultOptions = merge(Bubble_BubbleSeries.defaultOptions, {
+const MapBubbleSeriesDefaults = {
     /**
      * The main color of the series. This color affects both the fill
      * and the stroke of the bubble. For enhanced control, use `marker`
@@ -60114,7 +60063,75 @@ MapBubbleSeries.defaultOptions = merge(Bubble_BubbleSeries.defaultOptions, {
         pointFormat: '{point.name}: {point.z}'
     },
     stickyTracking: true
-});
+};
+/* *
+ *
+ *  Default Export
+ *
+ * */
+/* harmony default export */ const MapBubble_MapBubbleSeriesDefaults = (MapBubbleSeriesDefaults);
+
+;// ./code/es-modules/Series/MapBubble/MapBubbleSeries.js
+/* *
+ *
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Hønsi
+ *
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
+ *
+ *
+ * */
+
+
+
+
+
+
+
+
+/* *
+ *
+ *  Class
+ *
+ * */
+/**
+ * @class
+ * @name Highcharts.seriesTypes.mapbubble
+ *
+ * @augments Highcharts.Series
+ *
+ * @requires BubbleSeries
+ * @requires MapPointSeries
+ */
+class MapBubbleSeries extends Bubble_BubbleSeries {
+    constructor() {
+        /* *
+         *
+         *  Static Properties
+         *
+         * */
+        super(...arguments);
+        /** @internal */
+        this.clearBounds = Map_MapSeries.prototype.clearBounds;
+    }
+    /** @internal */
+    searchPoint(e, compareX) {
+        return this.searchKDTree({
+            plotX: e.chartX - this.chart.plotLeft,
+            plotY: e.chartY - this.chart.plotTop
+        }, compareX, e);
+    }
+    /** @internal */
+    translate() {
+        MapPoint_MapPointSeries.prototype.translate.call(this);
+        this.getRadii();
+        this.translateBubble();
+    }
+}
+/** @internal */
+MapBubbleSeries.defaultOptions = merge(Bubble_BubbleSeries.defaultOptions, MapBubble_MapBubbleSeriesDefaults);
 extend(MapBubbleSeries.prototype, {
     type: 'mapbubble',
     axisTypes: ['colorAxis'],
@@ -61394,7 +61411,7 @@ Series_SeriesRegistry.registerSeriesType('heatmap', HeatmapSeries);
 /* unused harmony import specifier */ var map_src_Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highmaps JS v13.1.1-modified (2026-11-10)
+ * @license Highmaps JS v13.1.1-modified (2026-11-11)
  * @module highcharts/modules/map
  * @requires highcharts
  *

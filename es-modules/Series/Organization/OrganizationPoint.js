@@ -27,7 +27,7 @@ const SankeyPointClass = SankeySeries.prototype.pointClass;
  * */
 /**
  * Get columns offset including all sibling and cousins etc.
- * @private
+ * @internal
  */
 function getOffset(node) {
     let offset = node.linksFrom.length;
@@ -55,6 +55,7 @@ class OrganizationPoint extends SankeyPointClass {
      *  Functions
      *
      * */
+    /** @internal */
     constructor(series, options, x) {
         super(series, options, x);
         if (!this.isNode) {
@@ -64,14 +65,14 @@ class OrganizationPoint extends SankeyPointClass {
     }
     /**
      * All nodes in an org chart are equal width.
-     * @private
+     * @internal
      */
     getSum() {
         return 1;
     }
     /**
      * Set node.column for hanging layout
-     * @private
+     * @internal
      */
     setNodeColumn() {
         super.setNodeColumn();

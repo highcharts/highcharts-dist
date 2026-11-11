@@ -27,7 +27,6 @@ import { clamp, defined, fireEvent, isFunction } from '../../Shared/Utilities.js
 /**
  * Reingold-Fruchterman algorithm from
  * "Graph Drawing by Force-directed Placement" paper.
- * @private
  */
 class ReingoldFruchtermanLayout {
     constructor() {
@@ -36,14 +35,22 @@ class ReingoldFruchtermanLayout {
          *  Static Functions
          *
          * */
+        /** @internal */
         this.box = {};
+        /** @internal */
         this.currentStep = 0;
+        /** @internal */
         this.initialRendering = true;
+        /** @internal */
         this.links = [];
+        /** @internal */
         this.nodes = [];
+        /** @internal */
         this.series = [];
+        /** @internal */
         this.simulation = false;
     }
+    /** @internal */
     static compose(ChartClass) {
         GraphLayout.compose(ChartClass);
         GraphLayout.integrations.euler = EulerIntegration;
@@ -51,6 +58,7 @@ class ReingoldFruchtermanLayout {
         GraphLayout.layouts['reingold-fruchterman'] =
             ReingoldFruchtermanLayout;
     }
+    /** @internal */
     init(options) {
         this.options = options;
         this.nodes = [];
@@ -74,9 +82,11 @@ class ReingoldFruchtermanLayout {
                 this.integration.repulsiveForceFunction;
         this.approximation = options.approximation;
     }
+    /** @internal */
     updateSimulation(enable) {
         this.enableSimulation = (enable ?? this.options.enableSimulation);
     }
+    /** @internal */
     start() {
         const layout = this, series = this.series, options = this.options;
         layout.currentStep = 0;
@@ -96,6 +106,7 @@ class ReingoldFruchtermanLayout {
             layout.step();
         }
     }
+    /** @internal */
     step() {
         const anyLayout = this, allSeries = this.series;
         // Algorithm:
@@ -136,11 +147,13 @@ class ReingoldFruchtermanLayout {
             }
         }
     }
+    /** @internal */
     stop() {
         if (this.simulation) {
             win.cancelAnimationFrame(this.simulation);
         }
     }
+    /** @internal */
     setArea(x, y, w, h) {
         this.box = {
             left: x,
@@ -149,11 +162,13 @@ class ReingoldFruchtermanLayout {
             height: h
         };
     }
+    /** @internal */
     setK() {
         // Optimal distance between nodes,
         // available space around the node:
         this.k = this.options.linkLength || this.integration.getK(this);
     }
+    /** @internal */
     addElementsToCollection(elements, collection) {
         for (const element of elements) {
             if (collection.indexOf(element) === -1) {
@@ -161,18 +176,21 @@ class ReingoldFruchtermanLayout {
             }
         }
     }
+    /** @internal */
     removeElementFromCollection(element, collection) {
         const index = collection.indexOf(element);
         if (index !== -1) {
             collection.splice(index, 1);
         }
     }
+    /** @internal */
     clear() {
         this.nodes.length = 0;
         this.links.length = 0;
         this.series.length = 0;
         this.resetSimulation();
     }
+    /** @internal */
     resetSimulation() {
         this.forcedStop = false;
         this.systemTemperature = 0;
@@ -180,6 +198,7 @@ class ReingoldFruchtermanLayout {
         this.setTemperature();
         this.setDiffTemperature();
     }
+    /** @internal */
     restartSimulation() {
         if (!this.simulation) {
             // When dragging nodes, we don't need to calculate
@@ -204,24 +223,30 @@ class ReingoldFruchtermanLayout {
             this.resetSimulation();
         }
     }
+    /** @internal */
     setMaxIterations(maxIterations) {
         this.maxIterations = (maxIterations ?? this.options.maxIterations);
     }
+    /** @internal */
     setTemperature() {
         this.temperature = this.startTemperature =
             Math.sqrt(this.nodes.length);
     }
+    /** @internal */
     setDiffTemperature() {
         this.diffTemperature = this.startTemperature /
             (this.options.maxIterations + 1);
     }
+    /** @internal */
     setInitialRendering(enable) {
         this.initialRendering = enable;
     }
+    /** @internal */
     createQuadTree() {
         this.quadTree = new QuadTree(this.box.left, this.box.top, this.box.width, this.box.height);
         this.quadTree.insertNodes(this.nodes);
     }
+    /** @internal */
     initPositions() {
         const initialPositions = this.options.initialPositions;
         if (isFunction(initialPositions)) {
@@ -244,6 +269,7 @@ class ReingoldFruchtermanLayout {
             this.setRandomPositions();
         }
     }
+    /** @internal */
     setCircularPositions() {
         const box = this.box, nodes = this.nodes, nodesLength = nodes.length + 1, angle = 2 * Math.PI / nodesLength, rootNodes = nodes.filter(function (node) {
             return node.linksTo.length === 0;
@@ -291,12 +317,13 @@ class ReingoldFruchtermanLayout {
             node.dispY = 0;
         }
     }
+    /** @internal */
     setRandomPositions() {
         const box = this.box, nodes = this.nodes, nodesLength = nodes.length + 1, 
         /**
          * Return a repeatable, quasi-random number based on an integer
          * input. For the initial positions
-         * @private
+         * @internal
          */
         unrandom = (n) => {
             let rand = n * n / Math.PI;
@@ -314,13 +341,16 @@ class ReingoldFruchtermanLayout {
             node.dispY = 0;
         }
     }
+    /** @internal */
     force(name, ...args) {
         this.integration[name].apply(this, args);
     }
+    /** @internal */
     barycenterForces() {
         this.getBarycenter();
         this.force('barycenter');
     }
+    /** @internal */
     getBarycenter() {
         let systemMass = 0, cx = 0, cy = 0;
         for (const node of this.nodes) {
@@ -336,6 +366,7 @@ class ReingoldFruchtermanLayout {
         };
         return this.barycenter;
     }
+    /** @internal */
     barnesHutApproximation(node, quadNode) {
         const distanceXY = this.getDistXY(node, quadNode), distanceR = this.vectorLength(distanceXY);
         let goDeeper, force;
@@ -363,6 +394,7 @@ class ReingoldFruchtermanLayout {
         }
         return goDeeper;
     }
+    /** @internal */
     repulsiveForces() {
         if (this.approximation === 'barnes-hut') {
             for (const node of this.nodes) {
@@ -391,6 +423,7 @@ class ReingoldFruchtermanLayout {
             }
         }
     }
+    /** @internal */
     attractiveForces() {
         let distanceXY, distanceR, force;
         for (const link of this.links) {
@@ -404,6 +437,7 @@ class ReingoldFruchtermanLayout {
             }
         }
     }
+    /** @internal */
     applyLimits() {
         const nodes = this.nodes;
         for (const node of nodes) {
@@ -420,7 +454,7 @@ class ReingoldFruchtermanLayout {
     /**
      * External box that nodes should fall. When hitting an edge, node
      * should stop or bounce.
-     * @private
+     * @internal
      */
     applyLimitBox(node, box) {
         const radius = node.radius;
@@ -464,7 +498,7 @@ class ReingoldFruchtermanLayout {
     /**
      * From "A comparison of simulated annealing cooling strategies" by
      * Nourani and Andresen work.
-     * @private
+     * @internal
      */
     coolDown(temperature, temperatureStep, currentStep) {
         // Logarithmic:
@@ -483,10 +517,12 @@ class ReingoldFruchtermanLayout {
         // Linear:
         return temperature - temperatureStep * currentStep;
     }
+    /** @internal */
     isStable() {
         return Math.abs(this.systemTemperature -
             this.prevSystemTemperature) < 0.00001 || this.temperature <= 0;
     }
+    /** @internal */
     getSystemTemperature() {
         let value = 0;
         for (const node of this.nodes) {
@@ -494,13 +530,16 @@ class ReingoldFruchtermanLayout {
         }
         return value;
     }
+    /** @internal */
     vectorLength(vector) {
         return Math.sqrt(vector.x * vector.x + vector.y * vector.y);
     }
+    /** @internal */
     getDistR(nodeA, nodeB) {
         const distance = this.getDistXY(nodeA, nodeB);
         return this.vectorLength(distance);
     }
+    /** @internal */
     getDistXY(nodeA, nodeB) {
         const xDist = nodeA.plotX - nodeB.plotX, yDist = nodeA.plotY - nodeB.plotY;
         return {

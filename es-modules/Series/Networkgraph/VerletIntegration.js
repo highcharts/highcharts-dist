@@ -23,7 +23,7 @@
  * In Verlet integration, force is applied on a node immediately to it's
  * `plotX` and `plotY` position.
  *
- * @private
+ * @internal
  * @param {Highcharts.Point} link
  *        Link that connects two nodes
  * @param {number} force
@@ -50,7 +50,7 @@ function attractive(link, force, distanceXY) {
  * Attractive force function. Can be replaced by API's
  * `layoutAlgorithm.attractiveForce`
  *
- * @private
+ * @internal
  * @param {number} d current distance between two nodes
  * @param {number} k expected distance between two nodes
  * @return {number} force
@@ -66,7 +66,7 @@ function attractiveForceFunction(d, k) {
  * In Verlet integration, force is applied on a node immediately to it's
  * `plotX` and `plotY` position.
  *
- * @private
+ * @internal
  */
 function barycenter() {
     const gravitationalConstant = this.options.gravitationalConstant || 0, xFactor = (this.barycenter.xFactor -
@@ -84,7 +84,7 @@ function barycenter() {
 /**
  * Estimate the best possible distance between two nodes, making graph
  * readable.
- * @private
+ * @internal
  */
 function getK(layout) {
     return Math.pow(layout.box.width * layout.box.height / layout.nodes.length, 0.5);
@@ -116,7 +116,7 @@ function getK(layout) {
  * forces. Or even Time-Corrected Verlet by Jonathan
  * "lonesock" Dummer
  *
- * @private
+ * @internal
  * @param {Highcharts.NetworkgraphLayout} layout layout object
  * @param {Highcharts.Point} node node that should be translated
  */
@@ -146,7 +146,7 @@ function integrate(layout, node) {
  * In Verlet integration, force is applied on a node immediately to it's
  * `plotX` and `plotY` position.
  *
- * @private
+ * @internal
  * @param {Highcharts.Point} node
  *        Node that should be translated by force.
  * @param {number} force
@@ -165,7 +165,7 @@ function repulsive(node, force, distanceXY) {
  * Repulsive force function. Can be replaced by API's
  * `layoutAlgorithm.repulsiveForce`
  *
- * @private
+ * @internal
  * @param {number} d current distance between two nodes
  * @param {number} k expected distance between two nodes
  * @return {number} force
