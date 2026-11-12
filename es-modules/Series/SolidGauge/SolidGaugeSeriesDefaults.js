@@ -92,7 +92,6 @@ const SolidGaugeSeriesDefaults = {
      *         Individual radius and innerRadius
      *
      * @type      {string}
-     * @default   "100%"
      * @since     4.1.6
      * @product   highcharts
      * @apioption plotOptions.solidgauge.radius

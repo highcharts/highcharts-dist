@@ -16,6 +16,7 @@ import TreemapNode from '../Treemap/TreemapNode.js';
  *  Class
  *
  * */
+/** @internal */
 class SunburstNode extends TreemapNode {
 }
 /* *
@@ -23,4 +24,5 @@ class SunburstNode extends TreemapNode {
  *  Default Export
  *
  * */
+/** @internal */
 export default SunburstNode;

@@ -102667,7 +102667,7 @@ export interface SeriesSankeyNodesOptionsObject {
      * customized functionality. Here you can add additional data for your own
      * event callbacks and formatter callbacks.
      */
-    custom?: object;
+    custom?: Dictionary<any>;
     /**
      * (Highcharts, Highstock, Highmaps, Gantt) Individual data label for each
      * node. The options are the same as the ones for series.sankey.dataLabels.
@@ -115323,6 +115323,10 @@ export class Pointer {
     reset(allowMove?: boolean, delay?: number): void;
 }
 /**
+ * Scatter series type.
+ */
+export class ScatterSeries {}
+/**
  * This is the base series prototype that all other series types inherit from. A
  * new series is initialized either through the series option structure, or
  * after the chart is initialized, through Highcharts.Chart#addSeries.
@@ -115846,6 +115850,10 @@ export class Series {
      */
     update(options: SeriesOptionsType, redraw?: boolean): void;
 }
+/**
+ * Spline series type.
+ */
+export class SplineSeries {}
 /**
  * The class for stacks. Each stack, on a specific X value and either negative
  * or positive, has its own stack item.

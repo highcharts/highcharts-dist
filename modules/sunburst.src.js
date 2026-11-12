@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-11)
+ * @license Highcharts JS v13.1.1-modified (2026-11-12)
  * @module highcharts/modules/sunburst
  * @requires highcharts
  *
@@ -4073,7 +4073,7 @@ class SunburstPoint extends SunburstPoint_TreemapPoint {
  *
  * */
 /**
- * @private
+ * @internal
  * @function calculateLevelSizes
  *
  * @param {Object} levelOptions
@@ -4139,7 +4139,7 @@ function calculateLevelSizes(levelOptions, params) {
     return result;
 }
 /**
- * @private
+ * @internal
  */
 function getLevelFromAndTo({ level, height }) {
     //  Never displays level below 1
@@ -4149,7 +4149,7 @@ function getLevelFromAndTo({ level, height }) {
 }
 /**
  * TODO introduce step, which should default to 1.
- * @private
+ * @internal
  */
 function range(from, to) {
     const result = [];
@@ -4165,12 +4165,14 @@ function range(from, to) {
  *  Default Export
  *
  * */
+/** @internal */
 const SunburstUtilities = {
     calculateLevelSizes,
     getLevelFromAndTo,
     range,
     recursive: Treemap_TreemapSeries.prototype.utils.recursive
 };
+/** @internal */
 /* harmony default export */ const Sunburst_SunburstUtilities = (SunburstUtilities);
 
 ;// ./code/es-modules/Series/Sunburst/SunburstNode.js
@@ -4192,6 +4194,7 @@ const SunburstUtilities = {
  *  Class
  *
  * */
+/** @internal */
 class SunburstNode extends Treemap_TreemapNode {
 }
 /* *
@@ -4199,6 +4202,7 @@ class SunburstNode extends Treemap_TreemapNode {
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const Sunburst_SunburstNode = (SunburstNode);
 
 ;// ./code/es-modules/Series/Sunburst/SunburstSeriesDefaults.js
@@ -4238,8 +4242,6 @@ class SunburstNode extends Treemap_TreemapNode {
  * @product      highcharts
  * @requires     modules/sunburst
  * @optionparent plotOptions.sunburst
- *
- * @private
  */
 const SunburstSeriesDefaults = {
     /**
@@ -4374,14 +4376,10 @@ const SunburstSeriesDefaults = {
      * @type    {Array<number|string>}
      * @default ["50%", "50%"]
      * @product highcharts
-     *
-     * @private
      */
     center: ['50%', '50%'],
     /**
      * @product highcharts
-     *
-     * @private
      */
     clip: false,
     colorByPoint: false,
@@ -4389,14 +4387,10 @@ const SunburstSeriesDefaults = {
      * Disable inherited opacity from Treemap series.
      *
      * @ignore-option
-     *
-     * @private
      */
     opacity: 1,
     /**
      * @declare Highcharts.SeriesSunburstDataLabelsOptionsObject
-     *
-     * @private
      */
     dataLabels: {
         allowOverlap: true,
@@ -4429,8 +4423,6 @@ const SunburstSeriesDefaults = {
      * Which point to use as a root in the visualization.
      *
      * @type {string}
-     *
-     * @private
      */
     rootId: void 0,
     /**
@@ -4438,8 +4430,6 @@ const SunburstSeriesDefaults = {
      * set to false the first level visible when drilling is considered
      * to be level one. Otherwise the level will be the same as the tree
      * structure.
-     *
-     * @private
      */
     levelIsConstant: true,
     /**
@@ -4449,8 +4439,6 @@ const SunburstSeriesDefaults = {
      *         Sunburst with various sizes per level
      *
      * @since 6.0.5
-     *
-     * @private
      */
     levelSize: {
         /**
@@ -4498,8 +4486,6 @@ const SunburstSeriesDefaults = {
      *         Sliced sunburst
      *
      * @since 6.0.4
-     *
-     * @private
      */
     slicedOffset: 10
 };
@@ -4885,7 +4871,7 @@ const rad2deg = 180 / Math.PI;
  *  Functions
  *
  * */
-/** @private */
+/** @internal */
 function isBoolean(x) {
     return typeof x === 'boolean';
 }
@@ -4893,7 +4879,7 @@ function isBoolean(x) {
  * Find a set of coordinates given a start coordinates, an angle, and a
  * distance.
  *
- * @private
+ * @internal
  * @function getEndPoint
  *
  * @param {number} x
@@ -4917,7 +4903,7 @@ const getEndPoint = function getEndPoint(x, y, angle, distance) {
         y: y + (Math.sin(angle) * distance)
     };
 };
-/** @private */
+/** @internal */
 function getDlOptions(params) {
     // Set options to new object to avoid problems with scope
     const point = params.point, shape = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.isObject)(params.shapeArgs) ? params.shapeArgs : {}, { end = 0, radius = 0, start = 0 } = shape, optionsPoint = ((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.isObject)(params.optionsPoint) ?
@@ -5056,7 +5042,7 @@ function getDlOptions(params) {
     style.width = width + 'px';
     return options;
 }
-/** @private */
+/** @internal */
 function getAnimation(shape, params) {
     const point = params.point, radians = params.radians, innerR = params.innerR, idRoot = params.idRoot, idPreviousRoot = params.idPreviousRoot, shapeExisting = params.shapeExisting, shapeRoot = params.shapeRoot, shapePreviousRoot = params.shapePreviousRoot, visible = params.visible;
     let from = {}, to = {
@@ -5119,7 +5105,7 @@ function getAnimation(shape, params) {
         to: to
     };
 }
-/** @private */
+/** @internal */
 function getDrillId(point, idRoot, mapIdToNode) {
     const node = point.node;
     let drillId, nodeRoot;
@@ -5135,7 +5121,7 @@ function getDrillId(point, idRoot, mapIdToNode) {
     }
     return drillId;
 }
-/** @private */
+/** @internal */
 function cbSetTreeValuesBefore(node, options) {
     const mapIdToNode = options.mapIdToNode, parent = node.parent, nodeParent = parent ? mapIdToNode[parent] : void 0, series = options.series, chart = series.chart, points = series.points, point = points[node.i], colors = series.options.colors || chart && chart.options.colors, colorInfo = SunburstSeries_getColor(node, {
         colors: colors,
@@ -5180,7 +5166,7 @@ class SunburstSeries extends Treemap_TreemapSeries {
     }
     /**
      * Animate the slices in. Similar to the animation of polar charts.
-     * @private
+     * @internal
      */
     animate(init) {
         const chart = this.chart, center = [
@@ -5322,7 +5308,7 @@ class SunburstSeries extends Treemap_TreemapSeries {
     }
     /**
      * The layout algorithm for the levels.
-     * @private
+     * @internal
      */
     layoutAlgorithm(parent, children, options) {
         let startAngle = parent.start;
@@ -5365,7 +5351,7 @@ class SunburstSeries extends Treemap_TreemapSeries {
     }
     /**
      * Set the shape arguments on the nodes. Recursive from root down.
-     * @private
+     * @internal
      */
     setShapeArgs(parent, parentValues, mapOptionsToLevel) {
         const level = parent.level + 1, options = mapOptionsToLevel[level], 

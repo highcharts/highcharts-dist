@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-11)
+ * @license Highcharts JS v13.1.1-modified (2026-11-12)
  * @module highcharts/highcharts-3d
  * @requires highcharts
  *
@@ -4983,7 +4983,6 @@ var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__w
  *
  * */
 /**
- * @private
  * @class
  * @name Highcharts.seriesTypes.scatter3d
  *

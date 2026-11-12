@@ -43,8 +43,6 @@
  *               threshold, zoneAxis, zones
  * @requires     modules/sankey
  * @optionparent plotOptions.sankey
- *
- * @private
  */
 const SankeySeriesDefaults = {
     borderWidth: 0,
@@ -55,8 +53,6 @@ const SankeySeriesDefaults = {
      * straight. It also sets the turn radius of the bands wrapping around
      * a circular layout; a self-link's loop turns on the node width
      * instead.
-     *
-     * @private
      */
     curveFactor: 0.33,
     /**
@@ -67,8 +63,6 @@ const SankeySeriesDefaults = {
      * string by default.
      *
      * @declare Highcharts.SeriesSankeyDataLabelsOptionsObject
-     *
-     * @private
      */
     dataLabels: {
         enabled: true,
@@ -109,7 +103,6 @@ const SankeySeriesDefaults = {
     /**
      * @default   true
      * @extends   plotOptions.series.inactiveOtherPoints
-     * @private
      */
     inactiveOtherPoints: true,
     /**
@@ -195,14 +188,10 @@ const SankeySeriesDefaults = {
     linkColorMode: 'from',
     /**
      * Opacity for the links between nodes in the sankey diagram.
-     *
-     * @private
      */
     linkOpacity: 0.5,
     /**
      * Opacity for the nodes in the sankey diagram.
-     *
-     * @private
      */
     opacity: 1,
     /**
@@ -216,8 +205,6 @@ const SankeySeriesDefaults = {
      * @since     7.1.3
      * @default   0
      * @apioption plotOptions.sankey.minLinkWidth
-     *
-     * @private
      */
     minLinkWidth: 0,
     /**
@@ -279,7 +266,7 @@ const SankeySeriesDefaults = {
      *
      * @since 11.4.0
      * @sample highcharts/series-sankey/node-distance
-     *         Sankey with dnode distance of 100% means equal to node width
+     *         Sankey with node distance of 100% means equal to node width
      * @sample highcharts/series-organization/node-distance
      *         Organization chart with node distance of 50%
      * @type   {number|string}
@@ -421,10 +408,11 @@ const SankeySeriesDefaults = {
  * A reserved subspace to store options and values for customized
  * functionality. Here you can add additional data for your own event
  * callbacks and formatter callbacks.
- * @apioption series.sankey.nodes.custom
+ *
  * @type      {Highcharts.Dictionary<*>}
- * @product   highcharts
  * @since     next
+ * @product   highcharts
+ * @apioption series.sankey.nodes.custom
  */
 /**
  * Individual data label for each node. The options are the same as

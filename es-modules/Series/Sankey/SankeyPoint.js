@@ -27,7 +27,7 @@ class SankeyPoint extends ColumnSeries.prototype.pointClass {
      *
      * */
     /**
-     * @private
+     * @internal
      */
     applyOptions(options, x) {
         Point.prototype.applyOptions.call(this, options, x);
@@ -38,7 +38,7 @@ class SankeyPoint extends ColumnSeries.prototype.pointClass {
         return this;
     }
     /**
-     * @private
+     * @internal
      */
     getClassName() {
         return (this.isNode ? 'highcharts-node ' : 'highcharts-link ') +
@@ -50,7 +50,7 @@ class SankeyPoint extends ColumnSeries.prototype.pointClass {
      * ignored, so a node reached only through a cycle still anchors to its
      * non-circular predecessors (or column 0 when it has none).
      *
-     * @private
+     * @internal
      */
     getFromNode() {
         const node = this;
@@ -71,7 +71,7 @@ class SankeyPoint extends ColumnSeries.prototype.pointClass {
     }
     /**
      * Calculate node.column if it's not set by user
-     * @private
+     * @internal
      */
     setNodeColumn() {
         const node = this;
@@ -86,7 +86,7 @@ class SankeyPoint extends ColumnSeries.prototype.pointClass {
         }
     }
     /**
-     * @private
+     * @internal
      */
     isValid() {
         return this.isNode || typeof this.weight === 'number';

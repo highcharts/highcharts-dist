@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-11)
+ * @license Highcharts JS v13.1.1-modified (2026-11-12)
  * @module modules/arc-diagram
  * @requires highcharts/modules/sankey
  *
@@ -679,6 +679,7 @@ const ArcDiagramSeriesDefaults = {
  *  Composition
  *
  * */
+/** @internal */
 var SankeyColumnComposition;
 (function (SankeyColumnComposition) {
     /* *
@@ -693,7 +694,7 @@ var SankeyColumnComposition;
      * */
     /**
      * SankeyColumn Composition
-     * @private
+     * @internal
      * @function Highcharts.SankeyColumn#compose
      *
      * @param {Array<SankeyPoint>} points
@@ -731,7 +732,7 @@ var SankeyColumnComposition;
          * */
         /**
          * Calculate translation factor used in column and nodes distribution
-         * @private
+         * @internal
          * @function Highcharts.SankeyColumn#getTranslationFactor
          *
          * @param {SankeySeries} series
@@ -776,7 +777,7 @@ var SankeyColumnComposition;
         }
         /**
          * Get the top position of the column in pixels
-         * @private
+         * @internal
          * @function Highcharts.SankeyColumn#top
          *
          * @param {number} factor
@@ -802,14 +803,14 @@ var SankeyColumnComposition;
         /**
          * Flow-axis room this column's nodes reserve for self-link laps.
          * #8218
-         * @private
+         * @internal
          */
         lapSum() {
             return this.points.reduce((sum, node) => (sum + (node.wrapLap || 0)), 0);
         }
         /**
          * Get the left position of the column in pixels
-         * @private
+         * @internal
          * @function Highcharts.SankeyColumn#top
          *
          * @param {number} factor
@@ -833,14 +834,14 @@ var SankeyColumnComposition;
         }
         /**
          * Calculate sum of all nodes inside specific column
-         * @private
+         * @internal
          */
         sum() {
             return this.points.reduce((sum, node) => (sum + node.getSum()), 0);
         }
         /**
          * Get the offset in pixels of a node inside the column
-         * @private
+         * @internal
          * @function Highcharts.SankeyColumn#offset
          *
          * @param {SankeyPoint} node
@@ -893,6 +894,7 @@ var SankeyColumnComposition;
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const Sankey_SankeyColumnComposition = (SankeyColumnComposition);
 
 ;// external ["../highcharts.src.js","default","Series","types","column"]

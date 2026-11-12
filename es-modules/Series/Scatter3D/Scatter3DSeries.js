@@ -24,7 +24,6 @@ import { extend, merge } from '../../Shared/Utilities.js';
  *
  * */
 /**
- * @private
  * @class
  * @name Highcharts.seriesTypes.scatter3d
  *

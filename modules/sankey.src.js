@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-11)
+ * @license Highcharts JS v13.1.1-modified (2026-11-12)
  * @module highcharts/modules/sankey
  * @requires highcharts
  *
@@ -459,7 +459,7 @@ class SankeyPoint extends (highcharts_Series_types_column_commonjs_highcharts_Se
      *
      * */
     /**
-     * @private
+     * @internal
      */
     applyOptions(options, x) {
         highcharts_Point_commonjs_highcharts_Point_commonjs2_highcharts_Point_root_Highcharts_Point_default().prototype.applyOptions.call(this, options, x);
@@ -470,7 +470,7 @@ class SankeyPoint extends (highcharts_Series_types_column_commonjs_highcharts_Se
         return this;
     }
     /**
-     * @private
+     * @internal
      */
     getClassName() {
         return (this.isNode ? 'highcharts-node ' : 'highcharts-link ') +
@@ -482,7 +482,7 @@ class SankeyPoint extends (highcharts_Series_types_column_commonjs_highcharts_Se
      * ignored, so a node reached only through a cycle still anchors to its
      * non-circular predecessors (or column 0 when it has none).
      *
-     * @private
+     * @internal
      */
     getFromNode() {
         const node = this;
@@ -503,7 +503,7 @@ class SankeyPoint extends (highcharts_Series_types_column_commonjs_highcharts_Se
     }
     /**
      * Calculate node.column if it's not set by user
-     * @private
+     * @internal
      */
     setNodeColumn() {
         const node = this;
@@ -518,7 +518,7 @@ class SankeyPoint extends (highcharts_Series_types_column_commonjs_highcharts_Se
         }
     }
     /**
-     * @private
+     * @internal
      */
     isValid() {
         return this.isNode || typeof this.weight === 'number';
@@ -577,8 +577,6 @@ class SankeyPoint extends (highcharts_Series_types_column_commonjs_highcharts_Se
  *               threshold, zoneAxis, zones
  * @requires     modules/sankey
  * @optionparent plotOptions.sankey
- *
- * @private
  */
 const SankeySeriesDefaults = {
     borderWidth: 0,
@@ -589,8 +587,6 @@ const SankeySeriesDefaults = {
      * straight. It also sets the turn radius of the bands wrapping around
      * a circular layout; a self-link's loop turns on the node width
      * instead.
-     *
-     * @private
      */
     curveFactor: 0.33,
     /**
@@ -601,8 +597,6 @@ const SankeySeriesDefaults = {
      * string by default.
      *
      * @declare Highcharts.SeriesSankeyDataLabelsOptionsObject
-     *
-     * @private
      */
     dataLabels: {
         enabled: true,
@@ -643,7 +637,6 @@ const SankeySeriesDefaults = {
     /**
      * @default   true
      * @extends   plotOptions.series.inactiveOtherPoints
-     * @private
      */
     inactiveOtherPoints: true,
     /**
@@ -729,14 +722,10 @@ const SankeySeriesDefaults = {
     linkColorMode: 'from',
     /**
      * Opacity for the links between nodes in the sankey diagram.
-     *
-     * @private
      */
     linkOpacity: 0.5,
     /**
      * Opacity for the nodes in the sankey diagram.
-     *
-     * @private
      */
     opacity: 1,
     /**
@@ -750,8 +739,6 @@ const SankeySeriesDefaults = {
      * @since     7.1.3
      * @default   0
      * @apioption plotOptions.sankey.minLinkWidth
-     *
-     * @private
      */
     minLinkWidth: 0,
     /**
@@ -813,7 +800,7 @@ const SankeySeriesDefaults = {
      *
      * @since 11.4.0
      * @sample highcharts/series-sankey/node-distance
-     *         Sankey with dnode distance of 100% means equal to node width
+     *         Sankey with node distance of 100% means equal to node width
      * @sample highcharts/series-organization/node-distance
      *         Organization chart with node distance of 50%
      * @type   {number|string}
@@ -955,10 +942,11 @@ const SankeySeriesDefaults = {
  * A reserved subspace to store options and values for customized
  * functionality. Here you can add additional data for your own event
  * callbacks and formatter callbacks.
- * @apioption series.sankey.nodes.custom
+ *
  * @type      {Highcharts.Dictionary<*>}
- * @product   highcharts
  * @since     next
+ * @product   highcharts
+ * @apioption series.sankey.nodes.custom
  */
 /**
  * Individual data label for each node. The options are the same as
@@ -1172,6 +1160,7 @@ var highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highc
  *  Composition
  *
  * */
+/** @internal */
 var SankeyColumnComposition;
 (function (SankeyColumnComposition) {
     /* *
@@ -1186,7 +1175,7 @@ var SankeyColumnComposition;
      * */
     /**
      * SankeyColumn Composition
-     * @private
+     * @internal
      * @function Highcharts.SankeyColumn#compose
      *
      * @param {Array<SankeyPoint>} points
@@ -1224,7 +1213,7 @@ var SankeyColumnComposition;
          * */
         /**
          * Calculate translation factor used in column and nodes distribution
-         * @private
+         * @internal
          * @function Highcharts.SankeyColumn#getTranslationFactor
          *
          * @param {SankeySeries} series
@@ -1269,7 +1258,7 @@ var SankeyColumnComposition;
         }
         /**
          * Get the top position of the column in pixels
-         * @private
+         * @internal
          * @function Highcharts.SankeyColumn#top
          *
          * @param {number} factor
@@ -1295,14 +1284,14 @@ var SankeyColumnComposition;
         /**
          * Flow-axis room this column's nodes reserve for self-link laps.
          * #8218
-         * @private
+         * @internal
          */
         lapSum() {
             return this.points.reduce((sum, node) => (sum + (node.wrapLap || 0)), 0);
         }
         /**
          * Get the left position of the column in pixels
-         * @private
+         * @internal
          * @function Highcharts.SankeyColumn#top
          *
          * @param {number} factor
@@ -1326,14 +1315,14 @@ var SankeyColumnComposition;
         }
         /**
          * Calculate sum of all nodes inside specific column
-         * @private
+         * @internal
          */
         sum() {
             return this.points.reduce((sum, node) => (sum + node.getSum()), 0);
         }
         /**
          * Get the offset in pixels of a node inside the column
-         * @private
+         * @internal
          * @function Highcharts.SankeyColumn#offset
          *
          * @param {SankeyPoint} node
@@ -1386,6 +1375,7 @@ var SankeyColumnComposition;
  *  Default Export
  *
  * */
+/** @internal */
 /* harmony default export */ const Sankey_SankeyColumnComposition = (SankeyColumnComposition);
 
 // EXTERNAL MODULE: external {"amd":["highcharts/highcharts","Color"],"commonjs":["highcharts","Color"],"commonjs2":["highcharts","Color"],"root":["Highcharts","Color"]}
@@ -1928,7 +1918,6 @@ composeTextPath((highcharts_SVGElement_commonjs_highcharts_SVGElement_commonjs2_
  *
  * */
 /**
- * @private
  * @class
  * @name Highcharts.seriesTypes.sankey
  *
@@ -1966,7 +1955,7 @@ class SankeySeries extends (highcharts_Series_types_column_commonjs_highcharts_S
      *
      * */
     /**
-     * @private
+     * @internal
      */
     static getDLOptions(params) {
         const optionsPoint = ((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.isObject)(params.optionsPoint) ?
@@ -1989,7 +1978,7 @@ class SankeySeries extends (highcharts_Series_types_column_commonjs_highcharts_S
     /**
      * Create node columns by analyzing the nodes and the relations between
      * incoming and outgoing links.
-     * @private
+     * @internal
      */
     createNodeColumns() {
         const columns = [];
@@ -2012,7 +2001,7 @@ class SankeySeries extends (highcharts_Series_types_column_commonjs_highcharts_S
     }
     /**
      * Order the nodes, starting with the root node(s). (#9818)
-     * @private
+     * @internal
      */
     order(node, level, visited) {
         const series = this;
@@ -2038,7 +2027,7 @@ class SankeySeries extends (highcharts_Series_types_column_commonjs_highcharts_S
     /**
      * Extend generatePoints by adding the nodes, which are Point objects
      * but pushed to the this.nodes array.
-     * @private
+     * @internal
      */
     generatePoints() {
         Series_NodesComposition.generatePoints.apply(this, arguments);
@@ -2062,7 +2051,7 @@ class SankeySeries extends (highcharts_Series_types_column_commonjs_highcharts_S
     /**
      * Overridable function to get node padding, overridden in dependency
      * wheel series type.
-     * @private
+     * @internal
      */
     getNodePadding() {
         let nodePadding = this.options.nodePadding || 0;
@@ -2079,7 +2068,7 @@ class SankeySeries extends (highcharts_Series_types_column_commonjs_highcharts_S
     }
     /**
      * Define hasData function for non-cartesian series.
-     * @private
+     * @internal
      * @return {boolean}
      *         Returns true if the series has points at all.
      */
@@ -2088,7 +2077,7 @@ class SankeySeries extends (highcharts_Series_types_column_commonjs_highcharts_S
     }
     /**
      * Return the presentational attributes.
-     * @private
+     * @internal
      */
     pointAttribs(point, state) {
         if (!point) {
@@ -2183,7 +2172,7 @@ class SankeySeries extends (highcharts_Series_types_column_commonjs_highcharts_S
     }
     /**
      * Run pre-translation by generating the nodeColumns.
-     * @private
+     * @internal
      */
     translate() {
         this.generatePoints();
@@ -2756,6 +2745,7 @@ class SankeySeries extends (highcharts_Series_types_column_commonjs_highcharts_S
         }
     }
 }
+/** @internal */
 SankeySeries.defaultOptions = (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.merge)((highcharts_Series_types_column_commonjs_highcharts_Series_types_column_commonjs2_highcharts_Series_types_column_root_Highcharts_Series_types_column_default()).defaultOptions, Sankey_SankeySeriesDefaults);
 /**
  * Largest fraction of either plot axis circular geometry may claim.

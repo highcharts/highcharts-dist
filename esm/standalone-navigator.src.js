@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-11)
+ * @license Highcharts JS v13.1.1-modified (2026-11-12)
  * @module highcharts/standalone-navigator
  *
  * Standalone Navigator for Highcharts.
@@ -43816,6 +43816,116 @@ Series_SeriesRegistry.registerSeriesType('area', AreaSeries);
  * */
 /* harmony default export */ const Area_AreaSeries = (AreaSeries);
 
+;// ./code/es-modules/Series/Spline/SplineSeriesDefaults.js
+/* *
+ *
+ *  (c) 2010-2026 Highsoft AS
+ *  Author: Torstein Hønsi
+ *
+ *  Integration of this software requires a license.
+ *  - For commercial use, see www.highcharts.com/license
+ *  - For non-commercial, see www.highcharts.com/license-eula
+ *
+ *
+ * */
+
+/* *
+ *
+ *  API Options
+ *
+ * */
+/**
+ * A spline series is a special type of line series, where the segments
+ * between the data points are smoothed.
+ *
+ * @sample {highcharts} highcharts/demo/spline-irregular-time/
+ *         Spline chart
+ * @sample {highstock} stock/demo/spline/
+ *         Spline chart
+ *
+ * @extends      plotOptions.series
+ * @excluding    step, boostThreshold, boostBlending
+ * @product      highcharts highstock
+ * @optionparent plotOptions.spline
+ */
+const SplineSeriesDefaults = {};
+/**
+ * A `spline` series. If the [type](#series.spline.type) option is
+ * not specified, it is inherited from [chart.type](#chart.type).
+ *
+ * @extends   series,plotOptions.spline
+ * @excluding step, boostThreshold, boostBlending
+ * @product   highcharts highstock
+ * @apioption series.spline
+ */
+/**
+ * An array of data points for the series. For the `spline` series type,
+ * points can be given in the following ways:
+ *
+ * 1. An array of numerical values. In this case, the numerical values will be
+ *    interpreted as `y` options. The `x` values will be automatically
+ *    calculated, either starting at 0 and incremented by 1, or from
+ *    `pointStart` and `pointInterval` given in the series options. If the axis
+ *    has categories, these will be used. Example:
+ *    ```js
+ *    data: [0, 5, 3, 5]
+ *    ```
+ *
+ * 2. An array of arrays with 2 values. In this case, the values correspond to
+ *    `x,y`. If the first value is a string, it is applied as the name of the
+ *    point, and the `x` value is inferred.
+ *    ```js
+ *    data: [
+ *        [0, 9],
+ *        [1, 2],
+ *        [2, 8]
+ *    ]
+ *    ```
+ *
+ * 3. An array of objects with named values. The following snippet shows only a
+ *    few settings, see the complete options set below. If the total number of
+ *    data points exceeds the series'
+ *    [turboThreshold](#series.spline.turboThreshold),
+ *    this option is not available.
+ *    ```js
+ *    data: [{
+ *        x: 1,
+ *        y: 9,
+ *        name: "Point2",
+ *        color: "#00FF00"
+ *    }, {
+ *        x: 1,
+ *        y: 0,
+ *        name: "Point1",
+ *        color: "#FF00FF"
+ *    }]
+ *    ```
+ *
+ * @sample {highcharts} highcharts/chart/reflow-true/
+ *         Numerical values
+ * @sample {highcharts} highcharts/series/data-array-of-arrays/
+ *         Arrays of numeric x and y
+ * @sample {highcharts} highcharts/series/data-array-of-arrays-datetime/
+ *         Arrays of datetime x and y
+ * @sample {highcharts} highcharts/series/data-array-of-name-value/
+ *         Arrays of point.name and y
+ * @sample {highcharts} highcharts/series/data-array-of-objects/
+ *         Config objects
+ *
+ * @basic
+ * @type      {Array<number|Array<(number|string),(number|null)>|null|*>}
+ * @extends   series.line.data
+ * @product   highcharts highstock
+ * @apioption series.spline.data
+ */
+''; // Adds doclets above into transpiled
+/* *
+ *
+ *  Default Export
+ *
+ * */
+/* harmony default export */ const Spline_SplineSeriesDefaults = (SplineSeriesDefaults);
+
 ;// ./code/es-modules/Series/Spline/SplineSeries.js
 /* *
  *
@@ -43832,6 +43942,7 @@ Series_SeriesRegistry.registerSeriesType('area', AreaSeries);
 
 
 
+
 /* *
  *
  *  Class
@@ -43839,8 +43950,6 @@ Series_SeriesRegistry.registerSeriesType('area', AreaSeries);
  * */
 /**
  * Spline series type.
- *
- * @private
  */
 class SplineSeries extends Line_LineSeries {
     /* *
@@ -43852,7 +43961,7 @@ class SplineSeries extends Line_LineSeries {
      * Get the spline segment from a given point's previous neighbor to the
      * given point.
      *
-     * @private
+     * @internal
      * @function Highcharts.seriesTypes.spline#getPointSpline
      */
     getPointSpline(points, point, i) {
@@ -43862,7 +43971,7 @@ class SplineSeries extends Line_LineSeries {
         smoothing = 1.5, denom = smoothing + 1, plotX = point.plotX || 0, plotY = point.plotY || 0, lastPoint = points[i - 1], nextPoint = points[i + 1];
         let leftContX, leftContY, rightContX, rightContY;
         /**
-         * @private
+         * @internal
          */
         function doCurve(otherPoint) {
             return otherPoint &&
@@ -43993,21 +44102,8 @@ class SplineSeries extends Line_LineSeries {
  *  Static Properties
  *
  * */
-/**
- * A spline series is a special type of line series, where the segments
- * between the data points are smoothed.
- *
- * @sample {highcharts} highcharts/demo/spline-irregular-time/
- *         Spline chart
- * @sample {highstock} stock/demo/spline/
- *         Spline chart
- *
- * @extends      plotOptions.series
- * @excluding    step, boostThreshold, boostBlending
- * @product      highcharts highstock
- * @optionparent plotOptions.spline
- */
-SplineSeries.defaultOptions = merge(Line_LineSeries.defaultOptions);
+/** @internal */
+SplineSeries.defaultOptions = merge(Line_LineSeries.defaultOptions, Spline_SplineSeriesDefaults);
 Series_SeriesRegistry.registerSeriesType('spline', SplineSeries);
 /* *
  *
@@ -44015,81 +44111,6 @@ Series_SeriesRegistry.registerSeriesType('spline', SplineSeries);
  *
  * */
 /* harmony default export */ const Spline_SplineSeries = (SplineSeries);
-/* *
- *
- *  API Options
- *
- * */
-/**
- * A `spline` series. If the [type](#series.spline.type) option is
- * not specified, it is inherited from [chart.type](#chart.type).
- *
- * @extends   series,plotOptions.spline
- * @excluding step, boostThreshold, boostBlending
- * @product   highcharts highstock
- * @apioption series.spline
- */
-/**
- * An array of data points for the series. For the `spline` series type,
- * points can be given in the following ways:
- *
- * 1. An array of numerical values. In this case, the numerical values will be
- *    interpreted as `y` options. The `x` values will be automatically
- *    calculated, either starting at 0 and incremented by 1, or from
- *    `pointStart` and `pointInterval` given in the series options. If the axis
- *    has categories, these will be used. Example:
- *    ```js
- *    data: [0, 5, 3, 5]
- *    ```
- *
- * 2. An array of arrays with 2 values. In this case, the values correspond to
- *    `x,y`. If the first value is a string, it is applied as the name of the
- *    point, and the `x` value is inferred.
- *    ```js
- *    data: [
- *        [0, 9],
- *        [1, 2],
- *        [2, 8]
- *    ]
- *    ```
- *
- * 3. An array of objects with named values. The following snippet shows only a
- *    few settings, see the complete options set below. If the total number of
- *    data points exceeds the series'
- *    [turboThreshold](#series.spline.turboThreshold),
- *    this option is not available.
- *    ```js
- *    data: [{
- *        x: 1,
- *        y: 9,
- *        name: "Point2",
- *        color: "#00FF00"
- *    }, {
- *        x: 1,
- *        y: 0,
- *        name: "Point1",
- *        color: "#FF00FF"
- *    }]
- *    ```
- *
- * @sample {highcharts} highcharts/chart/reflow-true/
- *         Numerical values
- * @sample {highcharts} highcharts/series/data-array-of-arrays/
- *         Arrays of numeric x and y
- * @sample {highcharts} highcharts/series/data-array-of-arrays-datetime/
- *         Arrays of datetime x and y
- * @sample {highcharts} highcharts/series/data-array-of-name-value/
- *         Arrays of point.name and y
- * @sample {highcharts} highcharts/series/data-array-of-objects/
- *         Config objects
- *
- * @basic
- * @type      {Array<number|Array<(number|string),(number|null)>|null|*>}
- * @extends   series.line.data
- * @product   highcharts highstock
- * @apioption series.spline.data
- */
-''; // Adds doclets above intro transpiled
 
 ;// ./code/es-modules/Series/AreaSpline/AreaSplineSeries.js
 /* *
@@ -46543,8 +46564,6 @@ const ScatterSeriesDefaults = {
  * */
 /**
  * Scatter series type.
- *
- * @private
  */
 class ScatterSeries extends Line_LineSeries {
     /* *
@@ -46555,14 +46574,14 @@ class ScatterSeries extends Line_LineSeries {
     /* eslint-disable valid-jsdoc */
     /**
      * Optionally add the jitter effect.
-     * @private
+     * @internal
      */
     applyJitter() {
         const series = this, jitter = this.options.jitter, len = this.points.length;
         /**
          * Return a repeatable, pseudo-random number based on an integer
          * seed.
-         * @private
+         * @internal
          */
         function unrandom(seed) {
             const rand = Math.sin(seed) * 10000;
@@ -46592,7 +46611,7 @@ class ScatterSeries extends Line_LineSeries {
         }
     }
     /**
-     * @private
+     * @internal
      */
     drawGraph() {
         if (this.options.lineWidth) {
@@ -46608,6 +46627,7 @@ class ScatterSeries extends Line_LineSeries {
  *  Static Properties
  *
  * */
+/** @internal */
 ScatterSeries.defaultOptions = merge(Line_LineSeries.defaultOptions, Scatter_ScatterSeriesDefaults);
 extend(ScatterSeries.prototype, {
     allowOutsidePlotInteraction: true,
@@ -49572,7 +49592,7 @@ var Responsive;
 ;// ./code/es-modules/masters/highcharts.src.js
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-11)
+ * @license Highcharts JS v13.1.1-modified (2026-11-12)
  * @module highcharts/highcharts
  *
  * (c) 2009-2026 Highsoft AS
@@ -53847,7 +53867,7 @@ class Navigator {
 /* unused harmony import specifier */ var Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-11)
+ * @license Highcharts JS v13.1.1-modified (2026-11-12)
  * @module highcharts/modules/navigator
  * @requires highcharts
  *

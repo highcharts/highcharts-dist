@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.1.1-modified (2026-11-11)
+ * @license Highstock JS v13.1.1-modified (2026-11-12)
  * @module highcharts/modules/renko
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -250,7 +250,6 @@ var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__w
 /**
  * The renko series type.
  *
- * @private
  * @class
  * @name Highcharts.seriesTypes.renko
  *
@@ -259,7 +258,9 @@ var external_highcharts_src_js_default_SeriesRegistry_default = /*#__PURE__*/__w
 class RenkoSeries extends (external_highcharts_src_js_default_Series_types_column_default()) {
     constructor() {
         super(...arguments);
+        /** @internal */
         this.hasDerivedData = true;
+        /** @internal */
         this.allowDG = false;
         /* *
          *

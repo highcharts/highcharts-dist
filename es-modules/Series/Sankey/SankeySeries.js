@@ -34,7 +34,6 @@ composeTextPath(SVGElement);
  *
  * */
 /**
- * @private
  * @class
  * @name Highcharts.seriesTypes.sankey
  *
@@ -72,7 +71,7 @@ class SankeySeries extends ColumnSeries {
      *
      * */
     /**
-     * @private
+     * @internal
      */
     static getDLOptions(params) {
         const optionsPoint = (isObject(params.optionsPoint) ?
@@ -95,7 +94,7 @@ class SankeySeries extends ColumnSeries {
     /**
      * Create node columns by analyzing the nodes and the relations between
      * incoming and outgoing links.
-     * @private
+     * @internal
      */
     createNodeColumns() {
         const columns = [];
@@ -118,7 +117,7 @@ class SankeySeries extends ColumnSeries {
     }
     /**
      * Order the nodes, starting with the root node(s). (#9818)
-     * @private
+     * @internal
      */
     order(node, level, visited) {
         const series = this;
@@ -144,7 +143,7 @@ class SankeySeries extends ColumnSeries {
     /**
      * Extend generatePoints by adding the nodes, which are Point objects
      * but pushed to the this.nodes array.
-     * @private
+     * @internal
      */
     generatePoints() {
         NodesComposition.generatePoints.apply(this, arguments);
@@ -168,7 +167,7 @@ class SankeySeries extends ColumnSeries {
     /**
      * Overridable function to get node padding, overridden in dependency
      * wheel series type.
-     * @private
+     * @internal
      */
     getNodePadding() {
         let nodePadding = this.options.nodePadding || 0;
@@ -185,7 +184,7 @@ class SankeySeries extends ColumnSeries {
     }
     /**
      * Define hasData function for non-cartesian series.
-     * @private
+     * @internal
      * @return {boolean}
      *         Returns true if the series has points at all.
      */
@@ -194,7 +193,7 @@ class SankeySeries extends ColumnSeries {
     }
     /**
      * Return the presentational attributes.
-     * @private
+     * @internal
      */
     pointAttribs(point, state) {
         if (!point) {
@@ -289,7 +288,7 @@ class SankeySeries extends ColumnSeries {
     }
     /**
      * Run pre-translation by generating the nodeColumns.
-     * @private
+     * @internal
      */
     translate() {
         this.generatePoints();
@@ -862,6 +861,7 @@ class SankeySeries extends ColumnSeries {
         }
     }
 }
+/** @internal */
 SankeySeries.defaultOptions = merge(ColumnSeries.defaultOptions, SankeySeriesDefaults);
 /**
  * Largest fraction of either plot axis circular geometry may claim.

@@ -22,8 +22,6 @@ import { addEvent, extend, merge } from '../../Shared/Utilities.js';
  * */
 /**
  * Scatter series type.
- *
- * @private
  */
 class ScatterSeries extends LineSeries {
     /* *
@@ -34,14 +32,14 @@ class ScatterSeries extends LineSeries {
     /* eslint-disable valid-jsdoc */
     /**
      * Optionally add the jitter effect.
-     * @private
+     * @internal
      */
     applyJitter() {
         const series = this, jitter = this.options.jitter, len = this.points.length;
         /**
          * Return a repeatable, pseudo-random number based on an integer
          * seed.
-         * @private
+         * @internal
          */
         function unrandom(seed) {
             const rand = Math.sin(seed) * 10000;
@@ -71,7 +69,7 @@ class ScatterSeries extends LineSeries {
         }
     }
     /**
-     * @private
+     * @internal
      */
     drawGraph() {
         if (this.options.lineWidth) {
@@ -87,6 +85,7 @@ class ScatterSeries extends LineSeries {
  *  Static Properties
  *
  * */
+/** @internal */
 ScatterSeries.defaultOptions = merge(LineSeries.defaultOptions, ScatterSeriesDefaults);
 extend(ScatterSeries.prototype, {
     allowOutsidePlotInteraction: true,

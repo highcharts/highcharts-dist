@@ -27,7 +27,6 @@ import { clamp, extend, isNumber, merge, relativeLength } from '../../Shared/Uti
 /**
  * SolidGauge series type.
  *
- * @private
  * @class
  * @name Highcharts.seriesTypes.solidgauge
  *

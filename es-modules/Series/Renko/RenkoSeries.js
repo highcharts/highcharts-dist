@@ -23,7 +23,6 @@ import { extend, isNumber, merge, relativeLength } from '../../Shared/Utilities.
 /**
  * The renko series type.
  *
- * @private
  * @class
  * @name Highcharts.seriesTypes.renko
  *
@@ -32,7 +31,9 @@ import { extend, isNumber, merge, relativeLength } from '../../Shared/Utilities.
 class RenkoSeries extends ColumnSeries {
     constructor() {
         super(...arguments);
+        /** @internal */
         this.hasDerivedData = true;
+        /** @internal */
         this.allowDG = false;
         /* *
          *

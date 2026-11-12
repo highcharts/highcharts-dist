@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-11)
+ * @license Highcharts JS v13.1.1-modified (2026-11-12)
  * @module highcharts/modules/solid-gauge
  * @requires highcharts
  * @requires highcharts/highcharts-more
@@ -736,7 +736,6 @@ const SolidGaugeSeriesDefaults = {
      *         Individual radius and innerRadius
      *
      * @type      {string}
-     * @default   "100%"
      * @since     4.1.6
      * @product   highcharts
      * @apioption plotOptions.solidgauge.radius
@@ -898,7 +897,6 @@ const SolidGaugeSeriesDefaults = {
 /**
  * SolidGauge series type.
  *
- * @private
  * @class
  * @name Highcharts.seriesTypes.solidgauge
  *
