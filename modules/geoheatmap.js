@@ -1,5 +1,5 @@
 !/**
- * Highcharts JS v13.1.1-modified (2026-11-12)
+ * Highcharts JS v13.1.1-modified (2026-11-13)
  * @module highcharts/modules/geoheatmap
  * @requires highcharts
  * @requires highcharts/modules/map

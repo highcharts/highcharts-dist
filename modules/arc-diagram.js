@@ -1,5 +1,5 @@
 !/**
- * Highcharts JS v13.1.1-modified (2026-11-12)
+ * Highcharts JS v13.1.1-modified (2026-11-13)
  * @module modules/arc-diagram
  * @requires highcharts/modules/sankey
  *
