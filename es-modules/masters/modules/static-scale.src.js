@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Gantt JS v13.1.1-modified (2026-11-13)
+ * @license Highcharts Gantt JS v13.1.1-modified (2026-11-14)
  * @module highcharts/modules/static-scale
  * @requires highcharts
  *
