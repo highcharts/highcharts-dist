@@ -1,5 +1,5 @@
 /**
- * Highcharts Gantt JS v13.1.1-modified (2026-11-14)
+ * Highcharts Gantt JS v13.1.1-modified (2026-11-15)
  * @module highcharts/modules/static-scale
  * @requires highcharts
  *

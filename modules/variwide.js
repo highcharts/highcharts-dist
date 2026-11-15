@@ -1,5 +1,5 @@
 !/**
- * Highcharts JS v13.1.1-modified (2026-11-14)
+ * Highcharts JS v13.1.1-modified (2026-11-15)
  * @module highcharts/modules/variwide
  * @requires highcharts
  *
