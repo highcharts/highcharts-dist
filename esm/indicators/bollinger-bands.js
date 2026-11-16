@@ -1,5 +1,5 @@
 /**
- * Highstock JS v13.1.1-modified (2026-11-15)
+ * Highstock JS v13.1.1-modified (2026-11-16)
  * @module highcharts/indicators/bollinger-bands
  * @requires highcharts
  * @requires highcharts/modules/stock
