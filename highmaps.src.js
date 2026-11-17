@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Maps v13.1.1-modified (2026-11-16)
+ * @license Highcharts Maps v13.1.1-modified (2026-11-17)
  * @module highcharts/highmaps
  *
  * (c) 2011-2026 Highsoft AS
@@ -30783,12 +30783,16 @@ const seriesDefaults = {
      * @apioption plotOptions.series.dataMapping
      */
     /**
+     * Deprecated. Use the chart-level
+     * [dataTable](#dataTable) with
+     * [dataMapping](#plotOptions.series.dataMapping) instead.
+     *
      * Options for a specific series-level data table or an array of data
      * tables. The `dataTable` option can be either a configuration object or an
-     * instance of the `DataTable` class. If a `DataTable` instance is passed,
-     * it will be used directly. If a configuration object or an array is
-     * passed, a new `DataTable` instance will be created based on the provided
-     * configuration.
+     * instance of the `DataTable` class. The series always creates its own
+     * `DataTable` for the resolved data, reading from the given configuration
+     * or table. Changes to a given table are reflected in the series, while
+     * the series never writes back into it.
      *
      * @type   {Highcharts.DataTable|Highcharts.DataTableOptionsObject|Array<Highcharts.DataTable|Highcharts.DataTableOptionsObject>}
      * @sample {highcharts} highcharts/datatable/series-datatable/
@@ -30802,8 +30806,9 @@ const seriesDefaults = {
      * @sample {highmaps} maps/datatable/series-datatable
      *         Series-level data table
      *
-     * @since 13.0.0
-     * @apioption plotOptions.series.dataTable
+     * @since      13.0.0
+     * @deprecated next
+     * @apioption  plotOptions.series.dataTable
      */
     /**
      * Enable or disable the mouse tracking for a specific series. This
@@ -33327,12 +33332,10 @@ class Series {
          */
         series.options = series.setOptions(userOptions);
         const options = series.options, visible = options.visible !== false;
-        // Create the data table or use the one passed as option
-        this.dataTable ?? (this.dataTable = isArray(options.dataTable) ?
-            new Data_DataTableCore() :
-            options.dataTable?.isDataTable ?
-                options.dataTable :
-                new Data_DataTableCore(options.dataTable));
+        // Create the data table
+        this.dataTable ?? (this.dataTable = new Data_DataTableCore(isArray(options.dataTable) || options.dataTable?.isDataTable ?
+            void 0 :
+            options.dataTable));
         /**
          * All child series that are linked to the current series through the
          * [linkedTo](https://api.highcharts.com/highcharts/series.line.linkedTo)
@@ -34013,9 +34016,7 @@ class Series {
         series.xIncrement = null;
         delete series.xColumn;
         delete series.xColumnIsNumbers;
-        if (table !== options.dataTable) {
-            delete table.columns.x;
-        }
+        delete table.columns.x;
         series.colorCounter = 0; // For series with colorByPoint (#1547)
         // Array passed as option
         if (isArray(data)) {
@@ -49626,7 +49627,7 @@ var Responsive;
 ;// ./code/es-modules/masters/highcharts.src.js
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-16)
+ * @license Highcharts JS v13.1.1-modified (2026-11-17)
  * @module highcharts/highcharts
  *
  * (c) 2009-2026 Highsoft AS
@@ -51417,7 +51418,7 @@ extend(ColorAxis.prototype, Color_ColorAxisBase);
 /* unused harmony import specifier */ var Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-16)
+ * @license Highcharts JS v13.1.1-modified (2026-11-17)
  * @module highcharts/modules/color-axis
  * @requires highcharts
  *
@@ -61431,7 +61432,7 @@ Series_SeriesRegistry.registerSeriesType('heatmap', HeatmapSeries);
 /* unused harmony import specifier */ var map_src_Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highmaps JS v13.1.1-modified (2026-11-16)
+ * @license Highmaps JS v13.1.1-modified (2026-11-17)
  * @module highcharts/modules/map
  * @requires highcharts
  *

@@ -1,5 +1,5 @@
 !/**
- * Highstock JS v13.1.1-modified (2026-11-16)
+ * Highstock JS v13.1.1-modified (2026-11-17)
  * @module highcharts/indicators/cmo
  * @requires highcharts
  * @requires highcharts/modules/stock

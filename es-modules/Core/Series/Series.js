@@ -294,12 +294,10 @@ class Series {
          */
         series.options = series.setOptions(userOptions);
         const options = series.options, visible = options.visible !== false;
-        // Create the data table or use the one passed as option
-        this.dataTable ?? (this.dataTable = isArray(options.dataTable) ?
-            new DataTableCore() :
-            options.dataTable?.isDataTable ?
-                options.dataTable :
-                new DataTableCore(options.dataTable));
+        // Create the data table
+        this.dataTable ?? (this.dataTable = new DataTableCore(isArray(options.dataTable) || options.dataTable?.isDataTable ?
+            void 0 :
+            options.dataTable));
         /**
          * All child series that are linked to the current series through the
          * [linkedTo](https://api.highcharts.com/highcharts/series.line.linkedTo)
@@ -980,9 +978,7 @@ class Series {
         series.xIncrement = null;
         delete series.xColumn;
         delete series.xColumnIsNumbers;
-        if (table !== options.dataTable) {
-            delete table.columns.x;
-        }
+        delete table.columns.x;
         series.colorCounter = 0; // For series with colorByPoint (#1547)
         // Array passed as option
         if (isArray(data)) {

@@ -836,12 +836,15 @@ declare module "../highcharts.src" {
          */
         dataSorting?: Highcharts.PlotPcDataSortingOptions;
         /**
-         * (Highstock) Options for a specific series-level data table or an
-         * array of data tables. The `dataTable` option can be either a
-         * configuration object or an instance of the `DataTable` class. If a
-         * `DataTable` instance is passed, it will be used directly. If a
-         * configuration object or an array is passed, a new `DataTable`
-         * instance will be created based on the provided configuration.
+         * (Highstock) Deprecated. Use the chart-level dataTable with
+         * dataMapping instead.
+         *
+         * Options for a specific series-level data table or an array of data
+         * tables. The `dataTable` option can be either a configuration object
+         * or an instance of the `DataTable` class. The series always creates
+         * its own `DataTable` for the resolved data, reading from the given
+         * configuration or table. Changes to a given table are reflected in the
+         * series, while the series never writes back into it.
          */
         dataTable?: (Highcharts.DataTable|Highcharts.DataTableOptionsObject|Array<(Highcharts.DataTable|Highcharts.DataTableOptionsObject)>);
         /**

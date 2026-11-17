@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-16)
+ * @license Highcharts JS v13.1.1-modified (2026-11-17)
  * @module highcharts/modules/item-series
  * @requires highcharts
  *
@@ -593,12 +593,16 @@ const seriesDefaults = {
      * @apioption plotOptions.series.dataMapping
      */
     /**
+     * Deprecated. Use the chart-level
+     * [dataTable](#dataTable) with
+     * [dataMapping](#plotOptions.series.dataMapping) instead.
+     *
      * Options for a specific series-level data table or an array of data
      * tables. The `dataTable` option can be either a configuration object or an
-     * instance of the `DataTable` class. If a `DataTable` instance is passed,
-     * it will be used directly. If a configuration object or an array is
-     * passed, a new `DataTable` instance will be created based on the provided
-     * configuration.
+     * instance of the `DataTable` class. The series always creates its own
+     * `DataTable` for the resolved data, reading from the given configuration
+     * or table. Changes to a given table are reflected in the series, while
+     * the series never writes back into it.
      *
      * @type   {Highcharts.DataTable|Highcharts.DataTableOptionsObject|Array<Highcharts.DataTable|Highcharts.DataTableOptionsObject>}
      * @sample {highcharts} highcharts/datatable/series-datatable/
@@ -612,8 +616,9 @@ const seriesDefaults = {
      * @sample {highmaps} maps/datatable/series-datatable
      *         Series-level data table
      *
-     * @since 13.0.0
-     * @apioption plotOptions.series.dataTable
+     * @since      13.0.0
+     * @deprecated next
+     * @apioption  plotOptions.series.dataTable
      */
     /**
      * Enable or disable the mouse tracking for a specific series. This
