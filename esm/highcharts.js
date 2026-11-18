@@ -1,5 +1,5 @@
 /**
- * Highcharts JS v13.1.1-modified (2026-11-17)
+ * Highcharts JS v13.1.1-modified (2026-11-18)
  * @module highcharts/highcharts
  *
  * (c) 2009-2026 Highsoft AS
