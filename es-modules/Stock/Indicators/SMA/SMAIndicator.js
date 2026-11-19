@@ -278,20 +278,6 @@ class SMAIndicator extends LineSeries {
         indicator.isDirtyData = !!indicator.linkedSeries.length;
         fireEvent(indicator, 'updatedData'); // #18689
     }
-    /** @internal */
-    processData() {
-        const series = this, compareToMain = series.options.compareToMain, linkedParent = series.linkedParent;
-        super.processData.apply(series, arguments);
-        if (series.dataModify &&
-            linkedParent &&
-            linkedParent.dataModify &&
-            linkedParent.dataModify.compareValue &&
-            compareToMain) {
-            series.dataModify.compareValue =
-                linkedParent.dataModify.compareValue;
-        }
-        return;
-    }
 }
 /* *
  *

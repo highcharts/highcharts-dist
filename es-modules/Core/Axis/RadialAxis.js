@@ -946,7 +946,9 @@ var RadialAxis;
      */
     function wrapAxisGetMinorTickInterval(proceed) {
         if (!defined(this.options.minorTicks) &&
-            this.pane.hasSeriesType('gauge')) {
+            // Axes of a chart created before highcharts-more was loaded have
+            // no pane (#25546)
+            this.pane?.hasSeriesType('gauge')) {
             return 'auto';
         }
         return proceed.apply(this, Array.prototype.slice.call(arguments, 1));

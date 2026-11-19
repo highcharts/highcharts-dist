@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Stock v13.1.1-modified (2026-11-18)
+ * @license Highcharts Stock v13.1.1-modified (2026-11-19)
  * @module highcharts/highstock
  *
  * (c) 2009-2026 Highsoft AS
@@ -49627,7 +49627,7 @@ var Responsive;
 ;// ./code/es-modules/masters/highcharts.src.js
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-18)
+ * @license Highcharts JS v13.1.1-modified (2026-11-19)
  * @module highcharts/highcharts
  *
  * (c) 2009-2026 Highsoft AS
@@ -49849,13 +49849,13 @@ var DataModifyComposition;
             seriesProto.setCumulative = seriesSetCumulative;
             addEvent(SeriesClass, 'afterInit', afterInit);
             addEvent(SeriesClass, 'afterGetExtremes', afterGetExtremes);
-            addEvent(SeriesClass, 'afterProcessData', afterProcessData);
         }
         if (!axisProto.setCompare) {
             axisProto.setCompare = axisSetCompare;
             axisProto.setModifier = setModifier;
             axisProto.setCumulative = axisSetCumulative;
             pointProto.tooltipFormatter = tooltipFormatter;
+            addEvent(AxisClass, 'postProcessData', postProcessData);
         }
         return SeriesClass;
     }
@@ -50013,13 +50013,12 @@ var DataModifyComposition;
         }
     }
     /**
-     * Extend series.processData by finding the first y value in the plot area,
-     * used for comparing the following values
+     * Set the series compare base by finding the first non-zero value in the
+     * visible x range and storing it on `dataModify.compareValue`.
      *
      * @ignore
-     * @function Highcharts.Series#processData
      */
-    function afterProcessData() {
+    function updateCompareValue() {
         const series = this, 
         // For series with more than one value (range, OHLC etc), compare
         // against close or the pointValKey (#4922, #3112, #9854)
@@ -50038,6 +50037,40 @@ var DataModifyComposition;
                     series.dataModify.compareValue = compareValue;
                     break;
                 }
+            }
+        }
+    }
+    /**
+     * Recalculate compareValue for a series, then for its linkedSeries
+     * (parent before children, so compareToMain can copy a fresh base).
+     *
+     * @internal
+     */
+    function recalculateCompareValueTree(series) {
+        if (series.dataModify) {
+            const parentModify = series.linkedParent?.dataModify, compareToMain = 'compareToMain' in series.options &&
+                !!series.options.compareToMain;
+            if (compareToMain && parentModify?.compareValue) {
+                series.dataModify.compareValue = parentModify.compareValue;
+            }
+            else if (!compareToMain) {
+                updateCompareValue.call(series);
+            }
+        }
+        for (const linkedSeries of series.linkedSeries) {
+            recalculateCompareValueTree(linkedSeries);
+        }
+    }
+    /**
+     * After data grouping, refresh compareValue on each unlinked
+     * series and its linked descendants (#25538).
+     *
+     * @internal
+     */
+    function postProcessData() {
+        for (const series of this.series) {
+            if (!series.linkedParent) {
+                recalculateCompareValueTree(series);
             }
         }
     }
@@ -61064,7 +61097,7 @@ var BrokenAxis;
 /* unused harmony import specifier */ var Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-18)
+ * @license Highcharts JS v13.1.1-modified (2026-11-19)
  * @module highcharts/modules/broken-axis
  * @requires highcharts
  *
@@ -62554,7 +62587,7 @@ const DataGroupingComposition = {
 /* unused harmony import specifier */ var datagrouping_src_Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.1.1-modified (2026-11-18)
+ * @license Highstock JS v13.1.1-modified (2026-11-19)
  * @module highcharts/modules/datagrouping
  * @requires highcharts
  *
@@ -62919,7 +62952,7 @@ const MouseWheelZoomComposition = {
 /* unused harmony import specifier */ var mouse_wheel_zoom_src_Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-18)
+ * @license Highcharts JS v13.1.1-modified (2026-11-19)
  * @module highcharts/modules/mouse-wheel-zoom
  * @requires highcharts
  *
@@ -62943,7 +62976,7 @@ mouse_wheel_zoom_src_G.MouseWheelZoom.compose(mouse_wheel_zoom_src_G.Chart);
 /* unused harmony import specifier */ var stock_src_Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.1.1-modified (2026-11-18)
+ * @license Highstock JS v13.1.1-modified (2026-11-19)
  * @module highcharts/modules/stock
  * @requires highcharts
  *

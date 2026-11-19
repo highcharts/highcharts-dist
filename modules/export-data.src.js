@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-18)
+ * @license Highcharts JS v13.1.1-modified (2026-11-19)
  * @module highcharts/modules/export-data
  * @requires highcharts
  * @requires highcharts/modules/exporting
@@ -1676,10 +1676,6 @@ var ExportData;
  *  API Declarations
  *
  * */
-/**
- * @class
- * @name Highcharts.Exporting
- */
 /**
  * Function callback to execute while data rows are processed for exporting.
  * This allows the modification of data rows before processed into the final

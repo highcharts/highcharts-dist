@@ -6,7 +6,7 @@
 import * as globals from "../globals";
 import * as _Highcharts from "../highcharts";
 declare module "../highcharts" {
-    class Exporting {
+    interface Exporting {
         /**
          * Generates a data URL of CSV for local download in the browser. This
          * is the default action for a click on the 'Download CSV' button.

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-18)
+ * @license Highcharts JS v13.1.1-modified (2026-11-19)
  * @module highcharts/modules/data-sorting
  * @requires highcharts
  *

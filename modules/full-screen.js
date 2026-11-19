@@ -1,5 +1,5 @@
 !/**
- * Highstock JS v13.1.1-modified (2026-11-18)
+ * Highstock JS v13.1.1-modified (2026-11-19)
  * @module highcharts/modules/full-screen
  * @requires highcharts
  *

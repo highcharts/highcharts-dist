@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.1.1-modified (2026-11-18)
+ * @license Highstock JS v13.1.1-modified (2026-11-19)
  * @module highcharts/indicators/indicators-all
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -963,20 +963,6 @@ class SMAIndicator extends (highcharts_Series_types_line_commonjs_highcharts_Ser
         }
         indicator.isDirtyData = !!indicator.linkedSeries.length;
         (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.fireEvent)(indicator, 'updatedData'); // #18689
-    }
-    /** @internal */
-    processData() {
-        const series = this, compareToMain = series.options.compareToMain, linkedParent = series.linkedParent;
-        super.processData.apply(series, arguments);
-        if (series.dataModify &&
-            linkedParent &&
-            linkedParent.dataModify &&
-            linkedParent.dataModify.compareValue &&
-            compareToMain) {
-            series.dataModify.compareValue =
-                linkedParent.dataModify.compareValue;
-        }
-        return;
     }
 }
 /* *

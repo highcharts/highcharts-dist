@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-18)
+ * @license Highcharts JS v13.1.1-modified (2026-11-19)
  * @module highcharts/highcharts-more
  * @requires highcharts
  *
@@ -11775,7 +11775,9 @@ var RadialAxis;
      */
     function wrapAxisGetMinorTickInterval(proceed) {
         if (!(0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.defined)(this.options.minorTicks) &&
-            this.pane.hasSeriesType('gauge')) {
+            // Axes of a chart created before highcharts-more was loaded have
+            // no pane (#25546)
+            this.pane?.hasSeriesType('gauge')) {
             return 'auto';
         }
         return proceed.apply(this, Array.prototype.slice.call(arguments, 1));

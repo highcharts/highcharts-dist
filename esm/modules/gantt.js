@@ -1,5 +1,5 @@
 let t,e,i,s;/**
- * Highcharts Gantt JS v13.1.1-modified (2026-11-18)
+ * Highcharts Gantt JS v13.1.1-modified (2026-11-19)
  * @module highcharts/modules/gantt
  * @requires highcharts
  *
