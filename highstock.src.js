@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Stock v13.1.1-modified (2026-11-19)
+ * @license Highcharts Stock v13.1.1-modified (2026-11-20)
  * @module highcharts/highstock
  *
  * (c) 2009-2026 Highsoft AS
@@ -36064,7 +36064,7 @@ class Series {
      *
      * @function Highcharts.Series#update
      *
-     * @param {Highcharts.SeriesOptionsType} options
+     * @param {Partial<Highcharts.SeriesOptionsType>} options
      *        New options that will be merged with the series' existing options.
      *
      * @param {boolean} [redraw=true]
@@ -49627,7 +49627,7 @@ var Responsive;
 ;// ./code/es-modules/masters/highcharts.src.js
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-19)
+ * @license Highcharts JS v13.1.1-modified (2026-11-20)
  * @module highcharts/highcharts
  *
  * (c) 2009-2026 Highsoft AS
@@ -61097,7 +61097,7 @@ var BrokenAxis;
 /* unused harmony import specifier */ var Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-19)
+ * @license Highcharts JS v13.1.1-modified (2026-11-20)
  * @module highcharts/modules/broken-axis
  * @requires highcharts
  *
@@ -61470,6 +61470,7 @@ let AxisConstructor;
  * Check the groupPixelWidth and apply the grouping if needed.
  * Fired only after processing the data.
  *
+ * @internal
  * @product highstock
  *
  * @function Highcharts.Axis#applyGrouping
@@ -62257,7 +62258,7 @@ const DataGroupingComposition = {
 * @type {Highcharts.DataTable}
 */ /**
 * @name Highcharts.DataGroupingResultObject#groupMap
-* @type {Array<DataGroupingInfoObject>}
+* @type {Array<Highcharts.DataGroupingInfoObject>}
 */
 /**
  * Highcharts Stock only. If a point object is created by data
@@ -62587,7 +62588,7 @@ const DataGroupingComposition = {
 /* unused harmony import specifier */ var datagrouping_src_Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.1.1-modified (2026-11-19)
+ * @license Highstock JS v13.1.1-modified (2026-11-20)
  * @module highcharts/modules/datagrouping
  * @requires highcharts
  *
@@ -62952,7 +62953,7 @@ const MouseWheelZoomComposition = {
 /* unused harmony import specifier */ var mouse_wheel_zoom_src_Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-19)
+ * @license Highcharts JS v13.1.1-modified (2026-11-20)
  * @module highcharts/modules/mouse-wheel-zoom
  * @requires highcharts
  *
@@ -62976,7 +62977,7 @@ mouse_wheel_zoom_src_G.MouseWheelZoom.compose(mouse_wheel_zoom_src_G.Chart);
 /* unused harmony import specifier */ var stock_src_Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.1.1-modified (2026-11-19)
+ * @license Highstock JS v13.1.1-modified (2026-11-20)
  * @module highcharts/modules/stock
  * @requires highcharts
  *

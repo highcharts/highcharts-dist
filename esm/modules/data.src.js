@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-19)
+ * @license Highcharts JS v13.1.1-modified (2026-11-20)
  * @module highcharts/modules/data
  * @requires highcharts
  *
@@ -1192,6 +1192,12 @@ class Data {
      * Parse a CSV input string
      *
      * @function Highcharts.Data#parseCSV
+     *
+     * @param {Highcharts.DataOptions} [inOptions]
+     *        The data options.
+     *
+     * @return {Array<Array<Highcharts.DataValueType>>}
+     *         The parsed columns.
      */
     parseCSV(inOptions) {
         const self = this, columns = this.columns = [], options = inOptions || this.options, startColumn = options.startColumn || 0, endColumn = options.endColumn || Number.MAX_VALUE, dataTypes = [], 
@@ -2555,6 +2561,12 @@ class SeriesBuilder {
  *
  * @param {Highcharts.Options} chartOptions
  *        The chart options that were used.
+ */
+/**
+ * The final parsed columns.
+ *
+ * @name Highcharts.Data#columns
+ * @type {Array<Array<Highcharts.DataValueType>>|undefined}
  */
 /**
  * Callback function that returns the corresponding Date object to a match.

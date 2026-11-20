@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Gantt JS v13.1.1-modified (2026-11-19)
+ * @license Highcharts Gantt JS v13.1.1-modified (2026-11-20)
  * @module highcharts/modules/gantt
  * @requires highcharts
  *
@@ -9031,6 +9031,20 @@ const connectorsDefaults = {
              * @apioption connectors.marker.lineColor
              */
             /**
+             * The x offset of the marker.
+             *
+             * @type      {number}
+             * @since     13.0.0
+             * @apioption connectors.marker.xOffset
+             */
+            /**
+             * The y offset of the marker.
+             *
+             * @type      {number}
+             * @since     13.0.0
+             * @apioption connectors.marker.yOffset
+             */
+            /**
              * Enable markers for the connectors.
              */
             enabled: false,
@@ -9054,20 +9068,6 @@ const connectorsDefaults = {
              * Set the line/border width of the pathfinder markers.
              */
             lineWidth: 1
-            /**
-             * The x offset of the marker.
-             *
-             * @since 13.0.0
-             * @type number
-             * @apioption connectors.marker.xOffset
-             */
-            /**
-             * The y offset of the marker.
-             *
-             * @since 13.0.0
-             * @type number
-             * @apioption connectors.marker.yOffset
-             */
         },
         /**
          * Marker options specific to the start markers for this chart's
@@ -9851,7 +9851,7 @@ Pathfinder.prototype.algorithms = PathfinderAlgorithms;
 /* unused harmony import specifier */ var Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Gantt JS v13.1.1-modified (2026-11-19)
+ * @license Highcharts Gantt JS v13.1.1-modified (2026-11-20)
  * @module highcharts/modules/pathfinder
  * @requires highcharts
  *
@@ -9984,7 +9984,7 @@ function chartAdjustHeight() {
 /* unused harmony import specifier */ var static_scale_src_Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Gantt JS v13.1.1-modified (2026-11-19)
+ * @license Highcharts Gantt JS v13.1.1-modified (2026-11-20)
  * @module highcharts/modules/static-scale
  * @requires highcharts
  *
@@ -10098,6 +10098,9 @@ const XRangeSeriesDefaults = {
         headerFormat: '<span style="font-size: 0.8em">{ucfirst point.x} - {point.x2}</span><br/>',
         pointFormat: '<span style="color:{point.color}">\u25CF</span> {series.name}: <b>{point.yCategory}</b><br/>'
     },
+    /**
+     * @type {number|string|Highcharts.BorderRadiusOptionsObject}
+     */
     borderRadius: 3,
     pointRange: 0
 };
@@ -10817,7 +10820,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
 /* unused harmony import specifier */ var xrange_src_Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-19)
+ * @license Highcharts JS v13.1.1-modified (2026-11-20)
  * @module highcharts/modules/xrange
  * @requires highcharts
  *

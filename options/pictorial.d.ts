@@ -1348,7 +1348,7 @@ declare module "../highcharts" {
          * number of data points exceeds the series' turboThreshold, this option
          * is not available. (see online documentation for example)
          */
-        data?: Array<([(number|string), number]|[(number|string), number, number]|Highcharts.PointOptionsObject)>;
+        data?: Array<(number|[(number|string), number]|[(number|string), number, number]|Highcharts.PointOptionsObject)>;
         /**
          * Not available
          */

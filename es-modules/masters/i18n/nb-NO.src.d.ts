@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-19)
+ * @license Highcharts JS v13.1.1-modified (2026-11-20)
  * @module highcharts/i18n/nb-NO
  * @requires highcharts
  *

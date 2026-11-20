@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highmaps JS v13.1.1-modified (2026-11-19)
+ * @license Highmaps JS v13.1.1-modified (2026-11-20)
  * @module highcharts/modules/map
  * @requires highcharts
  *
@@ -2579,6 +2579,14 @@ const MapSeriesDefaults = {
  * @since 9.3.0
  * @product   highmaps
  * @apioption series.map.data.geometry.coordinates
+ */
+/**
+ * The key of the map area that the point joins to when `joinBy` is
+ * `hc-key`.
+ *
+ * @type      {string}
+ * @product   highmaps
+ * @apioption series.map.data.hc-key
  */
 /**
  * An id for the point. This can be used after render time to get a

@@ -597,7 +597,7 @@ declare module "../highcharts" {
          * For columns this is relative to the column width, for pies it is
          * relative to the radius and the inner radius.
          */
-        borderRadius?: number;
+        borderRadius?: (number|string|Highcharts.BorderRadiusOptionsObject);
         /**
          * (Highcharts, Highstock, Gantt) The width of the border surrounding
          * each column or bar. Defaults to `1` when there is room for a border,

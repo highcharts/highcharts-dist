@@ -8928,6 +8928,14 @@ export interface ConnectorsEndMarkerOptions {
      * inferred from the marker radius.
      */
     width?: number;
+    /**
+     * (Gantt) The x offset of the marker.
+     */
+    xOffset?: number;
+    /**
+     * (Gantt) The y offset of the marker.
+     */
+    yOffset?: number;
 }
 /**
  * (Gantt) Marker options for this chart's Pathfinder connectors. Note that this
@@ -8981,6 +8989,14 @@ export interface ConnectorsMarkerOptions {
      * inferred from the marker radius.
      */
     width?: number;
+    /**
+     * (Gantt) The x offset of the marker.
+     */
+    xOffset?: number;
+    /**
+     * (Gantt) The y offset of the marker.
+     */
+    yOffset?: number;
 }
 /**
  * (Gantt) The Pathfinder module allows you to define connections between any
@@ -9121,6 +9137,14 @@ export interface ConnectorsStartMarkerOptions {
      * inferred from the marker radius.
      */
     width?: number;
+    /**
+     * (Gantt) The x offset of the marker.
+     */
+    xOffset?: number;
+    /**
+     * (Gantt) The y offset of the marker.
+     */
+    yOffset?: number;
 }
 /**
  * (Highcharts, Highstock, Highmaps, Gantt) Events for the credits label.
@@ -114531,6 +114555,10 @@ export class Data {
      */
     constructor(dataOptions: DataOptions, chartOptions?: Options, chart?: Chart);
     /**
+     * The final parsed columns.
+     */
+    columns?: Array<Array<DataValueType>>;
+    /**
      * A collection of available date formats, extendable from the outside to
      * support custom date formats.
      */
@@ -114567,8 +114595,13 @@ export class Data {
     parseColumn(column: Array<DataValueType>, col: number): void;
     /**
      * Parse a CSV input string
+     *
+     * @param inOptions
+     *        The data options.
+     *
+     * @return The parsed columns.
      */
-    parseCSV(): void;
+    parseCSV(inOptions?: DataOptions): Array<Array<DataValueType>>;
     /**
      * A hook for working directly on the parsed columns
      */
@@ -115848,7 +115881,7 @@ export class Series {
      * @fires Highcharts.Series#update
      * @fires Highcharts.Series#afterUpdate
      */
-    update(options: SeriesOptionsType, redraw?: boolean): void;
+    update(options: Partial<SeriesOptionsType>, redraw?: boolean): void;
 }
 /**
  * Spline series type.

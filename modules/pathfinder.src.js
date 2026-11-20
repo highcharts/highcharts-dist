@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Gantt JS v13.1.1-modified (2026-11-19)
+ * @license Highcharts Gantt JS v13.1.1-modified (2026-11-20)
  * @module highcharts/modules/pathfinder
  * @requires highcharts
  *
@@ -1472,6 +1472,20 @@ const connectorsDefaults = {
              * @apioption connectors.marker.lineColor
              */
             /**
+             * The x offset of the marker.
+             *
+             * @type      {number}
+             * @since     13.0.0
+             * @apioption connectors.marker.xOffset
+             */
+            /**
+             * The y offset of the marker.
+             *
+             * @type      {number}
+             * @since     13.0.0
+             * @apioption connectors.marker.yOffset
+             */
+            /**
              * Enable markers for the connectors.
              */
             enabled: false,
@@ -1495,20 +1509,6 @@ const connectorsDefaults = {
              * Set the line/border width of the pathfinder markers.
              */
             lineWidth: 1
-            /**
-             * The x offset of the marker.
-             *
-             * @since 13.0.0
-             * @type number
-             * @apioption connectors.marker.xOffset
-             */
-            /**
-             * The y offset of the marker.
-             *
-             * @since 13.0.0
-             * @type number
-             * @apioption connectors.marker.yOffset
-             */
         },
         /**
          * Marker options specific to the start markers for this chart's

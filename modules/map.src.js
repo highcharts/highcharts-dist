@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highmaps JS v13.1.1-modified (2026-11-19)
+ * @license Highmaps JS v13.1.1-modified (2026-11-20)
  * @module highcharts/modules/map
  * @requires highcharts
  *
@@ -1791,13 +1791,27 @@ ColorAxis.defaultLegendLength = 200;
  *
  * @typedef {"linear"|"logarithmic"} Highcharts.ColorAxisTypeValue
  */
+// Hide the `Axis` methods that don't apply to the color axis. A same-named
+// ignored doclet stops JSDoc from inheriting them through `@augments`.
+/**
+ * @function Highcharts.ColorAxis#setCompare
+ * @ignore
+ */
+/**
+ * @function Highcharts.ColorAxis#setCumulative
+ * @ignore
+ */
+/**
+ * @function Highcharts.ColorAxis#setDataGrouping
+ * @ignore
+ */
 ''; // Detach doclet above
 
 ;// ./code/es-modules/masters/modules/coloraxis.src.js
 /* unused harmony import specifier */ var Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-19)
+ * @license Highcharts JS v13.1.1-modified (2026-11-20)
  * @module highcharts/modules/color-axis
  * @requires highcharts
  *
@@ -4348,6 +4362,14 @@ const MapSeriesDefaults = {
  * @since 9.3.0
  * @product   highmaps
  * @apioption series.map.data.geometry.coordinates
+ */
+/**
+ * The key of the map area that the point joins to when `joinBy` is
+ * `hc-key`.
+ *
+ * @type      {string}
+ * @product   highmaps
+ * @apioption series.map.data.hc-key
  */
 /**
  * An id for the point. This can be used after render time to get a

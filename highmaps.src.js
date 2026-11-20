@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Maps v13.1.1-modified (2026-11-19)
+ * @license Highcharts Maps v13.1.1-modified (2026-11-20)
  * @module highcharts/highmaps
  *
  * (c) 2011-2026 Highsoft AS
@@ -36064,7 +36064,7 @@ class Series {
      *
      * @function Highcharts.Series#update
      *
-     * @param {Highcharts.SeriesOptionsType} options
+     * @param {Partial<Highcharts.SeriesOptionsType>} options
      *        New options that will be merged with the series' existing options.
      *
      * @param {boolean} [redraw=true]
@@ -49627,7 +49627,7 @@ var Responsive;
 ;// ./code/es-modules/masters/highcharts.src.js
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-19)
+ * @license Highcharts JS v13.1.1-modified (2026-11-20)
  * @module highcharts/highcharts
  *
  * (c) 2009-2026 Highsoft AS
@@ -51412,13 +51412,27 @@ extend(ColorAxis.prototype, Color_ColorAxisBase);
  *
  * @typedef {"linear"|"logarithmic"} Highcharts.ColorAxisTypeValue
  */
+// Hide the `Axis` methods that don't apply to the color axis. A same-named
+// ignored doclet stops JSDoc from inheriting them through `@augments`.
+/**
+ * @function Highcharts.ColorAxis#setCompare
+ * @ignore
+ */
+/**
+ * @function Highcharts.ColorAxis#setCumulative
+ * @ignore
+ */
+/**
+ * @function Highcharts.ColorAxis#setDataGrouping
+ * @ignore
+ */
 ''; // Detach doclet above
 
 ;// ./code/es-modules/masters/modules/coloraxis.src.js
 /* unused harmony import specifier */ var Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-19)
+ * @license Highcharts JS v13.1.1-modified (2026-11-20)
  * @module highcharts/modules/color-axis
  * @requires highcharts
  *
@@ -53284,6 +53298,14 @@ const MapSeriesDefaults = {
  * @since 9.3.0
  * @product   highmaps
  * @apioption series.map.data.geometry.coordinates
+ */
+/**
+ * The key of the map area that the point joins to when `joinBy` is
+ * `hc-key`.
+ *
+ * @type      {string}
+ * @product   highmaps
+ * @apioption series.map.data.hc-key
  */
 /**
  * An id for the point. This can be used after render time to get a
@@ -61432,7 +61454,7 @@ Series_SeriesRegistry.registerSeriesType('heatmap', HeatmapSeries);
 /* unused harmony import specifier */ var map_src_Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highmaps JS v13.1.1-modified (2026-11-19)
+ * @license Highmaps JS v13.1.1-modified (2026-11-20)
  * @module highcharts/modules/map
  * @requires highcharts
  *

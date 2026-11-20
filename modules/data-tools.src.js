@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-19)
+ * @license Highcharts JS v13.1.1-modified (2026-11-20)
  * @module highcharts/modules/data-tools
  * @requires highcharts
  *
@@ -8615,6 +8615,10 @@ class FilterModifier extends Modifiers_DataModifier {
             case 'not': {
                 const sub = this.compile(condition.condition);
                 return (row, table, i) => !sub(row, table, i);
+            }
+            case 'in': {
+                const { columnId } = condition, values = new Set(condition.value);
+                return (row) => values.has(row[columnId]);
             }
         }
         const { columnId: col, value } = condition;

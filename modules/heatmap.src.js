@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highmaps JS v13.1.1-modified (2026-11-19)
+ * @license Highmaps JS v13.1.1-modified (2026-11-20)
  * @module highcharts/modules/heatmap
  * @requires highcharts
  *
@@ -1768,13 +1768,27 @@ ColorAxis.defaultLegendLength = 200;
  *
  * @typedef {"linear"|"logarithmic"} Highcharts.ColorAxisTypeValue
  */
+// Hide the `Axis` methods that don't apply to the color axis. A same-named
+// ignored doclet stops JSDoc from inheriting them through `@augments`.
+/**
+ * @function Highcharts.ColorAxis#setCompare
+ * @ignore
+ */
+/**
+ * @function Highcharts.ColorAxis#setCumulative
+ * @ignore
+ */
+/**
+ * @function Highcharts.ColorAxis#setDataGrouping
+ * @ignore
+ */
 ''; // Detach doclet above
 
 ;// ./code/es-modules/masters/modules/coloraxis.src.js
 /* unused harmony import specifier */ var Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-19)
+ * @license Highcharts JS v13.1.1-modified (2026-11-20)
  * @module highcharts/modules/color-axis
  * @requires highcharts
  *

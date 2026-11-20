@@ -8,11 +8,6 @@ import * as _Highcharts from "../highcharts";
 declare module "../highcharts" {
     interface Axis {
         /**
-         * (Highstock) Check the groupPixelWidth and apply the grouping if
-         * needed. Fired only after processing the data.
-         */
-        applyGrouping(): void;
-        /**
          * Highcharts Stock only. Set the compare mode on all series belonging
          * to a Y axis.
          *

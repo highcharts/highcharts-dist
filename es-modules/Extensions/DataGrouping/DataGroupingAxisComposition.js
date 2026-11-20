@@ -27,6 +27,7 @@ let AxisConstructor;
  * Check the groupPixelWidth and apply the grouping if needed.
  * Fired only after processing the data.
  *
+ * @internal
  * @product highstock
  *
  * @function Highcharts.Axis#applyGrouping

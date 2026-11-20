@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-19)
+ * @license Highcharts JS v13.1.1-modified (2026-11-20)
  * @module highcharts/modules/pictorial
  * @requires highcharts
  *
@@ -1445,7 +1445,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  *    ```
  *
  * @basic
- * @type      {Array<Array<(number|string),number>|Array<(number|string),number,number>|*>}
+ * @type      {Array<number|Array<(number|string),number>|Array<(number|string),number,number>|*>}
  * @extends   series.column.data
  *
  * @sample {highcharts} highcharts/demo/pictorial/

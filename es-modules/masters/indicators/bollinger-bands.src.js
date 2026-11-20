@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.1.1-modified (2026-11-19)
+ * @license Highstock JS v13.1.1-modified (2026-11-20)
  * @module highcharts/indicators/bollinger-bands
  * @requires highcharts
  * @requires highcharts/modules/stock

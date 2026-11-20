@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-19)
+ * @license Highcharts JS v13.1.1-modified (2026-11-20)
  * @module highcharts/modules/xrange
  * @requires highcharts
  *
@@ -213,6 +213,9 @@ const XRangeSeriesDefaults = {
         headerFormat: '<span style="font-size: 0.8em">{ucfirst point.x} - {point.x2}</span><br/>',
         pointFormat: '<span style="color:{point.color}">\u25CF</span> {series.name}: <b>{point.yCategory}</b><br/>'
     },
+    /**
+     * @type {number|string|Highcharts.BorderRadiusOptionsObject}
+     */
     borderRadius: 3,
     pointRange: 0
 };

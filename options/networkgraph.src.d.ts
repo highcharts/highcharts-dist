@@ -1037,7 +1037,7 @@ declare module "../highcharts.src" {
         /**
          * (Highcharts) The color of the auto generated node.
          */
-        color?: Highcharts.ColorString;
+        color?: Highcharts.ColorType;
         /**
          * (Highcharts) The color index of the auto generated node, especially
          * for use in styled mode.

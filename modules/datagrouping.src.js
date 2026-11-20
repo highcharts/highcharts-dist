@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.1.1-modified (2026-11-19)
+ * @license Highstock JS v13.1.1-modified (2026-11-20)
  * @module highcharts/modules/datagrouping
  * @requires highcharts
  *
@@ -463,6 +463,7 @@ let AxisConstructor;
  * Check the groupPixelWidth and apply the grouping if needed.
  * Fired only after processing the data.
  *
+ * @internal
  * @product highstock
  *
  * @function Highcharts.Axis#applyGrouping
@@ -1980,7 +1981,7 @@ const DataGroupingComposition = {
 * @type {Highcharts.DataTable}
 */ /**
 * @name Highcharts.DataGroupingResultObject#groupMap
-* @type {Array<DataGroupingInfoObject>}
+* @type {Array<Highcharts.DataGroupingInfoObject>}
 */
 /**
  * Highcharts Stock only. If a point object is created by data

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-19)
+ * @license Highcharts JS v13.1.1-modified (2026-11-20)
  * @module highcharts/modules/networkgraph
  * @requires highcharts
  *
@@ -1447,7 +1447,7 @@ const NetworkgraphSeriesDefaults = {
 /**
  * The color of the auto generated node.
  *
- * @type      {Highcharts.ColorString}
+ * @type      {Highcharts.ColorType}
  * @product   highcharts
  * @apioption series.networkgraph.nodes.color
  */

@@ -1677,6 +1677,11 @@ declare module "../highcharts.src" {
          */
         geometry?: (object|Highcharts.SeriesMappointDataGeometryOptions);
         /**
+         * (Highmaps) The key of the map area that the point joins to when
+         * `joinBy` is `hc-key`.
+         */
+        "hc-key"?: string;
+        /**
          * (Highmaps) An id for the point. This can be used after render time to
          * get a pointer to the point object through `chart.get()`.
          */
