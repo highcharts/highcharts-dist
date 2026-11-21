@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Stock v13.1.1-modified (2026-11-20)
+ * @license Highcharts Stock v13.1.1-modified (2026-11-21)
  * @module highcharts/highstock
  *
  * (c) 2009-2026 Highsoft AS
@@ -1248,6 +1248,21 @@ const ChartDefaults = {
      * @apioption  chart.zoomBySingleTouch
      */
     /**
+     * Deprecated. Use
+     * [chart.zooming.key](#chart.zooming.key)
+     * instead.
+     *
+     * Set a key to hold when dragging to zoom the chart. This is useful to
+     * avoid zooming while moving points. Should be set different than
+     * [chart.panKey](#chart.panKey).
+     *
+     * @type       {string}
+     * @since      6.2.0
+     * @validvalue ["alt", "ctrl", "meta", "shift"]
+     * @deprecated 10.2.1
+     * @apioption  chart.zoomKey
+     */
+    /**
      * Chart zooming options.
      *
      * @sample     highcharts/plotoptions/sankey-node-color
@@ -1258,6 +1273,20 @@ const ChartDefaults = {
      * @since 10.2.1
      */
     zooming: {
+        /**
+         * Set a key to hold when dragging to zoom the chart. This is useful to
+         * avoid zooming while moving points. Should be set different than
+         * [chart.panKey](#chart.panKey).
+         *
+         * **Note:** If both zooming and panning are enabled without keys,
+         * zooming will take precedence by default. To prioritize panning,
+         * either set zooming key or [chart.panKey](#chart.panKey).
+         *
+         * @type       {string}
+         * @default    {highcharts} undefined
+         * @validvalue ["alt", "ctrl", "meta", "shift"]
+         * @apioption  chart.zooming.key
+         */
         /**
          * Equivalent to [type](#chart.zooming.type), but for multitouch
          * gestures only. By default, the `pinchType` is the same as the
@@ -16253,6 +16282,7 @@ var AxisDefaults;
          * @type      {Array<*>}
          * @since     4.1.0
          * @product   highcharts highstock gantt
+         * @requires  modules/broken-axis
          * @apioption xAxis.breaks
          */
         /**
@@ -49627,7 +49657,7 @@ var Responsive;
 ;// ./code/es-modules/masters/highcharts.src.js
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-20)
+ * @license Highcharts JS v13.1.1-modified (2026-11-21)
  * @module highcharts/highcharts
  *
  * (c) 2009-2026 Highsoft AS
@@ -61097,7 +61127,7 @@ var BrokenAxis;
 /* unused harmony import specifier */ var Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-20)
+ * @license Highcharts JS v13.1.1-modified (2026-11-21)
  * @module highcharts/modules/broken-axis
  * @requires highcharts
  *
@@ -62588,7 +62618,7 @@ const DataGroupingComposition = {
 /* unused harmony import specifier */ var datagrouping_src_Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.1.1-modified (2026-11-20)
+ * @license Highstock JS v13.1.1-modified (2026-11-21)
  * @module highcharts/modules/datagrouping
  * @requires highcharts
  *
@@ -62896,7 +62926,6 @@ const MouseWheelZoomComposition = {
  * @type      {boolean}
  * @default   true
  * @since 11.1.0
- * @requires  modules/mouse-wheel-zoom
  * @apioption chart.zooming.mouseWheel.enabled
  */
 /**
@@ -62907,7 +62936,6 @@ const MouseWheelZoomComposition = {
  * @type      {number}
  * @default   1.1
  * @since 11.1.0
- * @requires  modules/mouse-wheel-zoom
  * @sample    {highcharts} highcharts/mouse-wheel-zoom/sensitivity
  *            Change mouse wheel zoom sensitivity
  * @sample    {highstock} stock/mouse-wheel-zoom/sensitivity
@@ -62931,7 +62959,6 @@ const MouseWheelZoomComposition = {
  * @default   {highstock} x
  * @validvalue ["x", "y", "xy"]
  * @since 11.1.0
- * @requires  modules/mouse-wheel-zoom
  * @apioption chart.zooming.mouseWheel.type
  */
 /**
@@ -62940,7 +62967,6 @@ const MouseWheelZoomComposition = {
  * @type      {boolean}
  * @default   false
  * @since     12.5.0
- * @requires  modules/mouse-wheel-zoom
  * @sample    {highcharts} highcharts/mouse-wheel-zoom/reset-zoom-button
  *            Enable reset zoom button for mouse wheel zooming
  * @sample    {highstock} stock/mouse-wheel-zoom/reset-zoom-button
@@ -62953,7 +62979,7 @@ const MouseWheelZoomComposition = {
 /* unused harmony import specifier */ var mouse_wheel_zoom_src_Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-20)
+ * @license Highcharts JS v13.1.1-modified (2026-11-21)
  * @module highcharts/modules/mouse-wheel-zoom
  * @requires highcharts
  *
@@ -62977,7 +63003,7 @@ mouse_wheel_zoom_src_G.MouseWheelZoom.compose(mouse_wheel_zoom_src_G.Chart);
 /* unused harmony import specifier */ var stock_src_Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.1.1-modified (2026-11-20)
+ * @license Highstock JS v13.1.1-modified (2026-11-21)
  * @module highcharts/modules/stock
  * @requires highcharts
  *

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-20)
+ * @license Highcharts JS v13.1.1-modified (2026-11-21)
  * @module highcharts/modules/export-data
  * @requires highcharts
  * @requires highcharts/modules/exporting
@@ -352,7 +352,6 @@ const exporting = {
      *
      * @type      {boolean | string}
      * @since     6.0.4
-     * @requires  modules/exporting
      * @requires  modules/export-data
      * @apioption exporting.tableCaption
      */
@@ -375,7 +374,6 @@ const exporting = {
      *          Using a third party XLSX converter
      *
      * @since    6.0.0
-     * @requires  modules/exporting
      * @requires modules/export-data
      */
     csv: {
@@ -383,8 +381,6 @@ const exporting = {
          * Options for annotations in the export-data table.
          *
          * @since    8.2.0
-         * @requires modules/exporting
-         * @requires modules/export-data
          * @requires modules/annotations
          */
         annotations: {
@@ -393,9 +389,6 @@ const exporting = {
              * combined in one export-data table cell.
              *
              * @since    8.2.0
-             * @requires modules/exporting
-             * @requires modules/export-data
-             * @requires modules/annotations
              */
             itemDelimiter: '; ',
             /**
@@ -406,9 +399,6 @@ const exporting = {
              *         Concatenate point annotations with itemDelimiter set.
              *
              * @since    8.2.0
-             * @requires modules/exporting
-             * @requires modules/export-data
-             * @requires modules/annotations
              */
             join: false
         },
@@ -531,7 +521,6 @@ const exporting = {
      *         allow exporting it.
      *
      * @since    6.0.0
-     * @requires modules/exporting
      * @requires modules/export-data
      */
     showTable: false,
@@ -544,7 +533,6 @@ const exporting = {
      *         Multiple table headers
      *
      * @since    6.0.4
-     * @requires modules/exporting
      * @requires modules/export-data
      */
     useMultiLevelHeaders: true,
@@ -556,7 +544,6 @@ const exporting = {
      *         Multiple table headers
      *
      * @since    6.0.4
-     * @requires modules/exporting
      * @requires modules/export-data
      */
     useRowspanHeaders: true

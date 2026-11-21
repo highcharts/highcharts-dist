@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.1.1-modified (2026-11-20)
+ * @license Highstock JS v13.1.1-modified (2026-11-21)
  * @module highcharts/modules/drag-panes
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -419,8 +419,6 @@ const AxisResizerDefaults = {
         /**
          * Contains two arrays of axes that are controlled by control line
          * of the axis.
-         *
-         * @requires modules/drag-panes
          */
         controlledAxis: {
             /**
@@ -435,7 +433,6 @@ const AxisResizerDefaults = {
              *
              * @type     {Array<number|string>}
              * @default  []
-             * @requires modules/drag-panes
              */
             next: [],
             /**
@@ -449,7 +446,6 @@ const AxisResizerDefaults = {
              *
              * @type     {Array<number|string>}
              * @default  []
-             * @requires modules/drag-panes
              */
             prev: []
         },
@@ -458,16 +454,12 @@ const AxisResizerDefaults = {
          *
          * @sample {highstock} stock/demo/candlestick-and-volume
          *         Enabled resizer
-         *
-         * @requires modules/drag-panes
          */
         enabled: false,
         /**
          * Cursor style for the control line.
          *
          * In styled mode use class `highcharts-axis-resizer` instead.
-         *
-         * @requires modules/drag-panes
          */
         cursor: 'ns-resize',
         /**
@@ -479,7 +471,6 @@ const AxisResizerDefaults = {
          *         Styled resizer
          *
          * @type     {Highcharts.ColorString}
-         * @requires modules/drag-panes
          */
         lineColor: 'var(--highcharts-neutral-color-20)',
         /**
@@ -491,8 +482,6 @@ const AxisResizerDefaults = {
          *
          * @sample {highstock} stock/yaxis/styled-resizer
          *         Styled resizer
-         *
-         * @requires modules/drag-panes
          */
         lineDashStyle: 'Solid',
         /**
@@ -502,8 +491,6 @@ const AxisResizerDefaults = {
          *
          * @sample {highstock} stock/yaxis/styled-resizer
          *         Styled resizer
-         *
-         * @requires modules/drag-panes
          */
         lineWidth: 4,
         /**
@@ -511,8 +498,6 @@ const AxisResizerDefaults = {
          *
          * @sample {highstock} stock/yaxis/styled-resizer
          *         Styled resizer
-         *
-         * @requires modules/drag-panes
          */
         x: 0,
         /**
@@ -520,8 +505,6 @@ const AxisResizerDefaults = {
          *
          * @sample {highstock} stock/yaxis/styled-resizer
          *         Styled resizer
-         *
-         * @requires modules/drag-panes
          */
         y: 0
     }

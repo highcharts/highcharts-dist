@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.1.1-modified (2026-11-20)
+ * @license Highstock JS v13.1.1-modified (2026-11-21)
  * @module highcharts/indicators/indicators-all
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -955,6 +955,7 @@ class SMAIndicator extends (highcharts_Series_types_line_commonjs_highcharts_Ser
             table.setColumns(columns);
             delete indicator.xColumn;
             delete indicator.xColumnIsNumbers;
+            indicator.isDirty = true; // #25632
         }
         if (indicator.calculateOn.xAxis &&
             indicator.getColumn('x', true).length) {

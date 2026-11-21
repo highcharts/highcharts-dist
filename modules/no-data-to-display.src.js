@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-20)
+ * @license Highcharts JS v13.1.1-modified (2026-11-21)
  * @module highcharts/modules/no-data-to-display
  * @requires highcharts
  *
@@ -164,7 +164,6 @@ const noData = {
      *
      * @type      {Highcharts.SVGAttributes}
      * @product   highcharts highstock gantt
-     * @requires  modules/no-data-to-display
      * @apioption noData.attr
      */
     attr: {
@@ -178,40 +177,32 @@ const noData = {
      * @default   false
      * @since     4.1.10
      * @product   highcharts highstock gantt
-     * @requires  modules/no-data-to-display
      * @apioption noData.useHTML
      */
     /**
      * The position of the no-data label, relative to the plot area.
      *
      * @type  {Highcharts.AlignObject}
-     * @requires modules/no-data-to-display
      */
     position: {
         /**
          * Horizontal offset of the label, in pixels.
-         *
-         * @requires modules/no-data-to-display
          */
         x: 0,
         /**
          * Vertical offset of the label, in pixels.
-         *
-         * @requires modules/no-data-to-display
          */
         y: 0,
         /**
          * Horizontal alignment of the label.
          *
          * @type {Highcharts.AlignValue}
-         * @requires modules/no-data-to-display
          */
         align: 'center',
         /**
          * Vertical alignment of the label.
          *
          * @type {Highcharts.VerticalAlignValue}
-         * @requires modules/no-data-to-display
          */
         verticalAlign: 'middle'
     },
@@ -222,7 +213,6 @@ const noData = {
      *         Styled no-data text
      *
      * @type {Highcharts.CSSObject}
-     * @requires modules/no-data-to-display
      */
     style: {
         /** @ignore */

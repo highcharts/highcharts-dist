@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Gantt JS v13.1.1-modified (2026-11-20)
+ * @license Highcharts Gantt JS v13.1.1-modified (2026-11-21)
  * @module highcharts/modules/treegrid
  * @requires highcharts
  *
@@ -1740,6 +1740,7 @@ const GridAxis = {
  *
  * @since     6.2.0
  * @product   gantt
+ * @requires  modules/grid-axis
  * @apioption xAxis.grid
  */
 /**

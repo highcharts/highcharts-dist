@@ -157,32 +157,45 @@ class Loader {
  */
 Loader.getFiles = (options) => {
     const files = addedFiles.slice();
-    const recurse = (opts, path = []) => {
-        Object.entries(opts).forEach(([key, value]) => {
-            if (path.length === 1 && path[0] === 'series') {
-                key = value.type || options.chart?.type || 'line';
-            }
-            const fullKey = path.concat(key).join('.'), 
-            // Pick up properties that are set on series items, like
-            // `dragDrop` or `label`
-            seriesKey = fullKey.replace(/^series\.[a-zA-Z]+/, 'plotOptions.series'), fullKeys = [fullKey];
-            // Add special cases
-            if (seriesKey !== fullKey) {
-                fullKeys.push(seriesKey);
-            }
-            fullKeys.forEach((fullKey) => {
-                if (fullKey in mapping) {
-                    mapping[fullKey].forEach((file) => pushUnique(files, file));
-                }
-            });
-            if (value && typeof value === 'object' && key !== 'data') {
-                path.push(key);
-                recurse(value, path);
-                path.pop();
-            }
+    const addFiles = (key) => {
+        [
+            key,
+            // Options of series items and plotOptions.<type>, see
+            // normalizeKey in dependency-mapping.js
+            key.replace(/^(?:series|plotOptions)\.[a-zA-Z0-9]+/, 'plotOptions.series'),
+            // Other axes share the options documented for xAxis
+            key.replace(/^(?:y|z|color)Axis\./, 'xAxis.')
+        ].forEach((k) => {
+            (mapping[k] || []).forEach((file) => pushUnique(files, file));
         });
     };
-    recurse(options);
+    const walk = (value, path) => {
+        if (Array.isArray(value)) {
+            value.forEach((item) => {
+                // Series items get their type in the path, other items
+                // share the array's path
+                if (path === 'series') {
+                    const itemPath = 'series.' +
+                        (item.type || options.chart?.type || 'line');
+                    addFiles(itemPath);
+                    walk(item, itemPath);
+                }
+                else {
+                    walk(item, path);
+                }
+            });
+        }
+        else if (value && typeof value === 'object') {
+            Object.entries(value).forEach(([key, child]) => {
+                const childPath = path ? `${path}.${key}` : key;
+                addFiles(childPath);
+                if (key !== 'data') {
+                    walk(child, childPath);
+                }
+            });
+        }
+    };
+    walk(options, '');
     // Advanced annotations
     if (options.annotations) {
         splat(options.annotations).forEach((annotation) => {

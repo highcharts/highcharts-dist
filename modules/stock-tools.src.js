@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.1.1-modified (2026-11-20)
+ * @license Highstock JS v13.1.1-modified (2026-11-21)
  * @module highcharts/modules/stock-tools
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -2894,13 +2894,13 @@ const { addFlagFromForm: StockToolsBindings_addFlagFromForm, attractToPoint: Sto
  *
  * */
 /**
- * @internal
  * @sample {highstock} stock/stocktools/custom-stock-tools-bindings
  *         Custom stock tools bindings
  *
  * @type         {Highcharts.Dictionary<Highcharts.NavigationBindingsOptionsObject>}
  * @since        7.0.0
  * @optionparent navigation.bindings
+ * @internal
  */
 const StockToolsBindings = {
     // Line type annotations:

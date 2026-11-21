@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-20)
+ * @license Highcharts JS v13.1.1-modified (2026-11-21)
  * @module highcharts/modules/networkgraph
  * @requires highcharts
  *
@@ -3316,6 +3316,7 @@ function composeTextPath(SVGElementClass) {
  *
  * @declare   Highcharts.DataLabelsTextPathOptionsObject
  * @since     7.1.0
+ * @requires  modules/textpath
  * @apioption plotOptions.series.dataLabels.textPath
  */
 /**

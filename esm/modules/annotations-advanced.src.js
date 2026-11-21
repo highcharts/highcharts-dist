@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-20)
+ * @license Highcharts JS v13.1.1-modified (2026-11-21)
  * @module highcharts/modules/annotations-advanced
  * @requires highcharts
  *
@@ -439,8 +439,6 @@ const AnnotationDefaults = {
      * Options for annotation's labels. Each label inherits options
      * from the labelOptions object. An option from the labelOptions
      * can be overwritten by config for a specific label.
-     *
-     * @requires modules/annotations
      */
     labelOptions: {
         /**
@@ -701,7 +699,6 @@ const AnnotationDefaults = {
      *         Attach annotation to a mock point with different ways
      *
      * @type      {Highcharts.AnnotationMockPointOptions}
-     * @requires  modules/annotations
      * @apioption annotations.labels.point
      */
     /**
@@ -734,7 +731,6 @@ const AnnotationDefaults = {
      *
      * @type      {Highcharts.AnnotationMockPointOptions}
      * @extends   annotations.labels.point
-     * @requires  modules/annotations
      * @apioption annotations.shapes.point
      */
     /**
@@ -781,8 +777,6 @@ const AnnotationDefaults = {
      * Options for annotation's shapes. Each shape inherits options
      * from the shapeOptions object. An option from the shapeOptions
      * can be overwritten by config for a specific shape.
-     *
-     * @requires  modules/annotations
      */
     shapeOptions: {
         /**
@@ -930,7 +924,6 @@ const AnnotationDefaults = {
      * by options in a specific control point.
      *
      * @declare  Highcharts.AnnotationControlPointOptionsObject
-     * @requires modules/annotations
      */
     controlPointOptions: {
         /**
@@ -992,15 +985,12 @@ const AnnotationDefaults = {
      */
     /**
      * Events available in annotations.
-     *
-     * @requires modules/annotations
      */
     events: {},
     /**
      *
      * Additional options for an annotation with the type.
      *
-     * @requires  modules/annotations
      * @apioption annotations.typeOptions
      */
     typeOptions: {
@@ -7830,7 +7820,6 @@ if (CrookedLine_defaultOptions.annotations?.types) {
     *         Crooked line
     *
     * @product      highstock
-    * @requires     modules/annotations-advanced
     * @optionparent annotations.types.crookedLine
     */
     CrookedLine_defaultOptions.annotations.types.crookedLine = {
@@ -7996,7 +7985,6 @@ if (ElliottWave_defaultOptions.annotations?.types) {
      *
      * @extends      annotations.types.crookedLine
      * @product      highstock
-     * @requires     modules/annotations-advanced
      * @optionparent annotations.types.elliottWave
      */
     {
@@ -8084,7 +8072,6 @@ if (Tunnel_defaultOptions.annotations?.types) {
      * @sample highcharts/annotations-advanced/tunnel/
      *         Tunnel
      * @product highstock
-     * @requires modules/annotations-advanced
      * @optionparent annotations.types.tunnel
      */
     {
@@ -8293,7 +8280,6 @@ if (InfinityLine_defaultOptions.annotations?.types) {
      *
      * @extends      annotations.types.crookedLine
      * @product      highstock
-     * @requires     modules/annotations-advanced
      * @optionparent annotations.types.infinityLine
      */
     InfinityLine_defaultOptions.annotations.types.infinityLine = (0,external_highcharts_src_js_default_namespaceObject.merge)(InfinityLine_defaultOptions.annotations.types.crookedLine);
@@ -8438,7 +8424,6 @@ if (TimeCycles_defaultOptions.annotations?.types) {
      * @extends      annotations.types.crookedLine
      * @product      highstock
      * @exclude      labelOptions
-     * @requires     modules/annotations-advanced
      * @optionparent annotations.types.timeCycles
      */
     {
@@ -8683,7 +8668,6 @@ if (Fibonacci_defaultOptions.annotations?.types) {
      *
      * @extends      annotations.types.crookedLine
      * @product      highstock
-     * @requires     modules/annotations-advanced
      * @optionparent annotations.types.fibonacci
      */
     {
@@ -8907,7 +8891,6 @@ if (FibonacciTimeZones_defaultOptions.annotations?.types) {
      * @extends      annotations.types.crookedLine
      * @since        9.3.0
      * @product      highstock
-     * @requires     modules/annotations-advanced
      * @optionparent annotations.types.fibonacciTimeZones
      */
     {
@@ -9104,7 +9087,6 @@ if (Pitchfork_defaultOptions.annotations?.types) {
      *
      * @extends      annotations.types.infinityLine
      * @product      highstock
-     * @requires     modules/annotations-advanced
      * @optionparent annotations.types.pitchfork
      */
     {
@@ -9291,7 +9273,6 @@ if (VerticalLine_defaultOptions.annotations?.types) {
      * @extends      annotations.types.crookedLine
      * @excluding    labels, shapes, controlPointOptions
      * @product      highstock
-     * @requires     modules/annotations-advanced
      * @optionparent annotations.types.verticalLine
      */
     VerticalLine_defaultOptions.annotations.types.verticalLine = {
@@ -9443,7 +9424,6 @@ if (Measure_defaultOptions.annotations?.types) {
      * @sample highcharts/annotations-advanced/measure/
      *         Measure
      * @product highstock
-     * @requires modules/annotations-advanced
      * @optionparent annotations.types.measure
      */
     Measure_defaultOptions.annotations.types.measure = {

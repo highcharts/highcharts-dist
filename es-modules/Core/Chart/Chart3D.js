@@ -111,7 +111,6 @@ var Chart3D;
                  *
                  * @since    4.0
                  * @product  highcharts
-                 * @requires highcharts-3d
                  */
                 frame: {
                     /**
@@ -127,7 +126,6 @@ var Chart3D;
                      *
                      * @since    4.0
                      * @product  highcharts
-                     * @requires highcharts-3d
                      */
                     /**
                      * The color of the panel.
@@ -1642,7 +1640,6 @@ export default Chart3D;
  * @deprecated 5.0.12
  * @since     4.0
  * @product   highcharts
- * @requires  highcharts-3d
  * @apioption chart.options3d.frame.side
  */
 /**

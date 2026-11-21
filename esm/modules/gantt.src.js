@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Gantt JS v13.1.1-modified (2026-11-20)
+ * @license Highcharts Gantt JS v13.1.1-modified (2026-11-21)
  * @module highcharts/modules/gantt
  * @requires highcharts
  *
@@ -606,6 +606,7 @@ const { composed } = (external_highcharts_src_js_default_default());
  * @extends   xAxis.plotLines
  * @excluding className, value
  * @product   gantt
+ * @requires  modules/current-date-indicator
  * @apioption xAxis.currentDateIndicator
  */
 const defaultOptions = {
@@ -8012,7 +8013,7 @@ class GanttPoint extends XRangePoint {
  *
  * @extends      plotOptions.xrange
  * @product      gantt
- * @requires     highcharts-gantt
+ * @requires     modules/gantt
  * @optionparent plotOptions.gantt
  */
 const GanttSeriesDefaults = {
@@ -8082,7 +8083,7 @@ const GanttSeriesDefaults = {
  *
  * @extends   series,plotOptions.gantt
  * @product   gantt
- * @requires  highcharts-gantt
+ * @requires  modules/gantt
  * @apioption series.gantt
  */
 /**
@@ -9086,6 +9087,7 @@ const connectorsDefaults = {
      *
      * @declare      Highcharts.ConnectorsOptions
      * @product      gantt
+     * @requires     modules/pathfinder
      * @optionparent connectors
      */
     connectors: {
@@ -9317,6 +9319,7 @@ const connectorsDefaults = {
  * @since     6.2.0
  * @excluding enabled, algorithmMargin
  * @product   gantt
+ * @requires  modules/pathfinder
  * @apioption plotOptions.series.connectors
  */
 /**
@@ -9333,7 +9336,7 @@ const connectorsDefaults = {
  * @since     6.2.0
  * @excluding enabled
  * @product   gantt
- * @requires  highcharts-gantt
+ * @requires  modules/pathfinder
  * @apioption series.xrange.data.connect
  */
 /**
@@ -11777,6 +11780,7 @@ const GridAxis = {
  *
  * @since     6.2.0
  * @product   gantt
+ * @requires  modules/grid-axis
  * @apioption xAxis.grid
  */
 /**
@@ -13269,7 +13273,7 @@ class GanttSeries extends (external_xrange_src_js_default_Series_types_xrange_de
      * This override draws the point as a diamond if point.options.milestone
      * is true, and uses the original drawPoint() if it is false or not set.
      *
-     * @requires highcharts-gantt
+     * @requires modules/gantt
      *
      * @internal
      * @function Highcharts.seriesTypes.gantt#drawPoint

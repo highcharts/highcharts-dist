@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-20)
+ * @license Highcharts JS v13.1.1-modified (2026-11-21)
  * @module highcharts/highcharts-3d
  * @requires highcharts
  *
@@ -400,7 +400,6 @@ var Chart3D;
                  *
                  * @since    4.0
                  * @product  highcharts
-                 * @requires highcharts-3d
                  */
                 frame: {
                     /**
@@ -416,7 +415,6 @@ var Chart3D;
                      *
                      * @since    4.0
                      * @product  highcharts
-                     * @requires highcharts-3d
                      */
                     /**
                      * The color of the panel.
@@ -1931,7 +1929,6 @@ var Chart3D;
  * @deprecated 5.0.12
  * @since     4.0
  * @product   highcharts
- * @requires  highcharts-3d
  * @apioption chart.options3d.frame.side
  */
 /**

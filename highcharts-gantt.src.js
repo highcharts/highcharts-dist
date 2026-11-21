@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Gantt JS v13.1.1-modified (2026-11-20)
+ * @license Highcharts Gantt JS v13.1.1-modified (2026-11-21)
  * @module highcharts/highcharts-gantt
  *
  * (c) 2017-2026 Highsoft AS
@@ -1254,6 +1254,21 @@ const ChartDefaults = {
      * @apioption  chart.zoomBySingleTouch
      */
     /**
+     * Deprecated. Use
+     * [chart.zooming.key](#chart.zooming.key)
+     * instead.
+     *
+     * Set a key to hold when dragging to zoom the chart. This is useful to
+     * avoid zooming while moving points. Should be set different than
+     * [chart.panKey](#chart.panKey).
+     *
+     * @type       {string}
+     * @since      6.2.0
+     * @validvalue ["alt", "ctrl", "meta", "shift"]
+     * @deprecated 10.2.1
+     * @apioption  chart.zoomKey
+     */
+    /**
      * Chart zooming options.
      *
      * @sample     highcharts/plotoptions/sankey-node-color
@@ -1264,6 +1279,20 @@ const ChartDefaults = {
      * @since 10.2.1
      */
     zooming: {
+        /**
+         * Set a key to hold when dragging to zoom the chart. This is useful to
+         * avoid zooming while moving points. Should be set different than
+         * [chart.panKey](#chart.panKey).
+         *
+         * **Note:** If both zooming and panning are enabled without keys,
+         * zooming will take precedence by default. To prioritize panning,
+         * either set zooming key or [chart.panKey](#chart.panKey).
+         *
+         * @type       {string}
+         * @default    {highcharts} undefined
+         * @validvalue ["alt", "ctrl", "meta", "shift"]
+         * @apioption  chart.zooming.key
+         */
         /**
          * Equivalent to [type](#chart.zooming.type), but for multitouch
          * gestures only. By default, the `pinchType` is the same as the
@@ -16259,6 +16288,7 @@ var AxisDefaults;
          * @type      {Array<*>}
          * @since     4.1.0
          * @product   highcharts highstock gantt
+         * @requires  modules/broken-axis
          * @apioption xAxis.breaks
          */
         /**
@@ -49633,7 +49663,7 @@ var Responsive;
 ;// ./code/es-modules/masters/highcharts.src.js
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-20)
+ * @license Highcharts JS v13.1.1-modified (2026-11-21)
  * @module highcharts/highcharts
  *
  * (c) 2009-2026 Highsoft AS
@@ -50364,6 +50394,7 @@ const { composed: CurrentDateIndication_composed } = Core_Globals;
  * @extends   xAxis.plotLines
  * @excluding className, value
  * @product   gantt
+ * @requires  modules/current-date-indicator
  * @apioption xAxis.currentDateIndicator
  */
 const CurrentDateIndication_defaultOptions = {
@@ -57567,6 +57598,7 @@ const connectorsDefaults = {
      *
      * @declare      Highcharts.ConnectorsOptions
      * @product      gantt
+     * @requires     modules/pathfinder
      * @optionparent connectors
      */
     connectors: {
@@ -57798,6 +57830,7 @@ const connectorsDefaults = {
  * @since     6.2.0
  * @excluding enabled, algorithmMargin
  * @product   gantt
+ * @requires  modules/pathfinder
  * @apioption plotOptions.series.connectors
  */
 /**
@@ -57814,7 +57847,7 @@ const connectorsDefaults = {
  * @since     6.2.0
  * @excluding enabled
  * @product   gantt
- * @requires  highcharts-gantt
+ * @requires  modules/pathfinder
  * @apioption series.xrange.data.connect
  */
 /**
@@ -58527,7 +58560,7 @@ Pathfinder.prototype.algorithms = PathfinderAlgorithms;
 /* unused harmony import specifier */ var Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Gantt JS v13.1.1-modified (2026-11-20)
+ * @license Highcharts Gantt JS v13.1.1-modified (2026-11-21)
  * @module highcharts/modules/pathfinder
  * @requires highcharts
  *
@@ -58660,7 +58693,7 @@ function chartAdjustHeight() {
 /* unused harmony import specifier */ var static_scale_src_Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Gantt JS v13.1.1-modified (2026-11-20)
+ * @license Highcharts Gantt JS v13.1.1-modified (2026-11-21)
  * @module highcharts/modules/static-scale
  * @requires highcharts
  *
@@ -59490,7 +59523,7 @@ Series_SeriesRegistry.registerSeriesType('xrange', XRangeSeries);
 /* unused harmony import specifier */ var xrange_src_Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-20)
+ * @license Highcharts JS v13.1.1-modified (2026-11-21)
  * @module highcharts/modules/xrange
  * @requires highcharts
  *
@@ -59620,7 +59653,7 @@ class GanttPoint extends GanttPoint_XRangePoint {
  *
  * @extends      plotOptions.xrange
  * @product      gantt
- * @requires     highcharts-gantt
+ * @requires     modules/gantt
  * @optionparent plotOptions.gantt
  */
 const GanttSeriesDefaults = {
@@ -59690,7 +59723,7 @@ const GanttSeriesDefaults = {
  *
  * @extends   series,plotOptions.gantt
  * @product   gantt
- * @requires  highcharts-gantt
+ * @requires  modules/gantt
  * @apioption series.gantt
  */
 /**
@@ -61439,6 +61472,7 @@ const GridAxis = {
  *
  * @since     6.2.0
  * @product   gantt
+ * @requires  modules/grid-axis
  * @apioption xAxis.grid
  */
 /**
@@ -62928,7 +62962,7 @@ class GanttSeries extends XRange_XRangeSeries {
      * This override draws the point as a diamond if point.options.milestone
      * is true, and uses the original drawPoint() if it is false or not set.
      *
-     * @requires highcharts-gantt
+     * @requires modules/gantt
      *
      * @internal
      * @function Highcharts.seriesTypes.gantt#drawPoint
@@ -63015,7 +63049,7 @@ Series_SeriesRegistry.registerSeriesType('gantt', GanttSeries);
 /* unused harmony import specifier */ var gantt_src_Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Gantt JS v13.1.1-modified (2026-11-20)
+ * @license Highcharts Gantt JS v13.1.1-modified (2026-11-21)
  * @module highcharts/modules/gantt
  * @requires highcharts
  *

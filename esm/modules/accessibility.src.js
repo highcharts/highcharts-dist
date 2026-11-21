@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-20)
+ * @license Highcharts JS v13.1.1-modified (2026-11-21)
  * @module highcharts/modules/accessibility
  * @requires highcharts
  *
@@ -13291,7 +13291,6 @@ const Options = {
      *
      * @extends    accessibility.point
      * @since 9.3.0
-     * @requires   modules/accessibility
      * @apioption  plotOptions.series.accessibility.point
      */
     /**
@@ -13396,7 +13395,6 @@ const Options = {
              * Options for keyboard navigation for the legend.
              *
              * @since     7.1.0
-             * @requires  modules/accessibility
              */
             keyboardNavigation: {
                 /**

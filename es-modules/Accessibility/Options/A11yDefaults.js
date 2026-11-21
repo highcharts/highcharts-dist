@@ -753,7 +753,6 @@ const Options = {
      *
      * @extends    accessibility.point
      * @since 9.3.0
-     * @requires   modules/accessibility
      * @apioption  plotOptions.series.accessibility.point
      */
     /**
@@ -858,7 +857,6 @@ const Options = {
              * Options for keyboard navigation for the legend.
              *
              * @since     7.1.0
-             * @requires  modules/accessibility
              */
             keyboardNavigation: {
                 /**

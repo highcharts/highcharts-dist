@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Gantt JS v13.1.1-modified (2026-11-20)
+ * @license Highcharts Gantt JS v13.1.1-modified (2026-11-21)
  * @module highcharts/modules/pathfinder
  * @requires highcharts
  *
@@ -1273,6 +1273,7 @@ const connectorsDefaults = {
      *
      * @declare      Highcharts.ConnectorsOptions
      * @product      gantt
+     * @requires     modules/pathfinder
      * @optionparent connectors
      */
     connectors: {
@@ -1504,6 +1505,7 @@ const connectorsDefaults = {
  * @since     6.2.0
  * @excluding enabled, algorithmMargin
  * @product   gantt
+ * @requires  modules/pathfinder
  * @apioption plotOptions.series.connectors
  */
 /**
@@ -1520,7 +1522,7 @@ const connectorsDefaults = {
  * @since     6.2.0
  * @excluding enabled
  * @product   gantt
- * @requires  highcharts-gantt
+ * @requires  modules/pathfinder
  * @apioption series.xrange.data.connect
  */
 /**

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-20)
+ * @license Highcharts JS v13.1.1-modified (2026-11-21)
  * @module highcharts/modules/annotations
  * @requires highcharts
  *
@@ -523,8 +523,6 @@ const AnnotationDefaults = {
      * Options for annotation's labels. Each label inherits options
      * from the labelOptions object. An option from the labelOptions
      * can be overwritten by config for a specific label.
-     *
-     * @requires modules/annotations
      */
     labelOptions: {
         /**
@@ -785,7 +783,6 @@ const AnnotationDefaults = {
      *         Attach annotation to a mock point with different ways
      *
      * @type      {Highcharts.AnnotationMockPointOptions}
-     * @requires  modules/annotations
      * @apioption annotations.labels.point
      */
     /**
@@ -818,7 +815,6 @@ const AnnotationDefaults = {
      *
      * @type      {Highcharts.AnnotationMockPointOptions}
      * @extends   annotations.labels.point
-     * @requires  modules/annotations
      * @apioption annotations.shapes.point
      */
     /**
@@ -865,8 +861,6 @@ const AnnotationDefaults = {
      * Options for annotation's shapes. Each shape inherits options
      * from the shapeOptions object. An option from the shapeOptions
      * can be overwritten by config for a specific shape.
-     *
-     * @requires  modules/annotations
      */
     shapeOptions: {
         /**
@@ -1014,7 +1008,6 @@ const AnnotationDefaults = {
      * by options in a specific control point.
      *
      * @declare  Highcharts.AnnotationControlPointOptionsObject
-     * @requires modules/annotations
      */
     controlPointOptions: {
         /**
@@ -1076,15 +1069,12 @@ const AnnotationDefaults = {
      */
     /**
      * Events available in annotations.
-     *
-     * @requires modules/annotations
      */
     events: {},
     /**
      *
      * Additional options for an annotation with the type.
      *
-     * @requires  modules/annotations
      * @apioption annotations.typeOptions
      */
     typeOptions: {

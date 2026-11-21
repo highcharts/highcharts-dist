@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Gantt JS v13.1.1-modified (2026-11-20)
+ * @license Highcharts Gantt JS v13.1.1-modified (2026-11-21)
  * @module highcharts/modules/current-date-indicator
  * @requires highcharts
  *
@@ -132,6 +132,7 @@ const { composed } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_H
  * @extends   xAxis.plotLines
  * @excluding className, value
  * @product   gantt
+ * @requires  modules/current-date-indicator
  * @apioption xAxis.currentDateIndicator
  */
 const defaultOptions = {

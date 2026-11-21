@@ -1831,8 +1831,14 @@ NavigationBindingsArrowSegmentAnnotationsTypesElliottWaveControlPointStyleOption
 NavigationBindingsArrowSegmentAnnotationsTypesFibonacciTimeZonesControlPointStyleOptions|NavigationBindingsArrowSegmentAnnotationsTypesInfinityLineControlPointStyleOptions|
 NavigationBindingsArrowSegmentAnnotationsTypesMeasureControlPointStyleOptions|NavigationBindingsArrowSegmentAnnotationsTypesPitchforkControlPointStyleOptions|
 NavigationBindingsArrowSegmentAnnotationsTypesTimeCyclesControlPointStyleOptions|NavigationBindingsArrowSegmentAnnotationsTypesTunnelControlPointStyleOptions|
-NavigationBindingsArrowSegmentAnnotationsTypesTunnelTypeHeightControlPointStyleOptions|NavigationBindingsCrooked3AnnotationsControlPointStyleOptions|
-NavigationBindingsCrooked3AnnotationsLabelsControlPointsStyleOptions|NavigationBindingsCrooked3AnnotationsShapesControlPointsStyleOptions|
+NavigationBindingsArrowSegmentAnnotationsTypesTunnelTypeHeightControlPointStyleOptions|NavigationBindingsCircleAnnotationAnnotationsControlPointStyleOptions|
+NavigationBindingsCircleAnnotationAnnotationsLabelsControlPointsStyleOptions|NavigationBindingsCircleAnnotationAnnotationsShapesControlPointsStyleOptions|
+NavigationBindingsCircleAnnotationAnnotationsTypesCrookedLineControlPointStyleOptions|NavigationBindingsCircleAnnotationAnnotationsTypesElliottWaveControlPointStyleOptions|
+NavigationBindingsCircleAnnotationAnnotationsTypesFibonacciControlPointStyleOptions|NavigationBindingsCircleAnnotationAnnotationsTypesFibonacciTimeZonesControlPointStyleOptions|
+NavigationBindingsCircleAnnotationAnnotationsTypesInfinityLineControlPointStyleOptions|NavigationBindingsCircleAnnotationAnnotationsTypesMeasureControlPointStyleOptions|
+NavigationBindingsCircleAnnotationAnnotationsTypesPitchforkControlPointStyleOptions|NavigationBindingsCircleAnnotationAnnotationsTypesTimeCyclesControlPointStyleOptions|
+NavigationBindingsCircleAnnotationAnnotationsTypesTunnelControlPointStyleOptions|NavigationBindingsCircleAnnotationAnnotationsTypesTunnelTypeHeightControlPointStyleOptions|
+NavigationBindingsCrooked3AnnotationsControlPointStyleOptions|NavigationBindingsCrooked3AnnotationsLabelsControlPointsStyleOptions|NavigationBindingsCrooked3AnnotationsShapesControlPointsStyleOptions|
 NavigationBindingsCrooked3AnnotationsTypesCrookedLineControlPointStyleOptions|NavigationBindingsCrooked3AnnotationsTypesElliottWaveControlPointStyleOptions|
 NavigationBindingsCrooked3AnnotationsTypesFibonacciControlPointStyleOptions|NavigationBindingsCrooked3AnnotationsTypesFibonacciTimeZonesControlPointStyleOptions|
 NavigationBindingsCrooked3AnnotationsTypesInfinityLineControlPointStyleOptions|NavigationBindingsCrooked3AnnotationsTypesMeasureControlPointStyleOptions|
@@ -1856,32 +1862,45 @@ NavigationBindingsElliott5AnnotationsTypesFibonacciControlPointStyleOptions|Navi
 NavigationBindingsElliott5AnnotationsTypesInfinityLineControlPointStyleOptions|NavigationBindingsElliott5AnnotationsTypesMeasureControlPointStyleOptions|
 NavigationBindingsElliott5AnnotationsTypesPitchforkControlPointStyleOptions|NavigationBindingsElliott5AnnotationsTypesTimeCyclesControlPointStyleOptions|
 NavigationBindingsElliott5AnnotationsTypesTunnelControlPointStyleOptions|NavigationBindingsElliott5AnnotationsTypesTunnelTypeHeightControlPointStyleOptions|
-NavigationBindingsFibonacciAnnotationsControlPointStyleOptions|NavigationBindingsFibonacciAnnotationsLabelsControlPointsStyleOptions|
-NavigationBindingsFibonacciAnnotationsShapesControlPointsStyleOptions|NavigationBindingsFibonacciAnnotationsTypesCrookedLineControlPointStyleOptions|
-NavigationBindingsFibonacciAnnotationsTypesElliottWaveControlPointStyleOptions|NavigationBindingsFibonacciAnnotationsTypesFibonacciControlPointStyleOptions|
-NavigationBindingsFibonacciAnnotationsTypesFibonacciTimeZonesControlPointStyleOptions|NavigationBindingsFibonacciAnnotationsTypesInfinityLineControlPointStyleOptions|
-NavigationBindingsFibonacciAnnotationsTypesMeasureControlPointStyleOptions|NavigationBindingsFibonacciAnnotationsTypesPitchforkControlPointStyleOptions|
-NavigationBindingsFibonacciAnnotationsTypesTimeCyclesControlPointStyleOptions|NavigationBindingsFibonacciAnnotationsTypesTunnelControlPointStyleOptions|
-NavigationBindingsFibonacciAnnotationsTypesTunnelTypeHeightControlPointStyleOptions|NavigationBindingsFibonacciTimeZonesAnnotationsControlPointStyleOptions|
-NavigationBindingsFibonacciTimeZonesAnnotationsLabelsControlPointsStyleOptions|NavigationBindingsFibonacciTimeZonesAnnotationsShapesControlPointsStyleOptions|
-NavigationBindingsFibonacciTimeZonesAnnotationsTypesCrookedLineControlPointStyleOptions|NavigationBindingsFibonacciTimeZonesAnnotationsTypesElliottWaveControlPointStyleOptions|
-NavigationBindingsFibonacciTimeZonesAnnotationsTypesFibonacciControlPointStyleOptions|NavigationBindingsFibonacciTimeZonesAnnotationsTypesFibonacciTimeZonesControlPointStyleOptions|
-NavigationBindingsFibonacciTimeZonesAnnotationsTypesInfinityLineControlPointStyleOptions|NavigationBindingsFibonacciTimeZonesAnnotationsTypesMeasureControlPointStyleOptions|
-NavigationBindingsFibonacciTimeZonesAnnotationsTypesPitchforkControlPointStyleOptions|NavigationBindingsFibonacciTimeZonesAnnotationsTypesTimeCyclesControlPointStyleOptions|
-NavigationBindingsFibonacciTimeZonesAnnotationsTypesTunnelControlPointStyleOptions|NavigationBindingsFibonacciTimeZonesAnnotationsTypesTunnelTypeHeightControlPointStyleOptions|
-NavigationBindingsHorizontalLineAnnotationsControlPointStyleOptions|NavigationBindingsHorizontalLineAnnotationsLabelsControlPointsStyleOptions|
-NavigationBindingsHorizontalLineAnnotationsShapesControlPointsStyleOptions|NavigationBindingsHorizontalLineAnnotationsTypesCrookedLineControlPointStyleOptions|
-NavigationBindingsHorizontalLineAnnotationsTypesElliottWaveControlPointStyleOptions|NavigationBindingsHorizontalLineAnnotationsTypesFibonacciControlPointStyleOptions|
-NavigationBindingsHorizontalLineAnnotationsTypesFibonacciTimeZonesControlPointStyleOptions|NavigationBindingsHorizontalLineAnnotationsTypesInfinityLineControlPointStyleOptions|
-NavigationBindingsHorizontalLineAnnotationsTypesMeasureControlPointStyleOptions|NavigationBindingsHorizontalLineAnnotationsTypesPitchforkControlPointStyleOptions|
-NavigationBindingsHorizontalLineAnnotationsTypesTimeCyclesControlPointStyleOptions|NavigationBindingsHorizontalLineAnnotationsTypesTunnelControlPointStyleOptions|
-NavigationBindingsHorizontalLineAnnotationsTypesTunnelTypeHeightControlPointStyleOptions|NavigationBindingsInfinityLineAnnotationsControlPointStyleOptions|
-NavigationBindingsInfinityLineAnnotationsLabelsControlPointsStyleOptions|NavigationBindingsInfinityLineAnnotationsShapesControlPointsStyleOptions|
-NavigationBindingsInfinityLineAnnotationsTypesCrookedLineControlPointStyleOptions|NavigationBindingsInfinityLineAnnotationsTypesElliottWaveControlPointStyleOptions|
-NavigationBindingsInfinityLineAnnotationsTypesFibonacciControlPointStyleOptions|NavigationBindingsInfinityLineAnnotationsTypesFibonacciTimeZonesControlPointStyleOptions|
-NavigationBindingsInfinityLineAnnotationsTypesInfinityLineControlPointStyleOptions|NavigationBindingsInfinityLineAnnotationsTypesMeasureControlPointStyleOptions|
-NavigationBindingsInfinityLineAnnotationsTypesPitchforkControlPointStyleOptions|NavigationBindingsInfinityLineAnnotationsTypesTimeCyclesControlPointStyleOptions|
-NavigationBindingsInfinityLineAnnotationsTypesTunnelControlPointStyleOptions|NavigationBindingsInfinityLineAnnotationsTypesTunnelTypeHeightControlPointStyleOptions|
+NavigationBindingsEllipseAnnotationAnnotationsControlPointStyleOptions|NavigationBindingsEllipseAnnotationAnnotationsLabelsControlPointsStyleOptions|
+NavigationBindingsEllipseAnnotationAnnotationsShapesControlPointsStyleOptions|NavigationBindingsEllipseAnnotationAnnotationsTypesCrookedLineControlPointStyleOptions|
+NavigationBindingsEllipseAnnotationAnnotationsTypesElliottWaveControlPointStyleOptions|NavigationBindingsEllipseAnnotationAnnotationsTypesFibonacciControlPointStyleOptions|
+NavigationBindingsEllipseAnnotationAnnotationsTypesFibonacciTimeZonesControlPointStyleOptions|NavigationBindingsEllipseAnnotationAnnotationsTypesInfinityLineControlPointStyleOptions|
+NavigationBindingsEllipseAnnotationAnnotationsTypesMeasureControlPointStyleOptions|NavigationBindingsEllipseAnnotationAnnotationsTypesPitchforkControlPointStyleOptions|
+NavigationBindingsEllipseAnnotationAnnotationsTypesTimeCyclesControlPointStyleOptions|NavigationBindingsEllipseAnnotationAnnotationsTypesTunnelControlPointStyleOptions|
+NavigationBindingsEllipseAnnotationAnnotationsTypesTunnelTypeHeightControlPointStyleOptions|NavigationBindingsFibonacciAnnotationsControlPointStyleOptions|
+NavigationBindingsFibonacciAnnotationsLabelsControlPointsStyleOptions|NavigationBindingsFibonacciAnnotationsShapesControlPointsStyleOptions|
+NavigationBindingsFibonacciAnnotationsTypesCrookedLineControlPointStyleOptions|NavigationBindingsFibonacciAnnotationsTypesElliottWaveControlPointStyleOptions|
+NavigationBindingsFibonacciAnnotationsTypesFibonacciControlPointStyleOptions|NavigationBindingsFibonacciAnnotationsTypesFibonacciTimeZonesControlPointStyleOptions|
+NavigationBindingsFibonacciAnnotationsTypesInfinityLineControlPointStyleOptions|NavigationBindingsFibonacciAnnotationsTypesMeasureControlPointStyleOptions|
+NavigationBindingsFibonacciAnnotationsTypesPitchforkControlPointStyleOptions|NavigationBindingsFibonacciAnnotationsTypesTimeCyclesControlPointStyleOptions|
+NavigationBindingsFibonacciAnnotationsTypesTunnelControlPointStyleOptions|NavigationBindingsFibonacciAnnotationsTypesTunnelTypeHeightControlPointStyleOptions|
+NavigationBindingsFibonacciTimeZonesAnnotationsControlPointStyleOptions|NavigationBindingsFibonacciTimeZonesAnnotationsLabelsControlPointsStyleOptions|
+NavigationBindingsFibonacciTimeZonesAnnotationsShapesControlPointsStyleOptions|NavigationBindingsFibonacciTimeZonesAnnotationsTypesCrookedLineControlPointStyleOptions|
+NavigationBindingsFibonacciTimeZonesAnnotationsTypesElliottWaveControlPointStyleOptions|NavigationBindingsFibonacciTimeZonesAnnotationsTypesFibonacciControlPointStyleOptions|
+NavigationBindingsFibonacciTimeZonesAnnotationsTypesFibonacciTimeZonesControlPointStyleOptions|NavigationBindingsFibonacciTimeZonesAnnotationsTypesInfinityLineControlPointStyleOptions|
+NavigationBindingsFibonacciTimeZonesAnnotationsTypesMeasureControlPointStyleOptions|NavigationBindingsFibonacciTimeZonesAnnotationsTypesPitchforkControlPointStyleOptions|
+NavigationBindingsFibonacciTimeZonesAnnotationsTypesTimeCyclesControlPointStyleOptions|NavigationBindingsFibonacciTimeZonesAnnotationsTypesTunnelControlPointStyleOptions|
+NavigationBindingsFibonacciTimeZonesAnnotationsTypesTunnelTypeHeightControlPointStyleOptions|NavigationBindingsHorizontalLineAnnotationsControlPointStyleOptions|
+NavigationBindingsHorizontalLineAnnotationsLabelsControlPointsStyleOptions|NavigationBindingsHorizontalLineAnnotationsShapesControlPointsStyleOptions|
+NavigationBindingsHorizontalLineAnnotationsTypesCrookedLineControlPointStyleOptions|NavigationBindingsHorizontalLineAnnotationsTypesElliottWaveControlPointStyleOptions|
+NavigationBindingsHorizontalLineAnnotationsTypesFibonacciControlPointStyleOptions|NavigationBindingsHorizontalLineAnnotationsTypesFibonacciTimeZonesControlPointStyleOptions|
+NavigationBindingsHorizontalLineAnnotationsTypesInfinityLineControlPointStyleOptions|NavigationBindingsHorizontalLineAnnotationsTypesMeasureControlPointStyleOptions|
+NavigationBindingsHorizontalLineAnnotationsTypesPitchforkControlPointStyleOptions|NavigationBindingsHorizontalLineAnnotationsTypesTimeCyclesControlPointStyleOptions|
+NavigationBindingsHorizontalLineAnnotationsTypesTunnelControlPointStyleOptions|NavigationBindingsHorizontalLineAnnotationsTypesTunnelTypeHeightControlPointStyleOptions|
+NavigationBindingsInfinityLineAnnotationsControlPointStyleOptions|NavigationBindingsInfinityLineAnnotationsLabelsControlPointsStyleOptions|
+NavigationBindingsInfinityLineAnnotationsShapesControlPointsStyleOptions|NavigationBindingsInfinityLineAnnotationsTypesCrookedLineControlPointStyleOptions|
+NavigationBindingsInfinityLineAnnotationsTypesElliottWaveControlPointStyleOptions|NavigationBindingsInfinityLineAnnotationsTypesFibonacciControlPointStyleOptions|
+NavigationBindingsInfinityLineAnnotationsTypesFibonacciTimeZonesControlPointStyleOptions|NavigationBindingsInfinityLineAnnotationsTypesInfinityLineControlPointStyleOptions|
+NavigationBindingsInfinityLineAnnotationsTypesMeasureControlPointStyleOptions|NavigationBindingsInfinityLineAnnotationsTypesPitchforkControlPointStyleOptions|
+NavigationBindingsInfinityLineAnnotationsTypesTimeCyclesControlPointStyleOptions|NavigationBindingsInfinityLineAnnotationsTypesTunnelControlPointStyleOptions|
+NavigationBindingsInfinityLineAnnotationsTypesTunnelTypeHeightControlPointStyleOptions|NavigationBindingsLabelAnnotationAnnotationsControlPointStyleOptions|
+NavigationBindingsLabelAnnotationAnnotationsLabelsControlPointsStyleOptions|NavigationBindingsLabelAnnotationAnnotationsShapesControlPointsStyleOptions|
+NavigationBindingsLabelAnnotationAnnotationsTypesCrookedLineControlPointStyleOptions|NavigationBindingsLabelAnnotationAnnotationsTypesElliottWaveControlPointStyleOptions|
+NavigationBindingsLabelAnnotationAnnotationsTypesFibonacciControlPointStyleOptions|NavigationBindingsLabelAnnotationAnnotationsTypesFibonacciTimeZonesControlPointStyleOptions|
+NavigationBindingsLabelAnnotationAnnotationsTypesInfinityLineControlPointStyleOptions|NavigationBindingsLabelAnnotationAnnotationsTypesMeasureControlPointStyleOptions|
+NavigationBindingsLabelAnnotationAnnotationsTypesPitchforkControlPointStyleOptions|NavigationBindingsLabelAnnotationAnnotationsTypesTimeCyclesControlPointStyleOptions|
+NavigationBindingsLabelAnnotationAnnotationsTypesTunnelControlPointStyleOptions|NavigationBindingsLabelAnnotationAnnotationsTypesTunnelTypeHeightControlPointStyleOptions|
 NavigationBindingsMeasureXAnnotationsControlPointStyleOptions|NavigationBindingsMeasureXAnnotationsLabelsControlPointsStyleOptions|NavigationBindingsMeasureXAnnotationsShapesControlPointsStyleOptions|
 NavigationBindingsMeasureXAnnotationsTypesCrookedLineControlPointStyleOptions|NavigationBindingsMeasureXAnnotationsTypesElliottWaveControlPointStyleOptions|
 NavigationBindingsMeasureXAnnotationsTypesFibonacciControlPointStyleOptions|NavigationBindingsMeasureXAnnotationsTypesFibonacciTimeZonesControlPointStyleOptions|
@@ -1920,7 +1939,14 @@ NavigationBindingsRayAnnotationsTypesFibonacciControlPointStyleOptions|Navigatio
 NavigationBindingsRayAnnotationsTypesInfinityLineControlPointStyleOptions|NavigationBindingsRayAnnotationsTypesMeasureControlPointStyleOptions|
 NavigationBindingsRayAnnotationsTypesPitchforkControlPointStyleOptions|NavigationBindingsRayAnnotationsTypesTimeCyclesControlPointStyleOptions|
 NavigationBindingsRayAnnotationsTypesTunnelControlPointStyleOptions|NavigationBindingsRayAnnotationsTypesTunnelTypeHeightControlPointStyleOptions|
-NavigationBindingsSegmentAnnotationsControlPointStyleOptions|NavigationBindingsSegmentAnnotationsLabelsControlPointsStyleOptions|NavigationBindingsSegmentAnnotationsShapesControlPointsStyleOptions|
+NavigationBindingsRectangleAnnotationAnnotationsControlPointStyleOptions|NavigationBindingsRectangleAnnotationAnnotationsLabelsControlPointsStyleOptions|
+NavigationBindingsRectangleAnnotationAnnotationsShapesControlPointsStyleOptions|NavigationBindingsRectangleAnnotationAnnotationsTypesCrookedLineControlPointStyleOptions|
+NavigationBindingsRectangleAnnotationAnnotationsTypesElliottWaveControlPointStyleOptions|NavigationBindingsRectangleAnnotationAnnotationsTypesFibonacciControlPointStyleOptions|
+NavigationBindingsRectangleAnnotationAnnotationsTypesFibonacciTimeZonesControlPointStyleOptions|NavigationBindingsRectangleAnnotationAnnotationsTypesInfinityLineControlPointStyleOptions|
+NavigationBindingsRectangleAnnotationAnnotationsTypesMeasureControlPointStyleOptions|NavigationBindingsRectangleAnnotationAnnotationsTypesPitchforkControlPointStyleOptions|
+NavigationBindingsRectangleAnnotationAnnotationsTypesTimeCyclesControlPointStyleOptions|NavigationBindingsRectangleAnnotationAnnotationsTypesTunnelControlPointStyleOptions|
+NavigationBindingsRectangleAnnotationAnnotationsTypesTunnelTypeHeightControlPointStyleOptions|NavigationBindingsSegmentAnnotationsControlPointStyleOptions|
+NavigationBindingsSegmentAnnotationsLabelsControlPointsStyleOptions|NavigationBindingsSegmentAnnotationsShapesControlPointsStyleOptions|
 NavigationBindingsSegmentAnnotationsTypesCrookedLineControlPointStyleOptions|NavigationBindingsSegmentAnnotationsTypesElliottWaveControlPointStyleOptions|
 NavigationBindingsSegmentAnnotationsTypesFibonacciControlPointStyleOptions|NavigationBindingsSegmentAnnotationsTypesFibonacciTimeZonesControlPointStyleOptions|
 NavigationBindingsSegmentAnnotationsTypesInfinityLineControlPointStyleOptions|NavigationBindingsSegmentAnnotationsTypesMeasureControlPointStyleOptions|
@@ -26982,6 +27008,3161 @@ export interface NavigationBindingsArrowSegmentOptions {
     annotationsOptions?: (AnnotationsOptions|NavigationBindingsArrowSegmentAnnotationsOptions);
 }
 /**
+ * (Highcharts, Highstock) Enable or disable the initial animation when a series
+ * is displayed for the `annotation`. The animation can also be set as a
+ * configuration object. Please note that this option only applies to the
+ * initial animation. For other animations, see chart.animation and the
+ * animation parameter under the API methods. The following properties are
+ * supported:
+ *
+ * - `defer`: The animation delay time in milliseconds.
+ */
+export interface NavigationBindingsCircleAnnotationAnnotationsAnimationOptions {
+    /**
+     * (Highcharts, Highstock) The animation delay time in milliseconds. Set to
+     * `0` renders annotation immediately. As `undefined` inherits defer time
+     * from the series.animation.defer.
+     */
+    defer?: number;
+}
+export interface NavigationBindingsCircleAnnotationAnnotationsControlPointStyleOptions {
+    cursor?: string;
+    fill?: string;
+    stroke?: string;
+    "stroke-width"?: number;
+}
+/**
+ * (Highcharts, Highstock) Events available in annotations.
+ */
+export interface NavigationBindingsCircleAnnotationAnnotationsEventsOptions {
+    /**
+     * (Highcharts, Highstock) Event callback when annotation is added to the
+     * chart.
+     */
+    add?: EventCallbackFunction<Annotation>;
+    /**
+     * (Highcharts, Highstock) Event callback when annotation is updated (e.g.
+     * drag and dropped or resized by control points).
+     */
+    afterUpdate?: EventCallbackFunction<Annotation>;
+    /**
+     * (Highcharts, Highstock) Fires when the annotation is clicked.
+     */
+    click?: EventCallbackFunction<Annotation>;
+    /**
+     * (Highcharts, Highstock) Fires when the annotation is dragged.
+     */
+    drag?: EventCallbackFunction<Annotation>;
+    /**
+     * (Highcharts, Highstock) Event callback when annotation is removed from
+     * the chart.
+     */
+    remove?: EventCallbackFunction<Annotation>;
+}
+/**
+ * (Highcharts, Highstock) Options for annotation's labels. Each label inherits
+ * options from the labelOptions object. An option from the labelOptions can be
+ * overwritten by config for a specific label.
+ */
+export interface NavigationBindingsCircleAnnotationAnnotationsLabelOptions {
+    /**
+     * (Highcharts, Highstock) Accessibility options for an annotation label.
+     */
+    accessibility?: AnnotationLabelAccessibilityOptionsObject;
+    /**
+     * (Highcharts, Highstock) The alignment of the annotation's label. If
+     * right, the right side of the label should be touching the point.
+     */
+    align?: AlignValue;
+    /**
+     * (Highcharts, Highstock) Whether to allow the annotation's labels to
+     * overlap. To make the labels less sensitive for overlapping, the can be
+     * set to 0.
+     */
+    allowOverlap?: boolean;
+    /**
+     * (Highcharts, Highstock) The background color or gradient for the
+     * annotation's label.
+     */
+    backgroundColor?: ColorType;
+    /**
+     * (Highcharts, Highstock) The border color for the annotation's label.
+     */
+    borderColor?: ColorType;
+    /**
+     * (Highcharts, Highstock) The border radius in pixels for the annotation's
+     * label.
+     */
+    borderRadius?: number;
+    /**
+     * (Highcharts, Highstock) The border width in pixels for the annotation's
+     * label.
+     */
+    borderWidth?: number;
+    /**
+     * (Highcharts, Highstock) A class name for styling by CSS.
+     */
+    className?: string;
+    /**
+     * (Highcharts, Highstock) Whether to hide the annotation's label that is
+     * outside the plot area.
+     */
+    crop?: boolean;
+    /**
+     * (Highcharts, Highstock) The label's pixel distance from the point.
+     */
+    distance?: number;
+    /**
+     * (Highcharts, Highstock) A format string for the data label.
+     */
+    format?: string;
+    /**
+     * (Highcharts, Highstock) Callback JavaScript function to format the
+     * annotation's label. Note that if a `format` or `text` are defined, the
+     * format or text take precedence and the formatter is ignored. `This`
+     * refers to a point object. The callback also receives an argument `ctx` so
+     * that arrow-functions can access the same context (the point in this case)
+     * as normal functions can using `this`. Since v12.6.0, the callback
+     * receives `ctx`.
+     */
+    formatter?: FormatterCallbackFunction<Point>;
+    /**
+     * (Highcharts, Highstock) Whether all the labels for an annotation are
+     * visible in the exported data table.
+     */
+    includeInDataExport?: boolean;
+    /**
+     * (Highcharts, Highstock) How to handle the annotation's label that flow
+     * outside the plot area. The justify option aligns the label inside the
+     * plot area.
+     */
+    overflow?: OptionsOverflowValue;
+    /**
+     * (Highcharts, Highstock) When either the borderWidth or the
+     * backgroundColor is set, this is the padding within the box.
+     */
+    padding?: number;
+    /**
+     * (Highcharts, Highstock) The shadow of the box. The shadow can be an
+     * object configuration containing `color`, `offsetX`, `offsetY`, `opacity`
+     * and `width`.
+     */
+    shadow?: (boolean|ShadowOptionsObject);
+    /**
+     * (Highcharts, Highstock) The name of a symbol to use for the border around
+     * the label. Symbols are predefined functions on the Renderer object.
+     */
+    shape?: string;
+    /**
+     * (Highcharts, Highstock) Styles for the annotation's label.
+     */
+    style?: CSSObject;
+    /**
+     * (Highcharts, Highstock) Alias for the format option.
+     */
+    text?: string;
+    /**
+     * (Highcharts, Highstock) Whether to use HTML to render the annotation's
+     * label.
+     */
+    useHTML?: boolean;
+    /**
+     * (Highcharts, Highstock) The vertical alignment of the annotation's label.
+     */
+    verticalAlign?: VerticalAlignValue;
+    /**
+     * (Highcharts, Highstock) The x position offset of the label relative to
+     * the point. Note that if a `distance` is defined, the distance takes
+     * precedence over `x` and `y` options.
+     */
+    x?: number;
+    /**
+     * (Highcharts, Highstock) The y position offset of the label relative to
+     * the point. Note that if a `distance` is defined, the distance takes
+     * precedence over `x` and `y` options.
+     */
+    y?: number;
+}
+export interface NavigationBindingsCircleAnnotationAnnotationsLabelsControlPointsStyleOptions {
+    cursor?: string;
+    fill?: string;
+    stroke?: string;
+    "stroke-width"?: number;
+}
+/**
+ * (Highcharts, Highstock) An array of labels for the annotation. For options
+ * that apply to multiple labels, they can be added to the labelOptions.
+ */
+export interface NavigationBindingsCircleAnnotationAnnotationsLabelsOptions {
+    /**
+     * (Highcharts, Highstock) Accessibility options for an annotation label.
+     */
+    accessibility?: AnnotationLabelAccessibilityOptionsObject;
+    /**
+     * (Highcharts, Highstock) The alignment of the annotation's label. If
+     * right, the right side of the label should be touching the point.
+     */
+    align?: AlignValue;
+    /**
+     * (Highcharts, Highstock) Whether to allow the annotation's labels to
+     * overlap. To make the labels less sensitive for overlapping, the can be
+     * set to 0.
+     */
+    allowOverlap?: boolean;
+    /**
+     * (Highcharts, Highstock) The background color or gradient for the
+     * annotation's label.
+     */
+    backgroundColor?: ColorType;
+    /**
+     * (Highcharts, Highstock) The border color for the annotation's label.
+     */
+    borderColor?: ColorType;
+    /**
+     * (Highcharts, Highstock) The border radius in pixels for the annotation's
+     * label.
+     */
+    borderRadius?: number;
+    /**
+     * (Highcharts, Highstock) The border width in pixels for the annotation's
+     * label.
+     */
+    borderWidth?: number;
+    /**
+     * (Highcharts, Highstock) A class name for styling by CSS.
+     */
+    className?: string;
+    /**
+     * (Highcharts, Highstock) The array of control points.
+     */
+    controlPoints?: (AnnotationControlPointOptionsObject|Array<AnnotationControlPointOptionsObject>);
+    /**
+     * (Highcharts, Highstock) Whether to hide the annotation's label that is
+     * outside the plot area.
+     */
+    crop?: boolean;
+    /**
+     * (Highcharts, Highstock) The label's pixel distance from the point.
+     */
+    distance?: number;
+    /**
+     * (Highcharts, Highstock) A format string for the data label.
+     */
+    format?: string;
+    /**
+     * (Highcharts, Highstock) Callback JavaScript function to format the
+     * annotation's label. Note that if a `format` or `text` are defined, the
+     * format or text take precedence and the formatter is ignored. `This`
+     * refers to a point object. The callback also receives an argument `ctx` so
+     * that arrow-functions can access the same context (the point in this case)
+     * as normal functions can using `this`. Since v12.6.0, the callback
+     * receives `ctx`.
+     */
+    formatter?: FormatterCallbackFunction<Point>;
+    /**
+     * (Highcharts, Highstock) An id for later identification of the annotation
+     * label.
+     */
+    id?: string;
+    /**
+     * (Highcharts, Highstock) Whether all the labels for an annotation are
+     * visible in the exported data table.
+     */
+    includeInDataExport?: boolean;
+    /**
+     * (Highcharts, Highstock) How to handle the annotation's label that flow
+     * outside the plot area. The justify option aligns the label inside the
+     * plot area.
+     */
+    overflow?: OptionsOverflowValue;
+    /**
+     * (Highcharts, Highstock) When either the borderWidth or the
+     * backgroundColor is set, this is the padding within the box.
+     */
+    padding?: number;
+    /**
+     * (Highcharts, Highstock) This option defines the point to which the label
+     * will be connected. It can be either the point which exists in the series
+     * - it is referenced by the point's id - or a new point with defined x, y
+     * properties and optionally axes.
+     */
+    point?: AnnotationMockPointOptions;
+    /**
+     * (Highcharts, Highstock) The shadow of the box. The shadow can be an
+     * object configuration containing `color`, `offsetX`, `offsetY`, `opacity`
+     * and `width`.
+     */
+    shadow?: (boolean|ShadowOptionsObject);
+    /**
+     * (Highcharts, Highstock) The name of a symbol to use for the border around
+     * the label. Symbols are predefined functions on the Renderer object.
+     */
+    shape?: string;
+    /**
+     * (Highcharts, Highstock) Styles for the annotation's label.
+     */
+    style?: CSSObject;
+    /**
+     * (Highcharts, Highstock) Alias for the format option.
+     */
+    text?: string;
+    /**
+     * (Highcharts, Highstock) Whether to use HTML to render the annotation's
+     * label.
+     */
+    useHTML?: boolean;
+    /**
+     * (Highcharts, Highstock) The vertical alignment of the annotation's label.
+     */
+    verticalAlign?: VerticalAlignValue;
+    /**
+     * (Highcharts, Highstock) The x position offset of the label relative to
+     * the point. Note that if a `distance` is defined, the distance takes
+     * precedence over `x` and `y` options.
+     */
+    x?: number;
+    /**
+     * (Highcharts, Highstock) The y position offset of the label relative to
+     * the point. Note that if a `distance` is defined, the distance takes
+     * precedence over `x` and `y` options.
+     */
+    y?: number;
+}
+/**
+ * (Highcharts, Highstock) Options to customize the bindings' annotation shapes
+ * and labels.
+ */
+export interface NavigationBindingsCircleAnnotationAnnotationsOptions {
+    /**
+     * (Highcharts, Highstock) Enable or disable the initial animation when a
+     * series is displayed for the `annotation`. The animation can also be set
+     * as a configuration object. Please note that this option only applies to
+     * the initial animation. For other animations, see chart.animation and the
+     * animation parameter under the API methods. The following properties are
+     * supported:
+     *
+     * - `defer`: The animation delay time in milliseconds.
+     */
+    animation?: (boolean|NavigationBindingsCircleAnnotationAnnotationsAnimationOptions|Partial<AnimationOptionsObject>);
+    /**
+     * (Highcharts, Highstock) A class name for styling by CSS.
+     */
+    className?: string;
+    /**
+     * (Highcharts, Highstock) Options for annotation's control points. Each
+     * control point inherits options from controlPointOptions object. Options
+     * from the controlPointOptions can be overwritten by options in a specific
+     * control point.
+     */
+    controlPointOptions?: AnnotationControlPointOptionsObject;
+    /**
+     * (Highcharts, Highstock) Whether to hide the part of the annotation that
+     * is outside the plot area.
+     */
+    crop?: boolean;
+    /**
+     * (Highcharts, Highstock) Allow an annotation to be draggable by a user.
+     * Possible values are `'x'`, `'xy'`, `'y'` and `''` (disabled).
+     */
+    draggable?: AnnotationDraggableValue;
+    /**
+     * (Highcharts, Highstock) Events available in annotations.
+     */
+    events?: NavigationBindingsCircleAnnotationAnnotationsEventsOptions;
+    /**
+     * (Highcharts, Highstock) Sets an ID for an annotation. Can be user later
+     * when removing an annotation in Chart.removeAnnotation(id) method.
+     */
+    id?: (number|string);
+    /**
+     * (Highcharts, Highstock) Options for annotation's labels. Each label
+     * inherits options from the labelOptions object. An option from the
+     * labelOptions can be overwritten by config for a specific label.
+     */
+    labelOptions?: NavigationBindingsCircleAnnotationAnnotationsLabelOptions;
+    /**
+     * (Highcharts, Highstock) An array of labels for the annotation. For
+     * options that apply to multiple labels, they can be added to the
+     * labelOptions.
+     */
+    labels?: Array<NavigationBindingsCircleAnnotationAnnotationsLabelsOptions>;
+    /**
+     * (Highcharts, Highstock) Options for annotation's shapes. Each shape
+     * inherits options from the shapeOptions object. An option from the
+     * shapeOptions can be overwritten by config for a specific shape.
+     */
+    shapeOptions?: NavigationBindingsCircleAnnotationAnnotationsShapeOptions;
+    /**
+     * (Highcharts, Highstock) An array of shapes for the annotation. For
+     * options that apply to multiple shapes, then can be added to the
+     * shapeOptions.
+     */
+    shapes?: Array<NavigationBindingsCircleAnnotationAnnotationsShapesOptions>;
+    /**
+     * (Highstock) For advanced annotations, this option defines the type of
+     * annotation. Can be one of the keys listed under the types option.
+     */
+    type?: string;
+    /**
+     * (Highcharts, Highstock) Additional options for an annotation with the
+     * type.
+     */
+    typeOptions?: NavigationBindingsCircleAnnotationAnnotationsTypeOptions;
+    /**
+     * (Highstock) Option override for specific advanced annotation types. This
+     * collection is intended for general theming using
+     * `Highcharts.setOptions()`.
+     */
+    types?: NavigationBindingsCircleAnnotationAnnotationsTypesOptions;
+    /**
+     * (Highcharts, Highstock) Whether the annotation is visible.
+     */
+    visible?: boolean;
+    /**
+     * (Highcharts, Highstock) The Z index of the annotation.
+     */
+    zIndex?: number;
+}
+/**
+ * (Highcharts, Highstock) Options for annotation's shapes. Each shape inherits
+ * options from the shapeOptions object. An option from the shapeOptions can be
+ * overwritten by config for a specific shape.
+ */
+export interface NavigationBindingsCircleAnnotationAnnotationsShapeOptions {
+    /**
+     * (Highcharts, Highstock) Name of the dash style to use for the shape's
+     * stroke.
+     */
+    dashStyle?: DashStyleValue;
+    /**
+     * (Highcharts, Highstock) The color of the shape's fill.
+     */
+    fill?: ColorType;
+    /**
+     * (Highcharts, Highstock) The height of the `rect` shape. Can be defined in
+     * pixels or yAxis units, if shapes.yAxis index is defined.
+     */
+    height?: number;
+    /**
+     * (Highcharts, Highstock) The radius of the `circle` shape. Can be defined
+     * in pixels or yAxis units, if shapes.yAxis index is defined.
+     */
+    r?: number;
+    /**
+     * (Highcharts, Highstock) The radius of the `ellipse` shape in y direction.
+     * Can be defined in pixels or yAxis units, if shapes.yAxis index is
+     * defined.
+     */
+    ry?: number;
+    /**
+     * (Highcharts, Highstock) Defines additional snapping area around an
+     * annotation making this annotation to focus. Defined in pixels.
+     */
+    snap?: number;
+    /**
+     * (Highcharts, Highstock) The URL for an image to use as the annotation
+     * shape. Note, type has to be set to `'image'`.
+     */
+    src?: string;
+    /**
+     * (Highcharts, Highstock) The color of the shape's stroke.
+     */
+    stroke?: ColorType;
+    /**
+     * (Highcharts, Highstock) The pixel stroke width of the shape.
+     */
+    strokeWidth?: number;
+    /**
+     * (Highcharts, Highstock) The type of the shape. Available options are
+     * `circle`, `rect`, `ellipse` and `path`.
+     */
+    type?: string;
+    /**
+     * (Highcharts, Highstock) The width of the `rect` shape. Can be defined in
+     * pixels or xAxis units, if shapes.xAxis index is defined.
+     */
+    width?: number;
+    /**
+     * (Highcharts, Highstock) The xAxis index which should be used for
+     * annotation's sizes and points coordinates conversion.
+     *
+     * This option is used for `rect` shape width, and all shapes point and
+     * points coordinates.
+     */
+    xAxis?: number;
+    /**
+     * (Highcharts, Highstock) The yAxis index which should be used for
+     * annotation's sizes and points coordinates conversion.
+     *
+     * This option is used for `rect` shape height, `circle` shape radius,
+     * `ellipse` y direction radius, and all shapes point and points
+     * coordinates.
+     */
+    yAxis?: number;
+}
+export interface NavigationBindingsCircleAnnotationAnnotationsShapesControlPointsStyleOptions {
+    cursor?: string;
+    fill?: string;
+    stroke?: string;
+    "stroke-width"?: number;
+}
+/**
+ * (Highcharts, Highstock) An array of shapes for the annotation. For options
+ * that apply to multiple shapes, then can be added to the shapeOptions.
+ */
+export interface NavigationBindingsCircleAnnotationAnnotationsShapesOptions {
+    /**
+     * (Highcharts, Highstock) The array of control points.
+     */
+    controlPoints?: (AnnotationControlPointOptionsObject|Array<AnnotationControlPointOptionsObject>);
+    /**
+     * (Highcharts, Highstock) Name of the dash style to use for the shape's
+     * stroke.
+     */
+    dashStyle?: DashStyleValue;
+    /**
+     * (Highcharts, Highstock) The color of the shape's fill.
+     */
+    fill?: ColorType;
+    /**
+     * (Highcharts, Highstock) The height of the `rect` shape. Can be defined in
+     * pixels or yAxis units, if shapes.yAxis index is defined.
+     */
+    height?: number;
+    /**
+     * (Highcharts, Highstock) Id of the marker which will be drawn at the final
+     * vertex of the path. The `arrow` and `reverse-arrow` markers are available
+     * by default; custom markers can be defined in the defs option.
+     */
+    markerEnd?: string;
+    /**
+     * (Highcharts, Highstock) Id of the marker which will be drawn at the first
+     * vertex of the path. The `arrow` and `reverse-arrow` markers are available
+     * by default; custom markers can be defined in the defs option.
+     */
+    markerStart?: string;
+    /**
+     * (Highcharts, Highstock) This option defines the point to which the shape
+     * will be connected. It can be either the point which exists in the series
+     * - it is referenced by the point's id - or a new point with defined x, y
+     * properties and optionally axes.
+     */
+    point?: AnnotationMockPointOptions;
+    /**
+     * (Highcharts, Highstock) An array of points for the shape or a callback
+     * function that returns that shape point.
+     *
+     * This option is available for shapes which can use multiple points such as
+     * path. A point can be either a point object or a point's id.
+     */
+    points?: Array<AnnotationMockPointOptions>;
+    /**
+     * (Highcharts, Highstock) The radius of the `circle` shape. Can be defined
+     * in pixels or yAxis units, if shapes.yAxis index is defined.
+     */
+    r?: number;
+    /**
+     * (Highcharts, Highstock) The radius of the `ellipse` shape in y direction.
+     * Can be defined in pixels or yAxis units, if shapes.yAxis index is
+     * defined.
+     */
+    ry?: number;
+    /**
+     * (Highcharts, Highstock) Defines additional snapping area around an
+     * annotation making this annotation to focus. Defined in pixels.
+     */
+    snap?: number;
+    /**
+     * (Highcharts, Highstock) The URL for an image to use as the annotation
+     * shape. Note, type has to be set to `'image'`.
+     */
+    src?: string;
+    /**
+     * (Highcharts, Highstock) The color of the shape's stroke.
+     */
+    stroke?: ColorType;
+    /**
+     * (Highcharts, Highstock) The pixel stroke width of the shape.
+     */
+    strokeWidth?: number;
+    /**
+     * (Highcharts, Highstock) The type of the shape. Available options are
+     * `circle`, `rect`, `ellipse` and `path`.
+     */
+    type?: string;
+    /**
+     * (Highcharts, Highstock) The width of the `rect` shape. Can be defined in
+     * pixels or xAxis units, if shapes.xAxis index is defined.
+     */
+    width?: number;
+    /**
+     * (Highcharts, Highstock) The xAxis index which should be used for
+     * annotation's sizes and points coordinates conversion.
+     *
+     * This option is used for `rect` shape width, and all shapes point and
+     * points coordinates.
+     */
+    xAxis?: number;
+    /**
+     * (Highcharts, Highstock) The yAxis index which should be used for
+     * annotation's sizes and points coordinates conversion.
+     *
+     * This option is used for `rect` shape height, `circle` shape radius,
+     * `ellipse` y direction radius, and all shapes point and points
+     * coordinates.
+     */
+    yAxis?: number;
+}
+/**
+ * (Highcharts, Highstock) Background shape options for the annotation.
+ */
+export interface NavigationBindingsCircleAnnotationAnnotationsTypeBackgroundOptions {
+    /**
+     * (Highcharts, Highstock) Name of the dash style to use for the shape's
+     * stroke.
+     */
+    dashStyle?: DashStyleValue;
+    /**
+     * (Highcharts, Highstock) The color of the shape's fill.
+     */
+    fill?: ColorType;
+    /**
+     * (Highcharts, Highstock) The height of the `rect` shape. Can be defined in
+     * pixels or yAxis units, if shapes.yAxis index is defined.
+     */
+    height?: number;
+    /**
+     * (Highcharts, Highstock) The radius of the `circle` shape. Can be defined
+     * in pixels or yAxis units, if shapes.yAxis index is defined.
+     */
+    r?: number;
+    /**
+     * (Highcharts, Highstock) The radius of the `ellipse` shape in y direction.
+     * Can be defined in pixels or yAxis units, if shapes.yAxis index is
+     * defined.
+     */
+    ry?: number;
+    /**
+     * (Highcharts, Highstock) Defines additional snapping area around an
+     * annotation making this annotation to focus. Defined in pixels.
+     */
+    snap?: number;
+    /**
+     * (Highcharts, Highstock) The URL for an image to use as the annotation
+     * shape. Note, type has to be set to `'image'`.
+     */
+    src?: string;
+    /**
+     * (Highcharts, Highstock) The color of the shape's stroke.
+     */
+    stroke?: ColorType;
+    /**
+     * (Highcharts, Highstock) The pixel stroke width of the shape.
+     */
+    strokeWidth?: number;
+    /**
+     * (Highcharts, Highstock) The type of the shape. Available options are
+     * `circle`, `rect`, `ellipse` and `path`.
+     */
+    type?: string;
+    /**
+     * (Highcharts, Highstock) The width of the `rect` shape. Can be defined in
+     * pixels or xAxis units, if shapes.xAxis index is defined.
+     */
+    width?: number;
+    /**
+     * (Highcharts, Highstock) The xAxis index which should be used for
+     * annotation's sizes and points coordinates conversion.
+     *
+     * This option is used for `rect` shape width, and all shapes point and
+     * points coordinates.
+     */
+    xAxis?: number;
+    /**
+     * (Highcharts, Highstock) The yAxis index which should be used for
+     * annotation's sizes and points coordinates conversion.
+     *
+     * This option is used for `rect` shape height, `circle` shape radius,
+     * `ellipse` y direction radius, and all shapes point and points
+     * coordinates.
+     */
+    yAxis?: number;
+}
+/**
+ * (Highcharts, Highstock) Line options.
+ */
+export interface NavigationBindingsCircleAnnotationAnnotationsTypeLineOptions {
+    /**
+     * (Highcharts, Highstock) Name of the dash style to use for the shape's
+     * stroke.
+     */
+    dashStyle?: DashStyleValue;
+    /**
+     * (Highcharts, Highstock) The color of the shape's fill.
+     */
+    fill?: ColorType;
+    /**
+     * (Highcharts, Highstock) The height of the `rect` shape. Can be defined in
+     * pixels or yAxis units, if shapes.yAxis index is defined.
+     */
+    height?: number;
+    /**
+     * (Highcharts, Highstock) The radius of the `circle` shape. Can be defined
+     * in pixels or yAxis units, if shapes.yAxis index is defined.
+     */
+    r?: number;
+    /**
+     * (Highcharts, Highstock) The radius of the `ellipse` shape in y direction.
+     * Can be defined in pixels or yAxis units, if shapes.yAxis index is
+     * defined.
+     */
+    ry?: number;
+    /**
+     * (Highcharts, Highstock) Defines additional snapping area around an
+     * annotation making this annotation to focus. Defined in pixels.
+     */
+    snap?: number;
+    /**
+     * (Highcharts, Highstock) The URL for an image to use as the annotation
+     * shape. Note, type has to be set to `'image'`.
+     */
+    src?: string;
+    /**
+     * (Highcharts, Highstock) The color of the shape's stroke.
+     */
+    stroke?: ColorType;
+    /**
+     * (Highcharts, Highstock) The pixel stroke width of the shape.
+     */
+    strokeWidth?: number;
+    /**
+     * (Highcharts, Highstock) The type of the shape. Available options are
+     * `circle`, `rect`, `ellipse` and `path`.
+     */
+    type?: string;
+    /**
+     * (Highcharts, Highstock) The width of the `rect` shape. Can be defined in
+     * pixels or xAxis units, if shapes.xAxis index is defined.
+     */
+    width?: number;
+    /**
+     * (Highcharts, Highstock) The xAxis index which should be used for
+     * annotation's sizes and points coordinates conversion.
+     *
+     * This option is used for `rect` shape width, and all shapes point and
+     * points coordinates.
+     */
+    xAxis?: number;
+    /**
+     * (Highcharts, Highstock) The yAxis index which should be used for
+     * annotation's sizes and points coordinates conversion.
+     *
+     * This option is used for `rect` shape height, `circle` shape radius,
+     * `ellipse` y direction radius, and all shapes point and points
+     * coordinates.
+     */
+    yAxis?: number;
+}
+/**
+ * (Highcharts, Highstock) Additional options for an annotation with the type.
+ */
+export interface NavigationBindingsCircleAnnotationAnnotationsTypeOptions {
+    /**
+     * (Highcharts, Highstock) Background shape options for the annotation.
+     */
+    background?: NavigationBindingsCircleAnnotationAnnotationsTypeBackgroundOptions;
+    /**
+     * (Highcharts, Highstock) Height of the annotation in pixels.
+     */
+    height?: number;
+    /**
+     * (Highcharts, Highstock) Line options.
+     */
+    line?: NavigationBindingsCircleAnnotationAnnotationsTypeLineOptions;
+    /**
+     * (Highcharts, Highstock) A single point that the annotation is attached
+     * to. It can be either the point which exists in the series - it is
+     * referenced by the point's id - or a new point with defined x, y
+     * properties and optionally axes.
+     */
+    point?: (string|AnnotationMockPointOptionsObject);
+    /**
+     * (Highcharts, Highstock) An array of points that the annotation is
+     * attached to. Each point can the point which exists in the series - it is
+     * referenced by the point's id - or a new point with defined x, y
+     * properties and optionally axes.
+     */
+    points?: Array<(string|AnnotationMockPointOptionsObject)>;
+    /**
+     * (Highcharts, Highstock) The annotation type identifier.
+     */
+    type?: string;
+    /**
+     * (Highcharts, Highstock) This option defines which `xAxis` the point is
+     * connected to. It refers to either the axis id or the index of the axis in
+     * the `xAxis` array.
+     */
+    xAxis?: (number|string);
+    /**
+     * (Highcharts, Highstock) This option defines which `yAxis` the point is
+     * connected to. It refers to either the axis id or the index of the axis in
+     * the `yAxis` array.
+     */
+    yAxis?: (number|string);
+}
+export interface NavigationBindingsCircleAnnotationAnnotationsTypesCrookedLineControlPointStyleOptions {
+    cursor?: string;
+    fill?: string;
+    stroke?: string;
+    "stroke-width"?: number;
+}
+/**
+ * (Highstock) Options for annotation's labels. Each label inherits options from
+ * the labelOptions object. An option from the labelOptions can be overwritten
+ * by config for a specific label.
+ */
+export interface NavigationBindingsCircleAnnotationAnnotationsTypesCrookedLineLabelOptions {
+    /**
+     * (Highstock) Accessibility options for an annotation label.
+     */
+    accessibility?: AnnotationLabelAccessibilityOptionsObject;
+    /**
+     * (Highstock) The alignment of the annotation's label. If right, the right
+     * side of the label should be touching the point.
+     */
+    align?: AlignValue;
+    /**
+     * (Highstock) Whether to allow the annotation's labels to overlap. To make
+     * the labels less sensitive for overlapping, the can be set to 0.
+     */
+    allowOverlap?: boolean;
+    /**
+     * (Highstock) The background color or gradient for the annotation's label.
+     */
+    backgroundColor?: ColorType;
+    /**
+     * (Highstock) The border color for the annotation's label.
+     */
+    borderColor?: ColorType;
+    /**
+     * (Highstock) The border radius in pixels for the annotation's label.
+     */
+    borderRadius?: number;
+    /**
+     * (Highstock) The border width in pixels for the annotation's label.
+     */
+    borderWidth?: number;
+    /**
+     * (Highstock) A class name for styling by CSS.
+     */
+    className?: string;
+    /**
+     * (Highstock) Whether to hide the annotation's label that is outside the
+     * plot area.
+     */
+    crop?: boolean;
+    /**
+     * (Highstock) The label's pixel distance from the point.
+     */
+    distance?: number;
+    /**
+     * (Highstock) A format string for the data label.
+     */
+    format?: string;
+    /**
+     * (Highstock) Callback JavaScript function to format the annotation's
+     * label. Note that if a `format` or `text` are defined, the format or text
+     * take precedence and the formatter is ignored. `This` refers to a point
+     * object. The callback also receives an argument `ctx` so that
+     * arrow-functions can access the same context (the point in this case) as
+     * normal functions can using `this`. Since v12.6.0, the callback receives
+     * `ctx`.
+     */
+    formatter?: FormatterCallbackFunction<Point>;
+    /**
+     * (Highstock) Whether all the labels for an annotation are visible in the
+     * exported data table.
+     */
+    includeInDataExport?: boolean;
+    /**
+     * (Highstock) How to handle the annotation's label that flow outside the
+     * plot area. The justify option aligns the label inside the plot area.
+     */
+    overflow?: OptionsOverflowValue;
+    /**
+     * (Highstock) When either the borderWidth or the backgroundColor is set,
+     * this is the padding within the box.
+     */
+    padding?: number;
+    /**
+     * (Highstock) The shadow of the box. The shadow can be an object
+     * configuration containing `color`, `offsetX`, `offsetY`, `opacity` and
+     * `width`.
+     */
+    shadow?: (boolean|ShadowOptionsObject);
+    /**
+     * (Highstock) The name of a symbol to use for the border around the label.
+     * Symbols are predefined functions on the Renderer object.
+     */
+    shape?: string;
+    /**
+     * (Highstock) Styles for the annotation's label.
+     */
+    style?: CSSObject;
+    /**
+     * (Highstock) Alias for the format option.
+     */
+    text?: string;
+    /**
+     * (Highstock) Whether to use HTML to render the annotation's label.
+     */
+    useHTML?: boolean;
+    /**
+     * (Highstock) The vertical alignment of the annotation's label.
+     */
+    verticalAlign?: VerticalAlignValue;
+    /**
+     * (Highstock) The x position offset of the label relative to the point.
+     * Note that if a `distance` is defined, the distance takes precedence over
+     * `x` and `y` options.
+     */
+    x?: number;
+    /**
+     * (Highstock) The y position offset of the label relative to the point.
+     * Note that if a `distance` is defined, the distance takes precedence over
+     * `x` and `y` options.
+     */
+    y?: number;
+}
+/**
+ * (Highstock) Options for the crooked line annotation type.
+ */
+export interface NavigationBindingsCircleAnnotationAnnotationsTypesCrookedLineOptions {
+    /**
+     * (Highstock) Options for annotation's control points. Each control point
+     * inherits options from controlPointOptions object. Options from the
+     * controlPointOptions can be overwritten by options in a specific control
+     * point.
+     */
+    controlPointOptions?: AnnotationControlPointOptionsObject;
+    /**
+     * (Highstock) Options for annotation's labels. Each label inherits options
+     * from the labelOptions object. An option from the labelOptions can be
+     * overwritten by config for a specific label.
+     */
+    labelOptions?: NavigationBindingsCircleAnnotationAnnotationsTypesCrookedLineLabelOptions;
+    /**
+     * (Highstock) Additional options for an annotation with the type.
+     */
+    typeOptions?: NavigationBindingsCircleAnnotationAnnotationsTypesCrookedLineTypeOptions;
+}
+/**
+ * (Highstock) Line options.
+ */
+export interface NavigationBindingsCircleAnnotationAnnotationsTypesCrookedLineTypeLineOptions {
+    fill?: string;
+}
+/**
+ * (Highstock) Additional options for an annotation with the type.
+ */
+export interface NavigationBindingsCircleAnnotationAnnotationsTypesCrookedLineTypeOptions {
+    /**
+     * (Highstock) Line options.
+     */
+    line?: NavigationBindingsCircleAnnotationAnnotationsTypesCrookedLineTypeLineOptions;
+    points?: Array<NavigationBindingsCircleAnnotationAnnotationsTypesCrookedLineTypePointsOptions>;
+    /**
+     * (Highstock) This option defines which `xAxis` the point is connected to.
+     * It refers to either the axis id or the index of the axis in the `xAxis`
+     * array.
+     */
+    xAxis?: number;
+    /**
+     * (Highstock) This option defines which `yAxis` the point is connected to.
+     * It refers to either the axis id or the index of the axis in the `yAxis`
+     * array.
+     */
+    yAxis?: number;
+}
+export interface NavigationBindingsCircleAnnotationAnnotationsTypesCrookedLineTypePointsOptions {
+    controlPoint?: number;
+    /**
+     * (Highstock) The x position of the point.
+     */
+    x?: number;
+    /**
+     * (Highstock) The y position of the point.
+     */
+    y?: number;
+}
+export interface NavigationBindingsCircleAnnotationAnnotationsTypesElliottWaveControlPointStyleOptions {
+    cursor?: string;
+    fill?: string;
+    stroke?: string;
+    "stroke-width"?: number;
+}
+/**
+ * (Highstock) Options for annotation's labels. Each label inherits options from
+ * the labelOptions object. An option from the labelOptions can be overwritten
+ * by config for a specific label.
+ */
+export interface NavigationBindingsCircleAnnotationAnnotationsTypesElliottWaveLabelOptions {
+    /**
+     * (Highstock) Accessibility options for an annotation label.
+     */
+    accessibility?: AnnotationLabelAccessibilityOptionsObject;
+    /**
+     * (Highstock) The alignment of the annotation's label. If right, the right
+     * side of the label should be touching the point.
+     */
+    align?: string;
+    /**
+     * (Highstock) Whether to allow the annotation's labels to overlap. To make
+     * the labels less sensitive for overlapping, the can be set to 0.
+     */
+    allowOverlap?: boolean;
+    /**
+     * (Highstock) The background color or gradient for the annotation's label.
+     */
+    backgroundColor?: string;
+    /**
+     * (Highstock) The border color for the annotation's label.
+     */
+    borderColor?: ColorType;
+    /**
+     * (Highstock) The border radius in pixels for the annotation's label.
+     */
+    borderRadius?: number;
+    /**
+     * (Highstock) The border width in pixels for the annotation's label.
+     */
+    borderWidth?: number;
+    /**
+     * (Highstock) A class name for styling by CSS.
+     */
+    className?: string;
+    /**
+     * (Highstock) Whether to hide the annotation's label that is outside the
+     * plot area.
+     */
+    crop?: boolean;
+    /**
+     * (Highstock) The label's pixel distance from the point.
+     */
+    distance?: number;
+    /**
+     * (Highstock) A format string for the data label.
+     */
+    format?: string;
+    /**
+     * (Highstock) Callback JavaScript function to format the annotation's
+     * label. Note that if a `format` or `text` are defined, the format or text
+     * take precedence and the formatter is ignored. `This` refers to a point
+     * object. The callback also receives an argument `ctx` so that
+     * arrow-functions can access the same context (the point in this case) as
+     * normal functions can using `this`. Since v12.6.0, the callback receives
+     * `ctx`.
+     */
+    formatter?: FormatterCallbackFunction<Point>;
+    /**
+     * (Highstock) Whether all the labels for an annotation are visible in the
+     * exported data table.
+     */
+    includeInDataExport?: boolean;
+    /**
+     * (Highstock) How to handle the annotation's label that flow outside the
+     * plot area. The justify option aligns the label inside the plot area.
+     */
+    overflow?: OptionsOverflowValue;
+    /**
+     * (Highstock) When either the borderWidth or the backgroundColor is set,
+     * this is the padding within the box.
+     */
+    padding?: number;
+    /**
+     * (Highstock) The shadow of the box. The shadow can be an object
+     * configuration containing `color`, `offsetX`, `offsetY`, `opacity` and
+     * `width`.
+     */
+    shadow?: (boolean|ShadowOptionsObject);
+    /**
+     * (Highstock) The name of a symbol to use for the border around the label.
+     * Symbols are predefined functions on the Renderer object.
+     */
+    shape?: string;
+    /**
+     * (Highstock) Styles for the annotation's label.
+     */
+    style?: (CSSObject|NavigationBindingsCircleAnnotationAnnotationsTypesElliottWaveLabelStyleOptions);
+    /**
+     * (Highstock) Alias for the format option.
+     */
+    text?: string;
+    type?: string;
+    /**
+     * (Highstock) Whether to use HTML to render the annotation's label.
+     */
+    useHTML?: boolean;
+    /**
+     * (Highstock) The vertical alignment of the annotation's label.
+     */
+    verticalAlign?: VerticalAlignValue;
+    /**
+     * (Highstock) The x position offset of the label relative to the point.
+     * Note that if a `distance` is defined, the distance takes precedence over
+     * `x` and `y` options.
+     */
+    x?: number;
+    /**
+     * (Highstock) The y position offset of the label relative to the point.
+     * Note that if a `distance` is defined, the distance takes precedence over
+     * `x` and `y` options.
+     */
+    y?: number;
+}
+/**
+ * (Highstock) Styles for the annotation's label.
+ */
+export interface NavigationBindingsCircleAnnotationAnnotationsTypesElliottWaveLabelStyleOptions {
+    color?: string;
+}
+/**
+ * (Highstock) Options for the elliott wave annotation type.
+ */
+export interface NavigationBindingsCircleAnnotationAnnotationsTypesElliottWaveOptions {
+    /**
+     * (Highstock) Options for annotation's control points. Each control point
+     * inherits options from controlPointOptions object. Options from the
+     * controlPointOptions can be overwritten by options in a specific control
+     * point.
+     */
+    controlPointOptions?: AnnotationControlPointOptionsObject;
+    /**
+     * (Highstock) Options for annotation's labels. Each label inherits options
+     * from the labelOptions object. An option from the labelOptions can be
+     * overwritten by config for a specific label.
+     */
+    labelOptions?: NavigationBindingsCircleAnnotationAnnotationsTypesElliottWaveLabelOptions;
+    /**
+     * (Highstock) Additional options for an annotation with the type.
+     */
+    typeOptions?: NavigationBindingsCircleAnnotationAnnotationsTypesElliottWaveTypeOptions;
+}
+/**
+ * (Highstock) Line options.
+ */
+export interface NavigationBindingsCircleAnnotationAnnotationsTypesElliottWaveTypeLineOptions {
+    fill?: string;
+    strokeWidth?: number;
+}
+/**
+ * (Highstock) Additional options for an annotation with the type.
+ */
+export interface NavigationBindingsCircleAnnotationAnnotationsTypesElliottWaveTypeOptions {
+    /**
+     * (Highstock) Line options.
+     */
+    line?: NavigationBindingsCircleAnnotationAnnotationsTypesElliottWaveTypeLineOptions;
+    points?: Array<NavigationBindingsCircleAnnotationAnnotationsTypesElliottWaveTypePointsOptions>;
+    /**
+     * (Highstock) This option defines which `xAxis` the point is connected to.
+     * It refers to either the axis id or the index of the axis in the `xAxis`
+     * array.
+     */
+    xAxis?: number;
+    /**
+     * (Highstock) This option defines which `yAxis` the point is connected to.
+     * It refers to either the axis id or the index of the axis in the `yAxis`
+     * array.
+     */
+    yAxis?: number;
+}
+/**
+ * (Highstock) Options for annotation's labels. Each label inherits options from
+ * the labelOptions object. An option from the labelOptions can be overwritten
+ * by config for a specific label.
+ */
+export interface NavigationBindingsCircleAnnotationAnnotationsTypesElliottWaveTypePointsLabelOptions {
+    /**
+     * (Highstock) Accessibility options for an annotation label.
+     */
+    accessibility?: AnnotationLabelAccessibilityOptionsObject;
+    /**
+     * (Highstock) The alignment of the annotation's label. If right, the right
+     * side of the label should be touching the point.
+     */
+    align?: AlignValue;
+    /**
+     * (Highstock) Whether to allow the annotation's labels to overlap. To make
+     * the labels less sensitive for overlapping, the can be set to 0.
+     */
+    allowOverlap?: boolean;
+    /**
+     * (Highstock) The background color or gradient for the annotation's label.
+     */
+    backgroundColor?: ColorType;
+    /**
+     * (Highstock) The border color for the annotation's label.
+     */
+    borderColor?: ColorType;
+    /**
+     * (Highstock) The border radius in pixels for the annotation's label.
+     */
+    borderRadius?: number;
+    /**
+     * (Highstock) The border width in pixels for the annotation's label.
+     */
+    borderWidth?: number;
+    /**
+     * (Highstock) A class name for styling by CSS.
+     */
+    className?: string;
+    /**
+     * (Highstock) Whether to hide the annotation's label that is outside the
+     * plot area.
+     */
+    crop?: boolean;
+    /**
+     * (Highstock) The label's pixel distance from the point.
+     */
+    distance?: number;
+    /**
+     * (Highstock) A format string for the data label.
+     */
+    format?: string;
+    /**
+     * (Highstock) Callback JavaScript function to format the annotation's
+     * label. Note that if a `format` or `text` are defined, the format or text
+     * take precedence and the formatter is ignored. `This` refers to a point
+     * object. The callback also receives an argument `ctx` so that
+     * arrow-functions can access the same context (the point in this case) as
+     * normal functions can using `this`. Since v12.6.0, the callback receives
+     * `ctx`.
+     */
+    formatter?: FormatterCallbackFunction<Point>;
+    /**
+     * (Highstock) Whether all the labels for an annotation are visible in the
+     * exported data table.
+     */
+    includeInDataExport?: boolean;
+    /**
+     * (Highstock) How to handle the annotation's label that flow outside the
+     * plot area. The justify option aligns the label inside the plot area.
+     */
+    overflow?: OptionsOverflowValue;
+    /**
+     * (Highstock) When either the borderWidth or the backgroundColor is set,
+     * this is the padding within the box.
+     */
+    padding?: number;
+    /**
+     * (Highstock) The shadow of the box. The shadow can be an object
+     * configuration containing `color`, `offsetX`, `offsetY`, `opacity` and
+     * `width`.
+     */
+    shadow?: (boolean|ShadowOptionsObject);
+    /**
+     * (Highstock) The name of a symbol to use for the border around the label.
+     * Symbols are predefined functions on the Renderer object.
+     */
+    shape?: string;
+    /**
+     * (Highstock) Styles for the annotation's label.
+     */
+    style?: CSSObject;
+    /**
+     * (Highstock) Alias for the format option.
+     */
+    text?: string;
+    /**
+     * (Highstock) Whether to use HTML to render the annotation's label.
+     */
+    useHTML?: boolean;
+    /**
+     * (Highstock) The vertical alignment of the annotation's label.
+     */
+    verticalAlign?: VerticalAlignValue;
+    /**
+     * (Highstock) The x position offset of the label relative to the point.
+     * Note that if a `distance` is defined, the distance takes precedence over
+     * `x` and `y` options.
+     */
+    x?: number;
+    /**
+     * (Highstock) The y position offset of the label relative to the point.
+     * Note that if a `distance` is defined, the distance takes precedence over
+     * `x` and `y` options.
+     */
+    y?: number;
+}
+export interface NavigationBindingsCircleAnnotationAnnotationsTypesElliottWaveTypePointsOptions {
+    controlPoint?: number;
+    /**
+     * (Highstock) Options for annotation's labels. Each label inherits options
+     * from the labelOptions object. An option from the labelOptions can be
+     * overwritten by config for a specific label.
+     */
+    label?: NavigationBindingsCircleAnnotationAnnotationsTypesElliottWaveTypePointsLabelOptions;
+    /**
+     * (Highstock) The x position of the point.
+     */
+    x?: number;
+    /**
+     * (Highstock) The y position of the point.
+     */
+    y?: number;
+}
+export interface NavigationBindingsCircleAnnotationAnnotationsTypesFibonacciControlPointStyleOptions {
+    cursor?: string;
+    fill?: string;
+    stroke?: string;
+    "stroke-width"?: number;
+}
+/**
+ * (Highstock) Options for annotation's labels. Each label inherits options from
+ * the labelOptions object. An option from the labelOptions can be overwritten
+ * by config for a specific label.
+ */
+export interface NavigationBindingsCircleAnnotationAnnotationsTypesFibonacciLabelOptions {
+    /**
+     * (Highstock) Accessibility options for an annotation label.
+     */
+    accessibility?: AnnotationLabelAccessibilityOptionsObject;
+    /**
+     * (Highstock) The alignment of the annotation's label. If right, the right
+     * side of the label should be touching the point.
+     */
+    align?: string;
+    /**
+     * (Highstock) Whether to allow the annotation's labels to overlap. To make
+     * the labels less sensitive for overlapping, the can be set to 0.
+     */
+    allowOverlap?: boolean;
+    /**
+     * (Highstock) The background color or gradient for the annotation's label.
+     */
+    backgroundColor?: string;
+    /**
+     * (Highstock) The border color for the annotation's label.
+     */
+    borderColor?: ColorType;
+    /**
+     * (Highstock) The border radius in pixels for the annotation's label.
+     */
+    borderRadius?: number;
+    /**
+     * (Highstock) The border width in pixels for the annotation's label.
+     */
+    borderWidth?: number;
+    /**
+     * (Highstock) A class name for styling by CSS.
+     */
+    className?: string;
+    /**
+     * (Highstock) Whether to hide the annotation's label that is outside the
+     * plot area.
+     */
+    crop?: boolean;
+    /**
+     * (Highstock) The label's pixel distance from the point.
+     */
+    distance?: number;
+    /**
+     * (Highstock) A format string for the data label.
+     */
+    format?: string;
+    /**
+     * (Highstock) Callback JavaScript function to format the annotation's
+     * label. Note that if a `format` or `text` are defined, the format or text
+     * take precedence and the formatter is ignored. `This` refers to a point
+     * object. The callback also receives an argument `ctx` so that
+     * arrow-functions can access the same context (the point in this case) as
+     * normal functions can using `this`. Since v12.6.0, the callback receives
+     * `ctx`.
+     */
+    formatter?: FormatterCallbackFunction<Point>;
+    /**
+     * (Highstock) Whether all the labels for an annotation are visible in the
+     * exported data table.
+     */
+    includeInDataExport?: boolean;
+    /**
+     * (Highstock) How to handle the annotation's label that flow outside the
+     * plot area. The justify option aligns the label inside the plot area.
+     */
+    overflow?: OptionsOverflowValue;
+    /**
+     * (Highstock) When either the borderWidth or the backgroundColor is set,
+     * this is the padding within the box.
+     */
+    padding?: number;
+    /**
+     * (Highstock) The shadow of the box. The shadow can be an object
+     * configuration containing `color`, `offsetX`, `offsetY`, `opacity` and
+     * `width`.
+     */
+    shadow?: (boolean|ShadowOptionsObject);
+    /**
+     * (Highstock) The name of a symbol to use for the border around the label.
+     * Symbols are predefined functions on the Renderer object.
+     */
+    shape?: string;
+    /**
+     * (Highstock) Styles for the annotation's label.
+     */
+    style?: (CSSObject|NavigationBindingsCircleAnnotationAnnotationsTypesFibonacciLabelStyleOptions);
+    /**
+     * (Highstock) Alias for the format option.
+     */
+    text?: string;
+    /**
+     * (Highstock) Whether to use HTML to render the annotation's label.
+     */
+    useHTML?: boolean;
+    /**
+     * (Highstock) The vertical alignment of the annotation's label.
+     */
+    verticalAlign?: string;
+    /**
+     * (Highstock) The x position offset of the label relative to the point.
+     * Note that if a `distance` is defined, the distance takes precedence over
+     * `x` and `y` options.
+     */
+    x?: number;
+    /**
+     * (Highstock) The y position offset of the label relative to the point.
+     * Note that if a `distance` is defined, the distance takes precedence over
+     * `x` and `y` options.
+     */
+    y?: number;
+}
+/**
+ * (Highstock) Styles for the annotation's label.
+ */
+export interface NavigationBindingsCircleAnnotationAnnotationsTypesFibonacciLabelStyleOptions {
+    color?: string;
+}
+/**
+ * (Highstock) Options for the fibonacci annotation type.
+ */
+export interface NavigationBindingsCircleAnnotationAnnotationsTypesFibonacciOptions {
+    /**
+     * (Highstock) Options for annotation's control points. Each control point
+     * inherits options from controlPointOptions object. Options from the
+     * controlPointOptions can be overwritten by options in a specific control
+     * point.
+     */
+    controlPointOptions?: AnnotationControlPointOptionsObject;
+    /**
+     * (Highstock) Options for annotation's labels. Each label inherits options
+     * from the labelOptions object. An option from the labelOptions can be
+     * overwritten by config for a specific label.
+     */
+    labelOptions?: NavigationBindingsCircleAnnotationAnnotationsTypesFibonacciLabelOptions;
+    /**
+     * (Highstock) Additional options for an annotation with the type.
+     */
+    typeOptions?: NavigationBindingsCircleAnnotationAnnotationsTypesFibonacciTypeOptions;
+}
+export interface NavigationBindingsCircleAnnotationAnnotationsTypesFibonacciTimeZonesControlPointStyleOptions {
+    cursor?: string;
+    fill?: string;
+    stroke?: string;
+    "stroke-width"?: number;
+}
+/**
+ * (Highstock) Options for annotation's labels. Each label inherits options from
+ * the labelOptions object. An option from the labelOptions can be overwritten
+ * by config for a specific label.
+ */
+export interface NavigationBindingsCircleAnnotationAnnotationsTypesFibonacciTimeZonesLabelOptions {
+    /**
+     * (Highstock) Accessibility options for an annotation label.
+     */
+    accessibility?: AnnotationLabelAccessibilityOptionsObject;
+    /**
+     * (Highstock) The alignment of the annotation's label. If right, the right
+     * side of the label should be touching the point.
+     */
+    align?: AlignValue;
+    /**
+     * (Highstock) Whether to allow the annotation's labels to overlap. To make
+     * the labels less sensitive for overlapping, the can be set to 0.
+     */
+    allowOverlap?: boolean;
+    /**
+     * (Highstock) The background color or gradient for the annotation's label.
+     */
+    backgroundColor?: ColorType;
+    /**
+     * (Highstock) The border color for the annotation's label.
+     */
+    borderColor?: ColorType;
+    /**
+     * (Highstock) The border radius in pixels for the annotation's label.
+     */
+    borderRadius?: number;
+    /**
+     * (Highstock) The border width in pixels for the annotation's label.
+     */
+    borderWidth?: number;
+    /**
+     * (Highstock) A class name for styling by CSS.
+     */
+    className?: string;
+    /**
+     * (Highstock) Whether to hide the annotation's label that is outside the
+     * plot area.
+     */
+    crop?: boolean;
+    /**
+     * (Highstock) The label's pixel distance from the point.
+     */
+    distance?: number;
+    /**
+     * (Highstock) A format string for the data label.
+     */
+    format?: string;
+    /**
+     * (Highstock) Callback JavaScript function to format the annotation's
+     * label. Note that if a `format` or `text` are defined, the format or text
+     * take precedence and the formatter is ignored. `This` refers to a point
+     * object. The callback also receives an argument `ctx` so that
+     * arrow-functions can access the same context (the point in this case) as
+     * normal functions can using `this`. Since v12.6.0, the callback receives
+     * `ctx`.
+     */
+    formatter?: FormatterCallbackFunction<Point>;
+    /**
+     * (Highstock) Whether all the labels for an annotation are visible in the
+     * exported data table.
+     */
+    includeInDataExport?: boolean;
+    /**
+     * (Highstock) How to handle the annotation's label that flow outside the
+     * plot area. The justify option aligns the label inside the plot area.
+     */
+    overflow?: OptionsOverflowValue;
+    /**
+     * (Highstock) When either the borderWidth or the backgroundColor is set,
+     * this is the padding within the box.
+     */
+    padding?: number;
+    /**
+     * (Highstock) The shadow of the box. The shadow can be an object
+     * configuration containing `color`, `offsetX`, `offsetY`, `opacity` and
+     * `width`.
+     */
+    shadow?: (boolean|ShadowOptionsObject);
+    /**
+     * (Highstock) The name of a symbol to use for the border around the label.
+     * Symbols are predefined functions on the Renderer object.
+     */
+    shape?: string;
+    /**
+     * (Highstock) Styles for the annotation's label.
+     */
+    style?: CSSObject;
+    /**
+     * (Highstock) Alias for the format option.
+     */
+    text?: string;
+    /**
+     * (Highstock) Whether to use HTML to render the annotation's label.
+     */
+    useHTML?: boolean;
+    /**
+     * (Highstock) The vertical alignment of the annotation's label.
+     */
+    verticalAlign?: VerticalAlignValue;
+    /**
+     * (Highstock) The x position offset of the label relative to the point.
+     * Note that if a `distance` is defined, the distance takes precedence over
+     * `x` and `y` options.
+     */
+    x?: number;
+    /**
+     * (Highstock) The y position offset of the label relative to the point.
+     * Note that if a `distance` is defined, the distance takes precedence over
+     * `x` and `y` options.
+     */
+    y?: number;
+}
+/**
+ * (Highstock) Options for the fibonacci time zones annotation type.
+ */
+export interface NavigationBindingsCircleAnnotationAnnotationsTypesFibonacciTimeZonesOptions {
+    /**
+     * (Highstock) Options for annotation's control points. Each control point
+     * inherits options from controlPointOptions object. Options from the
+     * controlPointOptions can be overwritten by options in a specific control
+     * point.
+     */
+    controlPointOptions?: AnnotationControlPointOptionsObject;
+    /**
+     * (Highstock) Options for annotation's labels. Each label inherits options
+     * from the labelOptions object. An option from the labelOptions can be
+     * overwritten by config for a specific label.
+     */
+    labelOptions?: NavigationBindingsCircleAnnotationAnnotationsTypesFibonacciTimeZonesLabelOptions;
+    /**
+     * (Highstock) Additional options for an annotation with the type.
+     */
+    typeOptions?: NavigationBindingsCircleAnnotationAnnotationsTypesFibonacciTimeZonesTypeOptions;
+}
+export interface NavigationBindingsCircleAnnotationAnnotationsTypesFibonacciTimeZonesTypeControlPointOptions {
+    events?: any;
+}
+/**
+ * (Highstock) Line options.
+ */
+export interface NavigationBindingsCircleAnnotationAnnotationsTypesFibonacciTimeZonesTypeLineOptions {
+    fill?: string;
+    /**
+     * (Highstock) The color of the lines.
+     */
+    stroke?: string;
+    /**
+     * (Highstock) The width of the lines.
+     */
+    strokeWidth?: number;
+}
+/**
+ * (Highstock) Additional options for an annotation with the type.
+ */
+export interface NavigationBindingsCircleAnnotationAnnotationsTypesFibonacciTimeZonesTypeOptions {
+    controlPointOptions?: NavigationBindingsCircleAnnotationAnnotationsTypesFibonacciTimeZonesTypeControlPointOptions;
+    /**
+     * (Highstock) Line options.
+     */
+    line?: NavigationBindingsCircleAnnotationAnnotationsTypesFibonacciTimeZonesTypeLineOptions;
+    points?: Array<NavigationBindingsCircleAnnotationAnnotationsTypesFibonacciTimeZonesTypePointsOptions>;
+    /**
+     * (Highstock) This option defines which `xAxis` the point is connected to.
+     * It refers to either the axis id or the index of the axis in the `xAxis`
+     * array.
+     */
+    xAxis?: number;
+    /**
+     * (Highstock) This option defines which `yAxis` the point is connected to.
+     * It refers to either the axis id or the index of the axis in the `yAxis`
+     * array.
+     */
+    yAxis?: number;
+}
+export interface NavigationBindingsCircleAnnotationAnnotationsTypesFibonacciTimeZonesTypePointsOptions {
+    controlPoint?: number;
+    /**
+     * (Highstock) The x position of the point.
+     */
+    x?: number;
+}
+/**
+ * (Highstock) An array with options for the labels.
+ */
+export interface NavigationBindingsCircleAnnotationAnnotationsTypesFibonacciTypeLabelsOptions {
+    /**
+     * (Highstock) Accessibility options for an annotation label.
+     */
+    accessibility?: AnnotationLabelAccessibilityOptionsObject;
+    /**
+     * (Highstock) The alignment of the annotation's label. If right, the right
+     * side of the label should be touching the point.
+     */
+    align?: AlignValue;
+    /**
+     * (Highstock) Whether to allow the annotation's labels to overlap. To make
+     * the labels less sensitive for overlapping, the can be set to 0.
+     */
+    allowOverlap?: boolean;
+    /**
+     * (Highstock) The background color or gradient for the annotation's label.
+     */
+    backgroundColor?: ColorType;
+    /**
+     * (Highstock) The border color for the annotation's label.
+     */
+    borderColor?: ColorType;
+    /**
+     * (Highstock) The border radius in pixels for the annotation's label.
+     */
+    borderRadius?: number;
+    /**
+     * (Highstock) The border width in pixels for the annotation's label.
+     */
+    borderWidth?: number;
+    /**
+     * (Highstock) A class name for styling by CSS.
+     */
+    className?: string;
+    /**
+     * (Highstock) Whether to hide the annotation's label that is outside the
+     * plot area.
+     */
+    crop?: boolean;
+    /**
+     * (Highstock) The label's pixel distance from the point.
+     */
+    distance?: number;
+    /**
+     * (Highstock) A format string for the data label.
+     */
+    format?: string;
+    /**
+     * (Highstock) Callback JavaScript function to format the annotation's
+     * label. Note that if a `format` or `text` are defined, the format or text
+     * take precedence and the formatter is ignored. `This` refers to a point
+     * object. The callback also receives an argument `ctx` so that
+     * arrow-functions can access the same context (the point in this case) as
+     * normal functions can using `this`. Since v12.6.0, the callback receives
+     * `ctx`.
+     */
+    formatter?: FormatterCallbackFunction<Point>;
+    /**
+     * (Highstock) Whether all the labels for an annotation are visible in the
+     * exported data table.
+     */
+    includeInDataExport?: boolean;
+    /**
+     * (Highstock) How to handle the annotation's label that flow outside the
+     * plot area. The justify option aligns the label inside the plot area.
+     */
+    overflow?: OptionsOverflowValue;
+    /**
+     * (Highstock) When either the borderWidth or the backgroundColor is set,
+     * this is the padding within the box.
+     */
+    padding?: number;
+    /**
+     * (Highstock) The shadow of the box. The shadow can be an object
+     * configuration containing `color`, `offsetX`, `offsetY`, `opacity` and
+     * `width`.
+     */
+    shadow?: (boolean|ShadowOptionsObject);
+    /**
+     * (Highstock) The name of a symbol to use for the border around the label.
+     * Symbols are predefined functions on the Renderer object.
+     */
+    shape?: string;
+    /**
+     * (Highstock) Styles for the annotation's label.
+     */
+    style?: CSSObject;
+    /**
+     * (Highstock) Alias for the format option.
+     */
+    text?: string;
+    /**
+     * (Highstock) Whether to use HTML to render the annotation's label.
+     */
+    useHTML?: boolean;
+    /**
+     * (Highstock) The vertical alignment of the annotation's label.
+     */
+    verticalAlign?: VerticalAlignValue;
+    /**
+     * (Highstock) The x position offset of the label relative to the point.
+     * Note that if a `distance` is defined, the distance takes precedence over
+     * `x` and `y` options.
+     */
+    x?: number;
+    /**
+     * (Highstock) The y position offset of the label relative to the point.
+     * Note that if a `distance` is defined, the distance takes precedence over
+     * `x` and `y` options.
+     */
+    y?: number;
+}
+/**
+ * (Highstock) Line options.
+ */
+export interface NavigationBindingsCircleAnnotationAnnotationsTypesFibonacciTypeLineOptions {
+    fill?: string;
+}
+/**
+ * (Highstock) Additional options for an annotation with the type.
+ */
+export interface NavigationBindingsCircleAnnotationAnnotationsTypesFibonacciTypeOptions {
+    /**
+     * (Highstock) An array of background colors: Defaults to: (see online
+     * documentation for example)
+     */
+    backgroundColors?: object;
+    /**
+     * (Highstock) The height of the fibonacci in terms of yAxis.
+     */
+    height?: number;
+    /**
+     * (Highstock) An array with options for the labels.
+     */
+    labels?: Array<NavigationBindingsCircleAnnotationAnnotationsTypesFibonacciTypeLabelsOptions>;
+    /**
+     * (Highstock) Line options.
+     */
+    line?: NavigationBindingsCircleAnnotationAnnotationsTypesFibonacciTypeLineOptions;
+    /**
+     * (Highstock) The color of line.
+     */
+    lineColor?: string;
+    /**
+     * (Highstock) An array of colors for the lines.
+     */
+    lineColors?: object;
+    points?: Array<NavigationBindingsCircleAnnotationAnnotationsTypesFibonacciTypePointsOptions>;
+    /**
+     * (Highstock) Whether the annotation levels should be reversed. By default
+     * they start from 0 and go to 1.
+     */
+    reversed?: boolean;
+    /**
+     * (Highstock) This option defines which `xAxis` the point is connected to.
+     * It refers to either the axis id or the index of the axis in the `xAxis`
+     * array.
+     */
+    xAxis?: number;
+    /**
+     * (Highstock) This option defines which `yAxis` the point is connected to.
+     * It refers to either the axis id or the index of the axis in the `yAxis`
+     * array.
+     */
+    yAxis?: number;
+}
+export interface NavigationBindingsCircleAnnotationAnnotationsTypesFibonacciTypePointsOptions {
+    controlPoint?: number;
+    /**
+     * (Highstock) The x position of the point.
+     */
+    x?: number;
+    /**
+     * (Highstock) The y position of the point.
+     */
+    y?: number;
+}
+export interface NavigationBindingsCircleAnnotationAnnotationsTypesInfinityLineControlPointStyleOptions {
+    cursor?: string;
+    fill?: string;
+    stroke?: string;
+    "stroke-width"?: number;
+}
+/**
+ * (Highstock) Options for annotation's labels. Each label inherits options from
+ * the labelOptions object. An option from the labelOptions can be overwritten
+ * by config for a specific label.
+ */
+export interface NavigationBindingsCircleAnnotationAnnotationsTypesInfinityLineLabelOptions {
+    /**
+     * (Highstock) Accessibility options for an annotation label.
+     */
+    accessibility?: AnnotationLabelAccessibilityOptionsObject;
+    /**
+     * (Highstock) The alignment of the annotation's label. If right, the right
+     * side of the label should be touching the point.
+     */
+    align?: AlignValue;
+    /**
+     * (Highstock) Whether to allow the annotation's labels to overlap. To make
+     * the labels less sensitive for overlapping, the can be set to 0.
+     */
+    allowOverlap?: boolean;
+    /**
+     * (Highstock) The background color or gradient for the annotation's label.
+     */
+    backgroundColor?: ColorType;
+    /**
+     * (Highstock) The border color for the annotation's label.
+     */
+    borderColor?: ColorType;
+    /**
+     * (Highstock) The border radius in pixels for the annotation's label.
+     */
+    borderRadius?: number;
+    /**
+     * (Highstock) The border width in pixels for the annotation's label.
+     */
+    borderWidth?: number;
+    /**
+     * (Highstock) A class name for styling by CSS.
+     */
+    className?: string;
+    /**
+     * (Highstock) Whether to hide the annotation's label that is outside the
+     * plot area.
+     */
+    crop?: boolean;
+    /**
+     * (Highstock) The label's pixel distance from the point.
+     */
+    distance?: number;
+    /**
+     * (Highstock) A format string for the data label.
+     */
+    format?: string;
+    /**
+     * (Highstock) Callback JavaScript function to format the annotation's
+     * label. Note that if a `format` or `text` are defined, the format or text
+     * take precedence and the formatter is ignored. `This` refers to a point
+     * object. The callback also receives an argument `ctx` so that
+     * arrow-functions can access the same context (the point in this case) as
+     * normal functions can using `this`. Since v12.6.0, the callback receives
+     * `ctx`.
+     */
+    formatter?: FormatterCallbackFunction<Point>;
+    /**
+     * (Highstock) Whether all the labels for an annotation are visible in the
+     * exported data table.
+     */
+    includeInDataExport?: boolean;
+    /**
+     * (Highstock) How to handle the annotation's label that flow outside the
+     * plot area. The justify option aligns the label inside the plot area.
+     */
+    overflow?: OptionsOverflowValue;
+    /**
+     * (Highstock) When either the borderWidth or the backgroundColor is set,
+     * this is the padding within the box.
+     */
+    padding?: number;
+    /**
+     * (Highstock) The shadow of the box. The shadow can be an object
+     * configuration containing `color`, `offsetX`, `offsetY`, `opacity` and
+     * `width`.
+     */
+    shadow?: (boolean|ShadowOptionsObject);
+    /**
+     * (Highstock) The name of a symbol to use for the border around the label.
+     * Symbols are predefined functions on the Renderer object.
+     */
+    shape?: string;
+    /**
+     * (Highstock) Styles for the annotation's label.
+     */
+    style?: CSSObject;
+    /**
+     * (Highstock) Alias for the format option.
+     */
+    text?: string;
+    /**
+     * (Highstock) Whether to use HTML to render the annotation's label.
+     */
+    useHTML?: boolean;
+    /**
+     * (Highstock) The vertical alignment of the annotation's label.
+     */
+    verticalAlign?: VerticalAlignValue;
+    /**
+     * (Highstock) The x position offset of the label relative to the point.
+     * Note that if a `distance` is defined, the distance takes precedence over
+     * `x` and `y` options.
+     */
+    x?: number;
+    /**
+     * (Highstock) The y position offset of the label relative to the point.
+     * Note that if a `distance` is defined, the distance takes precedence over
+     * `x` and `y` options.
+     */
+    y?: number;
+}
+/**
+ * (Highstock) Options for the infinity line annotation type.
+ */
+export interface NavigationBindingsCircleAnnotationAnnotationsTypesInfinityLineOptions {
+    /**
+     * (Highstock) Options for annotation's control points. Each control point
+     * inherits options from controlPointOptions object. Options from the
+     * controlPointOptions can be overwritten by options in a specific control
+     * point.
+     */
+    controlPointOptions?: AnnotationControlPointOptionsObject;
+    /**
+     * (Highstock) Options for annotation's labels. Each label inherits options
+     * from the labelOptions object. An option from the labelOptions can be
+     * overwritten by config for a specific label.
+     */
+    labelOptions?: NavigationBindingsCircleAnnotationAnnotationsTypesInfinityLineLabelOptions;
+    /**
+     * (Highstock) Additional options for an annotation with the type.
+     */
+    typeOptions?: NavigationBindingsCircleAnnotationAnnotationsTypesInfinityLineTypeOptions;
+}
+/**
+ * (Highstock) Line options.
+ */
+export interface NavigationBindingsCircleAnnotationAnnotationsTypesInfinityLineTypeLineOptions {
+    fill?: string;
+}
+/**
+ * (Highstock) Additional options for an annotation with the type.
+ */
+export interface NavigationBindingsCircleAnnotationAnnotationsTypesInfinityLineTypeOptions {
+    /**
+     * (Highstock) Line options.
+     */
+    line?: NavigationBindingsCircleAnnotationAnnotationsTypesInfinityLineTypeLineOptions;
+    points?: Array<NavigationBindingsCircleAnnotationAnnotationsTypesInfinityLineTypePointsOptions>;
+    /**
+     * (Highstock) This option defines which `xAxis` the point is connected to.
+     * It refers to either the axis id or the index of the axis in the `xAxis`
+     * array.
+     */
+    xAxis?: number;
+    /**
+     * (Highstock) This option defines which `yAxis` the point is connected to.
+     * It refers to either the axis id or the index of the axis in the `yAxis`
+     * array.
+     */
+    yAxis?: number;
+}
+export interface NavigationBindingsCircleAnnotationAnnotationsTypesInfinityLineTypePointsOptions {
+    controlPoint?: number;
+    /**
+     * (Highstock) The x position of the point.
+     */
+    x?: number;
+    /**
+     * (Highstock) The y position of the point.
+     */
+    y?: number;
+}
+export interface NavigationBindingsCircleAnnotationAnnotationsTypesMeasureControlPointStyleOptions {
+    cursor?: string;
+    fill?: string;
+    stroke?: string;
+    "stroke-width"?: number;
+}
+/**
+ * (Highstock) Options for the measure annotation type.
+ */
+export interface NavigationBindingsCircleAnnotationAnnotationsTypesMeasureOptions {
+    /**
+     * (Highstock) Options for annotation's control points. Each control point
+     * inherits options from controlPointOptions object. Options from the
+     * controlPointOptions can be overwritten by options in a specific control
+     * point.
+     */
+    controlPointOptions?: AnnotationControlPointOptionsObject;
+    /**
+     * (Highstock) Additional options for an annotation with the type.
+     */
+    typeOptions?: NavigationBindingsCircleAnnotationAnnotationsTypesMeasureTypeOptions;
+}
+export interface NavigationBindingsCircleAnnotationAnnotationsTypesMeasureTypeBackgroundOptions {
+    /**
+     * (Highstock) The color of the rectangle.
+     */
+    fill?: string;
+    /**
+     * (Highstock) The color of border.
+     */
+    stroke?: string;
+    /**
+     * (Highstock) The width of border.
+     */
+    strokeWidth?: number;
+}
+/**
+ * (Highstock) Configure a crosshair that is horizontally placed in middle of
+ * rectangle.
+ */
+export interface NavigationBindingsCircleAnnotationAnnotationsTypesMeasureTypeCrosshairXOptions {
+    /**
+     * (Highstock) The dash or dot style of the crosshair's line. For possible
+     * values, see this demonstration.
+     */
+    dashStyle?: DashStyleValue;
+    /**
+     * (Highstock) Enable or disable the horizontal crosshair.
+     */
+    enabled?: boolean;
+    /**
+     * (Highstock) The marker-end defines the arrowhead that will be drawn at
+     * the final vertex of the given crosshair's path.
+     */
+    markerEnd?: string;
+    /**
+     * (Highstock) The Z index of the crosshair in annotation.
+     */
+    zIndex?: number;
+}
+/**
+ * (Highstock) Configure a crosshair that is vertically placed in middle of
+ * rectangle.
+ */
+export interface NavigationBindingsCircleAnnotationAnnotationsTypesMeasureTypeCrosshairYOptions {
+    /**
+     * (Highstock) The dash or dot style of the crosshair's line. For possible
+     * values, see this demonstration.
+     */
+    dashStyle?: DashStyleValue;
+    /**
+     * (Highstock) Enable or disable the vertical crosshair.
+     */
+    enabled?: boolean;
+    /**
+     * (Highstock) The marker-end defines the arrowhead that will be drawn at
+     * the final vertex of the given crosshair's path.
+     */
+    markerEnd?: OptionsMarkerEndValue;
+    /**
+     * (Highstock) The Z index of the crosshair in annotation.
+     */
+    zIndex?: number;
+}
+export interface NavigationBindingsCircleAnnotationAnnotationsTypesMeasureTypeLabelOptions {
+    /**
+     * (Highstock) Enable or disable the label text (min, max, average, bins
+     * values).
+     *
+     * Defaults to true.
+     */
+    enabled?: boolean;
+    /**
+     * (Highstock) Formatter function for the label text.
+     *
+     * Available data are:
+     *
+     *  (see online documentation for example)
+     */
+    formatter?: Function;
+    /**
+     * (Highstock) CSS styles for the measure label.
+     */
+    style?: (CSSObject|NavigationBindingsCircleAnnotationAnnotationsTypesMeasureTypeLabelStyleOptions);
+}
+/**
+ * (Highstock) CSS styles for the measure label.
+ */
+export interface NavigationBindingsCircleAnnotationAnnotationsTypesMeasureTypeLabelStyleOptions {
+    color?: string;
+    fontSize?: number;
+}
+/**
+ * (Highstock) Line options.
+ */
+export interface NavigationBindingsCircleAnnotationAnnotationsTypesMeasureTypeLineOptions {
+    fill?: string;
+}
+/**
+ * (Highstock) Additional options for an annotation with the type.
+ */
+export interface NavigationBindingsCircleAnnotationAnnotationsTypesMeasureTypeOptions {
+    background?: NavigationBindingsCircleAnnotationAnnotationsTypesMeasureTypeBackgroundOptions;
+    /**
+     * (Highstock) Configure a crosshair that is horizontally placed in middle
+     * of rectangle.
+     */
+    crosshairX?: NavigationBindingsCircleAnnotationAnnotationsTypesMeasureTypeCrosshairXOptions;
+    /**
+     * (Highstock) Configure a crosshair that is vertically placed in middle of
+     * rectangle.
+     */
+    crosshairY?: NavigationBindingsCircleAnnotationAnnotationsTypesMeasureTypeCrosshairYOptions;
+    label?: NavigationBindingsCircleAnnotationAnnotationsTypesMeasureTypeLabelOptions;
+    /**
+     * (Highstock) Line options.
+     */
+    line?: NavigationBindingsCircleAnnotationAnnotationsTypesMeasureTypeLineOptions;
+    points?: Array<NavigationBindingsCircleAnnotationAnnotationsTypesMeasureTypePointsOptions>;
+    /**
+     * (Highstock) Decides in what dimensions the user can resize by dragging
+     * the mouse. Can be one of x, y or xy.
+     */
+    selectType?: string;
+    /**
+     * (Highstock) This number defines which xAxis the point is connected to. It
+     * refers to either the axis id or the index of the axis in the xAxis array.
+     */
+    xAxis?: number;
+    /**
+     * (Highstock) This number defines which yAxis the point is connected to. It
+     * refers to either the axis id or the index of the axis in the yAxis array.
+     */
+    yAxis?: number;
+}
+export interface NavigationBindingsCircleAnnotationAnnotationsTypesMeasureTypePointsOptions {
+    controlPoint?: number;
+    /**
+     * (Highstock) The x position of the point.
+     */
+    x?: number;
+    /**
+     * (Highstock) The y position of the point.
+     */
+    y?: number;
+}
+/**
+ * (Highstock) Option override for specific advanced annotation types. This
+ * collection is intended for general theming using `Highcharts.setOptions()`.
+ */
+export interface NavigationBindingsCircleAnnotationAnnotationsTypesOptions {
+    /**
+     * (Highstock) Options for the crooked line annotation type.
+     */
+    crookedLine?: NavigationBindingsCircleAnnotationAnnotationsTypesCrookedLineOptions;
+    /**
+     * (Highstock) Options for the elliott wave annotation type.
+     */
+    elliottWave?: NavigationBindingsCircleAnnotationAnnotationsTypesElliottWaveOptions;
+    /**
+     * (Highstock) Options for the fibonacci annotation type.
+     */
+    fibonacci?: NavigationBindingsCircleAnnotationAnnotationsTypesFibonacciOptions;
+    /**
+     * (Highstock) Options for the fibonacci time zones annotation type.
+     */
+    fibonacciTimeZones?: NavigationBindingsCircleAnnotationAnnotationsTypesFibonacciTimeZonesOptions;
+    /**
+     * (Highstock) Options for the infinity line annotation type.
+     */
+    infinityLine?: NavigationBindingsCircleAnnotationAnnotationsTypesInfinityLineOptions;
+    /**
+     * (Highstock) Options for the measure annotation type.
+     */
+    measure?: NavigationBindingsCircleAnnotationAnnotationsTypesMeasureOptions;
+    /**
+     * (Highstock) Options for the pitchfork annotation type.
+     */
+    pitchfork?: NavigationBindingsCircleAnnotationAnnotationsTypesPitchforkOptions;
+    /**
+     * (Highstock) Options for the time cycles annotation type.
+     */
+    timeCycles?: NavigationBindingsCircleAnnotationAnnotationsTypesTimeCyclesOptions;
+    /**
+     * (Highstock) Options for the tunnel annotation type.
+     */
+    tunnel?: NavigationBindingsCircleAnnotationAnnotationsTypesTunnelOptions;
+    /**
+     * (Highstock) Options for the vertical line annotation type.
+     */
+    verticalLine?: NavigationBindingsCircleAnnotationAnnotationsTypesVerticalLineOptions;
+}
+export interface NavigationBindingsCircleAnnotationAnnotationsTypesPitchforkControlPointStyleOptions {
+    cursor?: string;
+    fill?: string;
+    stroke?: string;
+    "stroke-width"?: number;
+}
+/**
+ * (Highstock) Options for annotation's labels. Each label inherits options from
+ * the labelOptions object. An option from the labelOptions can be overwritten
+ * by config for a specific label.
+ */
+export interface NavigationBindingsCircleAnnotationAnnotationsTypesPitchforkLabelOptions {
+    /**
+     * (Highstock) Accessibility options for an annotation label.
+     */
+    accessibility?: AnnotationLabelAccessibilityOptionsObject;
+    /**
+     * (Highstock) The alignment of the annotation's label. If right, the right
+     * side of the label should be touching the point.
+     */
+    align?: AlignValue;
+    /**
+     * (Highstock) Whether to allow the annotation's labels to overlap. To make
+     * the labels less sensitive for overlapping, the can be set to 0.
+     */
+    allowOverlap?: boolean;
+    /**
+     * (Highstock) The background color or gradient for the annotation's label.
+     */
+    backgroundColor?: ColorType;
+    /**
+     * (Highstock) The border color for the annotation's label.
+     */
+    borderColor?: ColorType;
+    /**
+     * (Highstock) The border radius in pixels for the annotation's label.
+     */
+    borderRadius?: number;
+    /**
+     * (Highstock) The border width in pixels for the annotation's label.
+     */
+    borderWidth?: number;
+    /**
+     * (Highstock) A class name for styling by CSS.
+     */
+    className?: string;
+    /**
+     * (Highstock) Whether to hide the annotation's label that is outside the
+     * plot area.
+     */
+    crop?: boolean;
+    /**
+     * (Highstock) The label's pixel distance from the point.
+     */
+    distance?: number;
+    /**
+     * (Highstock) A format string for the data label.
+     */
+    format?: string;
+    /**
+     * (Highstock) Callback JavaScript function to format the annotation's
+     * label. Note that if a `format` or `text` are defined, the format or text
+     * take precedence and the formatter is ignored. `This` refers to a point
+     * object. The callback also receives an argument `ctx` so that
+     * arrow-functions can access the same context (the point in this case) as
+     * normal functions can using `this`. Since v12.6.0, the callback receives
+     * `ctx`.
+     */
+    formatter?: FormatterCallbackFunction<Point>;
+    /**
+     * (Highstock) Whether all the labels for an annotation are visible in the
+     * exported data table.
+     */
+    includeInDataExport?: boolean;
+    /**
+     * (Highstock) How to handle the annotation's label that flow outside the
+     * plot area. The justify option aligns the label inside the plot area.
+     */
+    overflow?: OptionsOverflowValue;
+    /**
+     * (Highstock) When either the borderWidth or the backgroundColor is set,
+     * this is the padding within the box.
+     */
+    padding?: number;
+    /**
+     * (Highstock) The shadow of the box. The shadow can be an object
+     * configuration containing `color`, `offsetX`, `offsetY`, `opacity` and
+     * `width`.
+     */
+    shadow?: (boolean|ShadowOptionsObject);
+    /**
+     * (Highstock) The name of a symbol to use for the border around the label.
+     * Symbols are predefined functions on the Renderer object.
+     */
+    shape?: string;
+    /**
+     * (Highstock) Styles for the annotation's label.
+     */
+    style?: CSSObject;
+    /**
+     * (Highstock) Alias for the format option.
+     */
+    text?: string;
+    /**
+     * (Highstock) Whether to use HTML to render the annotation's label.
+     */
+    useHTML?: boolean;
+    /**
+     * (Highstock) The vertical alignment of the annotation's label.
+     */
+    verticalAlign?: VerticalAlignValue;
+    /**
+     * (Highstock) The x position offset of the label relative to the point.
+     * Note that if a `distance` is defined, the distance takes precedence over
+     * `x` and `y` options.
+     */
+    x?: number;
+    /**
+     * (Highstock) The y position offset of the label relative to the point.
+     * Note that if a `distance` is defined, the distance takes precedence over
+     * `x` and `y` options.
+     */
+    y?: number;
+}
+/**
+ * (Highstock) Options for the pitchfork annotation type.
+ */
+export interface NavigationBindingsCircleAnnotationAnnotationsTypesPitchforkOptions {
+    /**
+     * (Highstock) Options for annotation's control points. Each control point
+     * inherits options from controlPointOptions object. Options from the
+     * controlPointOptions can be overwritten by options in a specific control
+     * point.
+     */
+    controlPointOptions?: AnnotationControlPointOptionsObject;
+    /**
+     * (Highstock) Options for annotation's labels. Each label inherits options
+     * from the labelOptions object. An option from the labelOptions can be
+     * overwritten by config for a specific label.
+     */
+    labelOptions?: NavigationBindingsCircleAnnotationAnnotationsTypesPitchforkLabelOptions;
+    /**
+     * (Highstock) Additional options for an annotation with the type.
+     */
+    typeOptions?: NavigationBindingsCircleAnnotationAnnotationsTypesPitchforkTypeOptions;
+}
+/**
+ * (Highstock) Inner background options.
+ */
+export interface NavigationBindingsCircleAnnotationAnnotationsTypesPitchforkTypeInnerBackgroundOptions {
+    /**
+     * (Highstock) Name of the dash style to use for the shape's stroke.
+     */
+    dashStyle?: DashStyleValue;
+    /**
+     * (Highstock) The color of the shape's fill.
+     */
+    fill?: string;
+    /**
+     * (Highstock) The radius of the `ellipse` shape in y direction. Can be
+     * defined in pixels or yAxis units, if shapes.yAxis index is defined.
+     */
+    ry?: number;
+    /**
+     * (Highstock) Defines additional snapping area around an annotation making
+     * this annotation to focus. Defined in pixels.
+     */
+    snap?: number;
+    /**
+     * (Highstock) The URL for an image to use as the annotation shape. Note,
+     * type has to be set to `'image'`.
+     */
+    src?: string;
+    /**
+     * (Highstock) The color of the shape's stroke.
+     */
+    stroke?: ColorType;
+    /**
+     * (Highstock) The pixel stroke width of the shape.
+     */
+    strokeWidth?: number;
+    /**
+     * (Highstock) The xAxis index which should be used for annotation's sizes
+     * and points coordinates conversion.
+     *
+     * This option is used for `rect` shape width, and all shapes point and
+     * points coordinates.
+     */
+    xAxis?: number;
+    /**
+     * (Highstock) The yAxis index which should be used for annotation's sizes
+     * and points coordinates conversion.
+     *
+     * This option is used for `rect` shape height, `circle` shape radius,
+     * `ellipse` y direction radius, and all shapes point and points
+     * coordinates.
+     */
+    yAxis?: number;
+}
+/**
+ * (Highstock) Additional options for an annotation with the type.
+ */
+export interface NavigationBindingsCircleAnnotationAnnotationsTypesPitchforkTypeOptions {
+    /**
+     * (Highstock) Inner background options.
+     */
+    innerBackground?: NavigationBindingsCircleAnnotationAnnotationsTypesPitchforkTypeInnerBackgroundOptions;
+    /**
+     * (Highstock) Outer background options.
+     */
+    outerBackground?: NavigationBindingsCircleAnnotationAnnotationsTypesPitchforkTypeOuterBackgroundOptions;
+    points?: Array<NavigationBindingsCircleAnnotationAnnotationsTypesPitchforkTypePointsOptions>;
+    /**
+     * (Highstock) This option defines which `xAxis` the point is connected to.
+     * It refers to either the axis id or the index of the axis in the `xAxis`
+     * array.
+     */
+    xAxis?: number;
+    /**
+     * (Highstock) This option defines which `yAxis` the point is connected to.
+     * It refers to either the axis id or the index of the axis in the `yAxis`
+     * array.
+     */
+    yAxis?: number;
+}
+/**
+ * (Highstock) Outer background options.
+ */
+export interface NavigationBindingsCircleAnnotationAnnotationsTypesPitchforkTypeOuterBackgroundOptions {
+    /**
+     * (Highstock) Name of the dash style to use for the shape's stroke.
+     */
+    dashStyle?: DashStyleValue;
+    /**
+     * (Highstock) The color of the shape's fill.
+     */
+    fill?: string;
+    /**
+     * (Highstock) The radius of the `ellipse` shape in y direction. Can be
+     * defined in pixels or yAxis units, if shapes.yAxis index is defined.
+     */
+    ry?: number;
+    /**
+     * (Highstock) Defines additional snapping area around an annotation making
+     * this annotation to focus. Defined in pixels.
+     */
+    snap?: number;
+    /**
+     * (Highstock) The URL for an image to use as the annotation shape. Note,
+     * type has to be set to `'image'`.
+     */
+    src?: string;
+    /**
+     * (Highstock) The color of the shape's stroke.
+     */
+    stroke?: ColorType;
+    /**
+     * (Highstock) The pixel stroke width of the shape.
+     */
+    strokeWidth?: number;
+    /**
+     * (Highstock) The xAxis index which should be used for annotation's sizes
+     * and points coordinates conversion.
+     *
+     * This option is used for `rect` shape width, and all shapes point and
+     * points coordinates.
+     */
+    xAxis?: number;
+    /**
+     * (Highstock) The yAxis index which should be used for annotation's sizes
+     * and points coordinates conversion.
+     *
+     * This option is used for `rect` shape height, `circle` shape radius,
+     * `ellipse` y direction radius, and all shapes point and points
+     * coordinates.
+     */
+    yAxis?: number;
+}
+export interface NavigationBindingsCircleAnnotationAnnotationsTypesPitchforkTypePointsOptions {
+    controlPoint?: number;
+    /**
+     * (Highstock) The x position of the point.
+     */
+    x?: number;
+    /**
+     * (Highstock) The y position of the point.
+     */
+    y?: number;
+}
+export interface NavigationBindingsCircleAnnotationAnnotationsTypesTimeCyclesControlPointStyleOptions {
+    cursor?: string;
+    fill?: string;
+    stroke?: string;
+    "stroke-width"?: number;
+}
+/**
+ * (Highstock) Options for the time cycles annotation type.
+ */
+export interface NavigationBindingsCircleAnnotationAnnotationsTypesTimeCyclesOptions {
+    /**
+     * (Highstock) Options for annotation's control points. Each control point
+     * inherits options from controlPointOptions object. Options from the
+     * controlPointOptions can be overwritten by options in a specific control
+     * point.
+     */
+    controlPointOptions?: AnnotationControlPointOptionsObject;
+    /**
+     * (Highstock) Additional options for an annotation with the type.
+     */
+    typeOptions?: NavigationBindingsCircleAnnotationAnnotationsTypesTimeCyclesTypeOptions;
+}
+/**
+ * (Highstock) Line options.
+ */
+export interface NavigationBindingsCircleAnnotationAnnotationsTypesTimeCyclesTypeLineOptions {
+    fill?: string;
+}
+/**
+ * (Highstock) Additional options for an annotation with the type.
+ */
+export interface NavigationBindingsCircleAnnotationAnnotationsTypesTimeCyclesTypeOptions {
+    /**
+     * (Highstock) Line options.
+     */
+    line?: NavigationBindingsCircleAnnotationAnnotationsTypesTimeCyclesTypeLineOptions;
+    points?: Array<NavigationBindingsCircleAnnotationAnnotationsTypesTimeCyclesTypePointsOptions>;
+    /**
+     * (Highstock) This option defines which `xAxis` the point is connected to.
+     * It refers to either the axis id or the index of the axis in the `xAxis`
+     * array.
+     */
+    xAxis?: number;
+    /**
+     * (Highstock) This option defines which `yAxis` the point is connected to.
+     * It refers to either the axis id or the index of the axis in the `yAxis`
+     * array.
+     */
+    yAxis?: number;
+}
+export interface NavigationBindingsCircleAnnotationAnnotationsTypesTimeCyclesTypePointsOptions {
+    controlPoint?: number;
+    /**
+     * (Highstock) The x position of the point.
+     */
+    x?: number;
+}
+export interface NavigationBindingsCircleAnnotationAnnotationsTypesTunnelControlPointStyleOptions {
+    cursor?: string;
+    fill?: string;
+    stroke?: string;
+    "stroke-width"?: number;
+}
+/**
+ * (Highstock) Options for annotation's labels. Each label inherits options from
+ * the labelOptions object. An option from the labelOptions can be overwritten
+ * by config for a specific label.
+ */
+export interface NavigationBindingsCircleAnnotationAnnotationsTypesTunnelLabelOptions {
+    /**
+     * (Highstock) Accessibility options for an annotation label.
+     */
+    accessibility?: AnnotationLabelAccessibilityOptionsObject;
+    /**
+     * (Highstock) The alignment of the annotation's label. If right, the right
+     * side of the label should be touching the point.
+     */
+    align?: AlignValue;
+    /**
+     * (Highstock) Whether to allow the annotation's labels to overlap. To make
+     * the labels less sensitive for overlapping, the can be set to 0.
+     */
+    allowOverlap?: boolean;
+    /**
+     * (Highstock) The background color or gradient for the annotation's label.
+     */
+    backgroundColor?: ColorType;
+    /**
+     * (Highstock) The border color for the annotation's label.
+     */
+    borderColor?: ColorType;
+    /**
+     * (Highstock) The border radius in pixels for the annotation's label.
+     */
+    borderRadius?: number;
+    /**
+     * (Highstock) The border width in pixels for the annotation's label.
+     */
+    borderWidth?: number;
+    /**
+     * (Highstock) A class name for styling by CSS.
+     */
+    className?: string;
+    /**
+     * (Highstock) Whether to hide the annotation's label that is outside the
+     * plot area.
+     */
+    crop?: boolean;
+    /**
+     * (Highstock) The label's pixel distance from the point.
+     */
+    distance?: number;
+    /**
+     * (Highstock) A format string for the data label.
+     */
+    format?: string;
+    /**
+     * (Highstock) Callback JavaScript function to format the annotation's
+     * label. Note that if a `format` or `text` are defined, the format or text
+     * take precedence and the formatter is ignored. `This` refers to a point
+     * object. The callback also receives an argument `ctx` so that
+     * arrow-functions can access the same context (the point in this case) as
+     * normal functions can using `this`. Since v12.6.0, the callback receives
+     * `ctx`.
+     */
+    formatter?: FormatterCallbackFunction<Point>;
+    /**
+     * (Highstock) Whether all the labels for an annotation are visible in the
+     * exported data table.
+     */
+    includeInDataExport?: boolean;
+    /**
+     * (Highstock) How to handle the annotation's label that flow outside the
+     * plot area. The justify option aligns the label inside the plot area.
+     */
+    overflow?: OptionsOverflowValue;
+    /**
+     * (Highstock) When either the borderWidth or the backgroundColor is set,
+     * this is the padding within the box.
+     */
+    padding?: number;
+    /**
+     * (Highstock) The shadow of the box. The shadow can be an object
+     * configuration containing `color`, `offsetX`, `offsetY`, `opacity` and
+     * `width`.
+     */
+    shadow?: (boolean|ShadowOptionsObject);
+    /**
+     * (Highstock) The name of a symbol to use for the border around the label.
+     * Symbols are predefined functions on the Renderer object.
+     */
+    shape?: string;
+    /**
+     * (Highstock) Styles for the annotation's label.
+     */
+    style?: CSSObject;
+    /**
+     * (Highstock) Alias for the format option.
+     */
+    text?: string;
+    /**
+     * (Highstock) Whether to use HTML to render the annotation's label.
+     */
+    useHTML?: boolean;
+    /**
+     * (Highstock) The vertical alignment of the annotation's label.
+     */
+    verticalAlign?: VerticalAlignValue;
+    /**
+     * (Highstock) The x position offset of the label relative to the point.
+     * Note that if a `distance` is defined, the distance takes precedence over
+     * `x` and `y` options.
+     */
+    x?: number;
+    /**
+     * (Highstock) The y position offset of the label relative to the point.
+     * Note that if a `distance` is defined, the distance takes precedence over
+     * `x` and `y` options.
+     */
+    y?: number;
+}
+/**
+ * (Highstock) Options for the tunnel annotation type.
+ */
+export interface NavigationBindingsCircleAnnotationAnnotationsTypesTunnelOptions {
+    /**
+     * (Highstock) Options for annotation's control points. Each control point
+     * inherits options from controlPointOptions object. Options from the
+     * controlPointOptions can be overwritten by options in a specific control
+     * point.
+     */
+    controlPointOptions?: AnnotationControlPointOptionsObject;
+    /**
+     * (Highstock) Options for annotation's labels. Each label inherits options
+     * from the labelOptions object. An option from the labelOptions can be
+     * overwritten by config for a specific label.
+     */
+    labelOptions?: NavigationBindingsCircleAnnotationAnnotationsTypesTunnelLabelOptions;
+    /**
+     * (Highstock) Additional options for an annotation with the type.
+     */
+    typeOptions?: NavigationBindingsCircleAnnotationAnnotationsTypesTunnelTypeOptions;
+}
+/**
+ * (Highstock) Background options.
+ */
+export interface NavigationBindingsCircleAnnotationAnnotationsTypesTunnelTypeBackgroundOptions {
+    fill?: string;
+    strokeWidth?: number;
+}
+export interface NavigationBindingsCircleAnnotationAnnotationsTypesTunnelTypeHeightControlPointStyleOptions {
+    cursor?: string;
+    fill?: string;
+    stroke?: string;
+    "stroke-width"?: number;
+}
+/**
+ * (Highstock) Line options.
+ */
+export interface NavigationBindingsCircleAnnotationAnnotationsTypesTunnelTypeLineOptions {
+    fill?: string;
+    strokeWidth?: number;
+}
+/**
+ * (Highstock) Additional options for an annotation with the type.
+ */
+export interface NavigationBindingsCircleAnnotationAnnotationsTypesTunnelTypeOptions {
+    /**
+     * (Highstock) Background options.
+     */
+    background?: (object|NavigationBindingsCircleAnnotationAnnotationsTypesTunnelTypeBackgroundOptions);
+    /**
+     * (Highstock) The height of the annotation in terms of yAxis.
+     */
+    height?: number;
+    /**
+     * (Highstock) Options for the control point which controls the annotation's
+     * height.
+     */
+    heightControlPoint?: AnnotationControlPointOptionsObject;
+    /**
+     * (Highstock) Line options.
+     */
+    line?: NavigationBindingsCircleAnnotationAnnotationsTypesTunnelTypeLineOptions;
+    points?: Array<NavigationBindingsCircleAnnotationAnnotationsTypesTunnelTypePointsOptions>;
+    /**
+     * (Highstock) This option defines which `xAxis` the point is connected to.
+     * It refers to either the axis id or the index of the axis in the `xAxis`
+     * array.
+     */
+    xAxis?: number;
+    /**
+     * (Highstock) This option defines which `yAxis` the point is connected to.
+     * It refers to either the axis id or the index of the axis in the `yAxis`
+     * array.
+     */
+    yAxis?: number;
+}
+export interface NavigationBindingsCircleAnnotationAnnotationsTypesTunnelTypePointsOptions {
+    controlPoint?: number;
+    /**
+     * (Highstock) The x position of the point.
+     */
+    x?: number;
+    /**
+     * (Highstock) The y position of the point.
+     */
+    y?: number;
+}
+/**
+ * (Highstock) Options for annotation's labels. Each label inherits options from
+ * the labelOptions object. An option from the labelOptions can be overwritten
+ * by config for a specific label.
+ */
+export interface NavigationBindingsCircleAnnotationAnnotationsTypesVerticalLineLabelOptions {
+    /**
+     * (Highstock) Accessibility options for an annotation label.
+     */
+    accessibility?: AnnotationLabelAccessibilityOptionsObject;
+    /**
+     * (Highstock) The alignment of the annotation's label. If right, the right
+     * side of the label should be touching the point.
+     */
+    align?: AlignValue;
+    /**
+     * (Highstock) Whether to allow the annotation's labels to overlap. To make
+     * the labels less sensitive for overlapping, the can be set to 0.
+     */
+    allowOverlap?: boolean;
+    /**
+     * (Highstock) The background color or gradient for the annotation's label.
+     */
+    backgroundColor?: ColorType;
+    /**
+     * (Highstock) The border color for the annotation's label.
+     */
+    borderColor?: ColorType;
+    /**
+     * (Highstock) The border radius in pixels for the annotation's label.
+     */
+    borderRadius?: number;
+    /**
+     * (Highstock) The border width in pixels for the annotation's label.
+     */
+    borderWidth?: number;
+    /**
+     * (Highstock) A class name for styling by CSS.
+     */
+    className?: string;
+    /**
+     * (Highstock) Whether to hide the annotation's label that is outside the
+     * plot area.
+     */
+    crop?: boolean;
+    /**
+     * (Highstock) The label's pixel distance from the point.
+     */
+    distance?: number;
+    /**
+     * (Highstock) A format string for the data label.
+     */
+    format?: string;
+    /**
+     * (Highstock) Callback JavaScript function to format the annotation's
+     * label. Note that if a `format` or `text` are defined, the format or text
+     * take precedence and the formatter is ignored. `This` refers to a point
+     * object. The callback also receives an argument `ctx` so that
+     * arrow-functions can access the same context (the point in this case) as
+     * normal functions can using `this`. Since v12.6.0, the callback receives
+     * `ctx`.
+     */
+    formatter?: FormatterCallbackFunction<Point>;
+    /**
+     * (Highstock) Whether all the labels for an annotation are visible in the
+     * exported data table.
+     */
+    includeInDataExport?: boolean;
+    /**
+     * (Highstock) How to handle the annotation's label that flow outside the
+     * plot area. The justify option aligns the label inside the plot area.
+     */
+    overflow?: OptionsOverflowValue;
+    /**
+     * (Highstock) When either the borderWidth or the backgroundColor is set,
+     * this is the padding within the box.
+     */
+    padding?: number;
+    /**
+     * (Highstock) The shadow of the box. The shadow can be an object
+     * configuration containing `color`, `offsetX`, `offsetY`, `opacity` and
+     * `width`.
+     */
+    shadow?: (boolean|ShadowOptionsObject);
+    /**
+     * (Highstock) The name of a symbol to use for the border around the label.
+     * Symbols are predefined functions on the Renderer object.
+     */
+    shape?: string;
+    /**
+     * (Highstock) Styles for the annotation's label.
+     */
+    style?: (CSSObject|NavigationBindingsCircleAnnotationAnnotationsTypesVerticalLineLabelStyleOptions);
+    /**
+     * (Highstock) Alias for the format option.
+     */
+    text?: string;
+    /**
+     * (Highstock) Whether to use HTML to render the annotation's label.
+     */
+    useHTML?: boolean;
+    /**
+     * (Highstock) The vertical alignment of the annotation's label.
+     */
+    verticalAlign?: VerticalAlignValue;
+    /**
+     * (Highstock) The x position offset of the label relative to the point.
+     * Note that if a `distance` is defined, the distance takes precedence over
+     * `x` and `y` options.
+     */
+    x?: number;
+    /**
+     * (Highstock) The y position offset of the label relative to the point.
+     * Note that if a `distance` is defined, the distance takes precedence over
+     * `x` and `y` options.
+     */
+    y?: number;
+}
+/**
+ * (Highstock) Styles for the annotation's label.
+ */
+export interface NavigationBindingsCircleAnnotationAnnotationsTypesVerticalLineLabelStyleOptions {
+    color?: string;
+    fontSize?: number;
+}
+/**
+ * (Highstock) Options for the vertical line annotation type.
+ */
+export interface NavigationBindingsCircleAnnotationAnnotationsTypesVerticalLineOptions {
+    /**
+     * (Highstock) Options for annotation's labels. Each label inherits options
+     * from the labelOptions object. An option from the labelOptions can be
+     * overwritten by config for a specific label.
+     */
+    labelOptions?: NavigationBindingsCircleAnnotationAnnotationsTypesVerticalLineLabelOptions;
+    /**
+     * (Highstock) Additional options for an annotation with the type.
+     */
+    typeOptions?: NavigationBindingsCircleAnnotationAnnotationsTypesVerticalLineTypeOptions;
+}
+/**
+ * (Highstock) Connector options.
+ */
+export interface NavigationBindingsCircleAnnotationAnnotationsTypesVerticalLineTypeConnectorOptions {
+    /**
+     * (Highstock) Name of the dash style to use for the shape's stroke.
+     */
+    dashStyle?: DashStyleValue;
+    /**
+     * (Highstock) The color of the shape's fill.
+     */
+    fill?: ColorType;
+    markerEnd?: string;
+    /**
+     * (Highstock) The radius of the `ellipse` shape in y direction. Can be
+     * defined in pixels or yAxis units, if shapes.yAxis index is defined.
+     */
+    ry?: number;
+    /**
+     * (Highstock) Defines additional snapping area around an annotation making
+     * this annotation to focus. Defined in pixels.
+     */
+    snap?: number;
+    /**
+     * (Highstock) The URL for an image to use as the annotation shape. Note,
+     * type has to be set to `'image'`.
+     */
+    src?: string;
+    /**
+     * (Highstock) The color of the shape's stroke.
+     */
+    stroke?: ColorType;
+    /**
+     * (Highstock) The pixel stroke width of the shape.
+     */
+    strokeWidth?: number;
+    /**
+     * (Highstock) The xAxis index which should be used for annotation's sizes
+     * and points coordinates conversion.
+     *
+     * This option is used for `rect` shape width, and all shapes point and
+     * points coordinates.
+     */
+    xAxis?: number;
+    /**
+     * (Highstock) The yAxis index which should be used for annotation's sizes
+     * and points coordinates conversion.
+     *
+     * This option is used for `rect` shape height, `circle` shape radius,
+     * `ellipse` y direction radius, and all shapes point and points
+     * coordinates.
+     */
+    yAxis?: number;
+}
+/**
+ * (Highstock) Label options.
+ */
+export interface NavigationBindingsCircleAnnotationAnnotationsTypesVerticalLineTypeLabelOptions {
+    /**
+     * (Highstock) Accessibility options for an annotation label.
+     */
+    accessibility?: AnnotationLabelAccessibilityOptionsObject;
+    /**
+     * (Highstock) The alignment of the annotation's label. If right, the right
+     * side of the label should be touching the point.
+     */
+    align?: AlignValue;
+    /**
+     * (Highstock) Whether to allow the annotation's labels to overlap. To make
+     * the labels less sensitive for overlapping, the can be set to 0.
+     */
+    allowOverlap?: boolean;
+    /**
+     * (Highstock) The background color or gradient for the annotation's label.
+     */
+    backgroundColor?: string;
+    /**
+     * (Highstock) The border color for the annotation's label.
+     */
+    borderColor?: ColorType;
+    /**
+     * (Highstock) The border radius in pixels for the annotation's label.
+     */
+    borderRadius?: number;
+    /**
+     * (Highstock) The border width in pixels for the annotation's label.
+     */
+    borderWidth?: number;
+    /**
+     * (Highstock) A class name for styling by CSS.
+     */
+    className?: string;
+    /**
+     * (Highstock) Whether to hide the annotation's label that is outside the
+     * plot area.
+     */
+    crop?: boolean;
+    /**
+     * (Highstock) The label's pixel distance from the point.
+     */
+    distance?: number;
+    /**
+     * (Highstock) A format string for the data label.
+     */
+    format?: string;
+    /**
+     * (Highstock) Callback JavaScript function to format the annotation's
+     * label. Note that if a `format` or `text` are defined, the format or text
+     * take precedence and the formatter is ignored. `This` refers to a point
+     * object. The callback also receives an argument `ctx` so that
+     * arrow-functions can access the same context (the point in this case) as
+     * normal functions can using `this`. Since v12.6.0, the callback receives
+     * `ctx`.
+     */
+    formatter?: FormatterCallbackFunction<Point>;
+    /**
+     * (Highstock) Whether all the labels for an annotation are visible in the
+     * exported data table.
+     */
+    includeInDataExport?: boolean;
+    offset?: number;
+    /**
+     * (Highstock) How to handle the annotation's label that flow outside the
+     * plot area. The justify option aligns the label inside the plot area.
+     */
+    overflow?: OptionsOverflowValue;
+    /**
+     * (Highstock) When either the borderWidth or the backgroundColor is set,
+     * this is the padding within the box.
+     */
+    padding?: number;
+    /**
+     * (Highstock) The shadow of the box. The shadow can be an object
+     * configuration containing `color`, `offsetX`, `offsetY`, `opacity` and
+     * `width`.
+     */
+    shadow?: (boolean|ShadowOptionsObject);
+    /**
+     * (Highstock) The name of a symbol to use for the border around the label.
+     * Symbols are predefined functions on the Renderer object.
+     */
+    shape?: string;
+    /**
+     * (Highstock) Styles for the annotation's label.
+     */
+    style?: CSSObject;
+    /**
+     * (Highstock) Alias for the format option.
+     */
+    text?: string;
+    /**
+     * (Highstock) Whether to use HTML to render the annotation's label.
+     */
+    useHTML?: boolean;
+    /**
+     * (Highstock) The vertical alignment of the annotation's label.
+     */
+    verticalAlign?: VerticalAlignValue;
+    /**
+     * (Highstock) The x position offset of the label relative to the point.
+     * Note that if a `distance` is defined, the distance takes precedence over
+     * `x` and `y` options.
+     */
+    x?: number;
+    /**
+     * (Highstock) The y position offset of the label relative to the point.
+     * Note that if a `distance` is defined, the distance takes precedence over
+     * `x` and `y` options.
+     */
+    y?: number;
+}
+/**
+ * (Highstock) Line options.
+ */
+export interface NavigationBindingsCircleAnnotationAnnotationsTypesVerticalLineTypeLineOptions {
+    fill?: string;
+}
+/**
+ * (Highstock) Additional options for an annotation with the type.
+ */
+export interface NavigationBindingsCircleAnnotationAnnotationsTypesVerticalLineTypeOptions {
+    /**
+     * (Highstock) Connector options.
+     */
+    connector?: NavigationBindingsCircleAnnotationAnnotationsTypesVerticalLineTypeConnectorOptions;
+    /**
+     * (Highstock) Label options.
+     */
+    label?: NavigationBindingsCircleAnnotationAnnotationsTypesVerticalLineTypeLabelOptions;
+    /**
+     * (Highstock) Line options.
+     */
+    line?: NavigationBindingsCircleAnnotationAnnotationsTypesVerticalLineTypeLineOptions;
+    points?: Array<NavigationBindingsCircleAnnotationAnnotationsTypesVerticalLineTypePointsOptions>;
+    /**
+     * (Highstock) This option defines which `xAxis` the point is connected to.
+     * It refers to either the axis id or the index of the axis in the `xAxis`
+     * array.
+     */
+    xAxis?: number;
+    /**
+     * (Highstock) This option defines which `yAxis` the point is connected to.
+     * It refers to either the axis id or the index of the axis in the `yAxis`
+     * array.
+     */
+    yAxis?: number;
+}
+export interface NavigationBindingsCircleAnnotationAnnotationsTypesVerticalLineTypePointsOptions {
+    controlPoint?: number;
+    /**
+     * (Highstock) The x position of the point.
+     */
+    x?: number;
+    /**
+     * (Highstock) The y position of the point.
+     */
+    y?: number;
+}
+/**
+ * (Highcharts, Highstock) A circle annotation bindings. Includes `start` and
+ * one event in `steps` array.
+ */
+export interface NavigationBindingsCircleAnnotationOptions {
+    /**
+     * (Highcharts, Highstock) Options to customize the bindings' annotation
+     * shapes and labels.
+     */
+    annotationsOptions?: (AnnotationsOptions|NavigationBindingsCircleAnnotationAnnotationsOptions);
+}
+/**
  * (Highstock) Enable or disable the initial animation when a series is
  * displayed for the `annotation`. The animation can also be set as a
  * configuration object. Please note that this option only applies to the
@@ -39495,6 +42676,3163 @@ export interface NavigationBindingsElliott5Options {
     annotationsOptions?: (AnnotationsOptions|NavigationBindingsElliott5AnnotationsOptions);
 }
 /**
+ * (Highcharts, Highstock) Enable or disable the initial animation when a series
+ * is displayed for the `annotation`. The animation can also be set as a
+ * configuration object. Please note that this option only applies to the
+ * initial animation. For other animations, see chart.animation and the
+ * animation parameter under the API methods. The following properties are
+ * supported:
+ *
+ * - `defer`: The animation delay time in milliseconds.
+ */
+export interface NavigationBindingsEllipseAnnotationAnnotationsAnimationOptions {
+    /**
+     * (Highcharts, Highstock) The animation delay time in milliseconds. Set to
+     * `0` renders annotation immediately. As `undefined` inherits defer time
+     * from the series.animation.defer.
+     */
+    defer?: number;
+}
+export interface NavigationBindingsEllipseAnnotationAnnotationsControlPointStyleOptions {
+    cursor?: string;
+    fill?: string;
+    stroke?: string;
+    "stroke-width"?: number;
+}
+/**
+ * (Highcharts, Highstock) Events available in annotations.
+ */
+export interface NavigationBindingsEllipseAnnotationAnnotationsEventsOptions {
+    /**
+     * (Highcharts, Highstock) Event callback when annotation is added to the
+     * chart.
+     */
+    add?: EventCallbackFunction<Annotation>;
+    /**
+     * (Highcharts, Highstock) Event callback when annotation is updated (e.g.
+     * drag and dropped or resized by control points).
+     */
+    afterUpdate?: EventCallbackFunction<Annotation>;
+    /**
+     * (Highcharts, Highstock) Fires when the annotation is clicked.
+     */
+    click?: EventCallbackFunction<Annotation>;
+    /**
+     * (Highcharts, Highstock) Fires when the annotation is dragged.
+     */
+    drag?: EventCallbackFunction<Annotation>;
+    /**
+     * (Highcharts, Highstock) Event callback when annotation is removed from
+     * the chart.
+     */
+    remove?: EventCallbackFunction<Annotation>;
+}
+/**
+ * (Highcharts, Highstock) Options for annotation's labels. Each label inherits
+ * options from the labelOptions object. An option from the labelOptions can be
+ * overwritten by config for a specific label.
+ */
+export interface NavigationBindingsEllipseAnnotationAnnotationsLabelOptions {
+    /**
+     * (Highcharts, Highstock) Accessibility options for an annotation label.
+     */
+    accessibility?: AnnotationLabelAccessibilityOptionsObject;
+    /**
+     * (Highcharts, Highstock) The alignment of the annotation's label. If
+     * right, the right side of the label should be touching the point.
+     */
+    align?: AlignValue;
+    /**
+     * (Highcharts, Highstock) Whether to allow the annotation's labels to
+     * overlap. To make the labels less sensitive for overlapping, the can be
+     * set to 0.
+     */
+    allowOverlap?: boolean;
+    /**
+     * (Highcharts, Highstock) The background color or gradient for the
+     * annotation's label.
+     */
+    backgroundColor?: ColorType;
+    /**
+     * (Highcharts, Highstock) The border color for the annotation's label.
+     */
+    borderColor?: ColorType;
+    /**
+     * (Highcharts, Highstock) The border radius in pixels for the annotation's
+     * label.
+     */
+    borderRadius?: number;
+    /**
+     * (Highcharts, Highstock) The border width in pixels for the annotation's
+     * label.
+     */
+    borderWidth?: number;
+    /**
+     * (Highcharts, Highstock) A class name for styling by CSS.
+     */
+    className?: string;
+    /**
+     * (Highcharts, Highstock) Whether to hide the annotation's label that is
+     * outside the plot area.
+     */
+    crop?: boolean;
+    /**
+     * (Highcharts, Highstock) The label's pixel distance from the point.
+     */
+    distance?: number;
+    /**
+     * (Highcharts, Highstock) A format string for the data label.
+     */
+    format?: string;
+    /**
+     * (Highcharts, Highstock) Callback JavaScript function to format the
+     * annotation's label. Note that if a `format` or `text` are defined, the
+     * format or text take precedence and the formatter is ignored. `This`
+     * refers to a point object. The callback also receives an argument `ctx` so
+     * that arrow-functions can access the same context (the point in this case)
+     * as normal functions can using `this`. Since v12.6.0, the callback
+     * receives `ctx`.
+     */
+    formatter?: FormatterCallbackFunction<Point>;
+    /**
+     * (Highcharts, Highstock) Whether all the labels for an annotation are
+     * visible in the exported data table.
+     */
+    includeInDataExport?: boolean;
+    /**
+     * (Highcharts, Highstock) How to handle the annotation's label that flow
+     * outside the plot area. The justify option aligns the label inside the
+     * plot area.
+     */
+    overflow?: OptionsOverflowValue;
+    /**
+     * (Highcharts, Highstock) When either the borderWidth or the
+     * backgroundColor is set, this is the padding within the box.
+     */
+    padding?: number;
+    /**
+     * (Highcharts, Highstock) The shadow of the box. The shadow can be an
+     * object configuration containing `color`, `offsetX`, `offsetY`, `opacity`
+     * and `width`.
+     */
+    shadow?: (boolean|ShadowOptionsObject);
+    /**
+     * (Highcharts, Highstock) The name of a symbol to use for the border around
+     * the label. Symbols are predefined functions on the Renderer object.
+     */
+    shape?: string;
+    /**
+     * (Highcharts, Highstock) Styles for the annotation's label.
+     */
+    style?: CSSObject;
+    /**
+     * (Highcharts, Highstock) Alias for the format option.
+     */
+    text?: string;
+    /**
+     * (Highcharts, Highstock) Whether to use HTML to render the annotation's
+     * label.
+     */
+    useHTML?: boolean;
+    /**
+     * (Highcharts, Highstock) The vertical alignment of the annotation's label.
+     */
+    verticalAlign?: VerticalAlignValue;
+    /**
+     * (Highcharts, Highstock) The x position offset of the label relative to
+     * the point. Note that if a `distance` is defined, the distance takes
+     * precedence over `x` and `y` options.
+     */
+    x?: number;
+    /**
+     * (Highcharts, Highstock) The y position offset of the label relative to
+     * the point. Note that if a `distance` is defined, the distance takes
+     * precedence over `x` and `y` options.
+     */
+    y?: number;
+}
+export interface NavigationBindingsEllipseAnnotationAnnotationsLabelsControlPointsStyleOptions {
+    cursor?: string;
+    fill?: string;
+    stroke?: string;
+    "stroke-width"?: number;
+}
+/**
+ * (Highcharts, Highstock) An array of labels for the annotation. For options
+ * that apply to multiple labels, they can be added to the labelOptions.
+ */
+export interface NavigationBindingsEllipseAnnotationAnnotationsLabelsOptions {
+    /**
+     * (Highcharts, Highstock) Accessibility options for an annotation label.
+     */
+    accessibility?: AnnotationLabelAccessibilityOptionsObject;
+    /**
+     * (Highcharts, Highstock) The alignment of the annotation's label. If
+     * right, the right side of the label should be touching the point.
+     */
+    align?: AlignValue;
+    /**
+     * (Highcharts, Highstock) Whether to allow the annotation's labels to
+     * overlap. To make the labels less sensitive for overlapping, the can be
+     * set to 0.
+     */
+    allowOverlap?: boolean;
+    /**
+     * (Highcharts, Highstock) The background color or gradient for the
+     * annotation's label.
+     */
+    backgroundColor?: ColorType;
+    /**
+     * (Highcharts, Highstock) The border color for the annotation's label.
+     */
+    borderColor?: ColorType;
+    /**
+     * (Highcharts, Highstock) The border radius in pixels for the annotation's
+     * label.
+     */
+    borderRadius?: number;
+    /**
+     * (Highcharts, Highstock) The border width in pixels for the annotation's
+     * label.
+     */
+    borderWidth?: number;
+    /**
+     * (Highcharts, Highstock) A class name for styling by CSS.
+     */
+    className?: string;
+    /**
+     * (Highcharts, Highstock) The array of control points.
+     */
+    controlPoints?: (AnnotationControlPointOptionsObject|Array<AnnotationControlPointOptionsObject>);
+    /**
+     * (Highcharts, Highstock) Whether to hide the annotation's label that is
+     * outside the plot area.
+     */
+    crop?: boolean;
+    /**
+     * (Highcharts, Highstock) The label's pixel distance from the point.
+     */
+    distance?: number;
+    /**
+     * (Highcharts, Highstock) A format string for the data label.
+     */
+    format?: string;
+    /**
+     * (Highcharts, Highstock) Callback JavaScript function to format the
+     * annotation's label. Note that if a `format` or `text` are defined, the
+     * format or text take precedence and the formatter is ignored. `This`
+     * refers to a point object. The callback also receives an argument `ctx` so
+     * that arrow-functions can access the same context (the point in this case)
+     * as normal functions can using `this`. Since v12.6.0, the callback
+     * receives `ctx`.
+     */
+    formatter?: FormatterCallbackFunction<Point>;
+    /**
+     * (Highcharts, Highstock) An id for later identification of the annotation
+     * label.
+     */
+    id?: string;
+    /**
+     * (Highcharts, Highstock) Whether all the labels for an annotation are
+     * visible in the exported data table.
+     */
+    includeInDataExport?: boolean;
+    /**
+     * (Highcharts, Highstock) How to handle the annotation's label that flow
+     * outside the plot area. The justify option aligns the label inside the
+     * plot area.
+     */
+    overflow?: OptionsOverflowValue;
+    /**
+     * (Highcharts, Highstock) When either the borderWidth or the
+     * backgroundColor is set, this is the padding within the box.
+     */
+    padding?: number;
+    /**
+     * (Highcharts, Highstock) This option defines the point to which the label
+     * will be connected. It can be either the point which exists in the series
+     * - it is referenced by the point's id - or a new point with defined x, y
+     * properties and optionally axes.
+     */
+    point?: AnnotationMockPointOptions;
+    /**
+     * (Highcharts, Highstock) The shadow of the box. The shadow can be an
+     * object configuration containing `color`, `offsetX`, `offsetY`, `opacity`
+     * and `width`.
+     */
+    shadow?: (boolean|ShadowOptionsObject);
+    /**
+     * (Highcharts, Highstock) The name of a symbol to use for the border around
+     * the label. Symbols are predefined functions on the Renderer object.
+     */
+    shape?: string;
+    /**
+     * (Highcharts, Highstock) Styles for the annotation's label.
+     */
+    style?: CSSObject;
+    /**
+     * (Highcharts, Highstock) Alias for the format option.
+     */
+    text?: string;
+    /**
+     * (Highcharts, Highstock) Whether to use HTML to render the annotation's
+     * label.
+     */
+    useHTML?: boolean;
+    /**
+     * (Highcharts, Highstock) The vertical alignment of the annotation's label.
+     */
+    verticalAlign?: VerticalAlignValue;
+    /**
+     * (Highcharts, Highstock) The x position offset of the label relative to
+     * the point. Note that if a `distance` is defined, the distance takes
+     * precedence over `x` and `y` options.
+     */
+    x?: number;
+    /**
+     * (Highcharts, Highstock) The y position offset of the label relative to
+     * the point. Note that if a `distance` is defined, the distance takes
+     * precedence over `x` and `y` options.
+     */
+    y?: number;
+}
+/**
+ * (Highcharts, Highstock) Options to customize the bindings' annotation shapes
+ * and labels.
+ */
+export interface NavigationBindingsEllipseAnnotationAnnotationsOptions {
+    /**
+     * (Highcharts, Highstock) Enable or disable the initial animation when a
+     * series is displayed for the `annotation`. The animation can also be set
+     * as a configuration object. Please note that this option only applies to
+     * the initial animation. For other animations, see chart.animation and the
+     * animation parameter under the API methods. The following properties are
+     * supported:
+     *
+     * - `defer`: The animation delay time in milliseconds.
+     */
+    animation?: (boolean|NavigationBindingsEllipseAnnotationAnnotationsAnimationOptions|Partial<AnimationOptionsObject>);
+    /**
+     * (Highcharts, Highstock) A class name for styling by CSS.
+     */
+    className?: string;
+    /**
+     * (Highcharts, Highstock) Options for annotation's control points. Each
+     * control point inherits options from controlPointOptions object. Options
+     * from the controlPointOptions can be overwritten by options in a specific
+     * control point.
+     */
+    controlPointOptions?: AnnotationControlPointOptionsObject;
+    /**
+     * (Highcharts, Highstock) Whether to hide the part of the annotation that
+     * is outside the plot area.
+     */
+    crop?: boolean;
+    /**
+     * (Highcharts, Highstock) Allow an annotation to be draggable by a user.
+     * Possible values are `'x'`, `'xy'`, `'y'` and `''` (disabled).
+     */
+    draggable?: AnnotationDraggableValue;
+    /**
+     * (Highcharts, Highstock) Events available in annotations.
+     */
+    events?: NavigationBindingsEllipseAnnotationAnnotationsEventsOptions;
+    /**
+     * (Highcharts, Highstock) Sets an ID for an annotation. Can be user later
+     * when removing an annotation in Chart.removeAnnotation(id) method.
+     */
+    id?: (number|string);
+    /**
+     * (Highcharts, Highstock) Options for annotation's labels. Each label
+     * inherits options from the labelOptions object. An option from the
+     * labelOptions can be overwritten by config for a specific label.
+     */
+    labelOptions?: NavigationBindingsEllipseAnnotationAnnotationsLabelOptions;
+    /**
+     * (Highcharts, Highstock) An array of labels for the annotation. For
+     * options that apply to multiple labels, they can be added to the
+     * labelOptions.
+     */
+    labels?: Array<NavigationBindingsEllipseAnnotationAnnotationsLabelsOptions>;
+    /**
+     * (Highcharts, Highstock) Options for annotation's shapes. Each shape
+     * inherits options from the shapeOptions object. An option from the
+     * shapeOptions can be overwritten by config for a specific shape.
+     */
+    shapeOptions?: NavigationBindingsEllipseAnnotationAnnotationsShapeOptions;
+    /**
+     * (Highcharts, Highstock) An array of shapes for the annotation. For
+     * options that apply to multiple shapes, then can be added to the
+     * shapeOptions.
+     */
+    shapes?: Array<NavigationBindingsEllipseAnnotationAnnotationsShapesOptions>;
+    /**
+     * (Highstock) For advanced annotations, this option defines the type of
+     * annotation. Can be one of the keys listed under the types option.
+     */
+    type?: string;
+    /**
+     * (Highcharts, Highstock) Additional options for an annotation with the
+     * type.
+     */
+    typeOptions?: NavigationBindingsEllipseAnnotationAnnotationsTypeOptions;
+    /**
+     * (Highstock) Option override for specific advanced annotation types. This
+     * collection is intended for general theming using
+     * `Highcharts.setOptions()`.
+     */
+    types?: NavigationBindingsEllipseAnnotationAnnotationsTypesOptions;
+    /**
+     * (Highcharts, Highstock) Whether the annotation is visible.
+     */
+    visible?: boolean;
+    /**
+     * (Highcharts, Highstock) The Z index of the annotation.
+     */
+    zIndex?: number;
+}
+/**
+ * (Highcharts, Highstock) Options for annotation's shapes. Each shape inherits
+ * options from the shapeOptions object. An option from the shapeOptions can be
+ * overwritten by config for a specific shape.
+ */
+export interface NavigationBindingsEllipseAnnotationAnnotationsShapeOptions {
+    /**
+     * (Highcharts, Highstock) Name of the dash style to use for the shape's
+     * stroke.
+     */
+    dashStyle?: DashStyleValue;
+    /**
+     * (Highcharts, Highstock) The color of the shape's fill.
+     */
+    fill?: ColorType;
+    /**
+     * (Highcharts, Highstock) The height of the `rect` shape. Can be defined in
+     * pixels or yAxis units, if shapes.yAxis index is defined.
+     */
+    height?: number;
+    /**
+     * (Highcharts, Highstock) The radius of the `circle` shape. Can be defined
+     * in pixels or yAxis units, if shapes.yAxis index is defined.
+     */
+    r?: number;
+    /**
+     * (Highcharts, Highstock) The radius of the `ellipse` shape in y direction.
+     * Can be defined in pixels or yAxis units, if shapes.yAxis index is
+     * defined.
+     */
+    ry?: number;
+    /**
+     * (Highcharts, Highstock) Defines additional snapping area around an
+     * annotation making this annotation to focus. Defined in pixels.
+     */
+    snap?: number;
+    /**
+     * (Highcharts, Highstock) The URL for an image to use as the annotation
+     * shape. Note, type has to be set to `'image'`.
+     */
+    src?: string;
+    /**
+     * (Highcharts, Highstock) The color of the shape's stroke.
+     */
+    stroke?: ColorType;
+    /**
+     * (Highcharts, Highstock) The pixel stroke width of the shape.
+     */
+    strokeWidth?: number;
+    /**
+     * (Highcharts, Highstock) The type of the shape. Available options are
+     * `circle`, `rect`, `ellipse` and `path`.
+     */
+    type?: string;
+    /**
+     * (Highcharts, Highstock) The width of the `rect` shape. Can be defined in
+     * pixels or xAxis units, if shapes.xAxis index is defined.
+     */
+    width?: number;
+    /**
+     * (Highcharts, Highstock) The xAxis index which should be used for
+     * annotation's sizes and points coordinates conversion.
+     *
+     * This option is used for `rect` shape width, and all shapes point and
+     * points coordinates.
+     */
+    xAxis?: number;
+    /**
+     * (Highcharts, Highstock) The yAxis index which should be used for
+     * annotation's sizes and points coordinates conversion.
+     *
+     * This option is used for `rect` shape height, `circle` shape radius,
+     * `ellipse` y direction radius, and all shapes point and points
+     * coordinates.
+     */
+    yAxis?: number;
+}
+export interface NavigationBindingsEllipseAnnotationAnnotationsShapesControlPointsStyleOptions {
+    cursor?: string;
+    fill?: string;
+    stroke?: string;
+    "stroke-width"?: number;
+}
+/**
+ * (Highcharts, Highstock) An array of shapes for the annotation. For options
+ * that apply to multiple shapes, then can be added to the shapeOptions.
+ */
+export interface NavigationBindingsEllipseAnnotationAnnotationsShapesOptions {
+    /**
+     * (Highcharts, Highstock) The array of control points.
+     */
+    controlPoints?: (AnnotationControlPointOptionsObject|Array<AnnotationControlPointOptionsObject>);
+    /**
+     * (Highcharts, Highstock) Name of the dash style to use for the shape's
+     * stroke.
+     */
+    dashStyle?: DashStyleValue;
+    /**
+     * (Highcharts, Highstock) The color of the shape's fill.
+     */
+    fill?: ColorType;
+    /**
+     * (Highcharts, Highstock) The height of the `rect` shape. Can be defined in
+     * pixels or yAxis units, if shapes.yAxis index is defined.
+     */
+    height?: number;
+    /**
+     * (Highcharts, Highstock) Id of the marker which will be drawn at the final
+     * vertex of the path. The `arrow` and `reverse-arrow` markers are available
+     * by default; custom markers can be defined in the defs option.
+     */
+    markerEnd?: string;
+    /**
+     * (Highcharts, Highstock) Id of the marker which will be drawn at the first
+     * vertex of the path. The `arrow` and `reverse-arrow` markers are available
+     * by default; custom markers can be defined in the defs option.
+     */
+    markerStart?: string;
+    /**
+     * (Highcharts, Highstock) This option defines the point to which the shape
+     * will be connected. It can be either the point which exists in the series
+     * - it is referenced by the point's id - or a new point with defined x, y
+     * properties and optionally axes.
+     */
+    point?: AnnotationMockPointOptions;
+    /**
+     * (Highcharts, Highstock) An array of points for the shape or a callback
+     * function that returns that shape point.
+     *
+     * This option is available for shapes which can use multiple points such as
+     * path. A point can be either a point object or a point's id.
+     */
+    points?: Array<AnnotationMockPointOptions>;
+    /**
+     * (Highcharts, Highstock) The radius of the `circle` shape. Can be defined
+     * in pixels or yAxis units, if shapes.yAxis index is defined.
+     */
+    r?: number;
+    /**
+     * (Highcharts, Highstock) The radius of the `ellipse` shape in y direction.
+     * Can be defined in pixels or yAxis units, if shapes.yAxis index is
+     * defined.
+     */
+    ry?: number;
+    /**
+     * (Highcharts, Highstock) Defines additional snapping area around an
+     * annotation making this annotation to focus. Defined in pixels.
+     */
+    snap?: number;
+    /**
+     * (Highcharts, Highstock) The URL for an image to use as the annotation
+     * shape. Note, type has to be set to `'image'`.
+     */
+    src?: string;
+    /**
+     * (Highcharts, Highstock) The color of the shape's stroke.
+     */
+    stroke?: ColorType;
+    /**
+     * (Highcharts, Highstock) The pixel stroke width of the shape.
+     */
+    strokeWidth?: number;
+    /**
+     * (Highcharts, Highstock) The type of the shape. Available options are
+     * `circle`, `rect`, `ellipse` and `path`.
+     */
+    type?: string;
+    /**
+     * (Highcharts, Highstock) The width of the `rect` shape. Can be defined in
+     * pixels or xAxis units, if shapes.xAxis index is defined.
+     */
+    width?: number;
+    /**
+     * (Highcharts, Highstock) The xAxis index which should be used for
+     * annotation's sizes and points coordinates conversion.
+     *
+     * This option is used for `rect` shape width, and all shapes point and
+     * points coordinates.
+     */
+    xAxis?: number;
+    /**
+     * (Highcharts, Highstock) The yAxis index which should be used for
+     * annotation's sizes and points coordinates conversion.
+     *
+     * This option is used for `rect` shape height, `circle` shape radius,
+     * `ellipse` y direction radius, and all shapes point and points
+     * coordinates.
+     */
+    yAxis?: number;
+}
+/**
+ * (Highcharts, Highstock) Background shape options for the annotation.
+ */
+export interface NavigationBindingsEllipseAnnotationAnnotationsTypeBackgroundOptions {
+    /**
+     * (Highcharts, Highstock) Name of the dash style to use for the shape's
+     * stroke.
+     */
+    dashStyle?: DashStyleValue;
+    /**
+     * (Highcharts, Highstock) The color of the shape's fill.
+     */
+    fill?: ColorType;
+    /**
+     * (Highcharts, Highstock) The height of the `rect` shape. Can be defined in
+     * pixels or yAxis units, if shapes.yAxis index is defined.
+     */
+    height?: number;
+    /**
+     * (Highcharts, Highstock) The radius of the `circle` shape. Can be defined
+     * in pixels or yAxis units, if shapes.yAxis index is defined.
+     */
+    r?: number;
+    /**
+     * (Highcharts, Highstock) The radius of the `ellipse` shape in y direction.
+     * Can be defined in pixels or yAxis units, if shapes.yAxis index is
+     * defined.
+     */
+    ry?: number;
+    /**
+     * (Highcharts, Highstock) Defines additional snapping area around an
+     * annotation making this annotation to focus. Defined in pixels.
+     */
+    snap?: number;
+    /**
+     * (Highcharts, Highstock) The URL for an image to use as the annotation
+     * shape. Note, type has to be set to `'image'`.
+     */
+    src?: string;
+    /**
+     * (Highcharts, Highstock) The color of the shape's stroke.
+     */
+    stroke?: ColorType;
+    /**
+     * (Highcharts, Highstock) The pixel stroke width of the shape.
+     */
+    strokeWidth?: number;
+    /**
+     * (Highcharts, Highstock) The type of the shape. Available options are
+     * `circle`, `rect`, `ellipse` and `path`.
+     */
+    type?: string;
+    /**
+     * (Highcharts, Highstock) The width of the `rect` shape. Can be defined in
+     * pixels or xAxis units, if shapes.xAxis index is defined.
+     */
+    width?: number;
+    /**
+     * (Highcharts, Highstock) The xAxis index which should be used for
+     * annotation's sizes and points coordinates conversion.
+     *
+     * This option is used for `rect` shape width, and all shapes point and
+     * points coordinates.
+     */
+    xAxis?: number;
+    /**
+     * (Highcharts, Highstock) The yAxis index which should be used for
+     * annotation's sizes and points coordinates conversion.
+     *
+     * This option is used for `rect` shape height, `circle` shape radius,
+     * `ellipse` y direction radius, and all shapes point and points
+     * coordinates.
+     */
+    yAxis?: number;
+}
+/**
+ * (Highcharts, Highstock) Line options.
+ */
+export interface NavigationBindingsEllipseAnnotationAnnotationsTypeLineOptions {
+    /**
+     * (Highcharts, Highstock) Name of the dash style to use for the shape's
+     * stroke.
+     */
+    dashStyle?: DashStyleValue;
+    /**
+     * (Highcharts, Highstock) The color of the shape's fill.
+     */
+    fill?: ColorType;
+    /**
+     * (Highcharts, Highstock) The height of the `rect` shape. Can be defined in
+     * pixels or yAxis units, if shapes.yAxis index is defined.
+     */
+    height?: number;
+    /**
+     * (Highcharts, Highstock) The radius of the `circle` shape. Can be defined
+     * in pixels or yAxis units, if shapes.yAxis index is defined.
+     */
+    r?: number;
+    /**
+     * (Highcharts, Highstock) The radius of the `ellipse` shape in y direction.
+     * Can be defined in pixels or yAxis units, if shapes.yAxis index is
+     * defined.
+     */
+    ry?: number;
+    /**
+     * (Highcharts, Highstock) Defines additional snapping area around an
+     * annotation making this annotation to focus. Defined in pixels.
+     */
+    snap?: number;
+    /**
+     * (Highcharts, Highstock) The URL for an image to use as the annotation
+     * shape. Note, type has to be set to `'image'`.
+     */
+    src?: string;
+    /**
+     * (Highcharts, Highstock) The color of the shape's stroke.
+     */
+    stroke?: ColorType;
+    /**
+     * (Highcharts, Highstock) The pixel stroke width of the shape.
+     */
+    strokeWidth?: number;
+    /**
+     * (Highcharts, Highstock) The type of the shape. Available options are
+     * `circle`, `rect`, `ellipse` and `path`.
+     */
+    type?: string;
+    /**
+     * (Highcharts, Highstock) The width of the `rect` shape. Can be defined in
+     * pixels or xAxis units, if shapes.xAxis index is defined.
+     */
+    width?: number;
+    /**
+     * (Highcharts, Highstock) The xAxis index which should be used for
+     * annotation's sizes and points coordinates conversion.
+     *
+     * This option is used for `rect` shape width, and all shapes point and
+     * points coordinates.
+     */
+    xAxis?: number;
+    /**
+     * (Highcharts, Highstock) The yAxis index which should be used for
+     * annotation's sizes and points coordinates conversion.
+     *
+     * This option is used for `rect` shape height, `circle` shape radius,
+     * `ellipse` y direction radius, and all shapes point and points
+     * coordinates.
+     */
+    yAxis?: number;
+}
+/**
+ * (Highcharts, Highstock) Additional options for an annotation with the type.
+ */
+export interface NavigationBindingsEllipseAnnotationAnnotationsTypeOptions {
+    /**
+     * (Highcharts, Highstock) Background shape options for the annotation.
+     */
+    background?: NavigationBindingsEllipseAnnotationAnnotationsTypeBackgroundOptions;
+    /**
+     * (Highcharts, Highstock) Height of the annotation in pixels.
+     */
+    height?: number;
+    /**
+     * (Highcharts, Highstock) Line options.
+     */
+    line?: NavigationBindingsEllipseAnnotationAnnotationsTypeLineOptions;
+    /**
+     * (Highcharts, Highstock) A single point that the annotation is attached
+     * to. It can be either the point which exists in the series - it is
+     * referenced by the point's id - or a new point with defined x, y
+     * properties and optionally axes.
+     */
+    point?: (string|AnnotationMockPointOptionsObject);
+    /**
+     * (Highcharts, Highstock) An array of points that the annotation is
+     * attached to. Each point can the point which exists in the series - it is
+     * referenced by the point's id - or a new point with defined x, y
+     * properties and optionally axes.
+     */
+    points?: Array<(string|AnnotationMockPointOptionsObject)>;
+    /**
+     * (Highcharts, Highstock) The annotation type identifier.
+     */
+    type?: string;
+    /**
+     * (Highcharts, Highstock) This option defines which `xAxis` the point is
+     * connected to. It refers to either the axis id or the index of the axis in
+     * the `xAxis` array.
+     */
+    xAxis?: (number|string);
+    /**
+     * (Highcharts, Highstock) This option defines which `yAxis` the point is
+     * connected to. It refers to either the axis id or the index of the axis in
+     * the `yAxis` array.
+     */
+    yAxis?: (number|string);
+}
+export interface NavigationBindingsEllipseAnnotationAnnotationsTypesCrookedLineControlPointStyleOptions {
+    cursor?: string;
+    fill?: string;
+    stroke?: string;
+    "stroke-width"?: number;
+}
+/**
+ * (Highstock) Options for annotation's labels. Each label inherits options from
+ * the labelOptions object. An option from the labelOptions can be overwritten
+ * by config for a specific label.
+ */
+export interface NavigationBindingsEllipseAnnotationAnnotationsTypesCrookedLineLabelOptions {
+    /**
+     * (Highstock) Accessibility options for an annotation label.
+     */
+    accessibility?: AnnotationLabelAccessibilityOptionsObject;
+    /**
+     * (Highstock) The alignment of the annotation's label. If right, the right
+     * side of the label should be touching the point.
+     */
+    align?: AlignValue;
+    /**
+     * (Highstock) Whether to allow the annotation's labels to overlap. To make
+     * the labels less sensitive for overlapping, the can be set to 0.
+     */
+    allowOverlap?: boolean;
+    /**
+     * (Highstock) The background color or gradient for the annotation's label.
+     */
+    backgroundColor?: ColorType;
+    /**
+     * (Highstock) The border color for the annotation's label.
+     */
+    borderColor?: ColorType;
+    /**
+     * (Highstock) The border radius in pixels for the annotation's label.
+     */
+    borderRadius?: number;
+    /**
+     * (Highstock) The border width in pixels for the annotation's label.
+     */
+    borderWidth?: number;
+    /**
+     * (Highstock) A class name for styling by CSS.
+     */
+    className?: string;
+    /**
+     * (Highstock) Whether to hide the annotation's label that is outside the
+     * plot area.
+     */
+    crop?: boolean;
+    /**
+     * (Highstock) The label's pixel distance from the point.
+     */
+    distance?: number;
+    /**
+     * (Highstock) A format string for the data label.
+     */
+    format?: string;
+    /**
+     * (Highstock) Callback JavaScript function to format the annotation's
+     * label. Note that if a `format` or `text` are defined, the format or text
+     * take precedence and the formatter is ignored. `This` refers to a point
+     * object. The callback also receives an argument `ctx` so that
+     * arrow-functions can access the same context (the point in this case) as
+     * normal functions can using `this`. Since v12.6.0, the callback receives
+     * `ctx`.
+     */
+    formatter?: FormatterCallbackFunction<Point>;
+    /**
+     * (Highstock) Whether all the labels for an annotation are visible in the
+     * exported data table.
+     */
+    includeInDataExport?: boolean;
+    /**
+     * (Highstock) How to handle the annotation's label that flow outside the
+     * plot area. The justify option aligns the label inside the plot area.
+     */
+    overflow?: OptionsOverflowValue;
+    /**
+     * (Highstock) When either the borderWidth or the backgroundColor is set,
+     * this is the padding within the box.
+     */
+    padding?: number;
+    /**
+     * (Highstock) The shadow of the box. The shadow can be an object
+     * configuration containing `color`, `offsetX`, `offsetY`, `opacity` and
+     * `width`.
+     */
+    shadow?: (boolean|ShadowOptionsObject);
+    /**
+     * (Highstock) The name of a symbol to use for the border around the label.
+     * Symbols are predefined functions on the Renderer object.
+     */
+    shape?: string;
+    /**
+     * (Highstock) Styles for the annotation's label.
+     */
+    style?: CSSObject;
+    /**
+     * (Highstock) Alias for the format option.
+     */
+    text?: string;
+    /**
+     * (Highstock) Whether to use HTML to render the annotation's label.
+     */
+    useHTML?: boolean;
+    /**
+     * (Highstock) The vertical alignment of the annotation's label.
+     */
+    verticalAlign?: VerticalAlignValue;
+    /**
+     * (Highstock) The x position offset of the label relative to the point.
+     * Note that if a `distance` is defined, the distance takes precedence over
+     * `x` and `y` options.
+     */
+    x?: number;
+    /**
+     * (Highstock) The y position offset of the label relative to the point.
+     * Note that if a `distance` is defined, the distance takes precedence over
+     * `x` and `y` options.
+     */
+    y?: number;
+}
+/**
+ * (Highstock) Options for the crooked line annotation type.
+ */
+export interface NavigationBindingsEllipseAnnotationAnnotationsTypesCrookedLineOptions {
+    /**
+     * (Highstock) Options for annotation's control points. Each control point
+     * inherits options from controlPointOptions object. Options from the
+     * controlPointOptions can be overwritten by options in a specific control
+     * point.
+     */
+    controlPointOptions?: AnnotationControlPointOptionsObject;
+    /**
+     * (Highstock) Options for annotation's labels. Each label inherits options
+     * from the labelOptions object. An option from the labelOptions can be
+     * overwritten by config for a specific label.
+     */
+    labelOptions?: NavigationBindingsEllipseAnnotationAnnotationsTypesCrookedLineLabelOptions;
+    /**
+     * (Highstock) Additional options for an annotation with the type.
+     */
+    typeOptions?: NavigationBindingsEllipseAnnotationAnnotationsTypesCrookedLineTypeOptions;
+}
+/**
+ * (Highstock) Line options.
+ */
+export interface NavigationBindingsEllipseAnnotationAnnotationsTypesCrookedLineTypeLineOptions {
+    fill?: string;
+}
+/**
+ * (Highstock) Additional options for an annotation with the type.
+ */
+export interface NavigationBindingsEllipseAnnotationAnnotationsTypesCrookedLineTypeOptions {
+    /**
+     * (Highstock) Line options.
+     */
+    line?: NavigationBindingsEllipseAnnotationAnnotationsTypesCrookedLineTypeLineOptions;
+    points?: Array<NavigationBindingsEllipseAnnotationAnnotationsTypesCrookedLineTypePointsOptions>;
+    /**
+     * (Highstock) This option defines which `xAxis` the point is connected to.
+     * It refers to either the axis id or the index of the axis in the `xAxis`
+     * array.
+     */
+    xAxis?: number;
+    /**
+     * (Highstock) This option defines which `yAxis` the point is connected to.
+     * It refers to either the axis id or the index of the axis in the `yAxis`
+     * array.
+     */
+    yAxis?: number;
+}
+export interface NavigationBindingsEllipseAnnotationAnnotationsTypesCrookedLineTypePointsOptions {
+    controlPoint?: number;
+    /**
+     * (Highstock) The x position of the point.
+     */
+    x?: number;
+    /**
+     * (Highstock) The y position of the point.
+     */
+    y?: number;
+}
+export interface NavigationBindingsEllipseAnnotationAnnotationsTypesElliottWaveControlPointStyleOptions {
+    cursor?: string;
+    fill?: string;
+    stroke?: string;
+    "stroke-width"?: number;
+}
+/**
+ * (Highstock) Options for annotation's labels. Each label inherits options from
+ * the labelOptions object. An option from the labelOptions can be overwritten
+ * by config for a specific label.
+ */
+export interface NavigationBindingsEllipseAnnotationAnnotationsTypesElliottWaveLabelOptions {
+    /**
+     * (Highstock) Accessibility options for an annotation label.
+     */
+    accessibility?: AnnotationLabelAccessibilityOptionsObject;
+    /**
+     * (Highstock) The alignment of the annotation's label. If right, the right
+     * side of the label should be touching the point.
+     */
+    align?: string;
+    /**
+     * (Highstock) Whether to allow the annotation's labels to overlap. To make
+     * the labels less sensitive for overlapping, the can be set to 0.
+     */
+    allowOverlap?: boolean;
+    /**
+     * (Highstock) The background color or gradient for the annotation's label.
+     */
+    backgroundColor?: string;
+    /**
+     * (Highstock) The border color for the annotation's label.
+     */
+    borderColor?: ColorType;
+    /**
+     * (Highstock) The border radius in pixels for the annotation's label.
+     */
+    borderRadius?: number;
+    /**
+     * (Highstock) The border width in pixels for the annotation's label.
+     */
+    borderWidth?: number;
+    /**
+     * (Highstock) A class name for styling by CSS.
+     */
+    className?: string;
+    /**
+     * (Highstock) Whether to hide the annotation's label that is outside the
+     * plot area.
+     */
+    crop?: boolean;
+    /**
+     * (Highstock) The label's pixel distance from the point.
+     */
+    distance?: number;
+    /**
+     * (Highstock) A format string for the data label.
+     */
+    format?: string;
+    /**
+     * (Highstock) Callback JavaScript function to format the annotation's
+     * label. Note that if a `format` or `text` are defined, the format or text
+     * take precedence and the formatter is ignored. `This` refers to a point
+     * object. The callback also receives an argument `ctx` so that
+     * arrow-functions can access the same context (the point in this case) as
+     * normal functions can using `this`. Since v12.6.0, the callback receives
+     * `ctx`.
+     */
+    formatter?: FormatterCallbackFunction<Point>;
+    /**
+     * (Highstock) Whether all the labels for an annotation are visible in the
+     * exported data table.
+     */
+    includeInDataExport?: boolean;
+    /**
+     * (Highstock) How to handle the annotation's label that flow outside the
+     * plot area. The justify option aligns the label inside the plot area.
+     */
+    overflow?: OptionsOverflowValue;
+    /**
+     * (Highstock) When either the borderWidth or the backgroundColor is set,
+     * this is the padding within the box.
+     */
+    padding?: number;
+    /**
+     * (Highstock) The shadow of the box. The shadow can be an object
+     * configuration containing `color`, `offsetX`, `offsetY`, `opacity` and
+     * `width`.
+     */
+    shadow?: (boolean|ShadowOptionsObject);
+    /**
+     * (Highstock) The name of a symbol to use for the border around the label.
+     * Symbols are predefined functions on the Renderer object.
+     */
+    shape?: string;
+    /**
+     * (Highstock) Styles for the annotation's label.
+     */
+    style?: (CSSObject|NavigationBindingsEllipseAnnotationAnnotationsTypesElliottWaveLabelStyleOptions);
+    /**
+     * (Highstock) Alias for the format option.
+     */
+    text?: string;
+    type?: string;
+    /**
+     * (Highstock) Whether to use HTML to render the annotation's label.
+     */
+    useHTML?: boolean;
+    /**
+     * (Highstock) The vertical alignment of the annotation's label.
+     */
+    verticalAlign?: VerticalAlignValue;
+    /**
+     * (Highstock) The x position offset of the label relative to the point.
+     * Note that if a `distance` is defined, the distance takes precedence over
+     * `x` and `y` options.
+     */
+    x?: number;
+    /**
+     * (Highstock) The y position offset of the label relative to the point.
+     * Note that if a `distance` is defined, the distance takes precedence over
+     * `x` and `y` options.
+     */
+    y?: number;
+}
+/**
+ * (Highstock) Styles for the annotation's label.
+ */
+export interface NavigationBindingsEllipseAnnotationAnnotationsTypesElliottWaveLabelStyleOptions {
+    color?: string;
+}
+/**
+ * (Highstock) Options for the elliott wave annotation type.
+ */
+export interface NavigationBindingsEllipseAnnotationAnnotationsTypesElliottWaveOptions {
+    /**
+     * (Highstock) Options for annotation's control points. Each control point
+     * inherits options from controlPointOptions object. Options from the
+     * controlPointOptions can be overwritten by options in a specific control
+     * point.
+     */
+    controlPointOptions?: AnnotationControlPointOptionsObject;
+    /**
+     * (Highstock) Options for annotation's labels. Each label inherits options
+     * from the labelOptions object. An option from the labelOptions can be
+     * overwritten by config for a specific label.
+     */
+    labelOptions?: NavigationBindingsEllipseAnnotationAnnotationsTypesElliottWaveLabelOptions;
+    /**
+     * (Highstock) Additional options for an annotation with the type.
+     */
+    typeOptions?: NavigationBindingsEllipseAnnotationAnnotationsTypesElliottWaveTypeOptions;
+}
+/**
+ * (Highstock) Line options.
+ */
+export interface NavigationBindingsEllipseAnnotationAnnotationsTypesElliottWaveTypeLineOptions {
+    fill?: string;
+    strokeWidth?: number;
+}
+/**
+ * (Highstock) Additional options for an annotation with the type.
+ */
+export interface NavigationBindingsEllipseAnnotationAnnotationsTypesElliottWaveTypeOptions {
+    /**
+     * (Highstock) Line options.
+     */
+    line?: NavigationBindingsEllipseAnnotationAnnotationsTypesElliottWaveTypeLineOptions;
+    points?: Array<NavigationBindingsEllipseAnnotationAnnotationsTypesElliottWaveTypePointsOptions>;
+    /**
+     * (Highstock) This option defines which `xAxis` the point is connected to.
+     * It refers to either the axis id or the index of the axis in the `xAxis`
+     * array.
+     */
+    xAxis?: number;
+    /**
+     * (Highstock) This option defines which `yAxis` the point is connected to.
+     * It refers to either the axis id or the index of the axis in the `yAxis`
+     * array.
+     */
+    yAxis?: number;
+}
+/**
+ * (Highstock) Options for annotation's labels. Each label inherits options from
+ * the labelOptions object. An option from the labelOptions can be overwritten
+ * by config for a specific label.
+ */
+export interface NavigationBindingsEllipseAnnotationAnnotationsTypesElliottWaveTypePointsLabelOptions {
+    /**
+     * (Highstock) Accessibility options for an annotation label.
+     */
+    accessibility?: AnnotationLabelAccessibilityOptionsObject;
+    /**
+     * (Highstock) The alignment of the annotation's label. If right, the right
+     * side of the label should be touching the point.
+     */
+    align?: AlignValue;
+    /**
+     * (Highstock) Whether to allow the annotation's labels to overlap. To make
+     * the labels less sensitive for overlapping, the can be set to 0.
+     */
+    allowOverlap?: boolean;
+    /**
+     * (Highstock) The background color or gradient for the annotation's label.
+     */
+    backgroundColor?: ColorType;
+    /**
+     * (Highstock) The border color for the annotation's label.
+     */
+    borderColor?: ColorType;
+    /**
+     * (Highstock) The border radius in pixels for the annotation's label.
+     */
+    borderRadius?: number;
+    /**
+     * (Highstock) The border width in pixels for the annotation's label.
+     */
+    borderWidth?: number;
+    /**
+     * (Highstock) A class name for styling by CSS.
+     */
+    className?: string;
+    /**
+     * (Highstock) Whether to hide the annotation's label that is outside the
+     * plot area.
+     */
+    crop?: boolean;
+    /**
+     * (Highstock) The label's pixel distance from the point.
+     */
+    distance?: number;
+    /**
+     * (Highstock) A format string for the data label.
+     */
+    format?: string;
+    /**
+     * (Highstock) Callback JavaScript function to format the annotation's
+     * label. Note that if a `format` or `text` are defined, the format or text
+     * take precedence and the formatter is ignored. `This` refers to a point
+     * object. The callback also receives an argument `ctx` so that
+     * arrow-functions can access the same context (the point in this case) as
+     * normal functions can using `this`. Since v12.6.0, the callback receives
+     * `ctx`.
+     */
+    formatter?: FormatterCallbackFunction<Point>;
+    /**
+     * (Highstock) Whether all the labels for an annotation are visible in the
+     * exported data table.
+     */
+    includeInDataExport?: boolean;
+    /**
+     * (Highstock) How to handle the annotation's label that flow outside the
+     * plot area. The justify option aligns the label inside the plot area.
+     */
+    overflow?: OptionsOverflowValue;
+    /**
+     * (Highstock) When either the borderWidth or the backgroundColor is set,
+     * this is the padding within the box.
+     */
+    padding?: number;
+    /**
+     * (Highstock) The shadow of the box. The shadow can be an object
+     * configuration containing `color`, `offsetX`, `offsetY`, `opacity` and
+     * `width`.
+     */
+    shadow?: (boolean|ShadowOptionsObject);
+    /**
+     * (Highstock) The name of a symbol to use for the border around the label.
+     * Symbols are predefined functions on the Renderer object.
+     */
+    shape?: string;
+    /**
+     * (Highstock) Styles for the annotation's label.
+     */
+    style?: CSSObject;
+    /**
+     * (Highstock) Alias for the format option.
+     */
+    text?: string;
+    /**
+     * (Highstock) Whether to use HTML to render the annotation's label.
+     */
+    useHTML?: boolean;
+    /**
+     * (Highstock) The vertical alignment of the annotation's label.
+     */
+    verticalAlign?: VerticalAlignValue;
+    /**
+     * (Highstock) The x position offset of the label relative to the point.
+     * Note that if a `distance` is defined, the distance takes precedence over
+     * `x` and `y` options.
+     */
+    x?: number;
+    /**
+     * (Highstock) The y position offset of the label relative to the point.
+     * Note that if a `distance` is defined, the distance takes precedence over
+     * `x` and `y` options.
+     */
+    y?: number;
+}
+export interface NavigationBindingsEllipseAnnotationAnnotationsTypesElliottWaveTypePointsOptions {
+    controlPoint?: number;
+    /**
+     * (Highstock) Options for annotation's labels. Each label inherits options
+     * from the labelOptions object. An option from the labelOptions can be
+     * overwritten by config for a specific label.
+     */
+    label?: NavigationBindingsEllipseAnnotationAnnotationsTypesElliottWaveTypePointsLabelOptions;
+    /**
+     * (Highstock) The x position of the point.
+     */
+    x?: number;
+    /**
+     * (Highstock) The y position of the point.
+     */
+    y?: number;
+}
+export interface NavigationBindingsEllipseAnnotationAnnotationsTypesFibonacciControlPointStyleOptions {
+    cursor?: string;
+    fill?: string;
+    stroke?: string;
+    "stroke-width"?: number;
+}
+/**
+ * (Highstock) Options for annotation's labels. Each label inherits options from
+ * the labelOptions object. An option from the labelOptions can be overwritten
+ * by config for a specific label.
+ */
+export interface NavigationBindingsEllipseAnnotationAnnotationsTypesFibonacciLabelOptions {
+    /**
+     * (Highstock) Accessibility options for an annotation label.
+     */
+    accessibility?: AnnotationLabelAccessibilityOptionsObject;
+    /**
+     * (Highstock) The alignment of the annotation's label. If right, the right
+     * side of the label should be touching the point.
+     */
+    align?: string;
+    /**
+     * (Highstock) Whether to allow the annotation's labels to overlap. To make
+     * the labels less sensitive for overlapping, the can be set to 0.
+     */
+    allowOverlap?: boolean;
+    /**
+     * (Highstock) The background color or gradient for the annotation's label.
+     */
+    backgroundColor?: string;
+    /**
+     * (Highstock) The border color for the annotation's label.
+     */
+    borderColor?: ColorType;
+    /**
+     * (Highstock) The border radius in pixels for the annotation's label.
+     */
+    borderRadius?: number;
+    /**
+     * (Highstock) The border width in pixels for the annotation's label.
+     */
+    borderWidth?: number;
+    /**
+     * (Highstock) A class name for styling by CSS.
+     */
+    className?: string;
+    /**
+     * (Highstock) Whether to hide the annotation's label that is outside the
+     * plot area.
+     */
+    crop?: boolean;
+    /**
+     * (Highstock) The label's pixel distance from the point.
+     */
+    distance?: number;
+    /**
+     * (Highstock) A format string for the data label.
+     */
+    format?: string;
+    /**
+     * (Highstock) Callback JavaScript function to format the annotation's
+     * label. Note that if a `format` or `text` are defined, the format or text
+     * take precedence and the formatter is ignored. `This` refers to a point
+     * object. The callback also receives an argument `ctx` so that
+     * arrow-functions can access the same context (the point in this case) as
+     * normal functions can using `this`. Since v12.6.0, the callback receives
+     * `ctx`.
+     */
+    formatter?: FormatterCallbackFunction<Point>;
+    /**
+     * (Highstock) Whether all the labels for an annotation are visible in the
+     * exported data table.
+     */
+    includeInDataExport?: boolean;
+    /**
+     * (Highstock) How to handle the annotation's label that flow outside the
+     * plot area. The justify option aligns the label inside the plot area.
+     */
+    overflow?: OptionsOverflowValue;
+    /**
+     * (Highstock) When either the borderWidth or the backgroundColor is set,
+     * this is the padding within the box.
+     */
+    padding?: number;
+    /**
+     * (Highstock) The shadow of the box. The shadow can be an object
+     * configuration containing `color`, `offsetX`, `offsetY`, `opacity` and
+     * `width`.
+     */
+    shadow?: (boolean|ShadowOptionsObject);
+    /**
+     * (Highstock) The name of a symbol to use for the border around the label.
+     * Symbols are predefined functions on the Renderer object.
+     */
+    shape?: string;
+    /**
+     * (Highstock) Styles for the annotation's label.
+     */
+    style?: (CSSObject|NavigationBindingsEllipseAnnotationAnnotationsTypesFibonacciLabelStyleOptions);
+    /**
+     * (Highstock) Alias for the format option.
+     */
+    text?: string;
+    /**
+     * (Highstock) Whether to use HTML to render the annotation's label.
+     */
+    useHTML?: boolean;
+    /**
+     * (Highstock) The vertical alignment of the annotation's label.
+     */
+    verticalAlign?: string;
+    /**
+     * (Highstock) The x position offset of the label relative to the point.
+     * Note that if a `distance` is defined, the distance takes precedence over
+     * `x` and `y` options.
+     */
+    x?: number;
+    /**
+     * (Highstock) The y position offset of the label relative to the point.
+     * Note that if a `distance` is defined, the distance takes precedence over
+     * `x` and `y` options.
+     */
+    y?: number;
+}
+/**
+ * (Highstock) Styles for the annotation's label.
+ */
+export interface NavigationBindingsEllipseAnnotationAnnotationsTypesFibonacciLabelStyleOptions {
+    color?: string;
+}
+/**
+ * (Highstock) Options for the fibonacci annotation type.
+ */
+export interface NavigationBindingsEllipseAnnotationAnnotationsTypesFibonacciOptions {
+    /**
+     * (Highstock) Options for annotation's control points. Each control point
+     * inherits options from controlPointOptions object. Options from the
+     * controlPointOptions can be overwritten by options in a specific control
+     * point.
+     */
+    controlPointOptions?: AnnotationControlPointOptionsObject;
+    /**
+     * (Highstock) Options for annotation's labels. Each label inherits options
+     * from the labelOptions object. An option from the labelOptions can be
+     * overwritten by config for a specific label.
+     */
+    labelOptions?: NavigationBindingsEllipseAnnotationAnnotationsTypesFibonacciLabelOptions;
+    /**
+     * (Highstock) Additional options for an annotation with the type.
+     */
+    typeOptions?: NavigationBindingsEllipseAnnotationAnnotationsTypesFibonacciTypeOptions;
+}
+export interface NavigationBindingsEllipseAnnotationAnnotationsTypesFibonacciTimeZonesControlPointStyleOptions {
+    cursor?: string;
+    fill?: string;
+    stroke?: string;
+    "stroke-width"?: number;
+}
+/**
+ * (Highstock) Options for annotation's labels. Each label inherits options from
+ * the labelOptions object. An option from the labelOptions can be overwritten
+ * by config for a specific label.
+ */
+export interface NavigationBindingsEllipseAnnotationAnnotationsTypesFibonacciTimeZonesLabelOptions {
+    /**
+     * (Highstock) Accessibility options for an annotation label.
+     */
+    accessibility?: AnnotationLabelAccessibilityOptionsObject;
+    /**
+     * (Highstock) The alignment of the annotation's label. If right, the right
+     * side of the label should be touching the point.
+     */
+    align?: AlignValue;
+    /**
+     * (Highstock) Whether to allow the annotation's labels to overlap. To make
+     * the labels less sensitive for overlapping, the can be set to 0.
+     */
+    allowOverlap?: boolean;
+    /**
+     * (Highstock) The background color or gradient for the annotation's label.
+     */
+    backgroundColor?: ColorType;
+    /**
+     * (Highstock) The border color for the annotation's label.
+     */
+    borderColor?: ColorType;
+    /**
+     * (Highstock) The border radius in pixels for the annotation's label.
+     */
+    borderRadius?: number;
+    /**
+     * (Highstock) The border width in pixels for the annotation's label.
+     */
+    borderWidth?: number;
+    /**
+     * (Highstock) A class name for styling by CSS.
+     */
+    className?: string;
+    /**
+     * (Highstock) Whether to hide the annotation's label that is outside the
+     * plot area.
+     */
+    crop?: boolean;
+    /**
+     * (Highstock) The label's pixel distance from the point.
+     */
+    distance?: number;
+    /**
+     * (Highstock) A format string for the data label.
+     */
+    format?: string;
+    /**
+     * (Highstock) Callback JavaScript function to format the annotation's
+     * label. Note that if a `format` or `text` are defined, the format or text
+     * take precedence and the formatter is ignored. `This` refers to a point
+     * object. The callback also receives an argument `ctx` so that
+     * arrow-functions can access the same context (the point in this case) as
+     * normal functions can using `this`. Since v12.6.0, the callback receives
+     * `ctx`.
+     */
+    formatter?: FormatterCallbackFunction<Point>;
+    /**
+     * (Highstock) Whether all the labels for an annotation are visible in the
+     * exported data table.
+     */
+    includeInDataExport?: boolean;
+    /**
+     * (Highstock) How to handle the annotation's label that flow outside the
+     * plot area. The justify option aligns the label inside the plot area.
+     */
+    overflow?: OptionsOverflowValue;
+    /**
+     * (Highstock) When either the borderWidth or the backgroundColor is set,
+     * this is the padding within the box.
+     */
+    padding?: number;
+    /**
+     * (Highstock) The shadow of the box. The shadow can be an object
+     * configuration containing `color`, `offsetX`, `offsetY`, `opacity` and
+     * `width`.
+     */
+    shadow?: (boolean|ShadowOptionsObject);
+    /**
+     * (Highstock) The name of a symbol to use for the border around the label.
+     * Symbols are predefined functions on the Renderer object.
+     */
+    shape?: string;
+    /**
+     * (Highstock) Styles for the annotation's label.
+     */
+    style?: CSSObject;
+    /**
+     * (Highstock) Alias for the format option.
+     */
+    text?: string;
+    /**
+     * (Highstock) Whether to use HTML to render the annotation's label.
+     */
+    useHTML?: boolean;
+    /**
+     * (Highstock) The vertical alignment of the annotation's label.
+     */
+    verticalAlign?: VerticalAlignValue;
+    /**
+     * (Highstock) The x position offset of the label relative to the point.
+     * Note that if a `distance` is defined, the distance takes precedence over
+     * `x` and `y` options.
+     */
+    x?: number;
+    /**
+     * (Highstock) The y position offset of the label relative to the point.
+     * Note that if a `distance` is defined, the distance takes precedence over
+     * `x` and `y` options.
+     */
+    y?: number;
+}
+/**
+ * (Highstock) Options for the fibonacci time zones annotation type.
+ */
+export interface NavigationBindingsEllipseAnnotationAnnotationsTypesFibonacciTimeZonesOptions {
+    /**
+     * (Highstock) Options for annotation's control points. Each control point
+     * inherits options from controlPointOptions object. Options from the
+     * controlPointOptions can be overwritten by options in a specific control
+     * point.
+     */
+    controlPointOptions?: AnnotationControlPointOptionsObject;
+    /**
+     * (Highstock) Options for annotation's labels. Each label inherits options
+     * from the labelOptions object. An option from the labelOptions can be
+     * overwritten by config for a specific label.
+     */
+    labelOptions?: NavigationBindingsEllipseAnnotationAnnotationsTypesFibonacciTimeZonesLabelOptions;
+    /**
+     * (Highstock) Additional options for an annotation with the type.
+     */
+    typeOptions?: NavigationBindingsEllipseAnnotationAnnotationsTypesFibonacciTimeZonesTypeOptions;
+}
+export interface NavigationBindingsEllipseAnnotationAnnotationsTypesFibonacciTimeZonesTypeControlPointOptions {
+    events?: any;
+}
+/**
+ * (Highstock) Line options.
+ */
+export interface NavigationBindingsEllipseAnnotationAnnotationsTypesFibonacciTimeZonesTypeLineOptions {
+    fill?: string;
+    /**
+     * (Highstock) The color of the lines.
+     */
+    stroke?: string;
+    /**
+     * (Highstock) The width of the lines.
+     */
+    strokeWidth?: number;
+}
+/**
+ * (Highstock) Additional options for an annotation with the type.
+ */
+export interface NavigationBindingsEllipseAnnotationAnnotationsTypesFibonacciTimeZonesTypeOptions {
+    controlPointOptions?: NavigationBindingsEllipseAnnotationAnnotationsTypesFibonacciTimeZonesTypeControlPointOptions;
+    /**
+     * (Highstock) Line options.
+     */
+    line?: NavigationBindingsEllipseAnnotationAnnotationsTypesFibonacciTimeZonesTypeLineOptions;
+    points?: Array<NavigationBindingsEllipseAnnotationAnnotationsTypesFibonacciTimeZonesTypePointsOptions>;
+    /**
+     * (Highstock) This option defines which `xAxis` the point is connected to.
+     * It refers to either the axis id or the index of the axis in the `xAxis`
+     * array.
+     */
+    xAxis?: number;
+    /**
+     * (Highstock) This option defines which `yAxis` the point is connected to.
+     * It refers to either the axis id or the index of the axis in the `yAxis`
+     * array.
+     */
+    yAxis?: number;
+}
+export interface NavigationBindingsEllipseAnnotationAnnotationsTypesFibonacciTimeZonesTypePointsOptions {
+    controlPoint?: number;
+    /**
+     * (Highstock) The x position of the point.
+     */
+    x?: number;
+}
+/**
+ * (Highstock) An array with options for the labels.
+ */
+export interface NavigationBindingsEllipseAnnotationAnnotationsTypesFibonacciTypeLabelsOptions {
+    /**
+     * (Highstock) Accessibility options for an annotation label.
+     */
+    accessibility?: AnnotationLabelAccessibilityOptionsObject;
+    /**
+     * (Highstock) The alignment of the annotation's label. If right, the right
+     * side of the label should be touching the point.
+     */
+    align?: AlignValue;
+    /**
+     * (Highstock) Whether to allow the annotation's labels to overlap. To make
+     * the labels less sensitive for overlapping, the can be set to 0.
+     */
+    allowOverlap?: boolean;
+    /**
+     * (Highstock) The background color or gradient for the annotation's label.
+     */
+    backgroundColor?: ColorType;
+    /**
+     * (Highstock) The border color for the annotation's label.
+     */
+    borderColor?: ColorType;
+    /**
+     * (Highstock) The border radius in pixels for the annotation's label.
+     */
+    borderRadius?: number;
+    /**
+     * (Highstock) The border width in pixels for the annotation's label.
+     */
+    borderWidth?: number;
+    /**
+     * (Highstock) A class name for styling by CSS.
+     */
+    className?: string;
+    /**
+     * (Highstock) Whether to hide the annotation's label that is outside the
+     * plot area.
+     */
+    crop?: boolean;
+    /**
+     * (Highstock) The label's pixel distance from the point.
+     */
+    distance?: number;
+    /**
+     * (Highstock) A format string for the data label.
+     */
+    format?: string;
+    /**
+     * (Highstock) Callback JavaScript function to format the annotation's
+     * label. Note that if a `format` or `text` are defined, the format or text
+     * take precedence and the formatter is ignored. `This` refers to a point
+     * object. The callback also receives an argument `ctx` so that
+     * arrow-functions can access the same context (the point in this case) as
+     * normal functions can using `this`. Since v12.6.0, the callback receives
+     * `ctx`.
+     */
+    formatter?: FormatterCallbackFunction<Point>;
+    /**
+     * (Highstock) Whether all the labels for an annotation are visible in the
+     * exported data table.
+     */
+    includeInDataExport?: boolean;
+    /**
+     * (Highstock) How to handle the annotation's label that flow outside the
+     * plot area. The justify option aligns the label inside the plot area.
+     */
+    overflow?: OptionsOverflowValue;
+    /**
+     * (Highstock) When either the borderWidth or the backgroundColor is set,
+     * this is the padding within the box.
+     */
+    padding?: number;
+    /**
+     * (Highstock) The shadow of the box. The shadow can be an object
+     * configuration containing `color`, `offsetX`, `offsetY`, `opacity` and
+     * `width`.
+     */
+    shadow?: (boolean|ShadowOptionsObject);
+    /**
+     * (Highstock) The name of a symbol to use for the border around the label.
+     * Symbols are predefined functions on the Renderer object.
+     */
+    shape?: string;
+    /**
+     * (Highstock) Styles for the annotation's label.
+     */
+    style?: CSSObject;
+    /**
+     * (Highstock) Alias for the format option.
+     */
+    text?: string;
+    /**
+     * (Highstock) Whether to use HTML to render the annotation's label.
+     */
+    useHTML?: boolean;
+    /**
+     * (Highstock) The vertical alignment of the annotation's label.
+     */
+    verticalAlign?: VerticalAlignValue;
+    /**
+     * (Highstock) The x position offset of the label relative to the point.
+     * Note that if a `distance` is defined, the distance takes precedence over
+     * `x` and `y` options.
+     */
+    x?: number;
+    /**
+     * (Highstock) The y position offset of the label relative to the point.
+     * Note that if a `distance` is defined, the distance takes precedence over
+     * `x` and `y` options.
+     */
+    y?: number;
+}
+/**
+ * (Highstock) Line options.
+ */
+export interface NavigationBindingsEllipseAnnotationAnnotationsTypesFibonacciTypeLineOptions {
+    fill?: string;
+}
+/**
+ * (Highstock) Additional options for an annotation with the type.
+ */
+export interface NavigationBindingsEllipseAnnotationAnnotationsTypesFibonacciTypeOptions {
+    /**
+     * (Highstock) An array of background colors: Defaults to: (see online
+     * documentation for example)
+     */
+    backgroundColors?: object;
+    /**
+     * (Highstock) The height of the fibonacci in terms of yAxis.
+     */
+    height?: number;
+    /**
+     * (Highstock) An array with options for the labels.
+     */
+    labels?: Array<NavigationBindingsEllipseAnnotationAnnotationsTypesFibonacciTypeLabelsOptions>;
+    /**
+     * (Highstock) Line options.
+     */
+    line?: NavigationBindingsEllipseAnnotationAnnotationsTypesFibonacciTypeLineOptions;
+    /**
+     * (Highstock) The color of line.
+     */
+    lineColor?: string;
+    /**
+     * (Highstock) An array of colors for the lines.
+     */
+    lineColors?: object;
+    points?: Array<NavigationBindingsEllipseAnnotationAnnotationsTypesFibonacciTypePointsOptions>;
+    /**
+     * (Highstock) Whether the annotation levels should be reversed. By default
+     * they start from 0 and go to 1.
+     */
+    reversed?: boolean;
+    /**
+     * (Highstock) This option defines which `xAxis` the point is connected to.
+     * It refers to either the axis id or the index of the axis in the `xAxis`
+     * array.
+     */
+    xAxis?: number;
+    /**
+     * (Highstock) This option defines which `yAxis` the point is connected to.
+     * It refers to either the axis id or the index of the axis in the `yAxis`
+     * array.
+     */
+    yAxis?: number;
+}
+export interface NavigationBindingsEllipseAnnotationAnnotationsTypesFibonacciTypePointsOptions {
+    controlPoint?: number;
+    /**
+     * (Highstock) The x position of the point.
+     */
+    x?: number;
+    /**
+     * (Highstock) The y position of the point.
+     */
+    y?: number;
+}
+export interface NavigationBindingsEllipseAnnotationAnnotationsTypesInfinityLineControlPointStyleOptions {
+    cursor?: string;
+    fill?: string;
+    stroke?: string;
+    "stroke-width"?: number;
+}
+/**
+ * (Highstock) Options for annotation's labels. Each label inherits options from
+ * the labelOptions object. An option from the labelOptions can be overwritten
+ * by config for a specific label.
+ */
+export interface NavigationBindingsEllipseAnnotationAnnotationsTypesInfinityLineLabelOptions {
+    /**
+     * (Highstock) Accessibility options for an annotation label.
+     */
+    accessibility?: AnnotationLabelAccessibilityOptionsObject;
+    /**
+     * (Highstock) The alignment of the annotation's label. If right, the right
+     * side of the label should be touching the point.
+     */
+    align?: AlignValue;
+    /**
+     * (Highstock) Whether to allow the annotation's labels to overlap. To make
+     * the labels less sensitive for overlapping, the can be set to 0.
+     */
+    allowOverlap?: boolean;
+    /**
+     * (Highstock) The background color or gradient for the annotation's label.
+     */
+    backgroundColor?: ColorType;
+    /**
+     * (Highstock) The border color for the annotation's label.
+     */
+    borderColor?: ColorType;
+    /**
+     * (Highstock) The border radius in pixels for the annotation's label.
+     */
+    borderRadius?: number;
+    /**
+     * (Highstock) The border width in pixels for the annotation's label.
+     */
+    borderWidth?: number;
+    /**
+     * (Highstock) A class name for styling by CSS.
+     */
+    className?: string;
+    /**
+     * (Highstock) Whether to hide the annotation's label that is outside the
+     * plot area.
+     */
+    crop?: boolean;
+    /**
+     * (Highstock) The label's pixel distance from the point.
+     */
+    distance?: number;
+    /**
+     * (Highstock) A format string for the data label.
+     */
+    format?: string;
+    /**
+     * (Highstock) Callback JavaScript function to format the annotation's
+     * label. Note that if a `format` or `text` are defined, the format or text
+     * take precedence and the formatter is ignored. `This` refers to a point
+     * object. The callback also receives an argument `ctx` so that
+     * arrow-functions can access the same context (the point in this case) as
+     * normal functions can using `this`. Since v12.6.0, the callback receives
+     * `ctx`.
+     */
+    formatter?: FormatterCallbackFunction<Point>;
+    /**
+     * (Highstock) Whether all the labels for an annotation are visible in the
+     * exported data table.
+     */
+    includeInDataExport?: boolean;
+    /**
+     * (Highstock) How to handle the annotation's label that flow outside the
+     * plot area. The justify option aligns the label inside the plot area.
+     */
+    overflow?: OptionsOverflowValue;
+    /**
+     * (Highstock) When either the borderWidth or the backgroundColor is set,
+     * this is the padding within the box.
+     */
+    padding?: number;
+    /**
+     * (Highstock) The shadow of the box. The shadow can be an object
+     * configuration containing `color`, `offsetX`, `offsetY`, `opacity` and
+     * `width`.
+     */
+    shadow?: (boolean|ShadowOptionsObject);
+    /**
+     * (Highstock) The name of a symbol to use for the border around the label.
+     * Symbols are predefined functions on the Renderer object.
+     */
+    shape?: string;
+    /**
+     * (Highstock) Styles for the annotation's label.
+     */
+    style?: CSSObject;
+    /**
+     * (Highstock) Alias for the format option.
+     */
+    text?: string;
+    /**
+     * (Highstock) Whether to use HTML to render the annotation's label.
+     */
+    useHTML?: boolean;
+    /**
+     * (Highstock) The vertical alignment of the annotation's label.
+     */
+    verticalAlign?: VerticalAlignValue;
+    /**
+     * (Highstock) The x position offset of the label relative to the point.
+     * Note that if a `distance` is defined, the distance takes precedence over
+     * `x` and `y` options.
+     */
+    x?: number;
+    /**
+     * (Highstock) The y position offset of the label relative to the point.
+     * Note that if a `distance` is defined, the distance takes precedence over
+     * `x` and `y` options.
+     */
+    y?: number;
+}
+/**
+ * (Highstock) Options for the infinity line annotation type.
+ */
+export interface NavigationBindingsEllipseAnnotationAnnotationsTypesInfinityLineOptions {
+    /**
+     * (Highstock) Options for annotation's control points. Each control point
+     * inherits options from controlPointOptions object. Options from the
+     * controlPointOptions can be overwritten by options in a specific control
+     * point.
+     */
+    controlPointOptions?: AnnotationControlPointOptionsObject;
+    /**
+     * (Highstock) Options for annotation's labels. Each label inherits options
+     * from the labelOptions object. An option from the labelOptions can be
+     * overwritten by config for a specific label.
+     */
+    labelOptions?: NavigationBindingsEllipseAnnotationAnnotationsTypesInfinityLineLabelOptions;
+    /**
+     * (Highstock) Additional options for an annotation with the type.
+     */
+    typeOptions?: NavigationBindingsEllipseAnnotationAnnotationsTypesInfinityLineTypeOptions;
+}
+/**
+ * (Highstock) Line options.
+ */
+export interface NavigationBindingsEllipseAnnotationAnnotationsTypesInfinityLineTypeLineOptions {
+    fill?: string;
+}
+/**
+ * (Highstock) Additional options for an annotation with the type.
+ */
+export interface NavigationBindingsEllipseAnnotationAnnotationsTypesInfinityLineTypeOptions {
+    /**
+     * (Highstock) Line options.
+     */
+    line?: NavigationBindingsEllipseAnnotationAnnotationsTypesInfinityLineTypeLineOptions;
+    points?: Array<NavigationBindingsEllipseAnnotationAnnotationsTypesInfinityLineTypePointsOptions>;
+    /**
+     * (Highstock) This option defines which `xAxis` the point is connected to.
+     * It refers to either the axis id or the index of the axis in the `xAxis`
+     * array.
+     */
+    xAxis?: number;
+    /**
+     * (Highstock) This option defines which `yAxis` the point is connected to.
+     * It refers to either the axis id or the index of the axis in the `yAxis`
+     * array.
+     */
+    yAxis?: number;
+}
+export interface NavigationBindingsEllipseAnnotationAnnotationsTypesInfinityLineTypePointsOptions {
+    controlPoint?: number;
+    /**
+     * (Highstock) The x position of the point.
+     */
+    x?: number;
+    /**
+     * (Highstock) The y position of the point.
+     */
+    y?: number;
+}
+export interface NavigationBindingsEllipseAnnotationAnnotationsTypesMeasureControlPointStyleOptions {
+    cursor?: string;
+    fill?: string;
+    stroke?: string;
+    "stroke-width"?: number;
+}
+/**
+ * (Highstock) Options for the measure annotation type.
+ */
+export interface NavigationBindingsEllipseAnnotationAnnotationsTypesMeasureOptions {
+    /**
+     * (Highstock) Options for annotation's control points. Each control point
+     * inherits options from controlPointOptions object. Options from the
+     * controlPointOptions can be overwritten by options in a specific control
+     * point.
+     */
+    controlPointOptions?: AnnotationControlPointOptionsObject;
+    /**
+     * (Highstock) Additional options for an annotation with the type.
+     */
+    typeOptions?: NavigationBindingsEllipseAnnotationAnnotationsTypesMeasureTypeOptions;
+}
+export interface NavigationBindingsEllipseAnnotationAnnotationsTypesMeasureTypeBackgroundOptions {
+    /**
+     * (Highstock) The color of the rectangle.
+     */
+    fill?: string;
+    /**
+     * (Highstock) The color of border.
+     */
+    stroke?: string;
+    /**
+     * (Highstock) The width of border.
+     */
+    strokeWidth?: number;
+}
+/**
+ * (Highstock) Configure a crosshair that is horizontally placed in middle of
+ * rectangle.
+ */
+export interface NavigationBindingsEllipseAnnotationAnnotationsTypesMeasureTypeCrosshairXOptions {
+    /**
+     * (Highstock) The dash or dot style of the crosshair's line. For possible
+     * values, see this demonstration.
+     */
+    dashStyle?: DashStyleValue;
+    /**
+     * (Highstock) Enable or disable the horizontal crosshair.
+     */
+    enabled?: boolean;
+    /**
+     * (Highstock) The marker-end defines the arrowhead that will be drawn at
+     * the final vertex of the given crosshair's path.
+     */
+    markerEnd?: string;
+    /**
+     * (Highstock) The Z index of the crosshair in annotation.
+     */
+    zIndex?: number;
+}
+/**
+ * (Highstock) Configure a crosshair that is vertically placed in middle of
+ * rectangle.
+ */
+export interface NavigationBindingsEllipseAnnotationAnnotationsTypesMeasureTypeCrosshairYOptions {
+    /**
+     * (Highstock) The dash or dot style of the crosshair's line. For possible
+     * values, see this demonstration.
+     */
+    dashStyle?: DashStyleValue;
+    /**
+     * (Highstock) Enable or disable the vertical crosshair.
+     */
+    enabled?: boolean;
+    /**
+     * (Highstock) The marker-end defines the arrowhead that will be drawn at
+     * the final vertex of the given crosshair's path.
+     */
+    markerEnd?: OptionsMarkerEndValue;
+    /**
+     * (Highstock) The Z index of the crosshair in annotation.
+     */
+    zIndex?: number;
+}
+export interface NavigationBindingsEllipseAnnotationAnnotationsTypesMeasureTypeLabelOptions {
+    /**
+     * (Highstock) Enable or disable the label text (min, max, average, bins
+     * values).
+     *
+     * Defaults to true.
+     */
+    enabled?: boolean;
+    /**
+     * (Highstock) Formatter function for the label text.
+     *
+     * Available data are:
+     *
+     *  (see online documentation for example)
+     */
+    formatter?: Function;
+    /**
+     * (Highstock) CSS styles for the measure label.
+     */
+    style?: (CSSObject|NavigationBindingsEllipseAnnotationAnnotationsTypesMeasureTypeLabelStyleOptions);
+}
+/**
+ * (Highstock) CSS styles for the measure label.
+ */
+export interface NavigationBindingsEllipseAnnotationAnnotationsTypesMeasureTypeLabelStyleOptions {
+    color?: string;
+    fontSize?: number;
+}
+/**
+ * (Highstock) Line options.
+ */
+export interface NavigationBindingsEllipseAnnotationAnnotationsTypesMeasureTypeLineOptions {
+    fill?: string;
+}
+/**
+ * (Highstock) Additional options for an annotation with the type.
+ */
+export interface NavigationBindingsEllipseAnnotationAnnotationsTypesMeasureTypeOptions {
+    background?: NavigationBindingsEllipseAnnotationAnnotationsTypesMeasureTypeBackgroundOptions;
+    /**
+     * (Highstock) Configure a crosshair that is horizontally placed in middle
+     * of rectangle.
+     */
+    crosshairX?: NavigationBindingsEllipseAnnotationAnnotationsTypesMeasureTypeCrosshairXOptions;
+    /**
+     * (Highstock) Configure a crosshair that is vertically placed in middle of
+     * rectangle.
+     */
+    crosshairY?: NavigationBindingsEllipseAnnotationAnnotationsTypesMeasureTypeCrosshairYOptions;
+    label?: NavigationBindingsEllipseAnnotationAnnotationsTypesMeasureTypeLabelOptions;
+    /**
+     * (Highstock) Line options.
+     */
+    line?: NavigationBindingsEllipseAnnotationAnnotationsTypesMeasureTypeLineOptions;
+    points?: Array<NavigationBindingsEllipseAnnotationAnnotationsTypesMeasureTypePointsOptions>;
+    /**
+     * (Highstock) Decides in what dimensions the user can resize by dragging
+     * the mouse. Can be one of x, y or xy.
+     */
+    selectType?: string;
+    /**
+     * (Highstock) This number defines which xAxis the point is connected to. It
+     * refers to either the axis id or the index of the axis in the xAxis array.
+     */
+    xAxis?: number;
+    /**
+     * (Highstock) This number defines which yAxis the point is connected to. It
+     * refers to either the axis id or the index of the axis in the yAxis array.
+     */
+    yAxis?: number;
+}
+export interface NavigationBindingsEllipseAnnotationAnnotationsTypesMeasureTypePointsOptions {
+    controlPoint?: number;
+    /**
+     * (Highstock) The x position of the point.
+     */
+    x?: number;
+    /**
+     * (Highstock) The y position of the point.
+     */
+    y?: number;
+}
+/**
+ * (Highstock) Option override for specific advanced annotation types. This
+ * collection is intended for general theming using `Highcharts.setOptions()`.
+ */
+export interface NavigationBindingsEllipseAnnotationAnnotationsTypesOptions {
+    /**
+     * (Highstock) Options for the crooked line annotation type.
+     */
+    crookedLine?: NavigationBindingsEllipseAnnotationAnnotationsTypesCrookedLineOptions;
+    /**
+     * (Highstock) Options for the elliott wave annotation type.
+     */
+    elliottWave?: NavigationBindingsEllipseAnnotationAnnotationsTypesElliottWaveOptions;
+    /**
+     * (Highstock) Options for the fibonacci annotation type.
+     */
+    fibonacci?: NavigationBindingsEllipseAnnotationAnnotationsTypesFibonacciOptions;
+    /**
+     * (Highstock) Options for the fibonacci time zones annotation type.
+     */
+    fibonacciTimeZones?: NavigationBindingsEllipseAnnotationAnnotationsTypesFibonacciTimeZonesOptions;
+    /**
+     * (Highstock) Options for the infinity line annotation type.
+     */
+    infinityLine?: NavigationBindingsEllipseAnnotationAnnotationsTypesInfinityLineOptions;
+    /**
+     * (Highstock) Options for the measure annotation type.
+     */
+    measure?: NavigationBindingsEllipseAnnotationAnnotationsTypesMeasureOptions;
+    /**
+     * (Highstock) Options for the pitchfork annotation type.
+     */
+    pitchfork?: NavigationBindingsEllipseAnnotationAnnotationsTypesPitchforkOptions;
+    /**
+     * (Highstock) Options for the time cycles annotation type.
+     */
+    timeCycles?: NavigationBindingsEllipseAnnotationAnnotationsTypesTimeCyclesOptions;
+    /**
+     * (Highstock) Options for the tunnel annotation type.
+     */
+    tunnel?: NavigationBindingsEllipseAnnotationAnnotationsTypesTunnelOptions;
+    /**
+     * (Highstock) Options for the vertical line annotation type.
+     */
+    verticalLine?: NavigationBindingsEllipseAnnotationAnnotationsTypesVerticalLineOptions;
+}
+export interface NavigationBindingsEllipseAnnotationAnnotationsTypesPitchforkControlPointStyleOptions {
+    cursor?: string;
+    fill?: string;
+    stroke?: string;
+    "stroke-width"?: number;
+}
+/**
+ * (Highstock) Options for annotation's labels. Each label inherits options from
+ * the labelOptions object. An option from the labelOptions can be overwritten
+ * by config for a specific label.
+ */
+export interface NavigationBindingsEllipseAnnotationAnnotationsTypesPitchforkLabelOptions {
+    /**
+     * (Highstock) Accessibility options for an annotation label.
+     */
+    accessibility?: AnnotationLabelAccessibilityOptionsObject;
+    /**
+     * (Highstock) The alignment of the annotation's label. If right, the right
+     * side of the label should be touching the point.
+     */
+    align?: AlignValue;
+    /**
+     * (Highstock) Whether to allow the annotation's labels to overlap. To make
+     * the labels less sensitive for overlapping, the can be set to 0.
+     */
+    allowOverlap?: boolean;
+    /**
+     * (Highstock) The background color or gradient for the annotation's label.
+     */
+    backgroundColor?: ColorType;
+    /**
+     * (Highstock) The border color for the annotation's label.
+     */
+    borderColor?: ColorType;
+    /**
+     * (Highstock) The border radius in pixels for the annotation's label.
+     */
+    borderRadius?: number;
+    /**
+     * (Highstock) The border width in pixels for the annotation's label.
+     */
+    borderWidth?: number;
+    /**
+     * (Highstock) A class name for styling by CSS.
+     */
+    className?: string;
+    /**
+     * (Highstock) Whether to hide the annotation's label that is outside the
+     * plot area.
+     */
+    crop?: boolean;
+    /**
+     * (Highstock) The label's pixel distance from the point.
+     */
+    distance?: number;
+    /**
+     * (Highstock) A format string for the data label.
+     */
+    format?: string;
+    /**
+     * (Highstock) Callback JavaScript function to format the annotation's
+     * label. Note that if a `format` or `text` are defined, the format or text
+     * take precedence and the formatter is ignored. `This` refers to a point
+     * object. The callback also receives an argument `ctx` so that
+     * arrow-functions can access the same context (the point in this case) as
+     * normal functions can using `this`. Since v12.6.0, the callback receives
+     * `ctx`.
+     */
+    formatter?: FormatterCallbackFunction<Point>;
+    /**
+     * (Highstock) Whether all the labels for an annotation are visible in the
+     * exported data table.
+     */
+    includeInDataExport?: boolean;
+    /**
+     * (Highstock) How to handle the annotation's label that flow outside the
+     * plot area. The justify option aligns the label inside the plot area.
+     */
+    overflow?: OptionsOverflowValue;
+    /**
+     * (Highstock) When either the borderWidth or the backgroundColor is set,
+     * this is the padding within the box.
+     */
+    padding?: number;
+    /**
+     * (Highstock) The shadow of the box. The shadow can be an object
+     * configuration containing `color`, `offsetX`, `offsetY`, `opacity` and
+     * `width`.
+     */
+    shadow?: (boolean|ShadowOptionsObject);
+    /**
+     * (Highstock) The name of a symbol to use for the border around the label.
+     * Symbols are predefined functions on the Renderer object.
+     */
+    shape?: string;
+    /**
+     * (Highstock) Styles for the annotation's label.
+     */
+    style?: CSSObject;
+    /**
+     * (Highstock) Alias for the format option.
+     */
+    text?: string;
+    /**
+     * (Highstock) Whether to use HTML to render the annotation's label.
+     */
+    useHTML?: boolean;
+    /**
+     * (Highstock) The vertical alignment of the annotation's label.
+     */
+    verticalAlign?: VerticalAlignValue;
+    /**
+     * (Highstock) The x position offset of the label relative to the point.
+     * Note that if a `distance` is defined, the distance takes precedence over
+     * `x` and `y` options.
+     */
+    x?: number;
+    /**
+     * (Highstock) The y position offset of the label relative to the point.
+     * Note that if a `distance` is defined, the distance takes precedence over
+     * `x` and `y` options.
+     */
+    y?: number;
+}
+/**
+ * (Highstock) Options for the pitchfork annotation type.
+ */
+export interface NavigationBindingsEllipseAnnotationAnnotationsTypesPitchforkOptions {
+    /**
+     * (Highstock) Options for annotation's control points. Each control point
+     * inherits options from controlPointOptions object. Options from the
+     * controlPointOptions can be overwritten by options in a specific control
+     * point.
+     */
+    controlPointOptions?: AnnotationControlPointOptionsObject;
+    /**
+     * (Highstock) Options for annotation's labels. Each label inherits options
+     * from the labelOptions object. An option from the labelOptions can be
+     * overwritten by config for a specific label.
+     */
+    labelOptions?: NavigationBindingsEllipseAnnotationAnnotationsTypesPitchforkLabelOptions;
+    /**
+     * (Highstock) Additional options for an annotation with the type.
+     */
+    typeOptions?: NavigationBindingsEllipseAnnotationAnnotationsTypesPitchforkTypeOptions;
+}
+/**
+ * (Highstock) Inner background options.
+ */
+export interface NavigationBindingsEllipseAnnotationAnnotationsTypesPitchforkTypeInnerBackgroundOptions {
+    /**
+     * (Highstock) Name of the dash style to use for the shape's stroke.
+     */
+    dashStyle?: DashStyleValue;
+    /**
+     * (Highstock) The color of the shape's fill.
+     */
+    fill?: string;
+    /**
+     * (Highstock) The radius of the `ellipse` shape in y direction. Can be
+     * defined in pixels or yAxis units, if shapes.yAxis index is defined.
+     */
+    ry?: number;
+    /**
+     * (Highstock) Defines additional snapping area around an annotation making
+     * this annotation to focus. Defined in pixels.
+     */
+    snap?: number;
+    /**
+     * (Highstock) The URL for an image to use as the annotation shape. Note,
+     * type has to be set to `'image'`.
+     */
+    src?: string;
+    /**
+     * (Highstock) The color of the shape's stroke.
+     */
+    stroke?: ColorType;
+    /**
+     * (Highstock) The pixel stroke width of the shape.
+     */
+    strokeWidth?: number;
+    /**
+     * (Highstock) The xAxis index which should be used for annotation's sizes
+     * and points coordinates conversion.
+     *
+     * This option is used for `rect` shape width, and all shapes point and
+     * points coordinates.
+     */
+    xAxis?: number;
+    /**
+     * (Highstock) The yAxis index which should be used for annotation's sizes
+     * and points coordinates conversion.
+     *
+     * This option is used for `rect` shape height, `circle` shape radius,
+     * `ellipse` y direction radius, and all shapes point and points
+     * coordinates.
+     */
+    yAxis?: number;
+}
+/**
+ * (Highstock) Additional options for an annotation with the type.
+ */
+export interface NavigationBindingsEllipseAnnotationAnnotationsTypesPitchforkTypeOptions {
+    /**
+     * (Highstock) Inner background options.
+     */
+    innerBackground?: NavigationBindingsEllipseAnnotationAnnotationsTypesPitchforkTypeInnerBackgroundOptions;
+    /**
+     * (Highstock) Outer background options.
+     */
+    outerBackground?: NavigationBindingsEllipseAnnotationAnnotationsTypesPitchforkTypeOuterBackgroundOptions;
+    points?: Array<NavigationBindingsEllipseAnnotationAnnotationsTypesPitchforkTypePointsOptions>;
+    /**
+     * (Highstock) This option defines which `xAxis` the point is connected to.
+     * It refers to either the axis id or the index of the axis in the `xAxis`
+     * array.
+     */
+    xAxis?: number;
+    /**
+     * (Highstock) This option defines which `yAxis` the point is connected to.
+     * It refers to either the axis id or the index of the axis in the `yAxis`
+     * array.
+     */
+    yAxis?: number;
+}
+/**
+ * (Highstock) Outer background options.
+ */
+export interface NavigationBindingsEllipseAnnotationAnnotationsTypesPitchforkTypeOuterBackgroundOptions {
+    /**
+     * (Highstock) Name of the dash style to use for the shape's stroke.
+     */
+    dashStyle?: DashStyleValue;
+    /**
+     * (Highstock) The color of the shape's fill.
+     */
+    fill?: string;
+    /**
+     * (Highstock) The radius of the `ellipse` shape in y direction. Can be
+     * defined in pixels or yAxis units, if shapes.yAxis index is defined.
+     */
+    ry?: number;
+    /**
+     * (Highstock) Defines additional snapping area around an annotation making
+     * this annotation to focus. Defined in pixels.
+     */
+    snap?: number;
+    /**
+     * (Highstock) The URL for an image to use as the annotation shape. Note,
+     * type has to be set to `'image'`.
+     */
+    src?: string;
+    /**
+     * (Highstock) The color of the shape's stroke.
+     */
+    stroke?: ColorType;
+    /**
+     * (Highstock) The pixel stroke width of the shape.
+     */
+    strokeWidth?: number;
+    /**
+     * (Highstock) The xAxis index which should be used for annotation's sizes
+     * and points coordinates conversion.
+     *
+     * This option is used for `rect` shape width, and all shapes point and
+     * points coordinates.
+     */
+    xAxis?: number;
+    /**
+     * (Highstock) The yAxis index which should be used for annotation's sizes
+     * and points coordinates conversion.
+     *
+     * This option is used for `rect` shape height, `circle` shape radius,
+     * `ellipse` y direction radius, and all shapes point and points
+     * coordinates.
+     */
+    yAxis?: number;
+}
+export interface NavigationBindingsEllipseAnnotationAnnotationsTypesPitchforkTypePointsOptions {
+    controlPoint?: number;
+    /**
+     * (Highstock) The x position of the point.
+     */
+    x?: number;
+    /**
+     * (Highstock) The y position of the point.
+     */
+    y?: number;
+}
+export interface NavigationBindingsEllipseAnnotationAnnotationsTypesTimeCyclesControlPointStyleOptions {
+    cursor?: string;
+    fill?: string;
+    stroke?: string;
+    "stroke-width"?: number;
+}
+/**
+ * (Highstock) Options for the time cycles annotation type.
+ */
+export interface NavigationBindingsEllipseAnnotationAnnotationsTypesTimeCyclesOptions {
+    /**
+     * (Highstock) Options for annotation's control points. Each control point
+     * inherits options from controlPointOptions object. Options from the
+     * controlPointOptions can be overwritten by options in a specific control
+     * point.
+     */
+    controlPointOptions?: AnnotationControlPointOptionsObject;
+    /**
+     * (Highstock) Additional options for an annotation with the type.
+     */
+    typeOptions?: NavigationBindingsEllipseAnnotationAnnotationsTypesTimeCyclesTypeOptions;
+}
+/**
+ * (Highstock) Line options.
+ */
+export interface NavigationBindingsEllipseAnnotationAnnotationsTypesTimeCyclesTypeLineOptions {
+    fill?: string;
+}
+/**
+ * (Highstock) Additional options for an annotation with the type.
+ */
+export interface NavigationBindingsEllipseAnnotationAnnotationsTypesTimeCyclesTypeOptions {
+    /**
+     * (Highstock) Line options.
+     */
+    line?: NavigationBindingsEllipseAnnotationAnnotationsTypesTimeCyclesTypeLineOptions;
+    points?: Array<NavigationBindingsEllipseAnnotationAnnotationsTypesTimeCyclesTypePointsOptions>;
+    /**
+     * (Highstock) This option defines which `xAxis` the point is connected to.
+     * It refers to either the axis id or the index of the axis in the `xAxis`
+     * array.
+     */
+    xAxis?: number;
+    /**
+     * (Highstock) This option defines which `yAxis` the point is connected to.
+     * It refers to either the axis id or the index of the axis in the `yAxis`
+     * array.
+     */
+    yAxis?: number;
+}
+export interface NavigationBindingsEllipseAnnotationAnnotationsTypesTimeCyclesTypePointsOptions {
+    controlPoint?: number;
+    /**
+     * (Highstock) The x position of the point.
+     */
+    x?: number;
+}
+export interface NavigationBindingsEllipseAnnotationAnnotationsTypesTunnelControlPointStyleOptions {
+    cursor?: string;
+    fill?: string;
+    stroke?: string;
+    "stroke-width"?: number;
+}
+/**
+ * (Highstock) Options for annotation's labels. Each label inherits options from
+ * the labelOptions object. An option from the labelOptions can be overwritten
+ * by config for a specific label.
+ */
+export interface NavigationBindingsEllipseAnnotationAnnotationsTypesTunnelLabelOptions {
+    /**
+     * (Highstock) Accessibility options for an annotation label.
+     */
+    accessibility?: AnnotationLabelAccessibilityOptionsObject;
+    /**
+     * (Highstock) The alignment of the annotation's label. If right, the right
+     * side of the label should be touching the point.
+     */
+    align?: AlignValue;
+    /**
+     * (Highstock) Whether to allow the annotation's labels to overlap. To make
+     * the labels less sensitive for overlapping, the can be set to 0.
+     */
+    allowOverlap?: boolean;
+    /**
+     * (Highstock) The background color or gradient for the annotation's label.
+     */
+    backgroundColor?: ColorType;
+    /**
+     * (Highstock) The border color for the annotation's label.
+     */
+    borderColor?: ColorType;
+    /**
+     * (Highstock) The border radius in pixels for the annotation's label.
+     */
+    borderRadius?: number;
+    /**
+     * (Highstock) The border width in pixels for the annotation's label.
+     */
+    borderWidth?: number;
+    /**
+     * (Highstock) A class name for styling by CSS.
+     */
+    className?: string;
+    /**
+     * (Highstock) Whether to hide the annotation's label that is outside the
+     * plot area.
+     */
+    crop?: boolean;
+    /**
+     * (Highstock) The label's pixel distance from the point.
+     */
+    distance?: number;
+    /**
+     * (Highstock) A format string for the data label.
+     */
+    format?: string;
+    /**
+     * (Highstock) Callback JavaScript function to format the annotation's
+     * label. Note that if a `format` or `text` are defined, the format or text
+     * take precedence and the formatter is ignored. `This` refers to a point
+     * object. The callback also receives an argument `ctx` so that
+     * arrow-functions can access the same context (the point in this case) as
+     * normal functions can using `this`. Since v12.6.0, the callback receives
+     * `ctx`.
+     */
+    formatter?: FormatterCallbackFunction<Point>;
+    /**
+     * (Highstock) Whether all the labels for an annotation are visible in the
+     * exported data table.
+     */
+    includeInDataExport?: boolean;
+    /**
+     * (Highstock) How to handle the annotation's label that flow outside the
+     * plot area. The justify option aligns the label inside the plot area.
+     */
+    overflow?: OptionsOverflowValue;
+    /**
+     * (Highstock) When either the borderWidth or the backgroundColor is set,
+     * this is the padding within the box.
+     */
+    padding?: number;
+    /**
+     * (Highstock) The shadow of the box. The shadow can be an object
+     * configuration containing `color`, `offsetX`, `offsetY`, `opacity` and
+     * `width`.
+     */
+    shadow?: (boolean|ShadowOptionsObject);
+    /**
+     * (Highstock) The name of a symbol to use for the border around the label.
+     * Symbols are predefined functions on the Renderer object.
+     */
+    shape?: string;
+    /**
+     * (Highstock) Styles for the annotation's label.
+     */
+    style?: CSSObject;
+    /**
+     * (Highstock) Alias for the format option.
+     */
+    text?: string;
+    /**
+     * (Highstock) Whether to use HTML to render the annotation's label.
+     */
+    useHTML?: boolean;
+    /**
+     * (Highstock) The vertical alignment of the annotation's label.
+     */
+    verticalAlign?: VerticalAlignValue;
+    /**
+     * (Highstock) The x position offset of the label relative to the point.
+     * Note that if a `distance` is defined, the distance takes precedence over
+     * `x` and `y` options.
+     */
+    x?: number;
+    /**
+     * (Highstock) The y position offset of the label relative to the point.
+     * Note that if a `distance` is defined, the distance takes precedence over
+     * `x` and `y` options.
+     */
+    y?: number;
+}
+/**
+ * (Highstock) Options for the tunnel annotation type.
+ */
+export interface NavigationBindingsEllipseAnnotationAnnotationsTypesTunnelOptions {
+    /**
+     * (Highstock) Options for annotation's control points. Each control point
+     * inherits options from controlPointOptions object. Options from the
+     * controlPointOptions can be overwritten by options in a specific control
+     * point.
+     */
+    controlPointOptions?: AnnotationControlPointOptionsObject;
+    /**
+     * (Highstock) Options for annotation's labels. Each label inherits options
+     * from the labelOptions object. An option from the labelOptions can be
+     * overwritten by config for a specific label.
+     */
+    labelOptions?: NavigationBindingsEllipseAnnotationAnnotationsTypesTunnelLabelOptions;
+    /**
+     * (Highstock) Additional options for an annotation with the type.
+     */
+    typeOptions?: NavigationBindingsEllipseAnnotationAnnotationsTypesTunnelTypeOptions;
+}
+/**
+ * (Highstock) Background options.
+ */
+export interface NavigationBindingsEllipseAnnotationAnnotationsTypesTunnelTypeBackgroundOptions {
+    fill?: string;
+    strokeWidth?: number;
+}
+export interface NavigationBindingsEllipseAnnotationAnnotationsTypesTunnelTypeHeightControlPointStyleOptions {
+    cursor?: string;
+    fill?: string;
+    stroke?: string;
+    "stroke-width"?: number;
+}
+/**
+ * (Highstock) Line options.
+ */
+export interface NavigationBindingsEllipseAnnotationAnnotationsTypesTunnelTypeLineOptions {
+    fill?: string;
+    strokeWidth?: number;
+}
+/**
+ * (Highstock) Additional options for an annotation with the type.
+ */
+export interface NavigationBindingsEllipseAnnotationAnnotationsTypesTunnelTypeOptions {
+    /**
+     * (Highstock) Background options.
+     */
+    background?: (object|NavigationBindingsEllipseAnnotationAnnotationsTypesTunnelTypeBackgroundOptions);
+    /**
+     * (Highstock) The height of the annotation in terms of yAxis.
+     */
+    height?: number;
+    /**
+     * (Highstock) Options for the control point which controls the annotation's
+     * height.
+     */
+    heightControlPoint?: AnnotationControlPointOptionsObject;
+    /**
+     * (Highstock) Line options.
+     */
+    line?: NavigationBindingsEllipseAnnotationAnnotationsTypesTunnelTypeLineOptions;
+    points?: Array<NavigationBindingsEllipseAnnotationAnnotationsTypesTunnelTypePointsOptions>;
+    /**
+     * (Highstock) This option defines which `xAxis` the point is connected to.
+     * It refers to either the axis id or the index of the axis in the `xAxis`
+     * array.
+     */
+    xAxis?: number;
+    /**
+     * (Highstock) This option defines which `yAxis` the point is connected to.
+     * It refers to either the axis id or the index of the axis in the `yAxis`
+     * array.
+     */
+    yAxis?: number;
+}
+export interface NavigationBindingsEllipseAnnotationAnnotationsTypesTunnelTypePointsOptions {
+    controlPoint?: number;
+    /**
+     * (Highstock) The x position of the point.
+     */
+    x?: number;
+    /**
+     * (Highstock) The y position of the point.
+     */
+    y?: number;
+}
+/**
+ * (Highstock) Options for annotation's labels. Each label inherits options from
+ * the labelOptions object. An option from the labelOptions can be overwritten
+ * by config for a specific label.
+ */
+export interface NavigationBindingsEllipseAnnotationAnnotationsTypesVerticalLineLabelOptions {
+    /**
+     * (Highstock) Accessibility options for an annotation label.
+     */
+    accessibility?: AnnotationLabelAccessibilityOptionsObject;
+    /**
+     * (Highstock) The alignment of the annotation's label. If right, the right
+     * side of the label should be touching the point.
+     */
+    align?: AlignValue;
+    /**
+     * (Highstock) Whether to allow the annotation's labels to overlap. To make
+     * the labels less sensitive for overlapping, the can be set to 0.
+     */
+    allowOverlap?: boolean;
+    /**
+     * (Highstock) The background color or gradient for the annotation's label.
+     */
+    backgroundColor?: ColorType;
+    /**
+     * (Highstock) The border color for the annotation's label.
+     */
+    borderColor?: ColorType;
+    /**
+     * (Highstock) The border radius in pixels for the annotation's label.
+     */
+    borderRadius?: number;
+    /**
+     * (Highstock) The border width in pixels for the annotation's label.
+     */
+    borderWidth?: number;
+    /**
+     * (Highstock) A class name for styling by CSS.
+     */
+    className?: string;
+    /**
+     * (Highstock) Whether to hide the annotation's label that is outside the
+     * plot area.
+     */
+    crop?: boolean;
+    /**
+     * (Highstock) The label's pixel distance from the point.
+     */
+    distance?: number;
+    /**
+     * (Highstock) A format string for the data label.
+     */
+    format?: string;
+    /**
+     * (Highstock) Callback JavaScript function to format the annotation's
+     * label. Note that if a `format` or `text` are defined, the format or text
+     * take precedence and the formatter is ignored. `This` refers to a point
+     * object. The callback also receives an argument `ctx` so that
+     * arrow-functions can access the same context (the point in this case) as
+     * normal functions can using `this`. Since v12.6.0, the callback receives
+     * `ctx`.
+     */
+    formatter?: FormatterCallbackFunction<Point>;
+    /**
+     * (Highstock) Whether all the labels for an annotation are visible in the
+     * exported data table.
+     */
+    includeInDataExport?: boolean;
+    /**
+     * (Highstock) How to handle the annotation's label that flow outside the
+     * plot area. The justify option aligns the label inside the plot area.
+     */
+    overflow?: OptionsOverflowValue;
+    /**
+     * (Highstock) When either the borderWidth or the backgroundColor is set,
+     * this is the padding within the box.
+     */
+    padding?: number;
+    /**
+     * (Highstock) The shadow of the box. The shadow can be an object
+     * configuration containing `color`, `offsetX`, `offsetY`, `opacity` and
+     * `width`.
+     */
+    shadow?: (boolean|ShadowOptionsObject);
+    /**
+     * (Highstock) The name of a symbol to use for the border around the label.
+     * Symbols are predefined functions on the Renderer object.
+     */
+    shape?: string;
+    /**
+     * (Highstock) Styles for the annotation's label.
+     */
+    style?: (CSSObject|NavigationBindingsEllipseAnnotationAnnotationsTypesVerticalLineLabelStyleOptions);
+    /**
+     * (Highstock) Alias for the format option.
+     */
+    text?: string;
+    /**
+     * (Highstock) Whether to use HTML to render the annotation's label.
+     */
+    useHTML?: boolean;
+    /**
+     * (Highstock) The vertical alignment of the annotation's label.
+     */
+    verticalAlign?: VerticalAlignValue;
+    /**
+     * (Highstock) The x position offset of the label relative to the point.
+     * Note that if a `distance` is defined, the distance takes precedence over
+     * `x` and `y` options.
+     */
+    x?: number;
+    /**
+     * (Highstock) The y position offset of the label relative to the point.
+     * Note that if a `distance` is defined, the distance takes precedence over
+     * `x` and `y` options.
+     */
+    y?: number;
+}
+/**
+ * (Highstock) Styles for the annotation's label.
+ */
+export interface NavigationBindingsEllipseAnnotationAnnotationsTypesVerticalLineLabelStyleOptions {
+    color?: string;
+    fontSize?: number;
+}
+/**
+ * (Highstock) Options for the vertical line annotation type.
+ */
+export interface NavigationBindingsEllipseAnnotationAnnotationsTypesVerticalLineOptions {
+    /**
+     * (Highstock) Options for annotation's labels. Each label inherits options
+     * from the labelOptions object. An option from the labelOptions can be
+     * overwritten by config for a specific label.
+     */
+    labelOptions?: NavigationBindingsEllipseAnnotationAnnotationsTypesVerticalLineLabelOptions;
+    /**
+     * (Highstock) Additional options for an annotation with the type.
+     */
+    typeOptions?: NavigationBindingsEllipseAnnotationAnnotationsTypesVerticalLineTypeOptions;
+}
+/**
+ * (Highstock) Connector options.
+ */
+export interface NavigationBindingsEllipseAnnotationAnnotationsTypesVerticalLineTypeConnectorOptions {
+    /**
+     * (Highstock) Name of the dash style to use for the shape's stroke.
+     */
+    dashStyle?: DashStyleValue;
+    /**
+     * (Highstock) The color of the shape's fill.
+     */
+    fill?: ColorType;
+    markerEnd?: string;
+    /**
+     * (Highstock) The radius of the `ellipse` shape in y direction. Can be
+     * defined in pixels or yAxis units, if shapes.yAxis index is defined.
+     */
+    ry?: number;
+    /**
+     * (Highstock) Defines additional snapping area around an annotation making
+     * this annotation to focus. Defined in pixels.
+     */
+    snap?: number;
+    /**
+     * (Highstock) The URL for an image to use as the annotation shape. Note,
+     * type has to be set to `'image'`.
+     */
+    src?: string;
+    /**
+     * (Highstock) The color of the shape's stroke.
+     */
+    stroke?: ColorType;
+    /**
+     * (Highstock) The pixel stroke width of the shape.
+     */
+    strokeWidth?: number;
+    /**
+     * (Highstock) The xAxis index which should be used for annotation's sizes
+     * and points coordinates conversion.
+     *
+     * This option is used for `rect` shape width, and all shapes point and
+     * points coordinates.
+     */
+    xAxis?: number;
+    /**
+     * (Highstock) The yAxis index which should be used for annotation's sizes
+     * and points coordinates conversion.
+     *
+     * This option is used for `rect` shape height, `circle` shape radius,
+     * `ellipse` y direction radius, and all shapes point and points
+     * coordinates.
+     */
+    yAxis?: number;
+}
+/**
+ * (Highstock) Label options.
+ */
+export interface NavigationBindingsEllipseAnnotationAnnotationsTypesVerticalLineTypeLabelOptions {
+    /**
+     * (Highstock) Accessibility options for an annotation label.
+     */
+    accessibility?: AnnotationLabelAccessibilityOptionsObject;
+    /**
+     * (Highstock) The alignment of the annotation's label. If right, the right
+     * side of the label should be touching the point.
+     */
+    align?: AlignValue;
+    /**
+     * (Highstock) Whether to allow the annotation's labels to overlap. To make
+     * the labels less sensitive for overlapping, the can be set to 0.
+     */
+    allowOverlap?: boolean;
+    /**
+     * (Highstock) The background color or gradient for the annotation's label.
+     */
+    backgroundColor?: string;
+    /**
+     * (Highstock) The border color for the annotation's label.
+     */
+    borderColor?: ColorType;
+    /**
+     * (Highstock) The border radius in pixels for the annotation's label.
+     */
+    borderRadius?: number;
+    /**
+     * (Highstock) The border width in pixels for the annotation's label.
+     */
+    borderWidth?: number;
+    /**
+     * (Highstock) A class name for styling by CSS.
+     */
+    className?: string;
+    /**
+     * (Highstock) Whether to hide the annotation's label that is outside the
+     * plot area.
+     */
+    crop?: boolean;
+    /**
+     * (Highstock) The label's pixel distance from the point.
+     */
+    distance?: number;
+    /**
+     * (Highstock) A format string for the data label.
+     */
+    format?: string;
+    /**
+     * (Highstock) Callback JavaScript function to format the annotation's
+     * label. Note that if a `format` or `text` are defined, the format or text
+     * take precedence and the formatter is ignored. `This` refers to a point
+     * object. The callback also receives an argument `ctx` so that
+     * arrow-functions can access the same context (the point in this case) as
+     * normal functions can using `this`. Since v12.6.0, the callback receives
+     * `ctx`.
+     */
+    formatter?: FormatterCallbackFunction<Point>;
+    /**
+     * (Highstock) Whether all the labels for an annotation are visible in the
+     * exported data table.
+     */
+    includeInDataExport?: boolean;
+    offset?: number;
+    /**
+     * (Highstock) How to handle the annotation's label that flow outside the
+     * plot area. The justify option aligns the label inside the plot area.
+     */
+    overflow?: OptionsOverflowValue;
+    /**
+     * (Highstock) When either the borderWidth or the backgroundColor is set,
+     * this is the padding within the box.
+     */
+    padding?: number;
+    /**
+     * (Highstock) The shadow of the box. The shadow can be an object
+     * configuration containing `color`, `offsetX`, `offsetY`, `opacity` and
+     * `width`.
+     */
+    shadow?: (boolean|ShadowOptionsObject);
+    /**
+     * (Highstock) The name of a symbol to use for the border around the label.
+     * Symbols are predefined functions on the Renderer object.
+     */
+    shape?: string;
+    /**
+     * (Highstock) Styles for the annotation's label.
+     */
+    style?: CSSObject;
+    /**
+     * (Highstock) Alias for the format option.
+     */
+    text?: string;
+    /**
+     * (Highstock) Whether to use HTML to render the annotation's label.
+     */
+    useHTML?: boolean;
+    /**
+     * (Highstock) The vertical alignment of the annotation's label.
+     */
+    verticalAlign?: VerticalAlignValue;
+    /**
+     * (Highstock) The x position offset of the label relative to the point.
+     * Note that if a `distance` is defined, the distance takes precedence over
+     * `x` and `y` options.
+     */
+    x?: number;
+    /**
+     * (Highstock) The y position offset of the label relative to the point.
+     * Note that if a `distance` is defined, the distance takes precedence over
+     * `x` and `y` options.
+     */
+    y?: number;
+}
+/**
+ * (Highstock) Line options.
+ */
+export interface NavigationBindingsEllipseAnnotationAnnotationsTypesVerticalLineTypeLineOptions {
+    fill?: string;
+}
+/**
+ * (Highstock) Additional options for an annotation with the type.
+ */
+export interface NavigationBindingsEllipseAnnotationAnnotationsTypesVerticalLineTypeOptions {
+    /**
+     * (Highstock) Connector options.
+     */
+    connector?: NavigationBindingsEllipseAnnotationAnnotationsTypesVerticalLineTypeConnectorOptions;
+    /**
+     * (Highstock) Label options.
+     */
+    label?: NavigationBindingsEllipseAnnotationAnnotationsTypesVerticalLineTypeLabelOptions;
+    /**
+     * (Highstock) Line options.
+     */
+    line?: NavigationBindingsEllipseAnnotationAnnotationsTypesVerticalLineTypeLineOptions;
+    points?: Array<NavigationBindingsEllipseAnnotationAnnotationsTypesVerticalLineTypePointsOptions>;
+    /**
+     * (Highstock) This option defines which `xAxis` the point is connected to.
+     * It refers to either the axis id or the index of the axis in the `xAxis`
+     * array.
+     */
+    xAxis?: number;
+    /**
+     * (Highstock) This option defines which `yAxis` the point is connected to.
+     * It refers to either the axis id or the index of the axis in the `yAxis`
+     * array.
+     */
+    yAxis?: number;
+}
+export interface NavigationBindingsEllipseAnnotationAnnotationsTypesVerticalLineTypePointsOptions {
+    controlPoint?: number;
+    /**
+     * (Highstock) The x position of the point.
+     */
+    x?: number;
+    /**
+     * (Highstock) The y position of the point.
+     */
+    y?: number;
+}
+/**
+ * (Highcharts, Highstock) An ellipse annotation bindings. Includes `start` and
+ * two events in `steps` array. First updates the second point, responsible for
+ * a rx width, and second updates the ry width.
+ */
+export interface NavigationBindingsEllipseAnnotationOptions {
+    /**
+     * (Highcharts, Highstock) Options to customize the bindings' annotation
+     * shapes and labels.
+     */
+    annotationsOptions?: (AnnotationsOptions|NavigationBindingsEllipseAnnotationAnnotationsOptions);
+    className?: string;
+}
+/**
  * (Highstock) Enable or disable the initial animation when a series is
  * displayed for the `annotation`. The animation can also be set as a
  * configuration object. Please note that this option only applies to the
@@ -42621,6 +48959,7 @@ export interface NavigationBindingsFibonacciOptions {
      * labels.
      */
     annotationsOptions?: (AnnotationsOptions|NavigationBindingsFibonacciAnnotationsOptions);
+    className?: string;
 }
 /**
  * (Highstock) Enable or disable the initial animation when a series is
@@ -45749,6 +52088,14 @@ export interface NavigationBindingsFibonacciTimeZonesOptions {
      * labels.
      */
     annotationsOptions?: (AnnotationsOptions|NavigationBindingsFibonacciTimeZonesAnnotationsOptions);
+}
+/**
+ * (Highstock) Displays chart in fullscreen.
+ *
+ * **Note**: Fullscreen is not supported on iPhone due to iOS limitations.
+ */
+export interface NavigationBindingsFullScreenOptions {
+    noDataState?: string;
 }
 /**
  * (Highstock) Enable or disable the initial animation when a series is
@@ -52004,6 +58351,3161 @@ export interface NavigationBindingsInfinityLineOptions {
      * labels.
      */
     annotationsOptions?: (AnnotationsOptions|NavigationBindingsInfinityLineAnnotationsOptions);
+}
+/**
+ * (Highcharts, Highstock) Enable or disable the initial animation when a series
+ * is displayed for the `annotation`. The animation can also be set as a
+ * configuration object. Please note that this option only applies to the
+ * initial animation. For other animations, see chart.animation and the
+ * animation parameter under the API methods. The following properties are
+ * supported:
+ *
+ * - `defer`: The animation delay time in milliseconds.
+ */
+export interface NavigationBindingsLabelAnnotationAnnotationsAnimationOptions {
+    /**
+     * (Highcharts, Highstock) The animation delay time in milliseconds. Set to
+     * `0` renders annotation immediately. As `undefined` inherits defer time
+     * from the series.animation.defer.
+     */
+    defer?: number;
+}
+export interface NavigationBindingsLabelAnnotationAnnotationsControlPointStyleOptions {
+    cursor?: string;
+    fill?: string;
+    stroke?: string;
+    "stroke-width"?: number;
+}
+/**
+ * (Highcharts, Highstock) Events available in annotations.
+ */
+export interface NavigationBindingsLabelAnnotationAnnotationsEventsOptions {
+    /**
+     * (Highcharts, Highstock) Event callback when annotation is added to the
+     * chart.
+     */
+    add?: EventCallbackFunction<Annotation>;
+    /**
+     * (Highcharts, Highstock) Event callback when annotation is updated (e.g.
+     * drag and dropped or resized by control points).
+     */
+    afterUpdate?: EventCallbackFunction<Annotation>;
+    /**
+     * (Highcharts, Highstock) Fires when the annotation is clicked.
+     */
+    click?: EventCallbackFunction<Annotation>;
+    /**
+     * (Highcharts, Highstock) Fires when the annotation is dragged.
+     */
+    drag?: EventCallbackFunction<Annotation>;
+    /**
+     * (Highcharts, Highstock) Event callback when annotation is removed from
+     * the chart.
+     */
+    remove?: EventCallbackFunction<Annotation>;
+}
+/**
+ * (Highcharts, Highstock) Options for annotation's labels. Each label inherits
+ * options from the labelOptions object. An option from the labelOptions can be
+ * overwritten by config for a specific label.
+ */
+export interface NavigationBindingsLabelAnnotationAnnotationsLabelOptions {
+    /**
+     * (Highcharts, Highstock) Accessibility options for an annotation label.
+     */
+    accessibility?: AnnotationLabelAccessibilityOptionsObject;
+    /**
+     * (Highcharts, Highstock) The alignment of the annotation's label. If
+     * right, the right side of the label should be touching the point.
+     */
+    align?: AlignValue;
+    /**
+     * (Highcharts, Highstock) Whether to allow the annotation's labels to
+     * overlap. To make the labels less sensitive for overlapping, the can be
+     * set to 0.
+     */
+    allowOverlap?: boolean;
+    /**
+     * (Highcharts, Highstock) The background color or gradient for the
+     * annotation's label.
+     */
+    backgroundColor?: ColorType;
+    /**
+     * (Highcharts, Highstock) The border color for the annotation's label.
+     */
+    borderColor?: ColorType;
+    /**
+     * (Highcharts, Highstock) The border radius in pixels for the annotation's
+     * label.
+     */
+    borderRadius?: number;
+    /**
+     * (Highcharts, Highstock) The border width in pixels for the annotation's
+     * label.
+     */
+    borderWidth?: number;
+    /**
+     * (Highcharts, Highstock) A class name for styling by CSS.
+     */
+    className?: string;
+    /**
+     * (Highcharts, Highstock) Whether to hide the annotation's label that is
+     * outside the plot area.
+     */
+    crop?: boolean;
+    /**
+     * (Highcharts, Highstock) The label's pixel distance from the point.
+     */
+    distance?: number;
+    /**
+     * (Highcharts, Highstock) A format string for the data label.
+     */
+    format?: string;
+    /**
+     * (Highcharts, Highstock) Callback JavaScript function to format the
+     * annotation's label. Note that if a `format` or `text` are defined, the
+     * format or text take precedence and the formatter is ignored. `This`
+     * refers to a point object. The callback also receives an argument `ctx` so
+     * that arrow-functions can access the same context (the point in this case)
+     * as normal functions can using `this`. Since v12.6.0, the callback
+     * receives `ctx`.
+     */
+    formatter?: FormatterCallbackFunction<Point>;
+    /**
+     * (Highcharts, Highstock) Whether all the labels for an annotation are
+     * visible in the exported data table.
+     */
+    includeInDataExport?: boolean;
+    /**
+     * (Highcharts, Highstock) How to handle the annotation's label that flow
+     * outside the plot area. The justify option aligns the label inside the
+     * plot area.
+     */
+    overflow?: OptionsOverflowValue;
+    /**
+     * (Highcharts, Highstock) When either the borderWidth or the
+     * backgroundColor is set, this is the padding within the box.
+     */
+    padding?: number;
+    /**
+     * (Highcharts, Highstock) The shadow of the box. The shadow can be an
+     * object configuration containing `color`, `offsetX`, `offsetY`, `opacity`
+     * and `width`.
+     */
+    shadow?: (boolean|ShadowOptionsObject);
+    /**
+     * (Highcharts, Highstock) The name of a symbol to use for the border around
+     * the label. Symbols are predefined functions on the Renderer object.
+     */
+    shape?: string;
+    /**
+     * (Highcharts, Highstock) Styles for the annotation's label.
+     */
+    style?: CSSObject;
+    /**
+     * (Highcharts, Highstock) Alias for the format option.
+     */
+    text?: string;
+    /**
+     * (Highcharts, Highstock) Whether to use HTML to render the annotation's
+     * label.
+     */
+    useHTML?: boolean;
+    /**
+     * (Highcharts, Highstock) The vertical alignment of the annotation's label.
+     */
+    verticalAlign?: VerticalAlignValue;
+    /**
+     * (Highcharts, Highstock) The x position offset of the label relative to
+     * the point. Note that if a `distance` is defined, the distance takes
+     * precedence over `x` and `y` options.
+     */
+    x?: number;
+    /**
+     * (Highcharts, Highstock) The y position offset of the label relative to
+     * the point. Note that if a `distance` is defined, the distance takes
+     * precedence over `x` and `y` options.
+     */
+    y?: number;
+}
+export interface NavigationBindingsLabelAnnotationAnnotationsLabelsControlPointsStyleOptions {
+    cursor?: string;
+    fill?: string;
+    stroke?: string;
+    "stroke-width"?: number;
+}
+/**
+ * (Highcharts, Highstock) An array of labels for the annotation. For options
+ * that apply to multiple labels, they can be added to the labelOptions.
+ */
+export interface NavigationBindingsLabelAnnotationAnnotationsLabelsOptions {
+    /**
+     * (Highcharts, Highstock) Accessibility options for an annotation label.
+     */
+    accessibility?: AnnotationLabelAccessibilityOptionsObject;
+    /**
+     * (Highcharts, Highstock) The alignment of the annotation's label. If
+     * right, the right side of the label should be touching the point.
+     */
+    align?: AlignValue;
+    /**
+     * (Highcharts, Highstock) Whether to allow the annotation's labels to
+     * overlap. To make the labels less sensitive for overlapping, the can be
+     * set to 0.
+     */
+    allowOverlap?: boolean;
+    /**
+     * (Highcharts, Highstock) The background color or gradient for the
+     * annotation's label.
+     */
+    backgroundColor?: ColorType;
+    /**
+     * (Highcharts, Highstock) The border color for the annotation's label.
+     */
+    borderColor?: ColorType;
+    /**
+     * (Highcharts, Highstock) The border radius in pixels for the annotation's
+     * label.
+     */
+    borderRadius?: number;
+    /**
+     * (Highcharts, Highstock) The border width in pixels for the annotation's
+     * label.
+     */
+    borderWidth?: number;
+    /**
+     * (Highcharts, Highstock) A class name for styling by CSS.
+     */
+    className?: string;
+    /**
+     * (Highcharts, Highstock) The array of control points.
+     */
+    controlPoints?: (AnnotationControlPointOptionsObject|Array<AnnotationControlPointOptionsObject>);
+    /**
+     * (Highcharts, Highstock) Whether to hide the annotation's label that is
+     * outside the plot area.
+     */
+    crop?: boolean;
+    /**
+     * (Highcharts, Highstock) The label's pixel distance from the point.
+     */
+    distance?: number;
+    /**
+     * (Highcharts, Highstock) A format string for the data label.
+     */
+    format?: string;
+    /**
+     * (Highcharts, Highstock) Callback JavaScript function to format the
+     * annotation's label. Note that if a `format` or `text` are defined, the
+     * format or text take precedence and the formatter is ignored. `This`
+     * refers to a point object. The callback also receives an argument `ctx` so
+     * that arrow-functions can access the same context (the point in this case)
+     * as normal functions can using `this`. Since v12.6.0, the callback
+     * receives `ctx`.
+     */
+    formatter?: FormatterCallbackFunction<Point>;
+    /**
+     * (Highcharts, Highstock) An id for later identification of the annotation
+     * label.
+     */
+    id?: string;
+    /**
+     * (Highcharts, Highstock) Whether all the labels for an annotation are
+     * visible in the exported data table.
+     */
+    includeInDataExport?: boolean;
+    /**
+     * (Highcharts, Highstock) How to handle the annotation's label that flow
+     * outside the plot area. The justify option aligns the label inside the
+     * plot area.
+     */
+    overflow?: OptionsOverflowValue;
+    /**
+     * (Highcharts, Highstock) When either the borderWidth or the
+     * backgroundColor is set, this is the padding within the box.
+     */
+    padding?: number;
+    /**
+     * (Highcharts, Highstock) This option defines the point to which the label
+     * will be connected. It can be either the point which exists in the series
+     * - it is referenced by the point's id - or a new point with defined x, y
+     * properties and optionally axes.
+     */
+    point?: AnnotationMockPointOptions;
+    /**
+     * (Highcharts, Highstock) The shadow of the box. The shadow can be an
+     * object configuration containing `color`, `offsetX`, `offsetY`, `opacity`
+     * and `width`.
+     */
+    shadow?: (boolean|ShadowOptionsObject);
+    /**
+     * (Highcharts, Highstock) The name of a symbol to use for the border around
+     * the label. Symbols are predefined functions on the Renderer object.
+     */
+    shape?: string;
+    /**
+     * (Highcharts, Highstock) Styles for the annotation's label.
+     */
+    style?: CSSObject;
+    /**
+     * (Highcharts, Highstock) Alias for the format option.
+     */
+    text?: string;
+    /**
+     * (Highcharts, Highstock) Whether to use HTML to render the annotation's
+     * label.
+     */
+    useHTML?: boolean;
+    /**
+     * (Highcharts, Highstock) The vertical alignment of the annotation's label.
+     */
+    verticalAlign?: VerticalAlignValue;
+    /**
+     * (Highcharts, Highstock) The x position offset of the label relative to
+     * the point. Note that if a `distance` is defined, the distance takes
+     * precedence over `x` and `y` options.
+     */
+    x?: number;
+    /**
+     * (Highcharts, Highstock) The y position offset of the label relative to
+     * the point. Note that if a `distance` is defined, the distance takes
+     * precedence over `x` and `y` options.
+     */
+    y?: number;
+}
+/**
+ * (Highcharts, Highstock) Options to customize the bindings' annotation shapes
+ * and labels.
+ */
+export interface NavigationBindingsLabelAnnotationAnnotationsOptions {
+    /**
+     * (Highcharts, Highstock) Enable or disable the initial animation when a
+     * series is displayed for the `annotation`. The animation can also be set
+     * as a configuration object. Please note that this option only applies to
+     * the initial animation. For other animations, see chart.animation and the
+     * animation parameter under the API methods. The following properties are
+     * supported:
+     *
+     * - `defer`: The animation delay time in milliseconds.
+     */
+    animation?: (boolean|NavigationBindingsLabelAnnotationAnnotationsAnimationOptions|Partial<AnimationOptionsObject>);
+    /**
+     * (Highcharts, Highstock) A class name for styling by CSS.
+     */
+    className?: string;
+    /**
+     * (Highcharts, Highstock) Options for annotation's control points. Each
+     * control point inherits options from controlPointOptions object. Options
+     * from the controlPointOptions can be overwritten by options in a specific
+     * control point.
+     */
+    controlPointOptions?: AnnotationControlPointOptionsObject;
+    /**
+     * (Highcharts, Highstock) Whether to hide the part of the annotation that
+     * is outside the plot area.
+     */
+    crop?: boolean;
+    /**
+     * (Highcharts, Highstock) Allow an annotation to be draggable by a user.
+     * Possible values are `'x'`, `'xy'`, `'y'` and `''` (disabled).
+     */
+    draggable?: AnnotationDraggableValue;
+    /**
+     * (Highcharts, Highstock) Events available in annotations.
+     */
+    events?: NavigationBindingsLabelAnnotationAnnotationsEventsOptions;
+    /**
+     * (Highcharts, Highstock) Sets an ID for an annotation. Can be user later
+     * when removing an annotation in Chart.removeAnnotation(id) method.
+     */
+    id?: (number|string);
+    /**
+     * (Highcharts, Highstock) Options for annotation's labels. Each label
+     * inherits options from the labelOptions object. An option from the
+     * labelOptions can be overwritten by config for a specific label.
+     */
+    labelOptions?: NavigationBindingsLabelAnnotationAnnotationsLabelOptions;
+    /**
+     * (Highcharts, Highstock) An array of labels for the annotation. For
+     * options that apply to multiple labels, they can be added to the
+     * labelOptions.
+     */
+    labels?: Array<NavigationBindingsLabelAnnotationAnnotationsLabelsOptions>;
+    /**
+     * (Highcharts, Highstock) Options for annotation's shapes. Each shape
+     * inherits options from the shapeOptions object. An option from the
+     * shapeOptions can be overwritten by config for a specific shape.
+     */
+    shapeOptions?: NavigationBindingsLabelAnnotationAnnotationsShapeOptions;
+    /**
+     * (Highcharts, Highstock) An array of shapes for the annotation. For
+     * options that apply to multiple shapes, then can be added to the
+     * shapeOptions.
+     */
+    shapes?: Array<NavigationBindingsLabelAnnotationAnnotationsShapesOptions>;
+    /**
+     * (Highstock) For advanced annotations, this option defines the type of
+     * annotation. Can be one of the keys listed under the types option.
+     */
+    type?: string;
+    /**
+     * (Highcharts, Highstock) Additional options for an annotation with the
+     * type.
+     */
+    typeOptions?: NavigationBindingsLabelAnnotationAnnotationsTypeOptions;
+    /**
+     * (Highstock) Option override for specific advanced annotation types. This
+     * collection is intended for general theming using
+     * `Highcharts.setOptions()`.
+     */
+    types?: NavigationBindingsLabelAnnotationAnnotationsTypesOptions;
+    /**
+     * (Highcharts, Highstock) Whether the annotation is visible.
+     */
+    visible?: boolean;
+    /**
+     * (Highcharts, Highstock) The Z index of the annotation.
+     */
+    zIndex?: number;
+}
+/**
+ * (Highcharts, Highstock) Options for annotation's shapes. Each shape inherits
+ * options from the shapeOptions object. An option from the shapeOptions can be
+ * overwritten by config for a specific shape.
+ */
+export interface NavigationBindingsLabelAnnotationAnnotationsShapeOptions {
+    /**
+     * (Highcharts, Highstock) Name of the dash style to use for the shape's
+     * stroke.
+     */
+    dashStyle?: DashStyleValue;
+    /**
+     * (Highcharts, Highstock) The color of the shape's fill.
+     */
+    fill?: ColorType;
+    /**
+     * (Highcharts, Highstock) The height of the `rect` shape. Can be defined in
+     * pixels or yAxis units, if shapes.yAxis index is defined.
+     */
+    height?: number;
+    /**
+     * (Highcharts, Highstock) The radius of the `circle` shape. Can be defined
+     * in pixels or yAxis units, if shapes.yAxis index is defined.
+     */
+    r?: number;
+    /**
+     * (Highcharts, Highstock) The radius of the `ellipse` shape in y direction.
+     * Can be defined in pixels or yAxis units, if shapes.yAxis index is
+     * defined.
+     */
+    ry?: number;
+    /**
+     * (Highcharts, Highstock) Defines additional snapping area around an
+     * annotation making this annotation to focus. Defined in pixels.
+     */
+    snap?: number;
+    /**
+     * (Highcharts, Highstock) The URL for an image to use as the annotation
+     * shape. Note, type has to be set to `'image'`.
+     */
+    src?: string;
+    /**
+     * (Highcharts, Highstock) The color of the shape's stroke.
+     */
+    stroke?: ColorType;
+    /**
+     * (Highcharts, Highstock) The pixel stroke width of the shape.
+     */
+    strokeWidth?: number;
+    /**
+     * (Highcharts, Highstock) The type of the shape. Available options are
+     * `circle`, `rect`, `ellipse` and `path`.
+     */
+    type?: string;
+    /**
+     * (Highcharts, Highstock) The width of the `rect` shape. Can be defined in
+     * pixels or xAxis units, if shapes.xAxis index is defined.
+     */
+    width?: number;
+    /**
+     * (Highcharts, Highstock) The xAxis index which should be used for
+     * annotation's sizes and points coordinates conversion.
+     *
+     * This option is used for `rect` shape width, and all shapes point and
+     * points coordinates.
+     */
+    xAxis?: number;
+    /**
+     * (Highcharts, Highstock) The yAxis index which should be used for
+     * annotation's sizes and points coordinates conversion.
+     *
+     * This option is used for `rect` shape height, `circle` shape radius,
+     * `ellipse` y direction radius, and all shapes point and points
+     * coordinates.
+     */
+    yAxis?: number;
+}
+export interface NavigationBindingsLabelAnnotationAnnotationsShapesControlPointsStyleOptions {
+    cursor?: string;
+    fill?: string;
+    stroke?: string;
+    "stroke-width"?: number;
+}
+/**
+ * (Highcharts, Highstock) An array of shapes for the annotation. For options
+ * that apply to multiple shapes, then can be added to the shapeOptions.
+ */
+export interface NavigationBindingsLabelAnnotationAnnotationsShapesOptions {
+    /**
+     * (Highcharts, Highstock) The array of control points.
+     */
+    controlPoints?: (AnnotationControlPointOptionsObject|Array<AnnotationControlPointOptionsObject>);
+    /**
+     * (Highcharts, Highstock) Name of the dash style to use for the shape's
+     * stroke.
+     */
+    dashStyle?: DashStyleValue;
+    /**
+     * (Highcharts, Highstock) The color of the shape's fill.
+     */
+    fill?: ColorType;
+    /**
+     * (Highcharts, Highstock) The height of the `rect` shape. Can be defined in
+     * pixels or yAxis units, if shapes.yAxis index is defined.
+     */
+    height?: number;
+    /**
+     * (Highcharts, Highstock) Id of the marker which will be drawn at the final
+     * vertex of the path. The `arrow` and `reverse-arrow` markers are available
+     * by default; custom markers can be defined in the defs option.
+     */
+    markerEnd?: string;
+    /**
+     * (Highcharts, Highstock) Id of the marker which will be drawn at the first
+     * vertex of the path. The `arrow` and `reverse-arrow` markers are available
+     * by default; custom markers can be defined in the defs option.
+     */
+    markerStart?: string;
+    /**
+     * (Highcharts, Highstock) This option defines the point to which the shape
+     * will be connected. It can be either the point which exists in the series
+     * - it is referenced by the point's id - or a new point with defined x, y
+     * properties and optionally axes.
+     */
+    point?: AnnotationMockPointOptions;
+    /**
+     * (Highcharts, Highstock) An array of points for the shape or a callback
+     * function that returns that shape point.
+     *
+     * This option is available for shapes which can use multiple points such as
+     * path. A point can be either a point object or a point's id.
+     */
+    points?: Array<AnnotationMockPointOptions>;
+    /**
+     * (Highcharts, Highstock) The radius of the `circle` shape. Can be defined
+     * in pixels or yAxis units, if shapes.yAxis index is defined.
+     */
+    r?: number;
+    /**
+     * (Highcharts, Highstock) The radius of the `ellipse` shape in y direction.
+     * Can be defined in pixels or yAxis units, if shapes.yAxis index is
+     * defined.
+     */
+    ry?: number;
+    /**
+     * (Highcharts, Highstock) Defines additional snapping area around an
+     * annotation making this annotation to focus. Defined in pixels.
+     */
+    snap?: number;
+    /**
+     * (Highcharts, Highstock) The URL for an image to use as the annotation
+     * shape. Note, type has to be set to `'image'`.
+     */
+    src?: string;
+    /**
+     * (Highcharts, Highstock) The color of the shape's stroke.
+     */
+    stroke?: ColorType;
+    /**
+     * (Highcharts, Highstock) The pixel stroke width of the shape.
+     */
+    strokeWidth?: number;
+    /**
+     * (Highcharts, Highstock) The type of the shape. Available options are
+     * `circle`, `rect`, `ellipse` and `path`.
+     */
+    type?: string;
+    /**
+     * (Highcharts, Highstock) The width of the `rect` shape. Can be defined in
+     * pixels or xAxis units, if shapes.xAxis index is defined.
+     */
+    width?: number;
+    /**
+     * (Highcharts, Highstock) The xAxis index which should be used for
+     * annotation's sizes and points coordinates conversion.
+     *
+     * This option is used for `rect` shape width, and all shapes point and
+     * points coordinates.
+     */
+    xAxis?: number;
+    /**
+     * (Highcharts, Highstock) The yAxis index which should be used for
+     * annotation's sizes and points coordinates conversion.
+     *
+     * This option is used for `rect` shape height, `circle` shape radius,
+     * `ellipse` y direction radius, and all shapes point and points
+     * coordinates.
+     */
+    yAxis?: number;
+}
+/**
+ * (Highcharts, Highstock) Background shape options for the annotation.
+ */
+export interface NavigationBindingsLabelAnnotationAnnotationsTypeBackgroundOptions {
+    /**
+     * (Highcharts, Highstock) Name of the dash style to use for the shape's
+     * stroke.
+     */
+    dashStyle?: DashStyleValue;
+    /**
+     * (Highcharts, Highstock) The color of the shape's fill.
+     */
+    fill?: ColorType;
+    /**
+     * (Highcharts, Highstock) The height of the `rect` shape. Can be defined in
+     * pixels or yAxis units, if shapes.yAxis index is defined.
+     */
+    height?: number;
+    /**
+     * (Highcharts, Highstock) The radius of the `circle` shape. Can be defined
+     * in pixels or yAxis units, if shapes.yAxis index is defined.
+     */
+    r?: number;
+    /**
+     * (Highcharts, Highstock) The radius of the `ellipse` shape in y direction.
+     * Can be defined in pixels or yAxis units, if shapes.yAxis index is
+     * defined.
+     */
+    ry?: number;
+    /**
+     * (Highcharts, Highstock) Defines additional snapping area around an
+     * annotation making this annotation to focus. Defined in pixels.
+     */
+    snap?: number;
+    /**
+     * (Highcharts, Highstock) The URL for an image to use as the annotation
+     * shape. Note, type has to be set to `'image'`.
+     */
+    src?: string;
+    /**
+     * (Highcharts, Highstock) The color of the shape's stroke.
+     */
+    stroke?: ColorType;
+    /**
+     * (Highcharts, Highstock) The pixel stroke width of the shape.
+     */
+    strokeWidth?: number;
+    /**
+     * (Highcharts, Highstock) The type of the shape. Available options are
+     * `circle`, `rect`, `ellipse` and `path`.
+     */
+    type?: string;
+    /**
+     * (Highcharts, Highstock) The width of the `rect` shape. Can be defined in
+     * pixels or xAxis units, if shapes.xAxis index is defined.
+     */
+    width?: number;
+    /**
+     * (Highcharts, Highstock) The xAxis index which should be used for
+     * annotation's sizes and points coordinates conversion.
+     *
+     * This option is used for `rect` shape width, and all shapes point and
+     * points coordinates.
+     */
+    xAxis?: number;
+    /**
+     * (Highcharts, Highstock) The yAxis index which should be used for
+     * annotation's sizes and points coordinates conversion.
+     *
+     * This option is used for `rect` shape height, `circle` shape radius,
+     * `ellipse` y direction radius, and all shapes point and points
+     * coordinates.
+     */
+    yAxis?: number;
+}
+/**
+ * (Highcharts, Highstock) Line options.
+ */
+export interface NavigationBindingsLabelAnnotationAnnotationsTypeLineOptions {
+    /**
+     * (Highcharts, Highstock) Name of the dash style to use for the shape's
+     * stroke.
+     */
+    dashStyle?: DashStyleValue;
+    /**
+     * (Highcharts, Highstock) The color of the shape's fill.
+     */
+    fill?: ColorType;
+    /**
+     * (Highcharts, Highstock) The height of the `rect` shape. Can be defined in
+     * pixels or yAxis units, if shapes.yAxis index is defined.
+     */
+    height?: number;
+    /**
+     * (Highcharts, Highstock) The radius of the `circle` shape. Can be defined
+     * in pixels or yAxis units, if shapes.yAxis index is defined.
+     */
+    r?: number;
+    /**
+     * (Highcharts, Highstock) The radius of the `ellipse` shape in y direction.
+     * Can be defined in pixels or yAxis units, if shapes.yAxis index is
+     * defined.
+     */
+    ry?: number;
+    /**
+     * (Highcharts, Highstock) Defines additional snapping area around an
+     * annotation making this annotation to focus. Defined in pixels.
+     */
+    snap?: number;
+    /**
+     * (Highcharts, Highstock) The URL for an image to use as the annotation
+     * shape. Note, type has to be set to `'image'`.
+     */
+    src?: string;
+    /**
+     * (Highcharts, Highstock) The color of the shape's stroke.
+     */
+    stroke?: ColorType;
+    /**
+     * (Highcharts, Highstock) The pixel stroke width of the shape.
+     */
+    strokeWidth?: number;
+    /**
+     * (Highcharts, Highstock) The type of the shape. Available options are
+     * `circle`, `rect`, `ellipse` and `path`.
+     */
+    type?: string;
+    /**
+     * (Highcharts, Highstock) The width of the `rect` shape. Can be defined in
+     * pixels or xAxis units, if shapes.xAxis index is defined.
+     */
+    width?: number;
+    /**
+     * (Highcharts, Highstock) The xAxis index which should be used for
+     * annotation's sizes and points coordinates conversion.
+     *
+     * This option is used for `rect` shape width, and all shapes point and
+     * points coordinates.
+     */
+    xAxis?: number;
+    /**
+     * (Highcharts, Highstock) The yAxis index which should be used for
+     * annotation's sizes and points coordinates conversion.
+     *
+     * This option is used for `rect` shape height, `circle` shape radius,
+     * `ellipse` y direction radius, and all shapes point and points
+     * coordinates.
+     */
+    yAxis?: number;
+}
+/**
+ * (Highcharts, Highstock) Additional options for an annotation with the type.
+ */
+export interface NavigationBindingsLabelAnnotationAnnotationsTypeOptions {
+    /**
+     * (Highcharts, Highstock) Background shape options for the annotation.
+     */
+    background?: NavigationBindingsLabelAnnotationAnnotationsTypeBackgroundOptions;
+    /**
+     * (Highcharts, Highstock) Height of the annotation in pixels.
+     */
+    height?: number;
+    /**
+     * (Highcharts, Highstock) Line options.
+     */
+    line?: NavigationBindingsLabelAnnotationAnnotationsTypeLineOptions;
+    /**
+     * (Highcharts, Highstock) A single point that the annotation is attached
+     * to. It can be either the point which exists in the series - it is
+     * referenced by the point's id - or a new point with defined x, y
+     * properties and optionally axes.
+     */
+    point?: (string|AnnotationMockPointOptionsObject);
+    /**
+     * (Highcharts, Highstock) An array of points that the annotation is
+     * attached to. Each point can the point which exists in the series - it is
+     * referenced by the point's id - or a new point with defined x, y
+     * properties and optionally axes.
+     */
+    points?: Array<(string|AnnotationMockPointOptionsObject)>;
+    /**
+     * (Highcharts, Highstock) The annotation type identifier.
+     */
+    type?: string;
+    /**
+     * (Highcharts, Highstock) This option defines which `xAxis` the point is
+     * connected to. It refers to either the axis id or the index of the axis in
+     * the `xAxis` array.
+     */
+    xAxis?: (number|string);
+    /**
+     * (Highcharts, Highstock) This option defines which `yAxis` the point is
+     * connected to. It refers to either the axis id or the index of the axis in
+     * the `yAxis` array.
+     */
+    yAxis?: (number|string);
+}
+export interface NavigationBindingsLabelAnnotationAnnotationsTypesCrookedLineControlPointStyleOptions {
+    cursor?: string;
+    fill?: string;
+    stroke?: string;
+    "stroke-width"?: number;
+}
+/**
+ * (Highstock) Options for annotation's labels. Each label inherits options from
+ * the labelOptions object. An option from the labelOptions can be overwritten
+ * by config for a specific label.
+ */
+export interface NavigationBindingsLabelAnnotationAnnotationsTypesCrookedLineLabelOptions {
+    /**
+     * (Highstock) Accessibility options for an annotation label.
+     */
+    accessibility?: AnnotationLabelAccessibilityOptionsObject;
+    /**
+     * (Highstock) The alignment of the annotation's label. If right, the right
+     * side of the label should be touching the point.
+     */
+    align?: AlignValue;
+    /**
+     * (Highstock) Whether to allow the annotation's labels to overlap. To make
+     * the labels less sensitive for overlapping, the can be set to 0.
+     */
+    allowOverlap?: boolean;
+    /**
+     * (Highstock) The background color or gradient for the annotation's label.
+     */
+    backgroundColor?: ColorType;
+    /**
+     * (Highstock) The border color for the annotation's label.
+     */
+    borderColor?: ColorType;
+    /**
+     * (Highstock) The border radius in pixels for the annotation's label.
+     */
+    borderRadius?: number;
+    /**
+     * (Highstock) The border width in pixels for the annotation's label.
+     */
+    borderWidth?: number;
+    /**
+     * (Highstock) A class name for styling by CSS.
+     */
+    className?: string;
+    /**
+     * (Highstock) Whether to hide the annotation's label that is outside the
+     * plot area.
+     */
+    crop?: boolean;
+    /**
+     * (Highstock) The label's pixel distance from the point.
+     */
+    distance?: number;
+    /**
+     * (Highstock) A format string for the data label.
+     */
+    format?: string;
+    /**
+     * (Highstock) Callback JavaScript function to format the annotation's
+     * label. Note that if a `format` or `text` are defined, the format or text
+     * take precedence and the formatter is ignored. `This` refers to a point
+     * object. The callback also receives an argument `ctx` so that
+     * arrow-functions can access the same context (the point in this case) as
+     * normal functions can using `this`. Since v12.6.0, the callback receives
+     * `ctx`.
+     */
+    formatter?: FormatterCallbackFunction<Point>;
+    /**
+     * (Highstock) Whether all the labels for an annotation are visible in the
+     * exported data table.
+     */
+    includeInDataExport?: boolean;
+    /**
+     * (Highstock) How to handle the annotation's label that flow outside the
+     * plot area. The justify option aligns the label inside the plot area.
+     */
+    overflow?: OptionsOverflowValue;
+    /**
+     * (Highstock) When either the borderWidth or the backgroundColor is set,
+     * this is the padding within the box.
+     */
+    padding?: number;
+    /**
+     * (Highstock) The shadow of the box. The shadow can be an object
+     * configuration containing `color`, `offsetX`, `offsetY`, `opacity` and
+     * `width`.
+     */
+    shadow?: (boolean|ShadowOptionsObject);
+    /**
+     * (Highstock) The name of a symbol to use for the border around the label.
+     * Symbols are predefined functions on the Renderer object.
+     */
+    shape?: string;
+    /**
+     * (Highstock) Styles for the annotation's label.
+     */
+    style?: CSSObject;
+    /**
+     * (Highstock) Alias for the format option.
+     */
+    text?: string;
+    /**
+     * (Highstock) Whether to use HTML to render the annotation's label.
+     */
+    useHTML?: boolean;
+    /**
+     * (Highstock) The vertical alignment of the annotation's label.
+     */
+    verticalAlign?: VerticalAlignValue;
+    /**
+     * (Highstock) The x position offset of the label relative to the point.
+     * Note that if a `distance` is defined, the distance takes precedence over
+     * `x` and `y` options.
+     */
+    x?: number;
+    /**
+     * (Highstock) The y position offset of the label relative to the point.
+     * Note that if a `distance` is defined, the distance takes precedence over
+     * `x` and `y` options.
+     */
+    y?: number;
+}
+/**
+ * (Highstock) Options for the crooked line annotation type.
+ */
+export interface NavigationBindingsLabelAnnotationAnnotationsTypesCrookedLineOptions {
+    /**
+     * (Highstock) Options for annotation's control points. Each control point
+     * inherits options from controlPointOptions object. Options from the
+     * controlPointOptions can be overwritten by options in a specific control
+     * point.
+     */
+    controlPointOptions?: AnnotationControlPointOptionsObject;
+    /**
+     * (Highstock) Options for annotation's labels. Each label inherits options
+     * from the labelOptions object. An option from the labelOptions can be
+     * overwritten by config for a specific label.
+     */
+    labelOptions?: NavigationBindingsLabelAnnotationAnnotationsTypesCrookedLineLabelOptions;
+    /**
+     * (Highstock) Additional options for an annotation with the type.
+     */
+    typeOptions?: NavigationBindingsLabelAnnotationAnnotationsTypesCrookedLineTypeOptions;
+}
+/**
+ * (Highstock) Line options.
+ */
+export interface NavigationBindingsLabelAnnotationAnnotationsTypesCrookedLineTypeLineOptions {
+    fill?: string;
+}
+/**
+ * (Highstock) Additional options for an annotation with the type.
+ */
+export interface NavigationBindingsLabelAnnotationAnnotationsTypesCrookedLineTypeOptions {
+    /**
+     * (Highstock) Line options.
+     */
+    line?: NavigationBindingsLabelAnnotationAnnotationsTypesCrookedLineTypeLineOptions;
+    points?: Array<NavigationBindingsLabelAnnotationAnnotationsTypesCrookedLineTypePointsOptions>;
+    /**
+     * (Highstock) This option defines which `xAxis` the point is connected to.
+     * It refers to either the axis id or the index of the axis in the `xAxis`
+     * array.
+     */
+    xAxis?: number;
+    /**
+     * (Highstock) This option defines which `yAxis` the point is connected to.
+     * It refers to either the axis id or the index of the axis in the `yAxis`
+     * array.
+     */
+    yAxis?: number;
+}
+export interface NavigationBindingsLabelAnnotationAnnotationsTypesCrookedLineTypePointsOptions {
+    controlPoint?: number;
+    /**
+     * (Highstock) The x position of the point.
+     */
+    x?: number;
+    /**
+     * (Highstock) The y position of the point.
+     */
+    y?: number;
+}
+export interface NavigationBindingsLabelAnnotationAnnotationsTypesElliottWaveControlPointStyleOptions {
+    cursor?: string;
+    fill?: string;
+    stroke?: string;
+    "stroke-width"?: number;
+}
+/**
+ * (Highstock) Options for annotation's labels. Each label inherits options from
+ * the labelOptions object. An option from the labelOptions can be overwritten
+ * by config for a specific label.
+ */
+export interface NavigationBindingsLabelAnnotationAnnotationsTypesElliottWaveLabelOptions {
+    /**
+     * (Highstock) Accessibility options for an annotation label.
+     */
+    accessibility?: AnnotationLabelAccessibilityOptionsObject;
+    /**
+     * (Highstock) The alignment of the annotation's label. If right, the right
+     * side of the label should be touching the point.
+     */
+    align?: string;
+    /**
+     * (Highstock) Whether to allow the annotation's labels to overlap. To make
+     * the labels less sensitive for overlapping, the can be set to 0.
+     */
+    allowOverlap?: boolean;
+    /**
+     * (Highstock) The background color or gradient for the annotation's label.
+     */
+    backgroundColor?: string;
+    /**
+     * (Highstock) The border color for the annotation's label.
+     */
+    borderColor?: ColorType;
+    /**
+     * (Highstock) The border radius in pixels for the annotation's label.
+     */
+    borderRadius?: number;
+    /**
+     * (Highstock) The border width in pixels for the annotation's label.
+     */
+    borderWidth?: number;
+    /**
+     * (Highstock) A class name for styling by CSS.
+     */
+    className?: string;
+    /**
+     * (Highstock) Whether to hide the annotation's label that is outside the
+     * plot area.
+     */
+    crop?: boolean;
+    /**
+     * (Highstock) The label's pixel distance from the point.
+     */
+    distance?: number;
+    /**
+     * (Highstock) A format string for the data label.
+     */
+    format?: string;
+    /**
+     * (Highstock) Callback JavaScript function to format the annotation's
+     * label. Note that if a `format` or `text` are defined, the format or text
+     * take precedence and the formatter is ignored. `This` refers to a point
+     * object. The callback also receives an argument `ctx` so that
+     * arrow-functions can access the same context (the point in this case) as
+     * normal functions can using `this`. Since v12.6.0, the callback receives
+     * `ctx`.
+     */
+    formatter?: FormatterCallbackFunction<Point>;
+    /**
+     * (Highstock) Whether all the labels for an annotation are visible in the
+     * exported data table.
+     */
+    includeInDataExport?: boolean;
+    /**
+     * (Highstock) How to handle the annotation's label that flow outside the
+     * plot area. The justify option aligns the label inside the plot area.
+     */
+    overflow?: OptionsOverflowValue;
+    /**
+     * (Highstock) When either the borderWidth or the backgroundColor is set,
+     * this is the padding within the box.
+     */
+    padding?: number;
+    /**
+     * (Highstock) The shadow of the box. The shadow can be an object
+     * configuration containing `color`, `offsetX`, `offsetY`, `opacity` and
+     * `width`.
+     */
+    shadow?: (boolean|ShadowOptionsObject);
+    /**
+     * (Highstock) The name of a symbol to use for the border around the label.
+     * Symbols are predefined functions on the Renderer object.
+     */
+    shape?: string;
+    /**
+     * (Highstock) Styles for the annotation's label.
+     */
+    style?: (CSSObject|NavigationBindingsLabelAnnotationAnnotationsTypesElliottWaveLabelStyleOptions);
+    /**
+     * (Highstock) Alias for the format option.
+     */
+    text?: string;
+    type?: string;
+    /**
+     * (Highstock) Whether to use HTML to render the annotation's label.
+     */
+    useHTML?: boolean;
+    /**
+     * (Highstock) The vertical alignment of the annotation's label.
+     */
+    verticalAlign?: VerticalAlignValue;
+    /**
+     * (Highstock) The x position offset of the label relative to the point.
+     * Note that if a `distance` is defined, the distance takes precedence over
+     * `x` and `y` options.
+     */
+    x?: number;
+    /**
+     * (Highstock) The y position offset of the label relative to the point.
+     * Note that if a `distance` is defined, the distance takes precedence over
+     * `x` and `y` options.
+     */
+    y?: number;
+}
+/**
+ * (Highstock) Styles for the annotation's label.
+ */
+export interface NavigationBindingsLabelAnnotationAnnotationsTypesElliottWaveLabelStyleOptions {
+    color?: string;
+}
+/**
+ * (Highstock) Options for the elliott wave annotation type.
+ */
+export interface NavigationBindingsLabelAnnotationAnnotationsTypesElliottWaveOptions {
+    /**
+     * (Highstock) Options for annotation's control points. Each control point
+     * inherits options from controlPointOptions object. Options from the
+     * controlPointOptions can be overwritten by options in a specific control
+     * point.
+     */
+    controlPointOptions?: AnnotationControlPointOptionsObject;
+    /**
+     * (Highstock) Options for annotation's labels. Each label inherits options
+     * from the labelOptions object. An option from the labelOptions can be
+     * overwritten by config for a specific label.
+     */
+    labelOptions?: NavigationBindingsLabelAnnotationAnnotationsTypesElliottWaveLabelOptions;
+    /**
+     * (Highstock) Additional options for an annotation with the type.
+     */
+    typeOptions?: NavigationBindingsLabelAnnotationAnnotationsTypesElliottWaveTypeOptions;
+}
+/**
+ * (Highstock) Line options.
+ */
+export interface NavigationBindingsLabelAnnotationAnnotationsTypesElliottWaveTypeLineOptions {
+    fill?: string;
+    strokeWidth?: number;
+}
+/**
+ * (Highstock) Additional options for an annotation with the type.
+ */
+export interface NavigationBindingsLabelAnnotationAnnotationsTypesElliottWaveTypeOptions {
+    /**
+     * (Highstock) Line options.
+     */
+    line?: NavigationBindingsLabelAnnotationAnnotationsTypesElliottWaveTypeLineOptions;
+    points?: Array<NavigationBindingsLabelAnnotationAnnotationsTypesElliottWaveTypePointsOptions>;
+    /**
+     * (Highstock) This option defines which `xAxis` the point is connected to.
+     * It refers to either the axis id or the index of the axis in the `xAxis`
+     * array.
+     */
+    xAxis?: number;
+    /**
+     * (Highstock) This option defines which `yAxis` the point is connected to.
+     * It refers to either the axis id or the index of the axis in the `yAxis`
+     * array.
+     */
+    yAxis?: number;
+}
+/**
+ * (Highstock) Options for annotation's labels. Each label inherits options from
+ * the labelOptions object. An option from the labelOptions can be overwritten
+ * by config for a specific label.
+ */
+export interface NavigationBindingsLabelAnnotationAnnotationsTypesElliottWaveTypePointsLabelOptions {
+    /**
+     * (Highstock) Accessibility options for an annotation label.
+     */
+    accessibility?: AnnotationLabelAccessibilityOptionsObject;
+    /**
+     * (Highstock) The alignment of the annotation's label. If right, the right
+     * side of the label should be touching the point.
+     */
+    align?: AlignValue;
+    /**
+     * (Highstock) Whether to allow the annotation's labels to overlap. To make
+     * the labels less sensitive for overlapping, the can be set to 0.
+     */
+    allowOverlap?: boolean;
+    /**
+     * (Highstock) The background color or gradient for the annotation's label.
+     */
+    backgroundColor?: ColorType;
+    /**
+     * (Highstock) The border color for the annotation's label.
+     */
+    borderColor?: ColorType;
+    /**
+     * (Highstock) The border radius in pixels for the annotation's label.
+     */
+    borderRadius?: number;
+    /**
+     * (Highstock) The border width in pixels for the annotation's label.
+     */
+    borderWidth?: number;
+    /**
+     * (Highstock) A class name for styling by CSS.
+     */
+    className?: string;
+    /**
+     * (Highstock) Whether to hide the annotation's label that is outside the
+     * plot area.
+     */
+    crop?: boolean;
+    /**
+     * (Highstock) The label's pixel distance from the point.
+     */
+    distance?: number;
+    /**
+     * (Highstock) A format string for the data label.
+     */
+    format?: string;
+    /**
+     * (Highstock) Callback JavaScript function to format the annotation's
+     * label. Note that if a `format` or `text` are defined, the format or text
+     * take precedence and the formatter is ignored. `This` refers to a point
+     * object. The callback also receives an argument `ctx` so that
+     * arrow-functions can access the same context (the point in this case) as
+     * normal functions can using `this`. Since v12.6.0, the callback receives
+     * `ctx`.
+     */
+    formatter?: FormatterCallbackFunction<Point>;
+    /**
+     * (Highstock) Whether all the labels for an annotation are visible in the
+     * exported data table.
+     */
+    includeInDataExport?: boolean;
+    /**
+     * (Highstock) How to handle the annotation's label that flow outside the
+     * plot area. The justify option aligns the label inside the plot area.
+     */
+    overflow?: OptionsOverflowValue;
+    /**
+     * (Highstock) When either the borderWidth or the backgroundColor is set,
+     * this is the padding within the box.
+     */
+    padding?: number;
+    /**
+     * (Highstock) The shadow of the box. The shadow can be an object
+     * configuration containing `color`, `offsetX`, `offsetY`, `opacity` and
+     * `width`.
+     */
+    shadow?: (boolean|ShadowOptionsObject);
+    /**
+     * (Highstock) The name of a symbol to use for the border around the label.
+     * Symbols are predefined functions on the Renderer object.
+     */
+    shape?: string;
+    /**
+     * (Highstock) Styles for the annotation's label.
+     */
+    style?: CSSObject;
+    /**
+     * (Highstock) Alias for the format option.
+     */
+    text?: string;
+    /**
+     * (Highstock) Whether to use HTML to render the annotation's label.
+     */
+    useHTML?: boolean;
+    /**
+     * (Highstock) The vertical alignment of the annotation's label.
+     */
+    verticalAlign?: VerticalAlignValue;
+    /**
+     * (Highstock) The x position offset of the label relative to the point.
+     * Note that if a `distance` is defined, the distance takes precedence over
+     * `x` and `y` options.
+     */
+    x?: number;
+    /**
+     * (Highstock) The y position offset of the label relative to the point.
+     * Note that if a `distance` is defined, the distance takes precedence over
+     * `x` and `y` options.
+     */
+    y?: number;
+}
+export interface NavigationBindingsLabelAnnotationAnnotationsTypesElliottWaveTypePointsOptions {
+    controlPoint?: number;
+    /**
+     * (Highstock) Options for annotation's labels. Each label inherits options
+     * from the labelOptions object. An option from the labelOptions can be
+     * overwritten by config for a specific label.
+     */
+    label?: NavigationBindingsLabelAnnotationAnnotationsTypesElliottWaveTypePointsLabelOptions;
+    /**
+     * (Highstock) The x position of the point.
+     */
+    x?: number;
+    /**
+     * (Highstock) The y position of the point.
+     */
+    y?: number;
+}
+export interface NavigationBindingsLabelAnnotationAnnotationsTypesFibonacciControlPointStyleOptions {
+    cursor?: string;
+    fill?: string;
+    stroke?: string;
+    "stroke-width"?: number;
+}
+/**
+ * (Highstock) Options for annotation's labels. Each label inherits options from
+ * the labelOptions object. An option from the labelOptions can be overwritten
+ * by config for a specific label.
+ */
+export interface NavigationBindingsLabelAnnotationAnnotationsTypesFibonacciLabelOptions {
+    /**
+     * (Highstock) Accessibility options for an annotation label.
+     */
+    accessibility?: AnnotationLabelAccessibilityOptionsObject;
+    /**
+     * (Highstock) The alignment of the annotation's label. If right, the right
+     * side of the label should be touching the point.
+     */
+    align?: string;
+    /**
+     * (Highstock) Whether to allow the annotation's labels to overlap. To make
+     * the labels less sensitive for overlapping, the can be set to 0.
+     */
+    allowOverlap?: boolean;
+    /**
+     * (Highstock) The background color or gradient for the annotation's label.
+     */
+    backgroundColor?: string;
+    /**
+     * (Highstock) The border color for the annotation's label.
+     */
+    borderColor?: ColorType;
+    /**
+     * (Highstock) The border radius in pixels for the annotation's label.
+     */
+    borderRadius?: number;
+    /**
+     * (Highstock) The border width in pixels for the annotation's label.
+     */
+    borderWidth?: number;
+    /**
+     * (Highstock) A class name for styling by CSS.
+     */
+    className?: string;
+    /**
+     * (Highstock) Whether to hide the annotation's label that is outside the
+     * plot area.
+     */
+    crop?: boolean;
+    /**
+     * (Highstock) The label's pixel distance from the point.
+     */
+    distance?: number;
+    /**
+     * (Highstock) A format string for the data label.
+     */
+    format?: string;
+    /**
+     * (Highstock) Callback JavaScript function to format the annotation's
+     * label. Note that if a `format` or `text` are defined, the format or text
+     * take precedence and the formatter is ignored. `This` refers to a point
+     * object. The callback also receives an argument `ctx` so that
+     * arrow-functions can access the same context (the point in this case) as
+     * normal functions can using `this`. Since v12.6.0, the callback receives
+     * `ctx`.
+     */
+    formatter?: FormatterCallbackFunction<Point>;
+    /**
+     * (Highstock) Whether all the labels for an annotation are visible in the
+     * exported data table.
+     */
+    includeInDataExport?: boolean;
+    /**
+     * (Highstock) How to handle the annotation's label that flow outside the
+     * plot area. The justify option aligns the label inside the plot area.
+     */
+    overflow?: OptionsOverflowValue;
+    /**
+     * (Highstock) When either the borderWidth or the backgroundColor is set,
+     * this is the padding within the box.
+     */
+    padding?: number;
+    /**
+     * (Highstock) The shadow of the box. The shadow can be an object
+     * configuration containing `color`, `offsetX`, `offsetY`, `opacity` and
+     * `width`.
+     */
+    shadow?: (boolean|ShadowOptionsObject);
+    /**
+     * (Highstock) The name of a symbol to use for the border around the label.
+     * Symbols are predefined functions on the Renderer object.
+     */
+    shape?: string;
+    /**
+     * (Highstock) Styles for the annotation's label.
+     */
+    style?: (CSSObject|NavigationBindingsLabelAnnotationAnnotationsTypesFibonacciLabelStyleOptions);
+    /**
+     * (Highstock) Alias for the format option.
+     */
+    text?: string;
+    /**
+     * (Highstock) Whether to use HTML to render the annotation's label.
+     */
+    useHTML?: boolean;
+    /**
+     * (Highstock) The vertical alignment of the annotation's label.
+     */
+    verticalAlign?: string;
+    /**
+     * (Highstock) The x position offset of the label relative to the point.
+     * Note that if a `distance` is defined, the distance takes precedence over
+     * `x` and `y` options.
+     */
+    x?: number;
+    /**
+     * (Highstock) The y position offset of the label relative to the point.
+     * Note that if a `distance` is defined, the distance takes precedence over
+     * `x` and `y` options.
+     */
+    y?: number;
+}
+/**
+ * (Highstock) Styles for the annotation's label.
+ */
+export interface NavigationBindingsLabelAnnotationAnnotationsTypesFibonacciLabelStyleOptions {
+    color?: string;
+}
+/**
+ * (Highstock) Options for the fibonacci annotation type.
+ */
+export interface NavigationBindingsLabelAnnotationAnnotationsTypesFibonacciOptions {
+    /**
+     * (Highstock) Options for annotation's control points. Each control point
+     * inherits options from controlPointOptions object. Options from the
+     * controlPointOptions can be overwritten by options in a specific control
+     * point.
+     */
+    controlPointOptions?: AnnotationControlPointOptionsObject;
+    /**
+     * (Highstock) Options for annotation's labels. Each label inherits options
+     * from the labelOptions object. An option from the labelOptions can be
+     * overwritten by config for a specific label.
+     */
+    labelOptions?: NavigationBindingsLabelAnnotationAnnotationsTypesFibonacciLabelOptions;
+    /**
+     * (Highstock) Additional options for an annotation with the type.
+     */
+    typeOptions?: NavigationBindingsLabelAnnotationAnnotationsTypesFibonacciTypeOptions;
+}
+export interface NavigationBindingsLabelAnnotationAnnotationsTypesFibonacciTimeZonesControlPointStyleOptions {
+    cursor?: string;
+    fill?: string;
+    stroke?: string;
+    "stroke-width"?: number;
+}
+/**
+ * (Highstock) Options for annotation's labels. Each label inherits options from
+ * the labelOptions object. An option from the labelOptions can be overwritten
+ * by config for a specific label.
+ */
+export interface NavigationBindingsLabelAnnotationAnnotationsTypesFibonacciTimeZonesLabelOptions {
+    /**
+     * (Highstock) Accessibility options for an annotation label.
+     */
+    accessibility?: AnnotationLabelAccessibilityOptionsObject;
+    /**
+     * (Highstock) The alignment of the annotation's label. If right, the right
+     * side of the label should be touching the point.
+     */
+    align?: AlignValue;
+    /**
+     * (Highstock) Whether to allow the annotation's labels to overlap. To make
+     * the labels less sensitive for overlapping, the can be set to 0.
+     */
+    allowOverlap?: boolean;
+    /**
+     * (Highstock) The background color or gradient for the annotation's label.
+     */
+    backgroundColor?: ColorType;
+    /**
+     * (Highstock) The border color for the annotation's label.
+     */
+    borderColor?: ColorType;
+    /**
+     * (Highstock) The border radius in pixels for the annotation's label.
+     */
+    borderRadius?: number;
+    /**
+     * (Highstock) The border width in pixels for the annotation's label.
+     */
+    borderWidth?: number;
+    /**
+     * (Highstock) A class name for styling by CSS.
+     */
+    className?: string;
+    /**
+     * (Highstock) Whether to hide the annotation's label that is outside the
+     * plot area.
+     */
+    crop?: boolean;
+    /**
+     * (Highstock) The label's pixel distance from the point.
+     */
+    distance?: number;
+    /**
+     * (Highstock) A format string for the data label.
+     */
+    format?: string;
+    /**
+     * (Highstock) Callback JavaScript function to format the annotation's
+     * label. Note that if a `format` or `text` are defined, the format or text
+     * take precedence and the formatter is ignored. `This` refers to a point
+     * object. The callback also receives an argument `ctx` so that
+     * arrow-functions can access the same context (the point in this case) as
+     * normal functions can using `this`. Since v12.6.0, the callback receives
+     * `ctx`.
+     */
+    formatter?: FormatterCallbackFunction<Point>;
+    /**
+     * (Highstock) Whether all the labels for an annotation are visible in the
+     * exported data table.
+     */
+    includeInDataExport?: boolean;
+    /**
+     * (Highstock) How to handle the annotation's label that flow outside the
+     * plot area. The justify option aligns the label inside the plot area.
+     */
+    overflow?: OptionsOverflowValue;
+    /**
+     * (Highstock) When either the borderWidth or the backgroundColor is set,
+     * this is the padding within the box.
+     */
+    padding?: number;
+    /**
+     * (Highstock) The shadow of the box. The shadow can be an object
+     * configuration containing `color`, `offsetX`, `offsetY`, `opacity` and
+     * `width`.
+     */
+    shadow?: (boolean|ShadowOptionsObject);
+    /**
+     * (Highstock) The name of a symbol to use for the border around the label.
+     * Symbols are predefined functions on the Renderer object.
+     */
+    shape?: string;
+    /**
+     * (Highstock) Styles for the annotation's label.
+     */
+    style?: CSSObject;
+    /**
+     * (Highstock) Alias for the format option.
+     */
+    text?: string;
+    /**
+     * (Highstock) Whether to use HTML to render the annotation's label.
+     */
+    useHTML?: boolean;
+    /**
+     * (Highstock) The vertical alignment of the annotation's label.
+     */
+    verticalAlign?: VerticalAlignValue;
+    /**
+     * (Highstock) The x position offset of the label relative to the point.
+     * Note that if a `distance` is defined, the distance takes precedence over
+     * `x` and `y` options.
+     */
+    x?: number;
+    /**
+     * (Highstock) The y position offset of the label relative to the point.
+     * Note that if a `distance` is defined, the distance takes precedence over
+     * `x` and `y` options.
+     */
+    y?: number;
+}
+/**
+ * (Highstock) Options for the fibonacci time zones annotation type.
+ */
+export interface NavigationBindingsLabelAnnotationAnnotationsTypesFibonacciTimeZonesOptions {
+    /**
+     * (Highstock) Options for annotation's control points. Each control point
+     * inherits options from controlPointOptions object. Options from the
+     * controlPointOptions can be overwritten by options in a specific control
+     * point.
+     */
+    controlPointOptions?: AnnotationControlPointOptionsObject;
+    /**
+     * (Highstock) Options for annotation's labels. Each label inherits options
+     * from the labelOptions object. An option from the labelOptions can be
+     * overwritten by config for a specific label.
+     */
+    labelOptions?: NavigationBindingsLabelAnnotationAnnotationsTypesFibonacciTimeZonesLabelOptions;
+    /**
+     * (Highstock) Additional options for an annotation with the type.
+     */
+    typeOptions?: NavigationBindingsLabelAnnotationAnnotationsTypesFibonacciTimeZonesTypeOptions;
+}
+export interface NavigationBindingsLabelAnnotationAnnotationsTypesFibonacciTimeZonesTypeControlPointOptions {
+    events?: any;
+}
+/**
+ * (Highstock) Line options.
+ */
+export interface NavigationBindingsLabelAnnotationAnnotationsTypesFibonacciTimeZonesTypeLineOptions {
+    fill?: string;
+    /**
+     * (Highstock) The color of the lines.
+     */
+    stroke?: string;
+    /**
+     * (Highstock) The width of the lines.
+     */
+    strokeWidth?: number;
+}
+/**
+ * (Highstock) Additional options for an annotation with the type.
+ */
+export interface NavigationBindingsLabelAnnotationAnnotationsTypesFibonacciTimeZonesTypeOptions {
+    controlPointOptions?: NavigationBindingsLabelAnnotationAnnotationsTypesFibonacciTimeZonesTypeControlPointOptions;
+    /**
+     * (Highstock) Line options.
+     */
+    line?: NavigationBindingsLabelAnnotationAnnotationsTypesFibonacciTimeZonesTypeLineOptions;
+    points?: Array<NavigationBindingsLabelAnnotationAnnotationsTypesFibonacciTimeZonesTypePointsOptions>;
+    /**
+     * (Highstock) This option defines which `xAxis` the point is connected to.
+     * It refers to either the axis id or the index of the axis in the `xAxis`
+     * array.
+     */
+    xAxis?: number;
+    /**
+     * (Highstock) This option defines which `yAxis` the point is connected to.
+     * It refers to either the axis id or the index of the axis in the `yAxis`
+     * array.
+     */
+    yAxis?: number;
+}
+export interface NavigationBindingsLabelAnnotationAnnotationsTypesFibonacciTimeZonesTypePointsOptions {
+    controlPoint?: number;
+    /**
+     * (Highstock) The x position of the point.
+     */
+    x?: number;
+}
+/**
+ * (Highstock) An array with options for the labels.
+ */
+export interface NavigationBindingsLabelAnnotationAnnotationsTypesFibonacciTypeLabelsOptions {
+    /**
+     * (Highstock) Accessibility options for an annotation label.
+     */
+    accessibility?: AnnotationLabelAccessibilityOptionsObject;
+    /**
+     * (Highstock) The alignment of the annotation's label. If right, the right
+     * side of the label should be touching the point.
+     */
+    align?: AlignValue;
+    /**
+     * (Highstock) Whether to allow the annotation's labels to overlap. To make
+     * the labels less sensitive for overlapping, the can be set to 0.
+     */
+    allowOverlap?: boolean;
+    /**
+     * (Highstock) The background color or gradient for the annotation's label.
+     */
+    backgroundColor?: ColorType;
+    /**
+     * (Highstock) The border color for the annotation's label.
+     */
+    borderColor?: ColorType;
+    /**
+     * (Highstock) The border radius in pixels for the annotation's label.
+     */
+    borderRadius?: number;
+    /**
+     * (Highstock) The border width in pixels for the annotation's label.
+     */
+    borderWidth?: number;
+    /**
+     * (Highstock) A class name for styling by CSS.
+     */
+    className?: string;
+    /**
+     * (Highstock) Whether to hide the annotation's label that is outside the
+     * plot area.
+     */
+    crop?: boolean;
+    /**
+     * (Highstock) The label's pixel distance from the point.
+     */
+    distance?: number;
+    /**
+     * (Highstock) A format string for the data label.
+     */
+    format?: string;
+    /**
+     * (Highstock) Callback JavaScript function to format the annotation's
+     * label. Note that if a `format` or `text` are defined, the format or text
+     * take precedence and the formatter is ignored. `This` refers to a point
+     * object. The callback also receives an argument `ctx` so that
+     * arrow-functions can access the same context (the point in this case) as
+     * normal functions can using `this`. Since v12.6.0, the callback receives
+     * `ctx`.
+     */
+    formatter?: FormatterCallbackFunction<Point>;
+    /**
+     * (Highstock) Whether all the labels for an annotation are visible in the
+     * exported data table.
+     */
+    includeInDataExport?: boolean;
+    /**
+     * (Highstock) How to handle the annotation's label that flow outside the
+     * plot area. The justify option aligns the label inside the plot area.
+     */
+    overflow?: OptionsOverflowValue;
+    /**
+     * (Highstock) When either the borderWidth or the backgroundColor is set,
+     * this is the padding within the box.
+     */
+    padding?: number;
+    /**
+     * (Highstock) The shadow of the box. The shadow can be an object
+     * configuration containing `color`, `offsetX`, `offsetY`, `opacity` and
+     * `width`.
+     */
+    shadow?: (boolean|ShadowOptionsObject);
+    /**
+     * (Highstock) The name of a symbol to use for the border around the label.
+     * Symbols are predefined functions on the Renderer object.
+     */
+    shape?: string;
+    /**
+     * (Highstock) Styles for the annotation's label.
+     */
+    style?: CSSObject;
+    /**
+     * (Highstock) Alias for the format option.
+     */
+    text?: string;
+    /**
+     * (Highstock) Whether to use HTML to render the annotation's label.
+     */
+    useHTML?: boolean;
+    /**
+     * (Highstock) The vertical alignment of the annotation's label.
+     */
+    verticalAlign?: VerticalAlignValue;
+    /**
+     * (Highstock) The x position offset of the label relative to the point.
+     * Note that if a `distance` is defined, the distance takes precedence over
+     * `x` and `y` options.
+     */
+    x?: number;
+    /**
+     * (Highstock) The y position offset of the label relative to the point.
+     * Note that if a `distance` is defined, the distance takes precedence over
+     * `x` and `y` options.
+     */
+    y?: number;
+}
+/**
+ * (Highstock) Line options.
+ */
+export interface NavigationBindingsLabelAnnotationAnnotationsTypesFibonacciTypeLineOptions {
+    fill?: string;
+}
+/**
+ * (Highstock) Additional options for an annotation with the type.
+ */
+export interface NavigationBindingsLabelAnnotationAnnotationsTypesFibonacciTypeOptions {
+    /**
+     * (Highstock) An array of background colors: Defaults to: (see online
+     * documentation for example)
+     */
+    backgroundColors?: object;
+    /**
+     * (Highstock) The height of the fibonacci in terms of yAxis.
+     */
+    height?: number;
+    /**
+     * (Highstock) An array with options for the labels.
+     */
+    labels?: Array<NavigationBindingsLabelAnnotationAnnotationsTypesFibonacciTypeLabelsOptions>;
+    /**
+     * (Highstock) Line options.
+     */
+    line?: NavigationBindingsLabelAnnotationAnnotationsTypesFibonacciTypeLineOptions;
+    /**
+     * (Highstock) The color of line.
+     */
+    lineColor?: string;
+    /**
+     * (Highstock) An array of colors for the lines.
+     */
+    lineColors?: object;
+    points?: Array<NavigationBindingsLabelAnnotationAnnotationsTypesFibonacciTypePointsOptions>;
+    /**
+     * (Highstock) Whether the annotation levels should be reversed. By default
+     * they start from 0 and go to 1.
+     */
+    reversed?: boolean;
+    /**
+     * (Highstock) This option defines which `xAxis` the point is connected to.
+     * It refers to either the axis id or the index of the axis in the `xAxis`
+     * array.
+     */
+    xAxis?: number;
+    /**
+     * (Highstock) This option defines which `yAxis` the point is connected to.
+     * It refers to either the axis id or the index of the axis in the `yAxis`
+     * array.
+     */
+    yAxis?: number;
+}
+export interface NavigationBindingsLabelAnnotationAnnotationsTypesFibonacciTypePointsOptions {
+    controlPoint?: number;
+    /**
+     * (Highstock) The x position of the point.
+     */
+    x?: number;
+    /**
+     * (Highstock) The y position of the point.
+     */
+    y?: number;
+}
+export interface NavigationBindingsLabelAnnotationAnnotationsTypesInfinityLineControlPointStyleOptions {
+    cursor?: string;
+    fill?: string;
+    stroke?: string;
+    "stroke-width"?: number;
+}
+/**
+ * (Highstock) Options for annotation's labels. Each label inherits options from
+ * the labelOptions object. An option from the labelOptions can be overwritten
+ * by config for a specific label.
+ */
+export interface NavigationBindingsLabelAnnotationAnnotationsTypesInfinityLineLabelOptions {
+    /**
+     * (Highstock) Accessibility options for an annotation label.
+     */
+    accessibility?: AnnotationLabelAccessibilityOptionsObject;
+    /**
+     * (Highstock) The alignment of the annotation's label. If right, the right
+     * side of the label should be touching the point.
+     */
+    align?: AlignValue;
+    /**
+     * (Highstock) Whether to allow the annotation's labels to overlap. To make
+     * the labels less sensitive for overlapping, the can be set to 0.
+     */
+    allowOverlap?: boolean;
+    /**
+     * (Highstock) The background color or gradient for the annotation's label.
+     */
+    backgroundColor?: ColorType;
+    /**
+     * (Highstock) The border color for the annotation's label.
+     */
+    borderColor?: ColorType;
+    /**
+     * (Highstock) The border radius in pixels for the annotation's label.
+     */
+    borderRadius?: number;
+    /**
+     * (Highstock) The border width in pixels for the annotation's label.
+     */
+    borderWidth?: number;
+    /**
+     * (Highstock) A class name for styling by CSS.
+     */
+    className?: string;
+    /**
+     * (Highstock) Whether to hide the annotation's label that is outside the
+     * plot area.
+     */
+    crop?: boolean;
+    /**
+     * (Highstock) The label's pixel distance from the point.
+     */
+    distance?: number;
+    /**
+     * (Highstock) A format string for the data label.
+     */
+    format?: string;
+    /**
+     * (Highstock) Callback JavaScript function to format the annotation's
+     * label. Note that if a `format` or `text` are defined, the format or text
+     * take precedence and the formatter is ignored. `This` refers to a point
+     * object. The callback also receives an argument `ctx` so that
+     * arrow-functions can access the same context (the point in this case) as
+     * normal functions can using `this`. Since v12.6.0, the callback receives
+     * `ctx`.
+     */
+    formatter?: FormatterCallbackFunction<Point>;
+    /**
+     * (Highstock) Whether all the labels for an annotation are visible in the
+     * exported data table.
+     */
+    includeInDataExport?: boolean;
+    /**
+     * (Highstock) How to handle the annotation's label that flow outside the
+     * plot area. The justify option aligns the label inside the plot area.
+     */
+    overflow?: OptionsOverflowValue;
+    /**
+     * (Highstock) When either the borderWidth or the backgroundColor is set,
+     * this is the padding within the box.
+     */
+    padding?: number;
+    /**
+     * (Highstock) The shadow of the box. The shadow can be an object
+     * configuration containing `color`, `offsetX`, `offsetY`, `opacity` and
+     * `width`.
+     */
+    shadow?: (boolean|ShadowOptionsObject);
+    /**
+     * (Highstock) The name of a symbol to use for the border around the label.
+     * Symbols are predefined functions on the Renderer object.
+     */
+    shape?: string;
+    /**
+     * (Highstock) Styles for the annotation's label.
+     */
+    style?: CSSObject;
+    /**
+     * (Highstock) Alias for the format option.
+     */
+    text?: string;
+    /**
+     * (Highstock) Whether to use HTML to render the annotation's label.
+     */
+    useHTML?: boolean;
+    /**
+     * (Highstock) The vertical alignment of the annotation's label.
+     */
+    verticalAlign?: VerticalAlignValue;
+    /**
+     * (Highstock) The x position offset of the label relative to the point.
+     * Note that if a `distance` is defined, the distance takes precedence over
+     * `x` and `y` options.
+     */
+    x?: number;
+    /**
+     * (Highstock) The y position offset of the label relative to the point.
+     * Note that if a `distance` is defined, the distance takes precedence over
+     * `x` and `y` options.
+     */
+    y?: number;
+}
+/**
+ * (Highstock) Options for the infinity line annotation type.
+ */
+export interface NavigationBindingsLabelAnnotationAnnotationsTypesInfinityLineOptions {
+    /**
+     * (Highstock) Options for annotation's control points. Each control point
+     * inherits options from controlPointOptions object. Options from the
+     * controlPointOptions can be overwritten by options in a specific control
+     * point.
+     */
+    controlPointOptions?: AnnotationControlPointOptionsObject;
+    /**
+     * (Highstock) Options for annotation's labels. Each label inherits options
+     * from the labelOptions object. An option from the labelOptions can be
+     * overwritten by config for a specific label.
+     */
+    labelOptions?: NavigationBindingsLabelAnnotationAnnotationsTypesInfinityLineLabelOptions;
+    /**
+     * (Highstock) Additional options for an annotation with the type.
+     */
+    typeOptions?: NavigationBindingsLabelAnnotationAnnotationsTypesInfinityLineTypeOptions;
+}
+/**
+ * (Highstock) Line options.
+ */
+export interface NavigationBindingsLabelAnnotationAnnotationsTypesInfinityLineTypeLineOptions {
+    fill?: string;
+}
+/**
+ * (Highstock) Additional options for an annotation with the type.
+ */
+export interface NavigationBindingsLabelAnnotationAnnotationsTypesInfinityLineTypeOptions {
+    /**
+     * (Highstock) Line options.
+     */
+    line?: NavigationBindingsLabelAnnotationAnnotationsTypesInfinityLineTypeLineOptions;
+    points?: Array<NavigationBindingsLabelAnnotationAnnotationsTypesInfinityLineTypePointsOptions>;
+    /**
+     * (Highstock) This option defines which `xAxis` the point is connected to.
+     * It refers to either the axis id or the index of the axis in the `xAxis`
+     * array.
+     */
+    xAxis?: number;
+    /**
+     * (Highstock) This option defines which `yAxis` the point is connected to.
+     * It refers to either the axis id or the index of the axis in the `yAxis`
+     * array.
+     */
+    yAxis?: number;
+}
+export interface NavigationBindingsLabelAnnotationAnnotationsTypesInfinityLineTypePointsOptions {
+    controlPoint?: number;
+    /**
+     * (Highstock) The x position of the point.
+     */
+    x?: number;
+    /**
+     * (Highstock) The y position of the point.
+     */
+    y?: number;
+}
+export interface NavigationBindingsLabelAnnotationAnnotationsTypesMeasureControlPointStyleOptions {
+    cursor?: string;
+    fill?: string;
+    stroke?: string;
+    "stroke-width"?: number;
+}
+/**
+ * (Highstock) Options for the measure annotation type.
+ */
+export interface NavigationBindingsLabelAnnotationAnnotationsTypesMeasureOptions {
+    /**
+     * (Highstock) Options for annotation's control points. Each control point
+     * inherits options from controlPointOptions object. Options from the
+     * controlPointOptions can be overwritten by options in a specific control
+     * point.
+     */
+    controlPointOptions?: AnnotationControlPointOptionsObject;
+    /**
+     * (Highstock) Additional options for an annotation with the type.
+     */
+    typeOptions?: NavigationBindingsLabelAnnotationAnnotationsTypesMeasureTypeOptions;
+}
+export interface NavigationBindingsLabelAnnotationAnnotationsTypesMeasureTypeBackgroundOptions {
+    /**
+     * (Highstock) The color of the rectangle.
+     */
+    fill?: string;
+    /**
+     * (Highstock) The color of border.
+     */
+    stroke?: string;
+    /**
+     * (Highstock) The width of border.
+     */
+    strokeWidth?: number;
+}
+/**
+ * (Highstock) Configure a crosshair that is horizontally placed in middle of
+ * rectangle.
+ */
+export interface NavigationBindingsLabelAnnotationAnnotationsTypesMeasureTypeCrosshairXOptions {
+    /**
+     * (Highstock) The dash or dot style of the crosshair's line. For possible
+     * values, see this demonstration.
+     */
+    dashStyle?: DashStyleValue;
+    /**
+     * (Highstock) Enable or disable the horizontal crosshair.
+     */
+    enabled?: boolean;
+    /**
+     * (Highstock) The marker-end defines the arrowhead that will be drawn at
+     * the final vertex of the given crosshair's path.
+     */
+    markerEnd?: string;
+    /**
+     * (Highstock) The Z index of the crosshair in annotation.
+     */
+    zIndex?: number;
+}
+/**
+ * (Highstock) Configure a crosshair that is vertically placed in middle of
+ * rectangle.
+ */
+export interface NavigationBindingsLabelAnnotationAnnotationsTypesMeasureTypeCrosshairYOptions {
+    /**
+     * (Highstock) The dash or dot style of the crosshair's line. For possible
+     * values, see this demonstration.
+     */
+    dashStyle?: DashStyleValue;
+    /**
+     * (Highstock) Enable or disable the vertical crosshair.
+     */
+    enabled?: boolean;
+    /**
+     * (Highstock) The marker-end defines the arrowhead that will be drawn at
+     * the final vertex of the given crosshair's path.
+     */
+    markerEnd?: OptionsMarkerEndValue;
+    /**
+     * (Highstock) The Z index of the crosshair in annotation.
+     */
+    zIndex?: number;
+}
+export interface NavigationBindingsLabelAnnotationAnnotationsTypesMeasureTypeLabelOptions {
+    /**
+     * (Highstock) Enable or disable the label text (min, max, average, bins
+     * values).
+     *
+     * Defaults to true.
+     */
+    enabled?: boolean;
+    /**
+     * (Highstock) Formatter function for the label text.
+     *
+     * Available data are:
+     *
+     *  (see online documentation for example)
+     */
+    formatter?: Function;
+    /**
+     * (Highstock) CSS styles for the measure label.
+     */
+    style?: (CSSObject|NavigationBindingsLabelAnnotationAnnotationsTypesMeasureTypeLabelStyleOptions);
+}
+/**
+ * (Highstock) CSS styles for the measure label.
+ */
+export interface NavigationBindingsLabelAnnotationAnnotationsTypesMeasureTypeLabelStyleOptions {
+    color?: string;
+    fontSize?: number;
+}
+/**
+ * (Highstock) Line options.
+ */
+export interface NavigationBindingsLabelAnnotationAnnotationsTypesMeasureTypeLineOptions {
+    fill?: string;
+}
+/**
+ * (Highstock) Additional options for an annotation with the type.
+ */
+export interface NavigationBindingsLabelAnnotationAnnotationsTypesMeasureTypeOptions {
+    background?: NavigationBindingsLabelAnnotationAnnotationsTypesMeasureTypeBackgroundOptions;
+    /**
+     * (Highstock) Configure a crosshair that is horizontally placed in middle
+     * of rectangle.
+     */
+    crosshairX?: NavigationBindingsLabelAnnotationAnnotationsTypesMeasureTypeCrosshairXOptions;
+    /**
+     * (Highstock) Configure a crosshair that is vertically placed in middle of
+     * rectangle.
+     */
+    crosshairY?: NavigationBindingsLabelAnnotationAnnotationsTypesMeasureTypeCrosshairYOptions;
+    label?: NavigationBindingsLabelAnnotationAnnotationsTypesMeasureTypeLabelOptions;
+    /**
+     * (Highstock) Line options.
+     */
+    line?: NavigationBindingsLabelAnnotationAnnotationsTypesMeasureTypeLineOptions;
+    points?: Array<NavigationBindingsLabelAnnotationAnnotationsTypesMeasureTypePointsOptions>;
+    /**
+     * (Highstock) Decides in what dimensions the user can resize by dragging
+     * the mouse. Can be one of x, y or xy.
+     */
+    selectType?: string;
+    /**
+     * (Highstock) This number defines which xAxis the point is connected to. It
+     * refers to either the axis id or the index of the axis in the xAxis array.
+     */
+    xAxis?: number;
+    /**
+     * (Highstock) This number defines which yAxis the point is connected to. It
+     * refers to either the axis id or the index of the axis in the yAxis array.
+     */
+    yAxis?: number;
+}
+export interface NavigationBindingsLabelAnnotationAnnotationsTypesMeasureTypePointsOptions {
+    controlPoint?: number;
+    /**
+     * (Highstock) The x position of the point.
+     */
+    x?: number;
+    /**
+     * (Highstock) The y position of the point.
+     */
+    y?: number;
+}
+/**
+ * (Highstock) Option override for specific advanced annotation types. This
+ * collection is intended for general theming using `Highcharts.setOptions()`.
+ */
+export interface NavigationBindingsLabelAnnotationAnnotationsTypesOptions {
+    /**
+     * (Highstock) Options for the crooked line annotation type.
+     */
+    crookedLine?: NavigationBindingsLabelAnnotationAnnotationsTypesCrookedLineOptions;
+    /**
+     * (Highstock) Options for the elliott wave annotation type.
+     */
+    elliottWave?: NavigationBindingsLabelAnnotationAnnotationsTypesElliottWaveOptions;
+    /**
+     * (Highstock) Options for the fibonacci annotation type.
+     */
+    fibonacci?: NavigationBindingsLabelAnnotationAnnotationsTypesFibonacciOptions;
+    /**
+     * (Highstock) Options for the fibonacci time zones annotation type.
+     */
+    fibonacciTimeZones?: NavigationBindingsLabelAnnotationAnnotationsTypesFibonacciTimeZonesOptions;
+    /**
+     * (Highstock) Options for the infinity line annotation type.
+     */
+    infinityLine?: NavigationBindingsLabelAnnotationAnnotationsTypesInfinityLineOptions;
+    /**
+     * (Highstock) Options for the measure annotation type.
+     */
+    measure?: NavigationBindingsLabelAnnotationAnnotationsTypesMeasureOptions;
+    /**
+     * (Highstock) Options for the pitchfork annotation type.
+     */
+    pitchfork?: NavigationBindingsLabelAnnotationAnnotationsTypesPitchforkOptions;
+    /**
+     * (Highstock) Options for the time cycles annotation type.
+     */
+    timeCycles?: NavigationBindingsLabelAnnotationAnnotationsTypesTimeCyclesOptions;
+    /**
+     * (Highstock) Options for the tunnel annotation type.
+     */
+    tunnel?: NavigationBindingsLabelAnnotationAnnotationsTypesTunnelOptions;
+    /**
+     * (Highstock) Options for the vertical line annotation type.
+     */
+    verticalLine?: NavigationBindingsLabelAnnotationAnnotationsTypesVerticalLineOptions;
+}
+export interface NavigationBindingsLabelAnnotationAnnotationsTypesPitchforkControlPointStyleOptions {
+    cursor?: string;
+    fill?: string;
+    stroke?: string;
+    "stroke-width"?: number;
+}
+/**
+ * (Highstock) Options for annotation's labels. Each label inherits options from
+ * the labelOptions object. An option from the labelOptions can be overwritten
+ * by config for a specific label.
+ */
+export interface NavigationBindingsLabelAnnotationAnnotationsTypesPitchforkLabelOptions {
+    /**
+     * (Highstock) Accessibility options for an annotation label.
+     */
+    accessibility?: AnnotationLabelAccessibilityOptionsObject;
+    /**
+     * (Highstock) The alignment of the annotation's label. If right, the right
+     * side of the label should be touching the point.
+     */
+    align?: AlignValue;
+    /**
+     * (Highstock) Whether to allow the annotation's labels to overlap. To make
+     * the labels less sensitive for overlapping, the can be set to 0.
+     */
+    allowOverlap?: boolean;
+    /**
+     * (Highstock) The background color or gradient for the annotation's label.
+     */
+    backgroundColor?: ColorType;
+    /**
+     * (Highstock) The border color for the annotation's label.
+     */
+    borderColor?: ColorType;
+    /**
+     * (Highstock) The border radius in pixels for the annotation's label.
+     */
+    borderRadius?: number;
+    /**
+     * (Highstock) The border width in pixels for the annotation's label.
+     */
+    borderWidth?: number;
+    /**
+     * (Highstock) A class name for styling by CSS.
+     */
+    className?: string;
+    /**
+     * (Highstock) Whether to hide the annotation's label that is outside the
+     * plot area.
+     */
+    crop?: boolean;
+    /**
+     * (Highstock) The label's pixel distance from the point.
+     */
+    distance?: number;
+    /**
+     * (Highstock) A format string for the data label.
+     */
+    format?: string;
+    /**
+     * (Highstock) Callback JavaScript function to format the annotation's
+     * label. Note that if a `format` or `text` are defined, the format or text
+     * take precedence and the formatter is ignored. `This` refers to a point
+     * object. The callback also receives an argument `ctx` so that
+     * arrow-functions can access the same context (the point in this case) as
+     * normal functions can using `this`. Since v12.6.0, the callback receives
+     * `ctx`.
+     */
+    formatter?: FormatterCallbackFunction<Point>;
+    /**
+     * (Highstock) Whether all the labels for an annotation are visible in the
+     * exported data table.
+     */
+    includeInDataExport?: boolean;
+    /**
+     * (Highstock) How to handle the annotation's label that flow outside the
+     * plot area. The justify option aligns the label inside the plot area.
+     */
+    overflow?: OptionsOverflowValue;
+    /**
+     * (Highstock) When either the borderWidth or the backgroundColor is set,
+     * this is the padding within the box.
+     */
+    padding?: number;
+    /**
+     * (Highstock) The shadow of the box. The shadow can be an object
+     * configuration containing `color`, `offsetX`, `offsetY`, `opacity` and
+     * `width`.
+     */
+    shadow?: (boolean|ShadowOptionsObject);
+    /**
+     * (Highstock) The name of a symbol to use for the border around the label.
+     * Symbols are predefined functions on the Renderer object.
+     */
+    shape?: string;
+    /**
+     * (Highstock) Styles for the annotation's label.
+     */
+    style?: CSSObject;
+    /**
+     * (Highstock) Alias for the format option.
+     */
+    text?: string;
+    /**
+     * (Highstock) Whether to use HTML to render the annotation's label.
+     */
+    useHTML?: boolean;
+    /**
+     * (Highstock) The vertical alignment of the annotation's label.
+     */
+    verticalAlign?: VerticalAlignValue;
+    /**
+     * (Highstock) The x position offset of the label relative to the point.
+     * Note that if a `distance` is defined, the distance takes precedence over
+     * `x` and `y` options.
+     */
+    x?: number;
+    /**
+     * (Highstock) The y position offset of the label relative to the point.
+     * Note that if a `distance` is defined, the distance takes precedence over
+     * `x` and `y` options.
+     */
+    y?: number;
+}
+/**
+ * (Highstock) Options for the pitchfork annotation type.
+ */
+export interface NavigationBindingsLabelAnnotationAnnotationsTypesPitchforkOptions {
+    /**
+     * (Highstock) Options for annotation's control points. Each control point
+     * inherits options from controlPointOptions object. Options from the
+     * controlPointOptions can be overwritten by options in a specific control
+     * point.
+     */
+    controlPointOptions?: AnnotationControlPointOptionsObject;
+    /**
+     * (Highstock) Options for annotation's labels. Each label inherits options
+     * from the labelOptions object. An option from the labelOptions can be
+     * overwritten by config for a specific label.
+     */
+    labelOptions?: NavigationBindingsLabelAnnotationAnnotationsTypesPitchforkLabelOptions;
+    /**
+     * (Highstock) Additional options for an annotation with the type.
+     */
+    typeOptions?: NavigationBindingsLabelAnnotationAnnotationsTypesPitchforkTypeOptions;
+}
+/**
+ * (Highstock) Inner background options.
+ */
+export interface NavigationBindingsLabelAnnotationAnnotationsTypesPitchforkTypeInnerBackgroundOptions {
+    /**
+     * (Highstock) Name of the dash style to use for the shape's stroke.
+     */
+    dashStyle?: DashStyleValue;
+    /**
+     * (Highstock) The color of the shape's fill.
+     */
+    fill?: string;
+    /**
+     * (Highstock) The radius of the `ellipse` shape in y direction. Can be
+     * defined in pixels or yAxis units, if shapes.yAxis index is defined.
+     */
+    ry?: number;
+    /**
+     * (Highstock) Defines additional snapping area around an annotation making
+     * this annotation to focus. Defined in pixels.
+     */
+    snap?: number;
+    /**
+     * (Highstock) The URL for an image to use as the annotation shape. Note,
+     * type has to be set to `'image'`.
+     */
+    src?: string;
+    /**
+     * (Highstock) The color of the shape's stroke.
+     */
+    stroke?: ColorType;
+    /**
+     * (Highstock) The pixel stroke width of the shape.
+     */
+    strokeWidth?: number;
+    /**
+     * (Highstock) The xAxis index which should be used for annotation's sizes
+     * and points coordinates conversion.
+     *
+     * This option is used for `rect` shape width, and all shapes point and
+     * points coordinates.
+     */
+    xAxis?: number;
+    /**
+     * (Highstock) The yAxis index which should be used for annotation's sizes
+     * and points coordinates conversion.
+     *
+     * This option is used for `rect` shape height, `circle` shape radius,
+     * `ellipse` y direction radius, and all shapes point and points
+     * coordinates.
+     */
+    yAxis?: number;
+}
+/**
+ * (Highstock) Additional options for an annotation with the type.
+ */
+export interface NavigationBindingsLabelAnnotationAnnotationsTypesPitchforkTypeOptions {
+    /**
+     * (Highstock) Inner background options.
+     */
+    innerBackground?: NavigationBindingsLabelAnnotationAnnotationsTypesPitchforkTypeInnerBackgroundOptions;
+    /**
+     * (Highstock) Outer background options.
+     */
+    outerBackground?: NavigationBindingsLabelAnnotationAnnotationsTypesPitchforkTypeOuterBackgroundOptions;
+    points?: Array<NavigationBindingsLabelAnnotationAnnotationsTypesPitchforkTypePointsOptions>;
+    /**
+     * (Highstock) This option defines which `xAxis` the point is connected to.
+     * It refers to either the axis id or the index of the axis in the `xAxis`
+     * array.
+     */
+    xAxis?: number;
+    /**
+     * (Highstock) This option defines which `yAxis` the point is connected to.
+     * It refers to either the axis id or the index of the axis in the `yAxis`
+     * array.
+     */
+    yAxis?: number;
+}
+/**
+ * (Highstock) Outer background options.
+ */
+export interface NavigationBindingsLabelAnnotationAnnotationsTypesPitchforkTypeOuterBackgroundOptions {
+    /**
+     * (Highstock) Name of the dash style to use for the shape's stroke.
+     */
+    dashStyle?: DashStyleValue;
+    /**
+     * (Highstock) The color of the shape's fill.
+     */
+    fill?: string;
+    /**
+     * (Highstock) The radius of the `ellipse` shape in y direction. Can be
+     * defined in pixels or yAxis units, if shapes.yAxis index is defined.
+     */
+    ry?: number;
+    /**
+     * (Highstock) Defines additional snapping area around an annotation making
+     * this annotation to focus. Defined in pixels.
+     */
+    snap?: number;
+    /**
+     * (Highstock) The URL for an image to use as the annotation shape. Note,
+     * type has to be set to `'image'`.
+     */
+    src?: string;
+    /**
+     * (Highstock) The color of the shape's stroke.
+     */
+    stroke?: ColorType;
+    /**
+     * (Highstock) The pixel stroke width of the shape.
+     */
+    strokeWidth?: number;
+    /**
+     * (Highstock) The xAxis index which should be used for annotation's sizes
+     * and points coordinates conversion.
+     *
+     * This option is used for `rect` shape width, and all shapes point and
+     * points coordinates.
+     */
+    xAxis?: number;
+    /**
+     * (Highstock) The yAxis index which should be used for annotation's sizes
+     * and points coordinates conversion.
+     *
+     * This option is used for `rect` shape height, `circle` shape radius,
+     * `ellipse` y direction radius, and all shapes point and points
+     * coordinates.
+     */
+    yAxis?: number;
+}
+export interface NavigationBindingsLabelAnnotationAnnotationsTypesPitchforkTypePointsOptions {
+    controlPoint?: number;
+    /**
+     * (Highstock) The x position of the point.
+     */
+    x?: number;
+    /**
+     * (Highstock) The y position of the point.
+     */
+    y?: number;
+}
+export interface NavigationBindingsLabelAnnotationAnnotationsTypesTimeCyclesControlPointStyleOptions {
+    cursor?: string;
+    fill?: string;
+    stroke?: string;
+    "stroke-width"?: number;
+}
+/**
+ * (Highstock) Options for the time cycles annotation type.
+ */
+export interface NavigationBindingsLabelAnnotationAnnotationsTypesTimeCyclesOptions {
+    /**
+     * (Highstock) Options for annotation's control points. Each control point
+     * inherits options from controlPointOptions object. Options from the
+     * controlPointOptions can be overwritten by options in a specific control
+     * point.
+     */
+    controlPointOptions?: AnnotationControlPointOptionsObject;
+    /**
+     * (Highstock) Additional options for an annotation with the type.
+     */
+    typeOptions?: NavigationBindingsLabelAnnotationAnnotationsTypesTimeCyclesTypeOptions;
+}
+/**
+ * (Highstock) Line options.
+ */
+export interface NavigationBindingsLabelAnnotationAnnotationsTypesTimeCyclesTypeLineOptions {
+    fill?: string;
+}
+/**
+ * (Highstock) Additional options for an annotation with the type.
+ */
+export interface NavigationBindingsLabelAnnotationAnnotationsTypesTimeCyclesTypeOptions {
+    /**
+     * (Highstock) Line options.
+     */
+    line?: NavigationBindingsLabelAnnotationAnnotationsTypesTimeCyclesTypeLineOptions;
+    points?: Array<NavigationBindingsLabelAnnotationAnnotationsTypesTimeCyclesTypePointsOptions>;
+    /**
+     * (Highstock) This option defines which `xAxis` the point is connected to.
+     * It refers to either the axis id or the index of the axis in the `xAxis`
+     * array.
+     */
+    xAxis?: number;
+    /**
+     * (Highstock) This option defines which `yAxis` the point is connected to.
+     * It refers to either the axis id or the index of the axis in the `yAxis`
+     * array.
+     */
+    yAxis?: number;
+}
+export interface NavigationBindingsLabelAnnotationAnnotationsTypesTimeCyclesTypePointsOptions {
+    controlPoint?: number;
+    /**
+     * (Highstock) The x position of the point.
+     */
+    x?: number;
+}
+export interface NavigationBindingsLabelAnnotationAnnotationsTypesTunnelControlPointStyleOptions {
+    cursor?: string;
+    fill?: string;
+    stroke?: string;
+    "stroke-width"?: number;
+}
+/**
+ * (Highstock) Options for annotation's labels. Each label inherits options from
+ * the labelOptions object. An option from the labelOptions can be overwritten
+ * by config for a specific label.
+ */
+export interface NavigationBindingsLabelAnnotationAnnotationsTypesTunnelLabelOptions {
+    /**
+     * (Highstock) Accessibility options for an annotation label.
+     */
+    accessibility?: AnnotationLabelAccessibilityOptionsObject;
+    /**
+     * (Highstock) The alignment of the annotation's label. If right, the right
+     * side of the label should be touching the point.
+     */
+    align?: AlignValue;
+    /**
+     * (Highstock) Whether to allow the annotation's labels to overlap. To make
+     * the labels less sensitive for overlapping, the can be set to 0.
+     */
+    allowOverlap?: boolean;
+    /**
+     * (Highstock) The background color or gradient for the annotation's label.
+     */
+    backgroundColor?: ColorType;
+    /**
+     * (Highstock) The border color for the annotation's label.
+     */
+    borderColor?: ColorType;
+    /**
+     * (Highstock) The border radius in pixels for the annotation's label.
+     */
+    borderRadius?: number;
+    /**
+     * (Highstock) The border width in pixels for the annotation's label.
+     */
+    borderWidth?: number;
+    /**
+     * (Highstock) A class name for styling by CSS.
+     */
+    className?: string;
+    /**
+     * (Highstock) Whether to hide the annotation's label that is outside the
+     * plot area.
+     */
+    crop?: boolean;
+    /**
+     * (Highstock) The label's pixel distance from the point.
+     */
+    distance?: number;
+    /**
+     * (Highstock) A format string for the data label.
+     */
+    format?: string;
+    /**
+     * (Highstock) Callback JavaScript function to format the annotation's
+     * label. Note that if a `format` or `text` are defined, the format or text
+     * take precedence and the formatter is ignored. `This` refers to a point
+     * object. The callback also receives an argument `ctx` so that
+     * arrow-functions can access the same context (the point in this case) as
+     * normal functions can using `this`. Since v12.6.0, the callback receives
+     * `ctx`.
+     */
+    formatter?: FormatterCallbackFunction<Point>;
+    /**
+     * (Highstock) Whether all the labels for an annotation are visible in the
+     * exported data table.
+     */
+    includeInDataExport?: boolean;
+    /**
+     * (Highstock) How to handle the annotation's label that flow outside the
+     * plot area. The justify option aligns the label inside the plot area.
+     */
+    overflow?: OptionsOverflowValue;
+    /**
+     * (Highstock) When either the borderWidth or the backgroundColor is set,
+     * this is the padding within the box.
+     */
+    padding?: number;
+    /**
+     * (Highstock) The shadow of the box. The shadow can be an object
+     * configuration containing `color`, `offsetX`, `offsetY`, `opacity` and
+     * `width`.
+     */
+    shadow?: (boolean|ShadowOptionsObject);
+    /**
+     * (Highstock) The name of a symbol to use for the border around the label.
+     * Symbols are predefined functions on the Renderer object.
+     */
+    shape?: string;
+    /**
+     * (Highstock) Styles for the annotation's label.
+     */
+    style?: CSSObject;
+    /**
+     * (Highstock) Alias for the format option.
+     */
+    text?: string;
+    /**
+     * (Highstock) Whether to use HTML to render the annotation's label.
+     */
+    useHTML?: boolean;
+    /**
+     * (Highstock) The vertical alignment of the annotation's label.
+     */
+    verticalAlign?: VerticalAlignValue;
+    /**
+     * (Highstock) The x position offset of the label relative to the point.
+     * Note that if a `distance` is defined, the distance takes precedence over
+     * `x` and `y` options.
+     */
+    x?: number;
+    /**
+     * (Highstock) The y position offset of the label relative to the point.
+     * Note that if a `distance` is defined, the distance takes precedence over
+     * `x` and `y` options.
+     */
+    y?: number;
+}
+/**
+ * (Highstock) Options for the tunnel annotation type.
+ */
+export interface NavigationBindingsLabelAnnotationAnnotationsTypesTunnelOptions {
+    /**
+     * (Highstock) Options for annotation's control points. Each control point
+     * inherits options from controlPointOptions object. Options from the
+     * controlPointOptions can be overwritten by options in a specific control
+     * point.
+     */
+    controlPointOptions?: AnnotationControlPointOptionsObject;
+    /**
+     * (Highstock) Options for annotation's labels. Each label inherits options
+     * from the labelOptions object. An option from the labelOptions can be
+     * overwritten by config for a specific label.
+     */
+    labelOptions?: NavigationBindingsLabelAnnotationAnnotationsTypesTunnelLabelOptions;
+    /**
+     * (Highstock) Additional options for an annotation with the type.
+     */
+    typeOptions?: NavigationBindingsLabelAnnotationAnnotationsTypesTunnelTypeOptions;
+}
+/**
+ * (Highstock) Background options.
+ */
+export interface NavigationBindingsLabelAnnotationAnnotationsTypesTunnelTypeBackgroundOptions {
+    fill?: string;
+    strokeWidth?: number;
+}
+export interface NavigationBindingsLabelAnnotationAnnotationsTypesTunnelTypeHeightControlPointStyleOptions {
+    cursor?: string;
+    fill?: string;
+    stroke?: string;
+    "stroke-width"?: number;
+}
+/**
+ * (Highstock) Line options.
+ */
+export interface NavigationBindingsLabelAnnotationAnnotationsTypesTunnelTypeLineOptions {
+    fill?: string;
+    strokeWidth?: number;
+}
+/**
+ * (Highstock) Additional options for an annotation with the type.
+ */
+export interface NavigationBindingsLabelAnnotationAnnotationsTypesTunnelTypeOptions {
+    /**
+     * (Highstock) Background options.
+     */
+    background?: (object|NavigationBindingsLabelAnnotationAnnotationsTypesTunnelTypeBackgroundOptions);
+    /**
+     * (Highstock) The height of the annotation in terms of yAxis.
+     */
+    height?: number;
+    /**
+     * (Highstock) Options for the control point which controls the annotation's
+     * height.
+     */
+    heightControlPoint?: AnnotationControlPointOptionsObject;
+    /**
+     * (Highstock) Line options.
+     */
+    line?: NavigationBindingsLabelAnnotationAnnotationsTypesTunnelTypeLineOptions;
+    points?: Array<NavigationBindingsLabelAnnotationAnnotationsTypesTunnelTypePointsOptions>;
+    /**
+     * (Highstock) This option defines which `xAxis` the point is connected to.
+     * It refers to either the axis id or the index of the axis in the `xAxis`
+     * array.
+     */
+    xAxis?: number;
+    /**
+     * (Highstock) This option defines which `yAxis` the point is connected to.
+     * It refers to either the axis id or the index of the axis in the `yAxis`
+     * array.
+     */
+    yAxis?: number;
+}
+export interface NavigationBindingsLabelAnnotationAnnotationsTypesTunnelTypePointsOptions {
+    controlPoint?: number;
+    /**
+     * (Highstock) The x position of the point.
+     */
+    x?: number;
+    /**
+     * (Highstock) The y position of the point.
+     */
+    y?: number;
+}
+/**
+ * (Highstock) Options for annotation's labels. Each label inherits options from
+ * the labelOptions object. An option from the labelOptions can be overwritten
+ * by config for a specific label.
+ */
+export interface NavigationBindingsLabelAnnotationAnnotationsTypesVerticalLineLabelOptions {
+    /**
+     * (Highstock) Accessibility options for an annotation label.
+     */
+    accessibility?: AnnotationLabelAccessibilityOptionsObject;
+    /**
+     * (Highstock) The alignment of the annotation's label. If right, the right
+     * side of the label should be touching the point.
+     */
+    align?: AlignValue;
+    /**
+     * (Highstock) Whether to allow the annotation's labels to overlap. To make
+     * the labels less sensitive for overlapping, the can be set to 0.
+     */
+    allowOverlap?: boolean;
+    /**
+     * (Highstock) The background color or gradient for the annotation's label.
+     */
+    backgroundColor?: ColorType;
+    /**
+     * (Highstock) The border color for the annotation's label.
+     */
+    borderColor?: ColorType;
+    /**
+     * (Highstock) The border radius in pixels for the annotation's label.
+     */
+    borderRadius?: number;
+    /**
+     * (Highstock) The border width in pixels for the annotation's label.
+     */
+    borderWidth?: number;
+    /**
+     * (Highstock) A class name for styling by CSS.
+     */
+    className?: string;
+    /**
+     * (Highstock) Whether to hide the annotation's label that is outside the
+     * plot area.
+     */
+    crop?: boolean;
+    /**
+     * (Highstock) The label's pixel distance from the point.
+     */
+    distance?: number;
+    /**
+     * (Highstock) A format string for the data label.
+     */
+    format?: string;
+    /**
+     * (Highstock) Callback JavaScript function to format the annotation's
+     * label. Note that if a `format` or `text` are defined, the format or text
+     * take precedence and the formatter is ignored. `This` refers to a point
+     * object. The callback also receives an argument `ctx` so that
+     * arrow-functions can access the same context (the point in this case) as
+     * normal functions can using `this`. Since v12.6.0, the callback receives
+     * `ctx`.
+     */
+    formatter?: FormatterCallbackFunction<Point>;
+    /**
+     * (Highstock) Whether all the labels for an annotation are visible in the
+     * exported data table.
+     */
+    includeInDataExport?: boolean;
+    /**
+     * (Highstock) How to handle the annotation's label that flow outside the
+     * plot area. The justify option aligns the label inside the plot area.
+     */
+    overflow?: OptionsOverflowValue;
+    /**
+     * (Highstock) When either the borderWidth or the backgroundColor is set,
+     * this is the padding within the box.
+     */
+    padding?: number;
+    /**
+     * (Highstock) The shadow of the box. The shadow can be an object
+     * configuration containing `color`, `offsetX`, `offsetY`, `opacity` and
+     * `width`.
+     */
+    shadow?: (boolean|ShadowOptionsObject);
+    /**
+     * (Highstock) The name of a symbol to use for the border around the label.
+     * Symbols are predefined functions on the Renderer object.
+     */
+    shape?: string;
+    /**
+     * (Highstock) Styles for the annotation's label.
+     */
+    style?: (CSSObject|NavigationBindingsLabelAnnotationAnnotationsTypesVerticalLineLabelStyleOptions);
+    /**
+     * (Highstock) Alias for the format option.
+     */
+    text?: string;
+    /**
+     * (Highstock) Whether to use HTML to render the annotation's label.
+     */
+    useHTML?: boolean;
+    /**
+     * (Highstock) The vertical alignment of the annotation's label.
+     */
+    verticalAlign?: VerticalAlignValue;
+    /**
+     * (Highstock) The x position offset of the label relative to the point.
+     * Note that if a `distance` is defined, the distance takes precedence over
+     * `x` and `y` options.
+     */
+    x?: number;
+    /**
+     * (Highstock) The y position offset of the label relative to the point.
+     * Note that if a `distance` is defined, the distance takes precedence over
+     * `x` and `y` options.
+     */
+    y?: number;
+}
+/**
+ * (Highstock) Styles for the annotation's label.
+ */
+export interface NavigationBindingsLabelAnnotationAnnotationsTypesVerticalLineLabelStyleOptions {
+    color?: string;
+    fontSize?: number;
+}
+/**
+ * (Highstock) Options for the vertical line annotation type.
+ */
+export interface NavigationBindingsLabelAnnotationAnnotationsTypesVerticalLineOptions {
+    /**
+     * (Highstock) Options for annotation's labels. Each label inherits options
+     * from the labelOptions object. An option from the labelOptions can be
+     * overwritten by config for a specific label.
+     */
+    labelOptions?: NavigationBindingsLabelAnnotationAnnotationsTypesVerticalLineLabelOptions;
+    /**
+     * (Highstock) Additional options for an annotation with the type.
+     */
+    typeOptions?: NavigationBindingsLabelAnnotationAnnotationsTypesVerticalLineTypeOptions;
+}
+/**
+ * (Highstock) Connector options.
+ */
+export interface NavigationBindingsLabelAnnotationAnnotationsTypesVerticalLineTypeConnectorOptions {
+    /**
+     * (Highstock) Name of the dash style to use for the shape's stroke.
+     */
+    dashStyle?: DashStyleValue;
+    /**
+     * (Highstock) The color of the shape's fill.
+     */
+    fill?: ColorType;
+    markerEnd?: string;
+    /**
+     * (Highstock) The radius of the `ellipse` shape in y direction. Can be
+     * defined in pixels or yAxis units, if shapes.yAxis index is defined.
+     */
+    ry?: number;
+    /**
+     * (Highstock) Defines additional snapping area around an annotation making
+     * this annotation to focus. Defined in pixels.
+     */
+    snap?: number;
+    /**
+     * (Highstock) The URL for an image to use as the annotation shape. Note,
+     * type has to be set to `'image'`.
+     */
+    src?: string;
+    /**
+     * (Highstock) The color of the shape's stroke.
+     */
+    stroke?: ColorType;
+    /**
+     * (Highstock) The pixel stroke width of the shape.
+     */
+    strokeWidth?: number;
+    /**
+     * (Highstock) The xAxis index which should be used for annotation's sizes
+     * and points coordinates conversion.
+     *
+     * This option is used for `rect` shape width, and all shapes point and
+     * points coordinates.
+     */
+    xAxis?: number;
+    /**
+     * (Highstock) The yAxis index which should be used for annotation's sizes
+     * and points coordinates conversion.
+     *
+     * This option is used for `rect` shape height, `circle` shape radius,
+     * `ellipse` y direction radius, and all shapes point and points
+     * coordinates.
+     */
+    yAxis?: number;
+}
+/**
+ * (Highstock) Label options.
+ */
+export interface NavigationBindingsLabelAnnotationAnnotationsTypesVerticalLineTypeLabelOptions {
+    /**
+     * (Highstock) Accessibility options for an annotation label.
+     */
+    accessibility?: AnnotationLabelAccessibilityOptionsObject;
+    /**
+     * (Highstock) The alignment of the annotation's label. If right, the right
+     * side of the label should be touching the point.
+     */
+    align?: AlignValue;
+    /**
+     * (Highstock) Whether to allow the annotation's labels to overlap. To make
+     * the labels less sensitive for overlapping, the can be set to 0.
+     */
+    allowOverlap?: boolean;
+    /**
+     * (Highstock) The background color or gradient for the annotation's label.
+     */
+    backgroundColor?: string;
+    /**
+     * (Highstock) The border color for the annotation's label.
+     */
+    borderColor?: ColorType;
+    /**
+     * (Highstock) The border radius in pixels for the annotation's label.
+     */
+    borderRadius?: number;
+    /**
+     * (Highstock) The border width in pixels for the annotation's label.
+     */
+    borderWidth?: number;
+    /**
+     * (Highstock) A class name for styling by CSS.
+     */
+    className?: string;
+    /**
+     * (Highstock) Whether to hide the annotation's label that is outside the
+     * plot area.
+     */
+    crop?: boolean;
+    /**
+     * (Highstock) The label's pixel distance from the point.
+     */
+    distance?: number;
+    /**
+     * (Highstock) A format string for the data label.
+     */
+    format?: string;
+    /**
+     * (Highstock) Callback JavaScript function to format the annotation's
+     * label. Note that if a `format` or `text` are defined, the format or text
+     * take precedence and the formatter is ignored. `This` refers to a point
+     * object. The callback also receives an argument `ctx` so that
+     * arrow-functions can access the same context (the point in this case) as
+     * normal functions can using `this`. Since v12.6.0, the callback receives
+     * `ctx`.
+     */
+    formatter?: FormatterCallbackFunction<Point>;
+    /**
+     * (Highstock) Whether all the labels for an annotation are visible in the
+     * exported data table.
+     */
+    includeInDataExport?: boolean;
+    offset?: number;
+    /**
+     * (Highstock) How to handle the annotation's label that flow outside the
+     * plot area. The justify option aligns the label inside the plot area.
+     */
+    overflow?: OptionsOverflowValue;
+    /**
+     * (Highstock) When either the borderWidth or the backgroundColor is set,
+     * this is the padding within the box.
+     */
+    padding?: number;
+    /**
+     * (Highstock) The shadow of the box. The shadow can be an object
+     * configuration containing `color`, `offsetX`, `offsetY`, `opacity` and
+     * `width`.
+     */
+    shadow?: (boolean|ShadowOptionsObject);
+    /**
+     * (Highstock) The name of a symbol to use for the border around the label.
+     * Symbols are predefined functions on the Renderer object.
+     */
+    shape?: string;
+    /**
+     * (Highstock) Styles for the annotation's label.
+     */
+    style?: CSSObject;
+    /**
+     * (Highstock) Alias for the format option.
+     */
+    text?: string;
+    /**
+     * (Highstock) Whether to use HTML to render the annotation's label.
+     */
+    useHTML?: boolean;
+    /**
+     * (Highstock) The vertical alignment of the annotation's label.
+     */
+    verticalAlign?: VerticalAlignValue;
+    /**
+     * (Highstock) The x position offset of the label relative to the point.
+     * Note that if a `distance` is defined, the distance takes precedence over
+     * `x` and `y` options.
+     */
+    x?: number;
+    /**
+     * (Highstock) The y position offset of the label relative to the point.
+     * Note that if a `distance` is defined, the distance takes precedence over
+     * `x` and `y` options.
+     */
+    y?: number;
+}
+/**
+ * (Highstock) Line options.
+ */
+export interface NavigationBindingsLabelAnnotationAnnotationsTypesVerticalLineTypeLineOptions {
+    fill?: string;
+}
+/**
+ * (Highstock) Additional options for an annotation with the type.
+ */
+export interface NavigationBindingsLabelAnnotationAnnotationsTypesVerticalLineTypeOptions {
+    /**
+     * (Highstock) Connector options.
+     */
+    connector?: NavigationBindingsLabelAnnotationAnnotationsTypesVerticalLineTypeConnectorOptions;
+    /**
+     * (Highstock) Label options.
+     */
+    label?: NavigationBindingsLabelAnnotationAnnotationsTypesVerticalLineTypeLabelOptions;
+    /**
+     * (Highstock) Line options.
+     */
+    line?: NavigationBindingsLabelAnnotationAnnotationsTypesVerticalLineTypeLineOptions;
+    points?: Array<NavigationBindingsLabelAnnotationAnnotationsTypesVerticalLineTypePointsOptions>;
+    /**
+     * (Highstock) This option defines which `xAxis` the point is connected to.
+     * It refers to either the axis id or the index of the axis in the `xAxis`
+     * array.
+     */
+    xAxis?: number;
+    /**
+     * (Highstock) This option defines which `yAxis` the point is connected to.
+     * It refers to either the axis id or the index of the axis in the `yAxis`
+     * array.
+     */
+    yAxis?: number;
+}
+export interface NavigationBindingsLabelAnnotationAnnotationsTypesVerticalLineTypePointsOptions {
+    controlPoint?: number;
+    /**
+     * (Highstock) The x position of the point.
+     */
+    x?: number;
+    /**
+     * (Highstock) The y position of the point.
+     */
+    y?: number;
+}
+/**
+ * (Highcharts, Highstock) A label annotation bindings. Includes `start` event
+ * only.
+ */
+export interface NavigationBindingsLabelAnnotationOptions {
+    /**
+     * (Highcharts, Highstock) Options to customize the bindings' annotation
+     * shapes and labels.
+     */
+    annotationsOptions?: (AnnotationsOptions|NavigationBindingsLabelAnnotationAnnotationsOptions);
 }
 /**
  * (Highstock) Enable or disable the initial animation when a series is
@@ -61389,6 +70891,21 @@ export interface NavigationBindingsMeasureYOptions {
      */
     annotationsOptions?: (AnnotationsOptions|NavigationBindingsMeasureYAnnotationsOptions);
 }
+/**
+ * (Highcharts, Highstock) Bindings definitions for custom HTML buttons. Each
+ * binding implements simple event-driven interface:
+ *
+ * - `className`: classname used to bind event to
+ *
+ * - `init`: initial event, fired on button click
+ *
+ * - `start`: fired on first click on a chart
+ *
+ * - `steps`: array of sequential events fired one after another on each of
+ * users clicks
+ *
+ * - `end`: last event to be called after last step event
+ */
 export interface NavigationBindingsOptions {
     /**
      * (Highstock) A line with arrow annotation. Includes `start` and one event
@@ -61405,6 +70922,11 @@ export interface NavigationBindingsOptions {
      * and one event in `steps` array.
      */
     arrowSegment?: (NavigationBindingsArrowSegmentOptions|NavigationBindingsOptionsObject);
+    /**
+     * (Highcharts, Highstock) A circle annotation bindings. Includes `start`
+     * and one event in `steps` array.
+     */
+    circleAnnotation?: (NavigationBindingsCircleAnnotationOptions|NavigationBindingsOptionsObject);
     /**
      * (Highstock) Crooked line (three points) annotation bindings. Includes
      * `start` and two events in `steps` (for second and third points in crooked
@@ -61436,6 +70958,12 @@ export interface NavigationBindingsOptions {
      * wave) array.
      */
     elliott5?: (NavigationBindingsElliott5Options|NavigationBindingsOptionsObject);
+    /**
+     * (Highcharts, Highstock) An ellipse annotation bindings. Includes `start`
+     * and two events in `steps` array. First updates the second point,
+     * responsible for a rx width, and second updates the ry width.
+     */
+    ellipseAnnotation?: (NavigationBindingsEllipseAnnotationOptions|NavigationBindingsOptionsObject);
     /**
      * (Highstock) A fibonacci annotation bindings. Includes `start` and two
      * events in `steps` array (updates second point, then height).
@@ -61474,7 +71002,7 @@ export interface NavigationBindingsOptions {
      *
      * **Note**: Fullscreen is not supported on iPhone due to iOS limitations.
      */
-    fullScreen?: NavigationBindingsOptionsObject;
+    fullScreen?: (NavigationBindingsFullScreenOptions|NavigationBindingsOptionsObject);
     /**
      * (Highstock) A horizontal line annotation. Includes `start` event.
      */
@@ -61491,6 +71019,11 @@ export interface NavigationBindingsOptions {
      * array.
      */
     infinityLine?: (NavigationBindingsInfinityLineOptions|NavigationBindingsOptionsObject);
+    /**
+     * (Highcharts, Highstock) A label annotation bindings. Includes `start`
+     * event only.
+     */
+    labelAnnotation?: (NavigationBindingsLabelAnnotationOptions|NavigationBindingsOptionsObject);
     /**
      * (Highstock) A measure (x-dimension) annotation bindings. Includes `start`
      * and one event in `steps` array.
@@ -61523,6 +71056,11 @@ export interface NavigationBindingsOptions {
      */
     ray?: (NavigationBindingsOptionsObject|NavigationBindingsRayOptions);
     /**
+     * (Highcharts, Highstock) A rectangle annotation bindings. Includes `start`
+     * and one event in `steps` array.
+     */
+    rectangleAnnotation?: (NavigationBindingsOptionsObject|NavigationBindingsRectangleAnnotationOptions);
+    /**
      * (Highstock) Save a chart in localStorage under `highcharts-chart` key.
      * Stored items:
      *
@@ -61532,7 +71070,7 @@ export interface NavigationBindingsOptions {
      *
      * - flags
      */
-    saveChart?: NavigationBindingsOptionsObject;
+    saveChart?: (NavigationBindingsOptionsObject|NavigationBindingsSaveChartOptions);
     /**
      * (Highstock) A segment annotation bindings. Includes `start` and one event
      * in `steps` array.
@@ -61549,7 +71087,7 @@ export interface NavigationBindingsOptions {
     /**
      * (Highstock) Change main series to `'hlc'` type.
      */
-    seriesTypeHLC?: NavigationBindingsOptionsObject;
+    seriesTypeHLC?: (NavigationBindingsOptionsObject|NavigationBindingsSeriesTypeHLCOptions);
     /**
      * (Highstock) Changes main series to `'hollowcandlestick'` type.
      */
@@ -71018,6 +80556,3174 @@ export interface NavigationBindingsRayOptions {
     annotationsOptions?: (AnnotationsOptions|NavigationBindingsRayAnnotationsOptions);
 }
 /**
+ * (Highcharts, Highstock) Enable or disable the initial animation when a series
+ * is displayed for the `annotation`. The animation can also be set as a
+ * configuration object. Please note that this option only applies to the
+ * initial animation. For other animations, see chart.animation and the
+ * animation parameter under the API methods. The following properties are
+ * supported:
+ *
+ * - `defer`: The animation delay time in milliseconds.
+ */
+export interface NavigationBindingsRectangleAnnotationAnnotationsAnimationOptions {
+    /**
+     * (Highcharts, Highstock) The animation delay time in milliseconds. Set to
+     * `0` renders annotation immediately. As `undefined` inherits defer time
+     * from the series.animation.defer.
+     */
+    defer?: number;
+}
+export interface NavigationBindingsRectangleAnnotationAnnotationsControlPointStyleOptions {
+    cursor?: string;
+    fill?: string;
+    stroke?: string;
+    "stroke-width"?: number;
+}
+/**
+ * (Highcharts, Highstock) Events available in annotations.
+ */
+export interface NavigationBindingsRectangleAnnotationAnnotationsEventsOptions {
+    /**
+     * (Highcharts, Highstock) Event callback when annotation is added to the
+     * chart.
+     */
+    add?: EventCallbackFunction<Annotation>;
+    /**
+     * (Highcharts, Highstock) Event callback when annotation is updated (e.g.
+     * drag and dropped or resized by control points).
+     */
+    afterUpdate?: EventCallbackFunction<Annotation>;
+    /**
+     * (Highcharts, Highstock) Fires when the annotation is clicked.
+     */
+    click?: EventCallbackFunction<Annotation>;
+    /**
+     * (Highcharts, Highstock) Fires when the annotation is dragged.
+     */
+    drag?: EventCallbackFunction<Annotation>;
+    /**
+     * (Highcharts, Highstock) Event callback when annotation is removed from
+     * the chart.
+     */
+    remove?: EventCallbackFunction<Annotation>;
+}
+/**
+ * (Highcharts, Highstock) Options for annotation's labels. Each label inherits
+ * options from the labelOptions object. An option from the labelOptions can be
+ * overwritten by config for a specific label.
+ */
+export interface NavigationBindingsRectangleAnnotationAnnotationsLabelOptions {
+    /**
+     * (Highcharts, Highstock) Accessibility options for an annotation label.
+     */
+    accessibility?: AnnotationLabelAccessibilityOptionsObject;
+    /**
+     * (Highcharts, Highstock) The alignment of the annotation's label. If
+     * right, the right side of the label should be touching the point.
+     */
+    align?: AlignValue;
+    /**
+     * (Highcharts, Highstock) Whether to allow the annotation's labels to
+     * overlap. To make the labels less sensitive for overlapping, the can be
+     * set to 0.
+     */
+    allowOverlap?: boolean;
+    /**
+     * (Highcharts, Highstock) The background color or gradient for the
+     * annotation's label.
+     */
+    backgroundColor?: ColorType;
+    /**
+     * (Highcharts, Highstock) The border color for the annotation's label.
+     */
+    borderColor?: ColorType;
+    /**
+     * (Highcharts, Highstock) The border radius in pixels for the annotation's
+     * label.
+     */
+    borderRadius?: number;
+    /**
+     * (Highcharts, Highstock) The border width in pixels for the annotation's
+     * label.
+     */
+    borderWidth?: number;
+    /**
+     * (Highcharts, Highstock) A class name for styling by CSS.
+     */
+    className?: string;
+    /**
+     * (Highcharts, Highstock) Whether to hide the annotation's label that is
+     * outside the plot area.
+     */
+    crop?: boolean;
+    /**
+     * (Highcharts, Highstock) The label's pixel distance from the point.
+     */
+    distance?: number;
+    /**
+     * (Highcharts, Highstock) A format string for the data label.
+     */
+    format?: string;
+    /**
+     * (Highcharts, Highstock) Callback JavaScript function to format the
+     * annotation's label. Note that if a `format` or `text` are defined, the
+     * format or text take precedence and the formatter is ignored. `This`
+     * refers to a point object. The callback also receives an argument `ctx` so
+     * that arrow-functions can access the same context (the point in this case)
+     * as normal functions can using `this`. Since v12.6.0, the callback
+     * receives `ctx`.
+     */
+    formatter?: FormatterCallbackFunction<Point>;
+    /**
+     * (Highcharts, Highstock) Whether all the labels for an annotation are
+     * visible in the exported data table.
+     */
+    includeInDataExport?: boolean;
+    /**
+     * (Highcharts, Highstock) How to handle the annotation's label that flow
+     * outside the plot area. The justify option aligns the label inside the
+     * plot area.
+     */
+    overflow?: OptionsOverflowValue;
+    /**
+     * (Highcharts, Highstock) When either the borderWidth or the
+     * backgroundColor is set, this is the padding within the box.
+     */
+    padding?: number;
+    /**
+     * (Highcharts, Highstock) The shadow of the box. The shadow can be an
+     * object configuration containing `color`, `offsetX`, `offsetY`, `opacity`
+     * and `width`.
+     */
+    shadow?: (boolean|ShadowOptionsObject);
+    /**
+     * (Highcharts, Highstock) The name of a symbol to use for the border around
+     * the label. Symbols are predefined functions on the Renderer object.
+     */
+    shape?: string;
+    /**
+     * (Highcharts, Highstock) Styles for the annotation's label.
+     */
+    style?: CSSObject;
+    /**
+     * (Highcharts, Highstock) Alias for the format option.
+     */
+    text?: string;
+    /**
+     * (Highcharts, Highstock) Whether to use HTML to render the annotation's
+     * label.
+     */
+    useHTML?: boolean;
+    /**
+     * (Highcharts, Highstock) The vertical alignment of the annotation's label.
+     */
+    verticalAlign?: VerticalAlignValue;
+    /**
+     * (Highcharts, Highstock) The x position offset of the label relative to
+     * the point. Note that if a `distance` is defined, the distance takes
+     * precedence over `x` and `y` options.
+     */
+    x?: number;
+    /**
+     * (Highcharts, Highstock) The y position offset of the label relative to
+     * the point. Note that if a `distance` is defined, the distance takes
+     * precedence over `x` and `y` options.
+     */
+    y?: number;
+}
+export interface NavigationBindingsRectangleAnnotationAnnotationsLabelsControlPointsStyleOptions {
+    cursor?: string;
+    fill?: string;
+    stroke?: string;
+    "stroke-width"?: number;
+}
+/**
+ * (Highcharts, Highstock) An array of labels for the annotation. For options
+ * that apply to multiple labels, they can be added to the labelOptions.
+ */
+export interface NavigationBindingsRectangleAnnotationAnnotationsLabelsOptions {
+    /**
+     * (Highcharts, Highstock) Accessibility options for an annotation label.
+     */
+    accessibility?: AnnotationLabelAccessibilityOptionsObject;
+    /**
+     * (Highcharts, Highstock) The alignment of the annotation's label. If
+     * right, the right side of the label should be touching the point.
+     */
+    align?: AlignValue;
+    /**
+     * (Highcharts, Highstock) Whether to allow the annotation's labels to
+     * overlap. To make the labels less sensitive for overlapping, the can be
+     * set to 0.
+     */
+    allowOverlap?: boolean;
+    /**
+     * (Highcharts, Highstock) The background color or gradient for the
+     * annotation's label.
+     */
+    backgroundColor?: ColorType;
+    /**
+     * (Highcharts, Highstock) The border color for the annotation's label.
+     */
+    borderColor?: ColorType;
+    /**
+     * (Highcharts, Highstock) The border radius in pixels for the annotation's
+     * label.
+     */
+    borderRadius?: number;
+    /**
+     * (Highcharts, Highstock) The border width in pixels for the annotation's
+     * label.
+     */
+    borderWidth?: number;
+    /**
+     * (Highcharts, Highstock) A class name for styling by CSS.
+     */
+    className?: string;
+    /**
+     * (Highcharts, Highstock) The array of control points.
+     */
+    controlPoints?: (AnnotationControlPointOptionsObject|Array<AnnotationControlPointOptionsObject>);
+    /**
+     * (Highcharts, Highstock) Whether to hide the annotation's label that is
+     * outside the plot area.
+     */
+    crop?: boolean;
+    /**
+     * (Highcharts, Highstock) The label's pixel distance from the point.
+     */
+    distance?: number;
+    /**
+     * (Highcharts, Highstock) A format string for the data label.
+     */
+    format?: string;
+    /**
+     * (Highcharts, Highstock) Callback JavaScript function to format the
+     * annotation's label. Note that if a `format` or `text` are defined, the
+     * format or text take precedence and the formatter is ignored. `This`
+     * refers to a point object. The callback also receives an argument `ctx` so
+     * that arrow-functions can access the same context (the point in this case)
+     * as normal functions can using `this`. Since v12.6.0, the callback
+     * receives `ctx`.
+     */
+    formatter?: FormatterCallbackFunction<Point>;
+    /**
+     * (Highcharts, Highstock) An id for later identification of the annotation
+     * label.
+     */
+    id?: string;
+    /**
+     * (Highcharts, Highstock) Whether all the labels for an annotation are
+     * visible in the exported data table.
+     */
+    includeInDataExport?: boolean;
+    /**
+     * (Highcharts, Highstock) How to handle the annotation's label that flow
+     * outside the plot area. The justify option aligns the label inside the
+     * plot area.
+     */
+    overflow?: OptionsOverflowValue;
+    /**
+     * (Highcharts, Highstock) When either the borderWidth or the
+     * backgroundColor is set, this is the padding within the box.
+     */
+    padding?: number;
+    /**
+     * (Highcharts, Highstock) This option defines the point to which the label
+     * will be connected. It can be either the point which exists in the series
+     * - it is referenced by the point's id - or a new point with defined x, y
+     * properties and optionally axes.
+     */
+    point?: AnnotationMockPointOptions;
+    /**
+     * (Highcharts, Highstock) The shadow of the box. The shadow can be an
+     * object configuration containing `color`, `offsetX`, `offsetY`, `opacity`
+     * and `width`.
+     */
+    shadow?: (boolean|ShadowOptionsObject);
+    /**
+     * (Highcharts, Highstock) The name of a symbol to use for the border around
+     * the label. Symbols are predefined functions on the Renderer object.
+     */
+    shape?: string;
+    /**
+     * (Highcharts, Highstock) Styles for the annotation's label.
+     */
+    style?: CSSObject;
+    /**
+     * (Highcharts, Highstock) Alias for the format option.
+     */
+    text?: string;
+    /**
+     * (Highcharts, Highstock) Whether to use HTML to render the annotation's
+     * label.
+     */
+    useHTML?: boolean;
+    /**
+     * (Highcharts, Highstock) The vertical alignment of the annotation's label.
+     */
+    verticalAlign?: VerticalAlignValue;
+    /**
+     * (Highcharts, Highstock) The x position offset of the label relative to
+     * the point. Note that if a `distance` is defined, the distance takes
+     * precedence over `x` and `y` options.
+     */
+    x?: number;
+    /**
+     * (Highcharts, Highstock) The y position offset of the label relative to
+     * the point. Note that if a `distance` is defined, the distance takes
+     * precedence over `x` and `y` options.
+     */
+    y?: number;
+}
+/**
+ * (Highcharts, Highstock) Options to customize the bindings' annotation shapes
+ * and labels.
+ */
+export interface NavigationBindingsRectangleAnnotationAnnotationsOptions {
+    /**
+     * (Highcharts, Highstock) Enable or disable the initial animation when a
+     * series is displayed for the `annotation`. The animation can also be set
+     * as a configuration object. Please note that this option only applies to
+     * the initial animation. For other animations, see chart.animation and the
+     * animation parameter under the API methods. The following properties are
+     * supported:
+     *
+     * - `defer`: The animation delay time in milliseconds.
+     */
+    animation?: (boolean|NavigationBindingsRectangleAnnotationAnnotationsAnimationOptions|Partial<AnimationOptionsObject>);
+    /**
+     * (Highcharts, Highstock) A class name for styling by CSS.
+     */
+    className?: string;
+    /**
+     * (Highcharts, Highstock) Options for annotation's control points. Each
+     * control point inherits options from controlPointOptions object. Options
+     * from the controlPointOptions can be overwritten by options in a specific
+     * control point.
+     */
+    controlPointOptions?: AnnotationControlPointOptionsObject;
+    /**
+     * (Highcharts, Highstock) Whether to hide the part of the annotation that
+     * is outside the plot area.
+     */
+    crop?: boolean;
+    /**
+     * (Highcharts, Highstock) Allow an annotation to be draggable by a user.
+     * Possible values are `'x'`, `'xy'`, `'y'` and `''` (disabled).
+     */
+    draggable?: AnnotationDraggableValue;
+    /**
+     * (Highcharts, Highstock) Events available in annotations.
+     */
+    events?: NavigationBindingsRectangleAnnotationAnnotationsEventsOptions;
+    /**
+     * (Highcharts, Highstock) Sets an ID for an annotation. Can be user later
+     * when removing an annotation in Chart.removeAnnotation(id) method.
+     */
+    id?: (number|string);
+    /**
+     * (Highcharts, Highstock) Options for annotation's labels. Each label
+     * inherits options from the labelOptions object. An option from the
+     * labelOptions can be overwritten by config for a specific label.
+     */
+    labelOptions?: NavigationBindingsRectangleAnnotationAnnotationsLabelOptions;
+    /**
+     * (Highcharts, Highstock) An array of labels for the annotation. For
+     * options that apply to multiple labels, they can be added to the
+     * labelOptions.
+     */
+    labels?: Array<NavigationBindingsRectangleAnnotationAnnotationsLabelsOptions>;
+    /**
+     * (Highcharts, Highstock) Options for annotation's shapes. Each shape
+     * inherits options from the shapeOptions object. An option from the
+     * shapeOptions can be overwritten by config for a specific shape.
+     */
+    shapeOptions?: NavigationBindingsRectangleAnnotationAnnotationsShapeOptions;
+    /**
+     * (Highcharts, Highstock) An array of shapes for the annotation. For
+     * options that apply to multiple shapes, then can be added to the
+     * shapeOptions.
+     */
+    shapes?: Array<NavigationBindingsRectangleAnnotationAnnotationsShapesOptions>;
+    /**
+     * (Highstock) For advanced annotations, this option defines the type of
+     * annotation. Can be one of the keys listed under the types option.
+     */
+    type?: string;
+    /**
+     * (Highcharts, Highstock) Additional options for an annotation with the
+     * type.
+     */
+    typeOptions?: NavigationBindingsRectangleAnnotationAnnotationsTypeOptions;
+    /**
+     * (Highstock) Option override for specific advanced annotation types. This
+     * collection is intended for general theming using
+     * `Highcharts.setOptions()`.
+     */
+    types?: NavigationBindingsRectangleAnnotationAnnotationsTypesOptions;
+    /**
+     * (Highcharts, Highstock) Whether the annotation is visible.
+     */
+    visible?: boolean;
+    /**
+     * (Highcharts, Highstock) The Z index of the annotation.
+     */
+    zIndex?: number;
+}
+/**
+ * (Highcharts, Highstock) Options for annotation's shapes. Each shape inherits
+ * options from the shapeOptions object. An option from the shapeOptions can be
+ * overwritten by config for a specific shape.
+ */
+export interface NavigationBindingsRectangleAnnotationAnnotationsShapeOptions {
+    /**
+     * (Highcharts, Highstock) Name of the dash style to use for the shape's
+     * stroke.
+     */
+    dashStyle?: DashStyleValue;
+    /**
+     * (Highcharts, Highstock) The color of the shape's fill.
+     */
+    fill?: ColorType;
+    /**
+     * (Highcharts, Highstock) The height of the `rect` shape. Can be defined in
+     * pixels or yAxis units, if shapes.yAxis index is defined.
+     */
+    height?: number;
+    /**
+     * (Highcharts, Highstock) The radius of the `circle` shape. Can be defined
+     * in pixels or yAxis units, if shapes.yAxis index is defined.
+     */
+    r?: number;
+    /**
+     * (Highcharts, Highstock) The radius of the `ellipse` shape in y direction.
+     * Can be defined in pixels or yAxis units, if shapes.yAxis index is
+     * defined.
+     */
+    ry?: number;
+    /**
+     * (Highcharts, Highstock) Defines additional snapping area around an
+     * annotation making this annotation to focus. Defined in pixels.
+     */
+    snap?: number;
+    /**
+     * (Highcharts, Highstock) The URL for an image to use as the annotation
+     * shape. Note, type has to be set to `'image'`.
+     */
+    src?: string;
+    /**
+     * (Highcharts, Highstock) The color of the shape's stroke.
+     */
+    stroke?: ColorType;
+    /**
+     * (Highcharts, Highstock) The pixel stroke width of the shape.
+     */
+    strokeWidth?: number;
+    /**
+     * (Highcharts, Highstock) The type of the shape. Available options are
+     * `circle`, `rect`, `ellipse` and `path`.
+     */
+    type?: string;
+    /**
+     * (Highcharts, Highstock) The width of the `rect` shape. Can be defined in
+     * pixels or xAxis units, if shapes.xAxis index is defined.
+     */
+    width?: number;
+    /**
+     * (Highcharts, Highstock) The xAxis index which should be used for
+     * annotation's sizes and points coordinates conversion.
+     *
+     * This option is used for `rect` shape width, and all shapes point and
+     * points coordinates.
+     */
+    xAxis?: number;
+    /**
+     * (Highcharts, Highstock) The yAxis index which should be used for
+     * annotation's sizes and points coordinates conversion.
+     *
+     * This option is used for `rect` shape height, `circle` shape radius,
+     * `ellipse` y direction radius, and all shapes point and points
+     * coordinates.
+     */
+    yAxis?: number;
+}
+export interface NavigationBindingsRectangleAnnotationAnnotationsShapesControlPointsStyleOptions {
+    cursor?: string;
+    fill?: string;
+    stroke?: string;
+    "stroke-width"?: number;
+}
+/**
+ * (Highcharts, Highstock) An array of shapes for the annotation. For options
+ * that apply to multiple shapes, then can be added to the shapeOptions.
+ */
+export interface NavigationBindingsRectangleAnnotationAnnotationsShapesOptions {
+    /**
+     * (Highcharts, Highstock) The array of control points.
+     */
+    controlPoints?: (AnnotationControlPointOptionsObject|Array<AnnotationControlPointOptionsObject>);
+    /**
+     * (Highcharts, Highstock) Name of the dash style to use for the shape's
+     * stroke.
+     */
+    dashStyle?: DashStyleValue;
+    /**
+     * (Highcharts, Highstock) The color of the shape's fill.
+     */
+    fill?: ColorType;
+    /**
+     * (Highcharts, Highstock) The height of the `rect` shape. Can be defined in
+     * pixels or yAxis units, if shapes.yAxis index is defined.
+     */
+    height?: number;
+    /**
+     * (Highcharts, Highstock) Id of the marker which will be drawn at the final
+     * vertex of the path. The `arrow` and `reverse-arrow` markers are available
+     * by default; custom markers can be defined in the defs option.
+     */
+    markerEnd?: string;
+    /**
+     * (Highcharts, Highstock) Id of the marker which will be drawn at the first
+     * vertex of the path. The `arrow` and `reverse-arrow` markers are available
+     * by default; custom markers can be defined in the defs option.
+     */
+    markerStart?: string;
+    /**
+     * (Highcharts, Highstock) This option defines the point to which the shape
+     * will be connected. It can be either the point which exists in the series
+     * - it is referenced by the point's id - or a new point with defined x, y
+     * properties and optionally axes.
+     */
+    point?: AnnotationMockPointOptions;
+    /**
+     * (Highcharts, Highstock) An array of points for the shape or a callback
+     * function that returns that shape point.
+     *
+     * This option is available for shapes which can use multiple points such as
+     * path. A point can be either a point object or a point's id.
+     */
+    points?: Array<AnnotationMockPointOptions>;
+    /**
+     * (Highcharts, Highstock) The radius of the `circle` shape. Can be defined
+     * in pixels or yAxis units, if shapes.yAxis index is defined.
+     */
+    r?: number;
+    /**
+     * (Highcharts, Highstock) The radius of the `ellipse` shape in y direction.
+     * Can be defined in pixels or yAxis units, if shapes.yAxis index is
+     * defined.
+     */
+    ry?: number;
+    /**
+     * (Highcharts, Highstock) Defines additional snapping area around an
+     * annotation making this annotation to focus. Defined in pixels.
+     */
+    snap?: number;
+    /**
+     * (Highcharts, Highstock) The URL for an image to use as the annotation
+     * shape. Note, type has to be set to `'image'`.
+     */
+    src?: string;
+    /**
+     * (Highcharts, Highstock) The color of the shape's stroke.
+     */
+    stroke?: ColorType;
+    /**
+     * (Highcharts, Highstock) The pixel stroke width of the shape.
+     */
+    strokeWidth?: number;
+    /**
+     * (Highcharts, Highstock) The type of the shape. Available options are
+     * `circle`, `rect`, `ellipse` and `path`.
+     */
+    type?: string;
+    /**
+     * (Highcharts, Highstock) The width of the `rect` shape. Can be defined in
+     * pixels or xAxis units, if shapes.xAxis index is defined.
+     */
+    width?: number;
+    /**
+     * (Highcharts, Highstock) The xAxis index which should be used for
+     * annotation's sizes and points coordinates conversion.
+     *
+     * This option is used for `rect` shape width, and all shapes point and
+     * points coordinates.
+     */
+    xAxis?: number;
+    /**
+     * (Highcharts, Highstock) The yAxis index which should be used for
+     * annotation's sizes and points coordinates conversion.
+     *
+     * This option is used for `rect` shape height, `circle` shape radius,
+     * `ellipse` y direction radius, and all shapes point and points
+     * coordinates.
+     */
+    yAxis?: number;
+}
+/**
+ * (Highcharts, Highstock) Background shape options for the annotation.
+ */
+export interface NavigationBindingsRectangleAnnotationAnnotationsTypeBackgroundOptions {
+    /**
+     * (Highcharts, Highstock) Name of the dash style to use for the shape's
+     * stroke.
+     */
+    dashStyle?: DashStyleValue;
+    /**
+     * (Highcharts, Highstock) The color of the shape's fill.
+     */
+    fill?: ColorType;
+    /**
+     * (Highcharts, Highstock) The height of the `rect` shape. Can be defined in
+     * pixels or yAxis units, if shapes.yAxis index is defined.
+     */
+    height?: number;
+    /**
+     * (Highcharts, Highstock) The radius of the `circle` shape. Can be defined
+     * in pixels or yAxis units, if shapes.yAxis index is defined.
+     */
+    r?: number;
+    /**
+     * (Highcharts, Highstock) The radius of the `ellipse` shape in y direction.
+     * Can be defined in pixels or yAxis units, if shapes.yAxis index is
+     * defined.
+     */
+    ry?: number;
+    /**
+     * (Highcharts, Highstock) Defines additional snapping area around an
+     * annotation making this annotation to focus. Defined in pixels.
+     */
+    snap?: number;
+    /**
+     * (Highcharts, Highstock) The URL for an image to use as the annotation
+     * shape. Note, type has to be set to `'image'`.
+     */
+    src?: string;
+    /**
+     * (Highcharts, Highstock) The color of the shape's stroke.
+     */
+    stroke?: ColorType;
+    /**
+     * (Highcharts, Highstock) The pixel stroke width of the shape.
+     */
+    strokeWidth?: number;
+    /**
+     * (Highcharts, Highstock) The type of the shape. Available options are
+     * `circle`, `rect`, `ellipse` and `path`.
+     */
+    type?: string;
+    /**
+     * (Highcharts, Highstock) The width of the `rect` shape. Can be defined in
+     * pixels or xAxis units, if shapes.xAxis index is defined.
+     */
+    width?: number;
+    /**
+     * (Highcharts, Highstock) The xAxis index which should be used for
+     * annotation's sizes and points coordinates conversion.
+     *
+     * This option is used for `rect` shape width, and all shapes point and
+     * points coordinates.
+     */
+    xAxis?: number;
+    /**
+     * (Highcharts, Highstock) The yAxis index which should be used for
+     * annotation's sizes and points coordinates conversion.
+     *
+     * This option is used for `rect` shape height, `circle` shape radius,
+     * `ellipse` y direction radius, and all shapes point and points
+     * coordinates.
+     */
+    yAxis?: number;
+}
+/**
+ * (Highcharts, Highstock) Line options.
+ */
+export interface NavigationBindingsRectangleAnnotationAnnotationsTypeLineOptions {
+    /**
+     * (Highcharts, Highstock) Name of the dash style to use for the shape's
+     * stroke.
+     */
+    dashStyle?: DashStyleValue;
+    /**
+     * (Highcharts, Highstock) The color of the shape's fill.
+     */
+    fill?: ColorType;
+    /**
+     * (Highcharts, Highstock) The height of the `rect` shape. Can be defined in
+     * pixels or yAxis units, if shapes.yAxis index is defined.
+     */
+    height?: number;
+    /**
+     * (Highcharts, Highstock) The radius of the `circle` shape. Can be defined
+     * in pixels or yAxis units, if shapes.yAxis index is defined.
+     */
+    r?: number;
+    /**
+     * (Highcharts, Highstock) The radius of the `ellipse` shape in y direction.
+     * Can be defined in pixels or yAxis units, if shapes.yAxis index is
+     * defined.
+     */
+    ry?: number;
+    /**
+     * (Highcharts, Highstock) Defines additional snapping area around an
+     * annotation making this annotation to focus. Defined in pixels.
+     */
+    snap?: number;
+    /**
+     * (Highcharts, Highstock) The URL for an image to use as the annotation
+     * shape. Note, type has to be set to `'image'`.
+     */
+    src?: string;
+    /**
+     * (Highcharts, Highstock) The color of the shape's stroke.
+     */
+    stroke?: ColorType;
+    /**
+     * (Highcharts, Highstock) The pixel stroke width of the shape.
+     */
+    strokeWidth?: number;
+    /**
+     * (Highcharts, Highstock) The type of the shape. Available options are
+     * `circle`, `rect`, `ellipse` and `path`.
+     */
+    type?: string;
+    /**
+     * (Highcharts, Highstock) The width of the `rect` shape. Can be defined in
+     * pixels or xAxis units, if shapes.xAxis index is defined.
+     */
+    width?: number;
+    /**
+     * (Highcharts, Highstock) The xAxis index which should be used for
+     * annotation's sizes and points coordinates conversion.
+     *
+     * This option is used for `rect` shape width, and all shapes point and
+     * points coordinates.
+     */
+    xAxis?: number;
+    /**
+     * (Highcharts, Highstock) The yAxis index which should be used for
+     * annotation's sizes and points coordinates conversion.
+     *
+     * This option is used for `rect` shape height, `circle` shape radius,
+     * `ellipse` y direction radius, and all shapes point and points
+     * coordinates.
+     */
+    yAxis?: number;
+}
+/**
+ * (Highcharts, Highstock) Additional options for an annotation with the type.
+ */
+export interface NavigationBindingsRectangleAnnotationAnnotationsTypeOptions {
+    /**
+     * (Highcharts, Highstock) Background shape options for the annotation.
+     */
+    background?: NavigationBindingsRectangleAnnotationAnnotationsTypeBackgroundOptions;
+    /**
+     * (Highcharts, Highstock) Height of the annotation in pixels.
+     */
+    height?: number;
+    /**
+     * (Highcharts, Highstock) Line options.
+     */
+    line?: NavigationBindingsRectangleAnnotationAnnotationsTypeLineOptions;
+    /**
+     * (Highcharts, Highstock) A single point that the annotation is attached
+     * to. It can be either the point which exists in the series - it is
+     * referenced by the point's id - or a new point with defined x, y
+     * properties and optionally axes.
+     */
+    point?: (string|AnnotationMockPointOptionsObject);
+    /**
+     * (Highcharts, Highstock) An array of points that the annotation is
+     * attached to. Each point can the point which exists in the series - it is
+     * referenced by the point's id - or a new point with defined x, y
+     * properties and optionally axes.
+     */
+    points?: Array<(string|AnnotationMockPointOptionsObject)>;
+    /**
+     * (Highcharts, Highstock) The annotation type identifier.
+     */
+    type?: string;
+    /**
+     * (Highcharts, Highstock) This option defines which `xAxis` the point is
+     * connected to. It refers to either the axis id or the index of the axis in
+     * the `xAxis` array.
+     */
+    xAxis?: (number|string);
+    /**
+     * (Highcharts, Highstock) This option defines which `yAxis` the point is
+     * connected to. It refers to either the axis id or the index of the axis in
+     * the `yAxis` array.
+     */
+    yAxis?: (number|string);
+}
+export interface NavigationBindingsRectangleAnnotationAnnotationsTypesCrookedLineControlPointStyleOptions {
+    cursor?: string;
+    fill?: string;
+    stroke?: string;
+    "stroke-width"?: number;
+}
+/**
+ * (Highstock) Options for annotation's labels. Each label inherits options from
+ * the labelOptions object. An option from the labelOptions can be overwritten
+ * by config for a specific label.
+ */
+export interface NavigationBindingsRectangleAnnotationAnnotationsTypesCrookedLineLabelOptions {
+    /**
+     * (Highstock) Accessibility options for an annotation label.
+     */
+    accessibility?: AnnotationLabelAccessibilityOptionsObject;
+    /**
+     * (Highstock) The alignment of the annotation's label. If right, the right
+     * side of the label should be touching the point.
+     */
+    align?: AlignValue;
+    /**
+     * (Highstock) Whether to allow the annotation's labels to overlap. To make
+     * the labels less sensitive for overlapping, the can be set to 0.
+     */
+    allowOverlap?: boolean;
+    /**
+     * (Highstock) The background color or gradient for the annotation's label.
+     */
+    backgroundColor?: ColorType;
+    /**
+     * (Highstock) The border color for the annotation's label.
+     */
+    borderColor?: ColorType;
+    /**
+     * (Highstock) The border radius in pixels for the annotation's label.
+     */
+    borderRadius?: number;
+    /**
+     * (Highstock) The border width in pixels for the annotation's label.
+     */
+    borderWidth?: number;
+    /**
+     * (Highstock) A class name for styling by CSS.
+     */
+    className?: string;
+    /**
+     * (Highstock) Whether to hide the annotation's label that is outside the
+     * plot area.
+     */
+    crop?: boolean;
+    /**
+     * (Highstock) The label's pixel distance from the point.
+     */
+    distance?: number;
+    /**
+     * (Highstock) A format string for the data label.
+     */
+    format?: string;
+    /**
+     * (Highstock) Callback JavaScript function to format the annotation's
+     * label. Note that if a `format` or `text` are defined, the format or text
+     * take precedence and the formatter is ignored. `This` refers to a point
+     * object. The callback also receives an argument `ctx` so that
+     * arrow-functions can access the same context (the point in this case) as
+     * normal functions can using `this`. Since v12.6.0, the callback receives
+     * `ctx`.
+     */
+    formatter?: FormatterCallbackFunction<Point>;
+    /**
+     * (Highstock) Whether all the labels for an annotation are visible in the
+     * exported data table.
+     */
+    includeInDataExport?: boolean;
+    /**
+     * (Highstock) How to handle the annotation's label that flow outside the
+     * plot area. The justify option aligns the label inside the plot area.
+     */
+    overflow?: OptionsOverflowValue;
+    /**
+     * (Highstock) When either the borderWidth or the backgroundColor is set,
+     * this is the padding within the box.
+     */
+    padding?: number;
+    /**
+     * (Highstock) The shadow of the box. The shadow can be an object
+     * configuration containing `color`, `offsetX`, `offsetY`, `opacity` and
+     * `width`.
+     */
+    shadow?: (boolean|ShadowOptionsObject);
+    /**
+     * (Highstock) The name of a symbol to use for the border around the label.
+     * Symbols are predefined functions on the Renderer object.
+     */
+    shape?: string;
+    /**
+     * (Highstock) Styles for the annotation's label.
+     */
+    style?: CSSObject;
+    /**
+     * (Highstock) Alias for the format option.
+     */
+    text?: string;
+    /**
+     * (Highstock) Whether to use HTML to render the annotation's label.
+     */
+    useHTML?: boolean;
+    /**
+     * (Highstock) The vertical alignment of the annotation's label.
+     */
+    verticalAlign?: VerticalAlignValue;
+    /**
+     * (Highstock) The x position offset of the label relative to the point.
+     * Note that if a `distance` is defined, the distance takes precedence over
+     * `x` and `y` options.
+     */
+    x?: number;
+    /**
+     * (Highstock) The y position offset of the label relative to the point.
+     * Note that if a `distance` is defined, the distance takes precedence over
+     * `x` and `y` options.
+     */
+    y?: number;
+}
+/**
+ * (Highstock) Options for the crooked line annotation type.
+ */
+export interface NavigationBindingsRectangleAnnotationAnnotationsTypesCrookedLineOptions {
+    /**
+     * (Highstock) Options for annotation's control points. Each control point
+     * inherits options from controlPointOptions object. Options from the
+     * controlPointOptions can be overwritten by options in a specific control
+     * point.
+     */
+    controlPointOptions?: AnnotationControlPointOptionsObject;
+    /**
+     * (Highstock) Options for annotation's labels. Each label inherits options
+     * from the labelOptions object. An option from the labelOptions can be
+     * overwritten by config for a specific label.
+     */
+    labelOptions?: NavigationBindingsRectangleAnnotationAnnotationsTypesCrookedLineLabelOptions;
+    /**
+     * (Highstock) Additional options for an annotation with the type.
+     */
+    typeOptions?: NavigationBindingsRectangleAnnotationAnnotationsTypesCrookedLineTypeOptions;
+}
+/**
+ * (Highstock) Line options.
+ */
+export interface NavigationBindingsRectangleAnnotationAnnotationsTypesCrookedLineTypeLineOptions {
+    fill?: string;
+}
+/**
+ * (Highstock) Additional options for an annotation with the type.
+ */
+export interface NavigationBindingsRectangleAnnotationAnnotationsTypesCrookedLineTypeOptions {
+    /**
+     * (Highstock) Line options.
+     */
+    line?: NavigationBindingsRectangleAnnotationAnnotationsTypesCrookedLineTypeLineOptions;
+    points?: Array<NavigationBindingsRectangleAnnotationAnnotationsTypesCrookedLineTypePointsOptions>;
+    /**
+     * (Highstock) This option defines which `xAxis` the point is connected to.
+     * It refers to either the axis id or the index of the axis in the `xAxis`
+     * array.
+     */
+    xAxis?: number;
+    /**
+     * (Highstock) This option defines which `yAxis` the point is connected to.
+     * It refers to either the axis id or the index of the axis in the `yAxis`
+     * array.
+     */
+    yAxis?: number;
+}
+export interface NavigationBindingsRectangleAnnotationAnnotationsTypesCrookedLineTypePointsOptions {
+    controlPoint?: number;
+    /**
+     * (Highstock) The x position of the point.
+     */
+    x?: number;
+    /**
+     * (Highstock) The y position of the point.
+     */
+    y?: number;
+}
+export interface NavigationBindingsRectangleAnnotationAnnotationsTypesElliottWaveControlPointStyleOptions {
+    cursor?: string;
+    fill?: string;
+    stroke?: string;
+    "stroke-width"?: number;
+}
+/**
+ * (Highstock) Options for annotation's labels. Each label inherits options from
+ * the labelOptions object. An option from the labelOptions can be overwritten
+ * by config for a specific label.
+ */
+export interface NavigationBindingsRectangleAnnotationAnnotationsTypesElliottWaveLabelOptions {
+    /**
+     * (Highstock) Accessibility options for an annotation label.
+     */
+    accessibility?: AnnotationLabelAccessibilityOptionsObject;
+    /**
+     * (Highstock) The alignment of the annotation's label. If right, the right
+     * side of the label should be touching the point.
+     */
+    align?: string;
+    /**
+     * (Highstock) Whether to allow the annotation's labels to overlap. To make
+     * the labels less sensitive for overlapping, the can be set to 0.
+     */
+    allowOverlap?: boolean;
+    /**
+     * (Highstock) The background color or gradient for the annotation's label.
+     */
+    backgroundColor?: string;
+    /**
+     * (Highstock) The border color for the annotation's label.
+     */
+    borderColor?: ColorType;
+    /**
+     * (Highstock) The border radius in pixels for the annotation's label.
+     */
+    borderRadius?: number;
+    /**
+     * (Highstock) The border width in pixels for the annotation's label.
+     */
+    borderWidth?: number;
+    /**
+     * (Highstock) A class name for styling by CSS.
+     */
+    className?: string;
+    /**
+     * (Highstock) Whether to hide the annotation's label that is outside the
+     * plot area.
+     */
+    crop?: boolean;
+    /**
+     * (Highstock) The label's pixel distance from the point.
+     */
+    distance?: number;
+    /**
+     * (Highstock) A format string for the data label.
+     */
+    format?: string;
+    /**
+     * (Highstock) Callback JavaScript function to format the annotation's
+     * label. Note that if a `format` or `text` are defined, the format or text
+     * take precedence and the formatter is ignored. `This` refers to a point
+     * object. The callback also receives an argument `ctx` so that
+     * arrow-functions can access the same context (the point in this case) as
+     * normal functions can using `this`. Since v12.6.0, the callback receives
+     * `ctx`.
+     */
+    formatter?: FormatterCallbackFunction<Point>;
+    /**
+     * (Highstock) Whether all the labels for an annotation are visible in the
+     * exported data table.
+     */
+    includeInDataExport?: boolean;
+    /**
+     * (Highstock) How to handle the annotation's label that flow outside the
+     * plot area. The justify option aligns the label inside the plot area.
+     */
+    overflow?: OptionsOverflowValue;
+    /**
+     * (Highstock) When either the borderWidth or the backgroundColor is set,
+     * this is the padding within the box.
+     */
+    padding?: number;
+    /**
+     * (Highstock) The shadow of the box. The shadow can be an object
+     * configuration containing `color`, `offsetX`, `offsetY`, `opacity` and
+     * `width`.
+     */
+    shadow?: (boolean|ShadowOptionsObject);
+    /**
+     * (Highstock) The name of a symbol to use for the border around the label.
+     * Symbols are predefined functions on the Renderer object.
+     */
+    shape?: string;
+    /**
+     * (Highstock) Styles for the annotation's label.
+     */
+    style?: (CSSObject|NavigationBindingsRectangleAnnotationAnnotationsTypesElliottWaveLabelStyleOptions);
+    /**
+     * (Highstock) Alias for the format option.
+     */
+    text?: string;
+    type?: string;
+    /**
+     * (Highstock) Whether to use HTML to render the annotation's label.
+     */
+    useHTML?: boolean;
+    /**
+     * (Highstock) The vertical alignment of the annotation's label.
+     */
+    verticalAlign?: VerticalAlignValue;
+    /**
+     * (Highstock) The x position offset of the label relative to the point.
+     * Note that if a `distance` is defined, the distance takes precedence over
+     * `x` and `y` options.
+     */
+    x?: number;
+    /**
+     * (Highstock) The y position offset of the label relative to the point.
+     * Note that if a `distance` is defined, the distance takes precedence over
+     * `x` and `y` options.
+     */
+    y?: number;
+}
+/**
+ * (Highstock) Styles for the annotation's label.
+ */
+export interface NavigationBindingsRectangleAnnotationAnnotationsTypesElliottWaveLabelStyleOptions {
+    color?: string;
+}
+/**
+ * (Highstock) Options for the elliott wave annotation type.
+ */
+export interface NavigationBindingsRectangleAnnotationAnnotationsTypesElliottWaveOptions {
+    /**
+     * (Highstock) Options for annotation's control points. Each control point
+     * inherits options from controlPointOptions object. Options from the
+     * controlPointOptions can be overwritten by options in a specific control
+     * point.
+     */
+    controlPointOptions?: AnnotationControlPointOptionsObject;
+    /**
+     * (Highstock) Options for annotation's labels. Each label inherits options
+     * from the labelOptions object. An option from the labelOptions can be
+     * overwritten by config for a specific label.
+     */
+    labelOptions?: NavigationBindingsRectangleAnnotationAnnotationsTypesElliottWaveLabelOptions;
+    /**
+     * (Highstock) Additional options for an annotation with the type.
+     */
+    typeOptions?: NavigationBindingsRectangleAnnotationAnnotationsTypesElliottWaveTypeOptions;
+}
+/**
+ * (Highstock) Line options.
+ */
+export interface NavigationBindingsRectangleAnnotationAnnotationsTypesElliottWaveTypeLineOptions {
+    fill?: string;
+    strokeWidth?: number;
+}
+/**
+ * (Highstock) Additional options for an annotation with the type.
+ */
+export interface NavigationBindingsRectangleAnnotationAnnotationsTypesElliottWaveTypeOptions {
+    /**
+     * (Highstock) Line options.
+     */
+    line?: NavigationBindingsRectangleAnnotationAnnotationsTypesElliottWaveTypeLineOptions;
+    points?: Array<NavigationBindingsRectangleAnnotationAnnotationsTypesElliottWaveTypePointsOptions>;
+    /**
+     * (Highstock) This option defines which `xAxis` the point is connected to.
+     * It refers to either the axis id or the index of the axis in the `xAxis`
+     * array.
+     */
+    xAxis?: number;
+    /**
+     * (Highstock) This option defines which `yAxis` the point is connected to.
+     * It refers to either the axis id or the index of the axis in the `yAxis`
+     * array.
+     */
+    yAxis?: number;
+}
+/**
+ * (Highstock) Options for annotation's labels. Each label inherits options from
+ * the labelOptions object. An option from the labelOptions can be overwritten
+ * by config for a specific label.
+ */
+export interface NavigationBindingsRectangleAnnotationAnnotationsTypesElliottWaveTypePointsLabelOptions {
+    /**
+     * (Highstock) Accessibility options for an annotation label.
+     */
+    accessibility?: AnnotationLabelAccessibilityOptionsObject;
+    /**
+     * (Highstock) The alignment of the annotation's label. If right, the right
+     * side of the label should be touching the point.
+     */
+    align?: AlignValue;
+    /**
+     * (Highstock) Whether to allow the annotation's labels to overlap. To make
+     * the labels less sensitive for overlapping, the can be set to 0.
+     */
+    allowOverlap?: boolean;
+    /**
+     * (Highstock) The background color or gradient for the annotation's label.
+     */
+    backgroundColor?: ColorType;
+    /**
+     * (Highstock) The border color for the annotation's label.
+     */
+    borderColor?: ColorType;
+    /**
+     * (Highstock) The border radius in pixels for the annotation's label.
+     */
+    borderRadius?: number;
+    /**
+     * (Highstock) The border width in pixels for the annotation's label.
+     */
+    borderWidth?: number;
+    /**
+     * (Highstock) A class name for styling by CSS.
+     */
+    className?: string;
+    /**
+     * (Highstock) Whether to hide the annotation's label that is outside the
+     * plot area.
+     */
+    crop?: boolean;
+    /**
+     * (Highstock) The label's pixel distance from the point.
+     */
+    distance?: number;
+    /**
+     * (Highstock) A format string for the data label.
+     */
+    format?: string;
+    /**
+     * (Highstock) Callback JavaScript function to format the annotation's
+     * label. Note that if a `format` or `text` are defined, the format or text
+     * take precedence and the formatter is ignored. `This` refers to a point
+     * object. The callback also receives an argument `ctx` so that
+     * arrow-functions can access the same context (the point in this case) as
+     * normal functions can using `this`. Since v12.6.0, the callback receives
+     * `ctx`.
+     */
+    formatter?: FormatterCallbackFunction<Point>;
+    /**
+     * (Highstock) Whether all the labels for an annotation are visible in the
+     * exported data table.
+     */
+    includeInDataExport?: boolean;
+    /**
+     * (Highstock) How to handle the annotation's label that flow outside the
+     * plot area. The justify option aligns the label inside the plot area.
+     */
+    overflow?: OptionsOverflowValue;
+    /**
+     * (Highstock) When either the borderWidth or the backgroundColor is set,
+     * this is the padding within the box.
+     */
+    padding?: number;
+    /**
+     * (Highstock) The shadow of the box. The shadow can be an object
+     * configuration containing `color`, `offsetX`, `offsetY`, `opacity` and
+     * `width`.
+     */
+    shadow?: (boolean|ShadowOptionsObject);
+    /**
+     * (Highstock) The name of a symbol to use for the border around the label.
+     * Symbols are predefined functions on the Renderer object.
+     */
+    shape?: string;
+    /**
+     * (Highstock) Styles for the annotation's label.
+     */
+    style?: CSSObject;
+    /**
+     * (Highstock) Alias for the format option.
+     */
+    text?: string;
+    /**
+     * (Highstock) Whether to use HTML to render the annotation's label.
+     */
+    useHTML?: boolean;
+    /**
+     * (Highstock) The vertical alignment of the annotation's label.
+     */
+    verticalAlign?: VerticalAlignValue;
+    /**
+     * (Highstock) The x position offset of the label relative to the point.
+     * Note that if a `distance` is defined, the distance takes precedence over
+     * `x` and `y` options.
+     */
+    x?: number;
+    /**
+     * (Highstock) The y position offset of the label relative to the point.
+     * Note that if a `distance` is defined, the distance takes precedence over
+     * `x` and `y` options.
+     */
+    y?: number;
+}
+export interface NavigationBindingsRectangleAnnotationAnnotationsTypesElliottWaveTypePointsOptions {
+    controlPoint?: number;
+    /**
+     * (Highstock) Options for annotation's labels. Each label inherits options
+     * from the labelOptions object. An option from the labelOptions can be
+     * overwritten by config for a specific label.
+     */
+    label?: NavigationBindingsRectangleAnnotationAnnotationsTypesElliottWaveTypePointsLabelOptions;
+    /**
+     * (Highstock) The x position of the point.
+     */
+    x?: number;
+    /**
+     * (Highstock) The y position of the point.
+     */
+    y?: number;
+}
+export interface NavigationBindingsRectangleAnnotationAnnotationsTypesFibonacciControlPointStyleOptions {
+    cursor?: string;
+    fill?: string;
+    stroke?: string;
+    "stroke-width"?: number;
+}
+/**
+ * (Highstock) Options for annotation's labels. Each label inherits options from
+ * the labelOptions object. An option from the labelOptions can be overwritten
+ * by config for a specific label.
+ */
+export interface NavigationBindingsRectangleAnnotationAnnotationsTypesFibonacciLabelOptions {
+    /**
+     * (Highstock) Accessibility options for an annotation label.
+     */
+    accessibility?: AnnotationLabelAccessibilityOptionsObject;
+    /**
+     * (Highstock) The alignment of the annotation's label. If right, the right
+     * side of the label should be touching the point.
+     */
+    align?: string;
+    /**
+     * (Highstock) Whether to allow the annotation's labels to overlap. To make
+     * the labels less sensitive for overlapping, the can be set to 0.
+     */
+    allowOverlap?: boolean;
+    /**
+     * (Highstock) The background color or gradient for the annotation's label.
+     */
+    backgroundColor?: string;
+    /**
+     * (Highstock) The border color for the annotation's label.
+     */
+    borderColor?: ColorType;
+    /**
+     * (Highstock) The border radius in pixels for the annotation's label.
+     */
+    borderRadius?: number;
+    /**
+     * (Highstock) The border width in pixels for the annotation's label.
+     */
+    borderWidth?: number;
+    /**
+     * (Highstock) A class name for styling by CSS.
+     */
+    className?: string;
+    /**
+     * (Highstock) Whether to hide the annotation's label that is outside the
+     * plot area.
+     */
+    crop?: boolean;
+    /**
+     * (Highstock) The label's pixel distance from the point.
+     */
+    distance?: number;
+    /**
+     * (Highstock) A format string for the data label.
+     */
+    format?: string;
+    /**
+     * (Highstock) Callback JavaScript function to format the annotation's
+     * label. Note that if a `format` or `text` are defined, the format or text
+     * take precedence and the formatter is ignored. `This` refers to a point
+     * object. The callback also receives an argument `ctx` so that
+     * arrow-functions can access the same context (the point in this case) as
+     * normal functions can using `this`. Since v12.6.0, the callback receives
+     * `ctx`.
+     */
+    formatter?: FormatterCallbackFunction<Point>;
+    /**
+     * (Highstock) Whether all the labels for an annotation are visible in the
+     * exported data table.
+     */
+    includeInDataExport?: boolean;
+    /**
+     * (Highstock) How to handle the annotation's label that flow outside the
+     * plot area. The justify option aligns the label inside the plot area.
+     */
+    overflow?: OptionsOverflowValue;
+    /**
+     * (Highstock) When either the borderWidth or the backgroundColor is set,
+     * this is the padding within the box.
+     */
+    padding?: number;
+    /**
+     * (Highstock) The shadow of the box. The shadow can be an object
+     * configuration containing `color`, `offsetX`, `offsetY`, `opacity` and
+     * `width`.
+     */
+    shadow?: (boolean|ShadowOptionsObject);
+    /**
+     * (Highstock) The name of a symbol to use for the border around the label.
+     * Symbols are predefined functions on the Renderer object.
+     */
+    shape?: string;
+    /**
+     * (Highstock) Styles for the annotation's label.
+     */
+    style?: (CSSObject|NavigationBindingsRectangleAnnotationAnnotationsTypesFibonacciLabelStyleOptions);
+    /**
+     * (Highstock) Alias for the format option.
+     */
+    text?: string;
+    /**
+     * (Highstock) Whether to use HTML to render the annotation's label.
+     */
+    useHTML?: boolean;
+    /**
+     * (Highstock) The vertical alignment of the annotation's label.
+     */
+    verticalAlign?: string;
+    /**
+     * (Highstock) The x position offset of the label relative to the point.
+     * Note that if a `distance` is defined, the distance takes precedence over
+     * `x` and `y` options.
+     */
+    x?: number;
+    /**
+     * (Highstock) The y position offset of the label relative to the point.
+     * Note that if a `distance` is defined, the distance takes precedence over
+     * `x` and `y` options.
+     */
+    y?: number;
+}
+/**
+ * (Highstock) Styles for the annotation's label.
+ */
+export interface NavigationBindingsRectangleAnnotationAnnotationsTypesFibonacciLabelStyleOptions {
+    color?: string;
+}
+/**
+ * (Highstock) Options for the fibonacci annotation type.
+ */
+export interface NavigationBindingsRectangleAnnotationAnnotationsTypesFibonacciOptions {
+    /**
+     * (Highstock) Options for annotation's control points. Each control point
+     * inherits options from controlPointOptions object. Options from the
+     * controlPointOptions can be overwritten by options in a specific control
+     * point.
+     */
+    controlPointOptions?: AnnotationControlPointOptionsObject;
+    /**
+     * (Highstock) Options for annotation's labels. Each label inherits options
+     * from the labelOptions object. An option from the labelOptions can be
+     * overwritten by config for a specific label.
+     */
+    labelOptions?: NavigationBindingsRectangleAnnotationAnnotationsTypesFibonacciLabelOptions;
+    /**
+     * (Highstock) Additional options for an annotation with the type.
+     */
+    typeOptions?: NavigationBindingsRectangleAnnotationAnnotationsTypesFibonacciTypeOptions;
+}
+export interface NavigationBindingsRectangleAnnotationAnnotationsTypesFibonacciTimeZonesControlPointStyleOptions {
+    cursor?: string;
+    fill?: string;
+    stroke?: string;
+    "stroke-width"?: number;
+}
+/**
+ * (Highstock) Options for annotation's labels. Each label inherits options from
+ * the labelOptions object. An option from the labelOptions can be overwritten
+ * by config for a specific label.
+ */
+export interface NavigationBindingsRectangleAnnotationAnnotationsTypesFibonacciTimeZonesLabelOptions {
+    /**
+     * (Highstock) Accessibility options for an annotation label.
+     */
+    accessibility?: AnnotationLabelAccessibilityOptionsObject;
+    /**
+     * (Highstock) The alignment of the annotation's label. If right, the right
+     * side of the label should be touching the point.
+     */
+    align?: AlignValue;
+    /**
+     * (Highstock) Whether to allow the annotation's labels to overlap. To make
+     * the labels less sensitive for overlapping, the can be set to 0.
+     */
+    allowOverlap?: boolean;
+    /**
+     * (Highstock) The background color or gradient for the annotation's label.
+     */
+    backgroundColor?: ColorType;
+    /**
+     * (Highstock) The border color for the annotation's label.
+     */
+    borderColor?: ColorType;
+    /**
+     * (Highstock) The border radius in pixels for the annotation's label.
+     */
+    borderRadius?: number;
+    /**
+     * (Highstock) The border width in pixels for the annotation's label.
+     */
+    borderWidth?: number;
+    /**
+     * (Highstock) A class name for styling by CSS.
+     */
+    className?: string;
+    /**
+     * (Highstock) Whether to hide the annotation's label that is outside the
+     * plot area.
+     */
+    crop?: boolean;
+    /**
+     * (Highstock) The label's pixel distance from the point.
+     */
+    distance?: number;
+    /**
+     * (Highstock) A format string for the data label.
+     */
+    format?: string;
+    /**
+     * (Highstock) Callback JavaScript function to format the annotation's
+     * label. Note that if a `format` or `text` are defined, the format or text
+     * take precedence and the formatter is ignored. `This` refers to a point
+     * object. The callback also receives an argument `ctx` so that
+     * arrow-functions can access the same context (the point in this case) as
+     * normal functions can using `this`. Since v12.6.0, the callback receives
+     * `ctx`.
+     */
+    formatter?: FormatterCallbackFunction<Point>;
+    /**
+     * (Highstock) Whether all the labels for an annotation are visible in the
+     * exported data table.
+     */
+    includeInDataExport?: boolean;
+    /**
+     * (Highstock) How to handle the annotation's label that flow outside the
+     * plot area. The justify option aligns the label inside the plot area.
+     */
+    overflow?: OptionsOverflowValue;
+    /**
+     * (Highstock) When either the borderWidth or the backgroundColor is set,
+     * this is the padding within the box.
+     */
+    padding?: number;
+    /**
+     * (Highstock) The shadow of the box. The shadow can be an object
+     * configuration containing `color`, `offsetX`, `offsetY`, `opacity` and
+     * `width`.
+     */
+    shadow?: (boolean|ShadowOptionsObject);
+    /**
+     * (Highstock) The name of a symbol to use for the border around the label.
+     * Symbols are predefined functions on the Renderer object.
+     */
+    shape?: string;
+    /**
+     * (Highstock) Styles for the annotation's label.
+     */
+    style?: CSSObject;
+    /**
+     * (Highstock) Alias for the format option.
+     */
+    text?: string;
+    /**
+     * (Highstock) Whether to use HTML to render the annotation's label.
+     */
+    useHTML?: boolean;
+    /**
+     * (Highstock) The vertical alignment of the annotation's label.
+     */
+    verticalAlign?: VerticalAlignValue;
+    /**
+     * (Highstock) The x position offset of the label relative to the point.
+     * Note that if a `distance` is defined, the distance takes precedence over
+     * `x` and `y` options.
+     */
+    x?: number;
+    /**
+     * (Highstock) The y position offset of the label relative to the point.
+     * Note that if a `distance` is defined, the distance takes precedence over
+     * `x` and `y` options.
+     */
+    y?: number;
+}
+/**
+ * (Highstock) Options for the fibonacci time zones annotation type.
+ */
+export interface NavigationBindingsRectangleAnnotationAnnotationsTypesFibonacciTimeZonesOptions {
+    /**
+     * (Highstock) Options for annotation's control points. Each control point
+     * inherits options from controlPointOptions object. Options from the
+     * controlPointOptions can be overwritten by options in a specific control
+     * point.
+     */
+    controlPointOptions?: AnnotationControlPointOptionsObject;
+    /**
+     * (Highstock) Options for annotation's labels. Each label inherits options
+     * from the labelOptions object. An option from the labelOptions can be
+     * overwritten by config for a specific label.
+     */
+    labelOptions?: NavigationBindingsRectangleAnnotationAnnotationsTypesFibonacciTimeZonesLabelOptions;
+    /**
+     * (Highstock) Additional options for an annotation with the type.
+     */
+    typeOptions?: NavigationBindingsRectangleAnnotationAnnotationsTypesFibonacciTimeZonesTypeOptions;
+}
+export interface NavigationBindingsRectangleAnnotationAnnotationsTypesFibonacciTimeZonesTypeControlPointOptions {
+    events?: any;
+}
+/**
+ * (Highstock) Line options.
+ */
+export interface NavigationBindingsRectangleAnnotationAnnotationsTypesFibonacciTimeZonesTypeLineOptions {
+    fill?: string;
+    /**
+     * (Highstock) The color of the lines.
+     */
+    stroke?: string;
+    /**
+     * (Highstock) The width of the lines.
+     */
+    strokeWidth?: number;
+}
+/**
+ * (Highstock) Additional options for an annotation with the type.
+ */
+export interface NavigationBindingsRectangleAnnotationAnnotationsTypesFibonacciTimeZonesTypeOptions {
+    controlPointOptions?: NavigationBindingsRectangleAnnotationAnnotationsTypesFibonacciTimeZonesTypeControlPointOptions;
+    /**
+     * (Highstock) Line options.
+     */
+    line?: NavigationBindingsRectangleAnnotationAnnotationsTypesFibonacciTimeZonesTypeLineOptions;
+    points?: Array<NavigationBindingsRectangleAnnotationAnnotationsTypesFibonacciTimeZonesTypePointsOptions>;
+    /**
+     * (Highstock) This option defines which `xAxis` the point is connected to.
+     * It refers to either the axis id or the index of the axis in the `xAxis`
+     * array.
+     */
+    xAxis?: number;
+    /**
+     * (Highstock) This option defines which `yAxis` the point is connected to.
+     * It refers to either the axis id or the index of the axis in the `yAxis`
+     * array.
+     */
+    yAxis?: number;
+}
+export interface NavigationBindingsRectangleAnnotationAnnotationsTypesFibonacciTimeZonesTypePointsOptions {
+    controlPoint?: number;
+    /**
+     * (Highstock) The x position of the point.
+     */
+    x?: number;
+}
+/**
+ * (Highstock) An array with options for the labels.
+ */
+export interface NavigationBindingsRectangleAnnotationAnnotationsTypesFibonacciTypeLabelsOptions {
+    /**
+     * (Highstock) Accessibility options for an annotation label.
+     */
+    accessibility?: AnnotationLabelAccessibilityOptionsObject;
+    /**
+     * (Highstock) The alignment of the annotation's label. If right, the right
+     * side of the label should be touching the point.
+     */
+    align?: AlignValue;
+    /**
+     * (Highstock) Whether to allow the annotation's labels to overlap. To make
+     * the labels less sensitive for overlapping, the can be set to 0.
+     */
+    allowOverlap?: boolean;
+    /**
+     * (Highstock) The background color or gradient for the annotation's label.
+     */
+    backgroundColor?: ColorType;
+    /**
+     * (Highstock) The border color for the annotation's label.
+     */
+    borderColor?: ColorType;
+    /**
+     * (Highstock) The border radius in pixels for the annotation's label.
+     */
+    borderRadius?: number;
+    /**
+     * (Highstock) The border width in pixels for the annotation's label.
+     */
+    borderWidth?: number;
+    /**
+     * (Highstock) A class name for styling by CSS.
+     */
+    className?: string;
+    /**
+     * (Highstock) Whether to hide the annotation's label that is outside the
+     * plot area.
+     */
+    crop?: boolean;
+    /**
+     * (Highstock) The label's pixel distance from the point.
+     */
+    distance?: number;
+    /**
+     * (Highstock) A format string for the data label.
+     */
+    format?: string;
+    /**
+     * (Highstock) Callback JavaScript function to format the annotation's
+     * label. Note that if a `format` or `text` are defined, the format or text
+     * take precedence and the formatter is ignored. `This` refers to a point
+     * object. The callback also receives an argument `ctx` so that
+     * arrow-functions can access the same context (the point in this case) as
+     * normal functions can using `this`. Since v12.6.0, the callback receives
+     * `ctx`.
+     */
+    formatter?: FormatterCallbackFunction<Point>;
+    /**
+     * (Highstock) Whether all the labels for an annotation are visible in the
+     * exported data table.
+     */
+    includeInDataExport?: boolean;
+    /**
+     * (Highstock) How to handle the annotation's label that flow outside the
+     * plot area. The justify option aligns the label inside the plot area.
+     */
+    overflow?: OptionsOverflowValue;
+    /**
+     * (Highstock) When either the borderWidth or the backgroundColor is set,
+     * this is the padding within the box.
+     */
+    padding?: number;
+    /**
+     * (Highstock) The shadow of the box. The shadow can be an object
+     * configuration containing `color`, `offsetX`, `offsetY`, `opacity` and
+     * `width`.
+     */
+    shadow?: (boolean|ShadowOptionsObject);
+    /**
+     * (Highstock) The name of a symbol to use for the border around the label.
+     * Symbols are predefined functions on the Renderer object.
+     */
+    shape?: string;
+    /**
+     * (Highstock) Styles for the annotation's label.
+     */
+    style?: CSSObject;
+    /**
+     * (Highstock) Alias for the format option.
+     */
+    text?: string;
+    /**
+     * (Highstock) Whether to use HTML to render the annotation's label.
+     */
+    useHTML?: boolean;
+    /**
+     * (Highstock) The vertical alignment of the annotation's label.
+     */
+    verticalAlign?: VerticalAlignValue;
+    /**
+     * (Highstock) The x position offset of the label relative to the point.
+     * Note that if a `distance` is defined, the distance takes precedence over
+     * `x` and `y` options.
+     */
+    x?: number;
+    /**
+     * (Highstock) The y position offset of the label relative to the point.
+     * Note that if a `distance` is defined, the distance takes precedence over
+     * `x` and `y` options.
+     */
+    y?: number;
+}
+/**
+ * (Highstock) Line options.
+ */
+export interface NavigationBindingsRectangleAnnotationAnnotationsTypesFibonacciTypeLineOptions {
+    fill?: string;
+}
+/**
+ * (Highstock) Additional options for an annotation with the type.
+ */
+export interface NavigationBindingsRectangleAnnotationAnnotationsTypesFibonacciTypeOptions {
+    /**
+     * (Highstock) An array of background colors: Defaults to: (see online
+     * documentation for example)
+     */
+    backgroundColors?: object;
+    /**
+     * (Highstock) The height of the fibonacci in terms of yAxis.
+     */
+    height?: number;
+    /**
+     * (Highstock) An array with options for the labels.
+     */
+    labels?: Array<NavigationBindingsRectangleAnnotationAnnotationsTypesFibonacciTypeLabelsOptions>;
+    /**
+     * (Highstock) Line options.
+     */
+    line?: NavigationBindingsRectangleAnnotationAnnotationsTypesFibonacciTypeLineOptions;
+    /**
+     * (Highstock) The color of line.
+     */
+    lineColor?: string;
+    /**
+     * (Highstock) An array of colors for the lines.
+     */
+    lineColors?: object;
+    points?: Array<NavigationBindingsRectangleAnnotationAnnotationsTypesFibonacciTypePointsOptions>;
+    /**
+     * (Highstock) Whether the annotation levels should be reversed. By default
+     * they start from 0 and go to 1.
+     */
+    reversed?: boolean;
+    /**
+     * (Highstock) This option defines which `xAxis` the point is connected to.
+     * It refers to either the axis id or the index of the axis in the `xAxis`
+     * array.
+     */
+    xAxis?: number;
+    /**
+     * (Highstock) This option defines which `yAxis` the point is connected to.
+     * It refers to either the axis id or the index of the axis in the `yAxis`
+     * array.
+     */
+    yAxis?: number;
+}
+export interface NavigationBindingsRectangleAnnotationAnnotationsTypesFibonacciTypePointsOptions {
+    controlPoint?: number;
+    /**
+     * (Highstock) The x position of the point.
+     */
+    x?: number;
+    /**
+     * (Highstock) The y position of the point.
+     */
+    y?: number;
+}
+export interface NavigationBindingsRectangleAnnotationAnnotationsTypesInfinityLineControlPointStyleOptions {
+    cursor?: string;
+    fill?: string;
+    stroke?: string;
+    "stroke-width"?: number;
+}
+/**
+ * (Highstock) Options for annotation's labels. Each label inherits options from
+ * the labelOptions object. An option from the labelOptions can be overwritten
+ * by config for a specific label.
+ */
+export interface NavigationBindingsRectangleAnnotationAnnotationsTypesInfinityLineLabelOptions {
+    /**
+     * (Highstock) Accessibility options for an annotation label.
+     */
+    accessibility?: AnnotationLabelAccessibilityOptionsObject;
+    /**
+     * (Highstock) The alignment of the annotation's label. If right, the right
+     * side of the label should be touching the point.
+     */
+    align?: AlignValue;
+    /**
+     * (Highstock) Whether to allow the annotation's labels to overlap. To make
+     * the labels less sensitive for overlapping, the can be set to 0.
+     */
+    allowOverlap?: boolean;
+    /**
+     * (Highstock) The background color or gradient for the annotation's label.
+     */
+    backgroundColor?: ColorType;
+    /**
+     * (Highstock) The border color for the annotation's label.
+     */
+    borderColor?: ColorType;
+    /**
+     * (Highstock) The border radius in pixels for the annotation's label.
+     */
+    borderRadius?: number;
+    /**
+     * (Highstock) The border width in pixels for the annotation's label.
+     */
+    borderWidth?: number;
+    /**
+     * (Highstock) A class name for styling by CSS.
+     */
+    className?: string;
+    /**
+     * (Highstock) Whether to hide the annotation's label that is outside the
+     * plot area.
+     */
+    crop?: boolean;
+    /**
+     * (Highstock) The label's pixel distance from the point.
+     */
+    distance?: number;
+    /**
+     * (Highstock) A format string for the data label.
+     */
+    format?: string;
+    /**
+     * (Highstock) Callback JavaScript function to format the annotation's
+     * label. Note that if a `format` or `text` are defined, the format or text
+     * take precedence and the formatter is ignored. `This` refers to a point
+     * object. The callback also receives an argument `ctx` so that
+     * arrow-functions can access the same context (the point in this case) as
+     * normal functions can using `this`. Since v12.6.0, the callback receives
+     * `ctx`.
+     */
+    formatter?: FormatterCallbackFunction<Point>;
+    /**
+     * (Highstock) Whether all the labels for an annotation are visible in the
+     * exported data table.
+     */
+    includeInDataExport?: boolean;
+    /**
+     * (Highstock) How to handle the annotation's label that flow outside the
+     * plot area. The justify option aligns the label inside the plot area.
+     */
+    overflow?: OptionsOverflowValue;
+    /**
+     * (Highstock) When either the borderWidth or the backgroundColor is set,
+     * this is the padding within the box.
+     */
+    padding?: number;
+    /**
+     * (Highstock) The shadow of the box. The shadow can be an object
+     * configuration containing `color`, `offsetX`, `offsetY`, `opacity` and
+     * `width`.
+     */
+    shadow?: (boolean|ShadowOptionsObject);
+    /**
+     * (Highstock) The name of a symbol to use for the border around the label.
+     * Symbols are predefined functions on the Renderer object.
+     */
+    shape?: string;
+    /**
+     * (Highstock) Styles for the annotation's label.
+     */
+    style?: CSSObject;
+    /**
+     * (Highstock) Alias for the format option.
+     */
+    text?: string;
+    /**
+     * (Highstock) Whether to use HTML to render the annotation's label.
+     */
+    useHTML?: boolean;
+    /**
+     * (Highstock) The vertical alignment of the annotation's label.
+     */
+    verticalAlign?: VerticalAlignValue;
+    /**
+     * (Highstock) The x position offset of the label relative to the point.
+     * Note that if a `distance` is defined, the distance takes precedence over
+     * `x` and `y` options.
+     */
+    x?: number;
+    /**
+     * (Highstock) The y position offset of the label relative to the point.
+     * Note that if a `distance` is defined, the distance takes precedence over
+     * `x` and `y` options.
+     */
+    y?: number;
+}
+/**
+ * (Highstock) Options for the infinity line annotation type.
+ */
+export interface NavigationBindingsRectangleAnnotationAnnotationsTypesInfinityLineOptions {
+    /**
+     * (Highstock) Options for annotation's control points. Each control point
+     * inherits options from controlPointOptions object. Options from the
+     * controlPointOptions can be overwritten by options in a specific control
+     * point.
+     */
+    controlPointOptions?: AnnotationControlPointOptionsObject;
+    /**
+     * (Highstock) Options for annotation's labels. Each label inherits options
+     * from the labelOptions object. An option from the labelOptions can be
+     * overwritten by config for a specific label.
+     */
+    labelOptions?: NavigationBindingsRectangleAnnotationAnnotationsTypesInfinityLineLabelOptions;
+    /**
+     * (Highstock) Additional options for an annotation with the type.
+     */
+    typeOptions?: NavigationBindingsRectangleAnnotationAnnotationsTypesInfinityLineTypeOptions;
+}
+/**
+ * (Highstock) Line options.
+ */
+export interface NavigationBindingsRectangleAnnotationAnnotationsTypesInfinityLineTypeLineOptions {
+    fill?: string;
+}
+/**
+ * (Highstock) Additional options for an annotation with the type.
+ */
+export interface NavigationBindingsRectangleAnnotationAnnotationsTypesInfinityLineTypeOptions {
+    /**
+     * (Highstock) Line options.
+     */
+    line?: NavigationBindingsRectangleAnnotationAnnotationsTypesInfinityLineTypeLineOptions;
+    points?: Array<NavigationBindingsRectangleAnnotationAnnotationsTypesInfinityLineTypePointsOptions>;
+    /**
+     * (Highstock) This option defines which `xAxis` the point is connected to.
+     * It refers to either the axis id or the index of the axis in the `xAxis`
+     * array.
+     */
+    xAxis?: number;
+    /**
+     * (Highstock) This option defines which `yAxis` the point is connected to.
+     * It refers to either the axis id or the index of the axis in the `yAxis`
+     * array.
+     */
+    yAxis?: number;
+}
+export interface NavigationBindingsRectangleAnnotationAnnotationsTypesInfinityLineTypePointsOptions {
+    controlPoint?: number;
+    /**
+     * (Highstock) The x position of the point.
+     */
+    x?: number;
+    /**
+     * (Highstock) The y position of the point.
+     */
+    y?: number;
+}
+export interface NavigationBindingsRectangleAnnotationAnnotationsTypesMeasureControlPointStyleOptions {
+    cursor?: string;
+    fill?: string;
+    stroke?: string;
+    "stroke-width"?: number;
+}
+/**
+ * (Highstock) Options for the measure annotation type.
+ */
+export interface NavigationBindingsRectangleAnnotationAnnotationsTypesMeasureOptions {
+    /**
+     * (Highstock) Options for annotation's control points. Each control point
+     * inherits options from controlPointOptions object. Options from the
+     * controlPointOptions can be overwritten by options in a specific control
+     * point.
+     */
+    controlPointOptions?: AnnotationControlPointOptionsObject;
+    /**
+     * (Highstock) Additional options for an annotation with the type.
+     */
+    typeOptions?: NavigationBindingsRectangleAnnotationAnnotationsTypesMeasureTypeOptions;
+}
+export interface NavigationBindingsRectangleAnnotationAnnotationsTypesMeasureTypeBackgroundOptions {
+    /**
+     * (Highstock) The color of the rectangle.
+     */
+    fill?: string;
+    /**
+     * (Highstock) The color of border.
+     */
+    stroke?: string;
+    /**
+     * (Highstock) The width of border.
+     */
+    strokeWidth?: number;
+}
+/**
+ * (Highstock) Configure a crosshair that is horizontally placed in middle of
+ * rectangle.
+ */
+export interface NavigationBindingsRectangleAnnotationAnnotationsTypesMeasureTypeCrosshairXOptions {
+    /**
+     * (Highstock) The dash or dot style of the crosshair's line. For possible
+     * values, see this demonstration.
+     */
+    dashStyle?: DashStyleValue;
+    /**
+     * (Highstock) Enable or disable the horizontal crosshair.
+     */
+    enabled?: boolean;
+    /**
+     * (Highstock) The marker-end defines the arrowhead that will be drawn at
+     * the final vertex of the given crosshair's path.
+     */
+    markerEnd?: string;
+    /**
+     * (Highstock) The Z index of the crosshair in annotation.
+     */
+    zIndex?: number;
+}
+/**
+ * (Highstock) Configure a crosshair that is vertically placed in middle of
+ * rectangle.
+ */
+export interface NavigationBindingsRectangleAnnotationAnnotationsTypesMeasureTypeCrosshairYOptions {
+    /**
+     * (Highstock) The dash or dot style of the crosshair's line. For possible
+     * values, see this demonstration.
+     */
+    dashStyle?: DashStyleValue;
+    /**
+     * (Highstock) Enable or disable the vertical crosshair.
+     */
+    enabled?: boolean;
+    /**
+     * (Highstock) The marker-end defines the arrowhead that will be drawn at
+     * the final vertex of the given crosshair's path.
+     */
+    markerEnd?: OptionsMarkerEndValue;
+    /**
+     * (Highstock) The Z index of the crosshair in annotation.
+     */
+    zIndex?: number;
+}
+export interface NavigationBindingsRectangleAnnotationAnnotationsTypesMeasureTypeLabelOptions {
+    /**
+     * (Highstock) Enable or disable the label text (min, max, average, bins
+     * values).
+     *
+     * Defaults to true.
+     */
+    enabled?: boolean;
+    /**
+     * (Highstock) Formatter function for the label text.
+     *
+     * Available data are:
+     *
+     *  (see online documentation for example)
+     */
+    formatter?: Function;
+    /**
+     * (Highstock) CSS styles for the measure label.
+     */
+    style?: (CSSObject|NavigationBindingsRectangleAnnotationAnnotationsTypesMeasureTypeLabelStyleOptions);
+}
+/**
+ * (Highstock) CSS styles for the measure label.
+ */
+export interface NavigationBindingsRectangleAnnotationAnnotationsTypesMeasureTypeLabelStyleOptions {
+    color?: string;
+    fontSize?: number;
+}
+/**
+ * (Highstock) Line options.
+ */
+export interface NavigationBindingsRectangleAnnotationAnnotationsTypesMeasureTypeLineOptions {
+    fill?: string;
+}
+/**
+ * (Highstock) Additional options for an annotation with the type.
+ */
+export interface NavigationBindingsRectangleAnnotationAnnotationsTypesMeasureTypeOptions {
+    background?: NavigationBindingsRectangleAnnotationAnnotationsTypesMeasureTypeBackgroundOptions;
+    /**
+     * (Highstock) Configure a crosshair that is horizontally placed in middle
+     * of rectangle.
+     */
+    crosshairX?: NavigationBindingsRectangleAnnotationAnnotationsTypesMeasureTypeCrosshairXOptions;
+    /**
+     * (Highstock) Configure a crosshair that is vertically placed in middle of
+     * rectangle.
+     */
+    crosshairY?: NavigationBindingsRectangleAnnotationAnnotationsTypesMeasureTypeCrosshairYOptions;
+    label?: NavigationBindingsRectangleAnnotationAnnotationsTypesMeasureTypeLabelOptions;
+    /**
+     * (Highstock) Line options.
+     */
+    line?: NavigationBindingsRectangleAnnotationAnnotationsTypesMeasureTypeLineOptions;
+    points?: Array<NavigationBindingsRectangleAnnotationAnnotationsTypesMeasureTypePointsOptions>;
+    /**
+     * (Highstock) Decides in what dimensions the user can resize by dragging
+     * the mouse. Can be one of x, y or xy.
+     */
+    selectType?: string;
+    /**
+     * (Highstock) This number defines which xAxis the point is connected to. It
+     * refers to either the axis id or the index of the axis in the xAxis array.
+     */
+    xAxis?: number;
+    /**
+     * (Highstock) This number defines which yAxis the point is connected to. It
+     * refers to either the axis id or the index of the axis in the yAxis array.
+     */
+    yAxis?: number;
+}
+export interface NavigationBindingsRectangleAnnotationAnnotationsTypesMeasureTypePointsOptions {
+    controlPoint?: number;
+    /**
+     * (Highstock) The x position of the point.
+     */
+    x?: number;
+    /**
+     * (Highstock) The y position of the point.
+     */
+    y?: number;
+}
+/**
+ * (Highstock) Option override for specific advanced annotation types. This
+ * collection is intended for general theming using `Highcharts.setOptions()`.
+ */
+export interface NavigationBindingsRectangleAnnotationAnnotationsTypesOptions {
+    /**
+     * (Highstock) Options for the crooked line annotation type.
+     */
+    crookedLine?: NavigationBindingsRectangleAnnotationAnnotationsTypesCrookedLineOptions;
+    /**
+     * (Highstock) Options for the elliott wave annotation type.
+     */
+    elliottWave?: NavigationBindingsRectangleAnnotationAnnotationsTypesElliottWaveOptions;
+    /**
+     * (Highstock) Options for the fibonacci annotation type.
+     */
+    fibonacci?: NavigationBindingsRectangleAnnotationAnnotationsTypesFibonacciOptions;
+    /**
+     * (Highstock) Options for the fibonacci time zones annotation type.
+     */
+    fibonacciTimeZones?: NavigationBindingsRectangleAnnotationAnnotationsTypesFibonacciTimeZonesOptions;
+    /**
+     * (Highstock) Options for the infinity line annotation type.
+     */
+    infinityLine?: NavigationBindingsRectangleAnnotationAnnotationsTypesInfinityLineOptions;
+    /**
+     * (Highstock) Options for the measure annotation type.
+     */
+    measure?: NavigationBindingsRectangleAnnotationAnnotationsTypesMeasureOptions;
+    /**
+     * (Highstock) Options for the pitchfork annotation type.
+     */
+    pitchfork?: NavigationBindingsRectangleAnnotationAnnotationsTypesPitchforkOptions;
+    /**
+     * (Highstock) Options for the time cycles annotation type.
+     */
+    timeCycles?: NavigationBindingsRectangleAnnotationAnnotationsTypesTimeCyclesOptions;
+    /**
+     * (Highstock) Options for the tunnel annotation type.
+     */
+    tunnel?: NavigationBindingsRectangleAnnotationAnnotationsTypesTunnelOptions;
+    /**
+     * (Highstock) Options for the vertical line annotation type.
+     */
+    verticalLine?: NavigationBindingsRectangleAnnotationAnnotationsTypesVerticalLineOptions;
+}
+export interface NavigationBindingsRectangleAnnotationAnnotationsTypesPitchforkControlPointStyleOptions {
+    cursor?: string;
+    fill?: string;
+    stroke?: string;
+    "stroke-width"?: number;
+}
+/**
+ * (Highstock) Options for annotation's labels. Each label inherits options from
+ * the labelOptions object. An option from the labelOptions can be overwritten
+ * by config for a specific label.
+ */
+export interface NavigationBindingsRectangleAnnotationAnnotationsTypesPitchforkLabelOptions {
+    /**
+     * (Highstock) Accessibility options for an annotation label.
+     */
+    accessibility?: AnnotationLabelAccessibilityOptionsObject;
+    /**
+     * (Highstock) The alignment of the annotation's label. If right, the right
+     * side of the label should be touching the point.
+     */
+    align?: AlignValue;
+    /**
+     * (Highstock) Whether to allow the annotation's labels to overlap. To make
+     * the labels less sensitive for overlapping, the can be set to 0.
+     */
+    allowOverlap?: boolean;
+    /**
+     * (Highstock) The background color or gradient for the annotation's label.
+     */
+    backgroundColor?: ColorType;
+    /**
+     * (Highstock) The border color for the annotation's label.
+     */
+    borderColor?: ColorType;
+    /**
+     * (Highstock) The border radius in pixels for the annotation's label.
+     */
+    borderRadius?: number;
+    /**
+     * (Highstock) The border width in pixels for the annotation's label.
+     */
+    borderWidth?: number;
+    /**
+     * (Highstock) A class name for styling by CSS.
+     */
+    className?: string;
+    /**
+     * (Highstock) Whether to hide the annotation's label that is outside the
+     * plot area.
+     */
+    crop?: boolean;
+    /**
+     * (Highstock) The label's pixel distance from the point.
+     */
+    distance?: number;
+    /**
+     * (Highstock) A format string for the data label.
+     */
+    format?: string;
+    /**
+     * (Highstock) Callback JavaScript function to format the annotation's
+     * label. Note that if a `format` or `text` are defined, the format or text
+     * take precedence and the formatter is ignored. `This` refers to a point
+     * object. The callback also receives an argument `ctx` so that
+     * arrow-functions can access the same context (the point in this case) as
+     * normal functions can using `this`. Since v12.6.0, the callback receives
+     * `ctx`.
+     */
+    formatter?: FormatterCallbackFunction<Point>;
+    /**
+     * (Highstock) Whether all the labels for an annotation are visible in the
+     * exported data table.
+     */
+    includeInDataExport?: boolean;
+    /**
+     * (Highstock) How to handle the annotation's label that flow outside the
+     * plot area. The justify option aligns the label inside the plot area.
+     */
+    overflow?: OptionsOverflowValue;
+    /**
+     * (Highstock) When either the borderWidth or the backgroundColor is set,
+     * this is the padding within the box.
+     */
+    padding?: number;
+    /**
+     * (Highstock) The shadow of the box. The shadow can be an object
+     * configuration containing `color`, `offsetX`, `offsetY`, `opacity` and
+     * `width`.
+     */
+    shadow?: (boolean|ShadowOptionsObject);
+    /**
+     * (Highstock) The name of a symbol to use for the border around the label.
+     * Symbols are predefined functions on the Renderer object.
+     */
+    shape?: string;
+    /**
+     * (Highstock) Styles for the annotation's label.
+     */
+    style?: CSSObject;
+    /**
+     * (Highstock) Alias for the format option.
+     */
+    text?: string;
+    /**
+     * (Highstock) Whether to use HTML to render the annotation's label.
+     */
+    useHTML?: boolean;
+    /**
+     * (Highstock) The vertical alignment of the annotation's label.
+     */
+    verticalAlign?: VerticalAlignValue;
+    /**
+     * (Highstock) The x position offset of the label relative to the point.
+     * Note that if a `distance` is defined, the distance takes precedence over
+     * `x` and `y` options.
+     */
+    x?: number;
+    /**
+     * (Highstock) The y position offset of the label relative to the point.
+     * Note that if a `distance` is defined, the distance takes precedence over
+     * `x` and `y` options.
+     */
+    y?: number;
+}
+/**
+ * (Highstock) Options for the pitchfork annotation type.
+ */
+export interface NavigationBindingsRectangleAnnotationAnnotationsTypesPitchforkOptions {
+    /**
+     * (Highstock) Options for annotation's control points. Each control point
+     * inherits options from controlPointOptions object. Options from the
+     * controlPointOptions can be overwritten by options in a specific control
+     * point.
+     */
+    controlPointOptions?: AnnotationControlPointOptionsObject;
+    /**
+     * (Highstock) Options for annotation's labels. Each label inherits options
+     * from the labelOptions object. An option from the labelOptions can be
+     * overwritten by config for a specific label.
+     */
+    labelOptions?: NavigationBindingsRectangleAnnotationAnnotationsTypesPitchforkLabelOptions;
+    /**
+     * (Highstock) Additional options for an annotation with the type.
+     */
+    typeOptions?: NavigationBindingsRectangleAnnotationAnnotationsTypesPitchforkTypeOptions;
+}
+/**
+ * (Highstock) Inner background options.
+ */
+export interface NavigationBindingsRectangleAnnotationAnnotationsTypesPitchforkTypeInnerBackgroundOptions {
+    /**
+     * (Highstock) Name of the dash style to use for the shape's stroke.
+     */
+    dashStyle?: DashStyleValue;
+    /**
+     * (Highstock) The color of the shape's fill.
+     */
+    fill?: string;
+    /**
+     * (Highstock) The radius of the `ellipse` shape in y direction. Can be
+     * defined in pixels or yAxis units, if shapes.yAxis index is defined.
+     */
+    ry?: number;
+    /**
+     * (Highstock) Defines additional snapping area around an annotation making
+     * this annotation to focus. Defined in pixels.
+     */
+    snap?: number;
+    /**
+     * (Highstock) The URL for an image to use as the annotation shape. Note,
+     * type has to be set to `'image'`.
+     */
+    src?: string;
+    /**
+     * (Highstock) The color of the shape's stroke.
+     */
+    stroke?: ColorType;
+    /**
+     * (Highstock) The pixel stroke width of the shape.
+     */
+    strokeWidth?: number;
+    /**
+     * (Highstock) The xAxis index which should be used for annotation's sizes
+     * and points coordinates conversion.
+     *
+     * This option is used for `rect` shape width, and all shapes point and
+     * points coordinates.
+     */
+    xAxis?: number;
+    /**
+     * (Highstock) The yAxis index which should be used for annotation's sizes
+     * and points coordinates conversion.
+     *
+     * This option is used for `rect` shape height, `circle` shape radius,
+     * `ellipse` y direction radius, and all shapes point and points
+     * coordinates.
+     */
+    yAxis?: number;
+}
+/**
+ * (Highstock) Additional options for an annotation with the type.
+ */
+export interface NavigationBindingsRectangleAnnotationAnnotationsTypesPitchforkTypeOptions {
+    /**
+     * (Highstock) Inner background options.
+     */
+    innerBackground?: NavigationBindingsRectangleAnnotationAnnotationsTypesPitchforkTypeInnerBackgroundOptions;
+    /**
+     * (Highstock) Outer background options.
+     */
+    outerBackground?: NavigationBindingsRectangleAnnotationAnnotationsTypesPitchforkTypeOuterBackgroundOptions;
+    points?: Array<NavigationBindingsRectangleAnnotationAnnotationsTypesPitchforkTypePointsOptions>;
+    /**
+     * (Highstock) This option defines which `xAxis` the point is connected to.
+     * It refers to either the axis id or the index of the axis in the `xAxis`
+     * array.
+     */
+    xAxis?: number;
+    /**
+     * (Highstock) This option defines which `yAxis` the point is connected to.
+     * It refers to either the axis id or the index of the axis in the `yAxis`
+     * array.
+     */
+    yAxis?: number;
+}
+/**
+ * (Highstock) Outer background options.
+ */
+export interface NavigationBindingsRectangleAnnotationAnnotationsTypesPitchforkTypeOuterBackgroundOptions {
+    /**
+     * (Highstock) Name of the dash style to use for the shape's stroke.
+     */
+    dashStyle?: DashStyleValue;
+    /**
+     * (Highstock) The color of the shape's fill.
+     */
+    fill?: string;
+    /**
+     * (Highstock) The radius of the `ellipse` shape in y direction. Can be
+     * defined in pixels or yAxis units, if shapes.yAxis index is defined.
+     */
+    ry?: number;
+    /**
+     * (Highstock) Defines additional snapping area around an annotation making
+     * this annotation to focus. Defined in pixels.
+     */
+    snap?: number;
+    /**
+     * (Highstock) The URL for an image to use as the annotation shape. Note,
+     * type has to be set to `'image'`.
+     */
+    src?: string;
+    /**
+     * (Highstock) The color of the shape's stroke.
+     */
+    stroke?: ColorType;
+    /**
+     * (Highstock) The pixel stroke width of the shape.
+     */
+    strokeWidth?: number;
+    /**
+     * (Highstock) The xAxis index which should be used for annotation's sizes
+     * and points coordinates conversion.
+     *
+     * This option is used for `rect` shape width, and all shapes point and
+     * points coordinates.
+     */
+    xAxis?: number;
+    /**
+     * (Highstock) The yAxis index which should be used for annotation's sizes
+     * and points coordinates conversion.
+     *
+     * This option is used for `rect` shape height, `circle` shape radius,
+     * `ellipse` y direction radius, and all shapes point and points
+     * coordinates.
+     */
+    yAxis?: number;
+}
+export interface NavigationBindingsRectangleAnnotationAnnotationsTypesPitchforkTypePointsOptions {
+    controlPoint?: number;
+    /**
+     * (Highstock) The x position of the point.
+     */
+    x?: number;
+    /**
+     * (Highstock) The y position of the point.
+     */
+    y?: number;
+}
+export interface NavigationBindingsRectangleAnnotationAnnotationsTypesTimeCyclesControlPointStyleOptions {
+    cursor?: string;
+    fill?: string;
+    stroke?: string;
+    "stroke-width"?: number;
+}
+/**
+ * (Highstock) Options for the time cycles annotation type.
+ */
+export interface NavigationBindingsRectangleAnnotationAnnotationsTypesTimeCyclesOptions {
+    /**
+     * (Highstock) Options for annotation's control points. Each control point
+     * inherits options from controlPointOptions object. Options from the
+     * controlPointOptions can be overwritten by options in a specific control
+     * point.
+     */
+    controlPointOptions?: AnnotationControlPointOptionsObject;
+    /**
+     * (Highstock) Additional options for an annotation with the type.
+     */
+    typeOptions?: NavigationBindingsRectangleAnnotationAnnotationsTypesTimeCyclesTypeOptions;
+}
+/**
+ * (Highstock) Line options.
+ */
+export interface NavigationBindingsRectangleAnnotationAnnotationsTypesTimeCyclesTypeLineOptions {
+    fill?: string;
+}
+/**
+ * (Highstock) Additional options for an annotation with the type.
+ */
+export interface NavigationBindingsRectangleAnnotationAnnotationsTypesTimeCyclesTypeOptions {
+    /**
+     * (Highstock) Line options.
+     */
+    line?: NavigationBindingsRectangleAnnotationAnnotationsTypesTimeCyclesTypeLineOptions;
+    points?: Array<NavigationBindingsRectangleAnnotationAnnotationsTypesTimeCyclesTypePointsOptions>;
+    /**
+     * (Highstock) This option defines which `xAxis` the point is connected to.
+     * It refers to either the axis id or the index of the axis in the `xAxis`
+     * array.
+     */
+    xAxis?: number;
+    /**
+     * (Highstock) This option defines which `yAxis` the point is connected to.
+     * It refers to either the axis id or the index of the axis in the `yAxis`
+     * array.
+     */
+    yAxis?: number;
+}
+export interface NavigationBindingsRectangleAnnotationAnnotationsTypesTimeCyclesTypePointsOptions {
+    controlPoint?: number;
+    /**
+     * (Highstock) The x position of the point.
+     */
+    x?: number;
+}
+export interface NavigationBindingsRectangleAnnotationAnnotationsTypesTunnelControlPointStyleOptions {
+    cursor?: string;
+    fill?: string;
+    stroke?: string;
+    "stroke-width"?: number;
+}
+/**
+ * (Highstock) Options for annotation's labels. Each label inherits options from
+ * the labelOptions object. An option from the labelOptions can be overwritten
+ * by config for a specific label.
+ */
+export interface NavigationBindingsRectangleAnnotationAnnotationsTypesTunnelLabelOptions {
+    /**
+     * (Highstock) Accessibility options for an annotation label.
+     */
+    accessibility?: AnnotationLabelAccessibilityOptionsObject;
+    /**
+     * (Highstock) The alignment of the annotation's label. If right, the right
+     * side of the label should be touching the point.
+     */
+    align?: AlignValue;
+    /**
+     * (Highstock) Whether to allow the annotation's labels to overlap. To make
+     * the labels less sensitive for overlapping, the can be set to 0.
+     */
+    allowOverlap?: boolean;
+    /**
+     * (Highstock) The background color or gradient for the annotation's label.
+     */
+    backgroundColor?: ColorType;
+    /**
+     * (Highstock) The border color for the annotation's label.
+     */
+    borderColor?: ColorType;
+    /**
+     * (Highstock) The border radius in pixels for the annotation's label.
+     */
+    borderRadius?: number;
+    /**
+     * (Highstock) The border width in pixels for the annotation's label.
+     */
+    borderWidth?: number;
+    /**
+     * (Highstock) A class name for styling by CSS.
+     */
+    className?: string;
+    /**
+     * (Highstock) Whether to hide the annotation's label that is outside the
+     * plot area.
+     */
+    crop?: boolean;
+    /**
+     * (Highstock) The label's pixel distance from the point.
+     */
+    distance?: number;
+    /**
+     * (Highstock) A format string for the data label.
+     */
+    format?: string;
+    /**
+     * (Highstock) Callback JavaScript function to format the annotation's
+     * label. Note that if a `format` or `text` are defined, the format or text
+     * take precedence and the formatter is ignored. `This` refers to a point
+     * object. The callback also receives an argument `ctx` so that
+     * arrow-functions can access the same context (the point in this case) as
+     * normal functions can using `this`. Since v12.6.0, the callback receives
+     * `ctx`.
+     */
+    formatter?: FormatterCallbackFunction<Point>;
+    /**
+     * (Highstock) Whether all the labels for an annotation are visible in the
+     * exported data table.
+     */
+    includeInDataExport?: boolean;
+    /**
+     * (Highstock) How to handle the annotation's label that flow outside the
+     * plot area. The justify option aligns the label inside the plot area.
+     */
+    overflow?: OptionsOverflowValue;
+    /**
+     * (Highstock) When either the borderWidth or the backgroundColor is set,
+     * this is the padding within the box.
+     */
+    padding?: number;
+    /**
+     * (Highstock) The shadow of the box. The shadow can be an object
+     * configuration containing `color`, `offsetX`, `offsetY`, `opacity` and
+     * `width`.
+     */
+    shadow?: (boolean|ShadowOptionsObject);
+    /**
+     * (Highstock) The name of a symbol to use for the border around the label.
+     * Symbols are predefined functions on the Renderer object.
+     */
+    shape?: string;
+    /**
+     * (Highstock) Styles for the annotation's label.
+     */
+    style?: CSSObject;
+    /**
+     * (Highstock) Alias for the format option.
+     */
+    text?: string;
+    /**
+     * (Highstock) Whether to use HTML to render the annotation's label.
+     */
+    useHTML?: boolean;
+    /**
+     * (Highstock) The vertical alignment of the annotation's label.
+     */
+    verticalAlign?: VerticalAlignValue;
+    /**
+     * (Highstock) The x position offset of the label relative to the point.
+     * Note that if a `distance` is defined, the distance takes precedence over
+     * `x` and `y` options.
+     */
+    x?: number;
+    /**
+     * (Highstock) The y position offset of the label relative to the point.
+     * Note that if a `distance` is defined, the distance takes precedence over
+     * `x` and `y` options.
+     */
+    y?: number;
+}
+/**
+ * (Highstock) Options for the tunnel annotation type.
+ */
+export interface NavigationBindingsRectangleAnnotationAnnotationsTypesTunnelOptions {
+    /**
+     * (Highstock) Options for annotation's control points. Each control point
+     * inherits options from controlPointOptions object. Options from the
+     * controlPointOptions can be overwritten by options in a specific control
+     * point.
+     */
+    controlPointOptions?: AnnotationControlPointOptionsObject;
+    /**
+     * (Highstock) Options for annotation's labels. Each label inherits options
+     * from the labelOptions object. An option from the labelOptions can be
+     * overwritten by config for a specific label.
+     */
+    labelOptions?: NavigationBindingsRectangleAnnotationAnnotationsTypesTunnelLabelOptions;
+    /**
+     * (Highstock) Additional options for an annotation with the type.
+     */
+    typeOptions?: NavigationBindingsRectangleAnnotationAnnotationsTypesTunnelTypeOptions;
+}
+/**
+ * (Highstock) Background options.
+ */
+export interface NavigationBindingsRectangleAnnotationAnnotationsTypesTunnelTypeBackgroundOptions {
+    fill?: string;
+    strokeWidth?: number;
+}
+export interface NavigationBindingsRectangleAnnotationAnnotationsTypesTunnelTypeHeightControlPointStyleOptions {
+    cursor?: string;
+    fill?: string;
+    stroke?: string;
+    "stroke-width"?: number;
+}
+/**
+ * (Highstock) Line options.
+ */
+export interface NavigationBindingsRectangleAnnotationAnnotationsTypesTunnelTypeLineOptions {
+    fill?: string;
+    strokeWidth?: number;
+}
+/**
+ * (Highstock) Additional options for an annotation with the type.
+ */
+export interface NavigationBindingsRectangleAnnotationAnnotationsTypesTunnelTypeOptions {
+    /**
+     * (Highstock) Background options.
+     */
+    background?: (object|NavigationBindingsRectangleAnnotationAnnotationsTypesTunnelTypeBackgroundOptions);
+    /**
+     * (Highstock) The height of the annotation in terms of yAxis.
+     */
+    height?: number;
+    /**
+     * (Highstock) Options for the control point which controls the annotation's
+     * height.
+     */
+    heightControlPoint?: AnnotationControlPointOptionsObject;
+    /**
+     * (Highstock) Line options.
+     */
+    line?: NavigationBindingsRectangleAnnotationAnnotationsTypesTunnelTypeLineOptions;
+    points?: Array<NavigationBindingsRectangleAnnotationAnnotationsTypesTunnelTypePointsOptions>;
+    /**
+     * (Highstock) This option defines which `xAxis` the point is connected to.
+     * It refers to either the axis id or the index of the axis in the `xAxis`
+     * array.
+     */
+    xAxis?: number;
+    /**
+     * (Highstock) This option defines which `yAxis` the point is connected to.
+     * It refers to either the axis id or the index of the axis in the `yAxis`
+     * array.
+     */
+    yAxis?: number;
+}
+export interface NavigationBindingsRectangleAnnotationAnnotationsTypesTunnelTypePointsOptions {
+    controlPoint?: number;
+    /**
+     * (Highstock) The x position of the point.
+     */
+    x?: number;
+    /**
+     * (Highstock) The y position of the point.
+     */
+    y?: number;
+}
+/**
+ * (Highstock) Options for annotation's labels. Each label inherits options from
+ * the labelOptions object. An option from the labelOptions can be overwritten
+ * by config for a specific label.
+ */
+export interface NavigationBindingsRectangleAnnotationAnnotationsTypesVerticalLineLabelOptions {
+    /**
+     * (Highstock) Accessibility options for an annotation label.
+     */
+    accessibility?: AnnotationLabelAccessibilityOptionsObject;
+    /**
+     * (Highstock) The alignment of the annotation's label. If right, the right
+     * side of the label should be touching the point.
+     */
+    align?: AlignValue;
+    /**
+     * (Highstock) Whether to allow the annotation's labels to overlap. To make
+     * the labels less sensitive for overlapping, the can be set to 0.
+     */
+    allowOverlap?: boolean;
+    /**
+     * (Highstock) The background color or gradient for the annotation's label.
+     */
+    backgroundColor?: ColorType;
+    /**
+     * (Highstock) The border color for the annotation's label.
+     */
+    borderColor?: ColorType;
+    /**
+     * (Highstock) The border radius in pixels for the annotation's label.
+     */
+    borderRadius?: number;
+    /**
+     * (Highstock) The border width in pixels for the annotation's label.
+     */
+    borderWidth?: number;
+    /**
+     * (Highstock) A class name for styling by CSS.
+     */
+    className?: string;
+    /**
+     * (Highstock) Whether to hide the annotation's label that is outside the
+     * plot area.
+     */
+    crop?: boolean;
+    /**
+     * (Highstock) The label's pixel distance from the point.
+     */
+    distance?: number;
+    /**
+     * (Highstock) A format string for the data label.
+     */
+    format?: string;
+    /**
+     * (Highstock) Callback JavaScript function to format the annotation's
+     * label. Note that if a `format` or `text` are defined, the format or text
+     * take precedence and the formatter is ignored. `This` refers to a point
+     * object. The callback also receives an argument `ctx` so that
+     * arrow-functions can access the same context (the point in this case) as
+     * normal functions can using `this`. Since v12.6.0, the callback receives
+     * `ctx`.
+     */
+    formatter?: FormatterCallbackFunction<Point>;
+    /**
+     * (Highstock) Whether all the labels for an annotation are visible in the
+     * exported data table.
+     */
+    includeInDataExport?: boolean;
+    /**
+     * (Highstock) How to handle the annotation's label that flow outside the
+     * plot area. The justify option aligns the label inside the plot area.
+     */
+    overflow?: OptionsOverflowValue;
+    /**
+     * (Highstock) When either the borderWidth or the backgroundColor is set,
+     * this is the padding within the box.
+     */
+    padding?: number;
+    /**
+     * (Highstock) The shadow of the box. The shadow can be an object
+     * configuration containing `color`, `offsetX`, `offsetY`, `opacity` and
+     * `width`.
+     */
+    shadow?: (boolean|ShadowOptionsObject);
+    /**
+     * (Highstock) The name of a symbol to use for the border around the label.
+     * Symbols are predefined functions on the Renderer object.
+     */
+    shape?: string;
+    /**
+     * (Highstock) Styles for the annotation's label.
+     */
+    style?: (CSSObject|NavigationBindingsRectangleAnnotationAnnotationsTypesVerticalLineLabelStyleOptions);
+    /**
+     * (Highstock) Alias for the format option.
+     */
+    text?: string;
+    /**
+     * (Highstock) Whether to use HTML to render the annotation's label.
+     */
+    useHTML?: boolean;
+    /**
+     * (Highstock) The vertical alignment of the annotation's label.
+     */
+    verticalAlign?: VerticalAlignValue;
+    /**
+     * (Highstock) The x position offset of the label relative to the point.
+     * Note that if a `distance` is defined, the distance takes precedence over
+     * `x` and `y` options.
+     */
+    x?: number;
+    /**
+     * (Highstock) The y position offset of the label relative to the point.
+     * Note that if a `distance` is defined, the distance takes precedence over
+     * `x` and `y` options.
+     */
+    y?: number;
+}
+/**
+ * (Highstock) Styles for the annotation's label.
+ */
+export interface NavigationBindingsRectangleAnnotationAnnotationsTypesVerticalLineLabelStyleOptions {
+    color?: string;
+    fontSize?: number;
+}
+/**
+ * (Highstock) Options for the vertical line annotation type.
+ */
+export interface NavigationBindingsRectangleAnnotationAnnotationsTypesVerticalLineOptions {
+    /**
+     * (Highstock) Options for annotation's labels. Each label inherits options
+     * from the labelOptions object. An option from the labelOptions can be
+     * overwritten by config for a specific label.
+     */
+    labelOptions?: NavigationBindingsRectangleAnnotationAnnotationsTypesVerticalLineLabelOptions;
+    /**
+     * (Highstock) Additional options for an annotation with the type.
+     */
+    typeOptions?: NavigationBindingsRectangleAnnotationAnnotationsTypesVerticalLineTypeOptions;
+}
+/**
+ * (Highstock) Connector options.
+ */
+export interface NavigationBindingsRectangleAnnotationAnnotationsTypesVerticalLineTypeConnectorOptions {
+    /**
+     * (Highstock) Name of the dash style to use for the shape's stroke.
+     */
+    dashStyle?: DashStyleValue;
+    /**
+     * (Highstock) The color of the shape's fill.
+     */
+    fill?: ColorType;
+    markerEnd?: string;
+    /**
+     * (Highstock) The radius of the `ellipse` shape in y direction. Can be
+     * defined in pixels or yAxis units, if shapes.yAxis index is defined.
+     */
+    ry?: number;
+    /**
+     * (Highstock) Defines additional snapping area around an annotation making
+     * this annotation to focus. Defined in pixels.
+     */
+    snap?: number;
+    /**
+     * (Highstock) The URL for an image to use as the annotation shape. Note,
+     * type has to be set to `'image'`.
+     */
+    src?: string;
+    /**
+     * (Highstock) The color of the shape's stroke.
+     */
+    stroke?: ColorType;
+    /**
+     * (Highstock) The pixel stroke width of the shape.
+     */
+    strokeWidth?: number;
+    /**
+     * (Highstock) The xAxis index which should be used for annotation's sizes
+     * and points coordinates conversion.
+     *
+     * This option is used for `rect` shape width, and all shapes point and
+     * points coordinates.
+     */
+    xAxis?: number;
+    /**
+     * (Highstock) The yAxis index which should be used for annotation's sizes
+     * and points coordinates conversion.
+     *
+     * This option is used for `rect` shape height, `circle` shape radius,
+     * `ellipse` y direction radius, and all shapes point and points
+     * coordinates.
+     */
+    yAxis?: number;
+}
+/**
+ * (Highstock) Label options.
+ */
+export interface NavigationBindingsRectangleAnnotationAnnotationsTypesVerticalLineTypeLabelOptions {
+    /**
+     * (Highstock) Accessibility options for an annotation label.
+     */
+    accessibility?: AnnotationLabelAccessibilityOptionsObject;
+    /**
+     * (Highstock) The alignment of the annotation's label. If right, the right
+     * side of the label should be touching the point.
+     */
+    align?: AlignValue;
+    /**
+     * (Highstock) Whether to allow the annotation's labels to overlap. To make
+     * the labels less sensitive for overlapping, the can be set to 0.
+     */
+    allowOverlap?: boolean;
+    /**
+     * (Highstock) The background color or gradient for the annotation's label.
+     */
+    backgroundColor?: string;
+    /**
+     * (Highstock) The border color for the annotation's label.
+     */
+    borderColor?: ColorType;
+    /**
+     * (Highstock) The border radius in pixels for the annotation's label.
+     */
+    borderRadius?: number;
+    /**
+     * (Highstock) The border width in pixels for the annotation's label.
+     */
+    borderWidth?: number;
+    /**
+     * (Highstock) A class name for styling by CSS.
+     */
+    className?: string;
+    /**
+     * (Highstock) Whether to hide the annotation's label that is outside the
+     * plot area.
+     */
+    crop?: boolean;
+    /**
+     * (Highstock) The label's pixel distance from the point.
+     */
+    distance?: number;
+    /**
+     * (Highstock) A format string for the data label.
+     */
+    format?: string;
+    /**
+     * (Highstock) Callback JavaScript function to format the annotation's
+     * label. Note that if a `format` or `text` are defined, the format or text
+     * take precedence and the formatter is ignored. `This` refers to a point
+     * object. The callback also receives an argument `ctx` so that
+     * arrow-functions can access the same context (the point in this case) as
+     * normal functions can using `this`. Since v12.6.0, the callback receives
+     * `ctx`.
+     */
+    formatter?: FormatterCallbackFunction<Point>;
+    /**
+     * (Highstock) Whether all the labels for an annotation are visible in the
+     * exported data table.
+     */
+    includeInDataExport?: boolean;
+    offset?: number;
+    /**
+     * (Highstock) How to handle the annotation's label that flow outside the
+     * plot area. The justify option aligns the label inside the plot area.
+     */
+    overflow?: OptionsOverflowValue;
+    /**
+     * (Highstock) When either the borderWidth or the backgroundColor is set,
+     * this is the padding within the box.
+     */
+    padding?: number;
+    /**
+     * (Highstock) The shadow of the box. The shadow can be an object
+     * configuration containing `color`, `offsetX`, `offsetY`, `opacity` and
+     * `width`.
+     */
+    shadow?: (boolean|ShadowOptionsObject);
+    /**
+     * (Highstock) The name of a symbol to use for the border around the label.
+     * Symbols are predefined functions on the Renderer object.
+     */
+    shape?: string;
+    /**
+     * (Highstock) Styles for the annotation's label.
+     */
+    style?: CSSObject;
+    /**
+     * (Highstock) Alias for the format option.
+     */
+    text?: string;
+    /**
+     * (Highstock) Whether to use HTML to render the annotation's label.
+     */
+    useHTML?: boolean;
+    /**
+     * (Highstock) The vertical alignment of the annotation's label.
+     */
+    verticalAlign?: VerticalAlignValue;
+    /**
+     * (Highstock) The x position offset of the label relative to the point.
+     * Note that if a `distance` is defined, the distance takes precedence over
+     * `x` and `y` options.
+     */
+    x?: number;
+    /**
+     * (Highstock) The y position offset of the label relative to the point.
+     * Note that if a `distance` is defined, the distance takes precedence over
+     * `x` and `y` options.
+     */
+    y?: number;
+}
+/**
+ * (Highstock) Line options.
+ */
+export interface NavigationBindingsRectangleAnnotationAnnotationsTypesVerticalLineTypeLineOptions {
+    fill?: string;
+}
+/**
+ * (Highstock) Additional options for an annotation with the type.
+ */
+export interface NavigationBindingsRectangleAnnotationAnnotationsTypesVerticalLineTypeOptions {
+    /**
+     * (Highstock) Connector options.
+     */
+    connector?: NavigationBindingsRectangleAnnotationAnnotationsTypesVerticalLineTypeConnectorOptions;
+    /**
+     * (Highstock) Label options.
+     */
+    label?: NavigationBindingsRectangleAnnotationAnnotationsTypesVerticalLineTypeLabelOptions;
+    /**
+     * (Highstock) Line options.
+     */
+    line?: NavigationBindingsRectangleAnnotationAnnotationsTypesVerticalLineTypeLineOptions;
+    points?: Array<NavigationBindingsRectangleAnnotationAnnotationsTypesVerticalLineTypePointsOptions>;
+    /**
+     * (Highstock) This option defines which `xAxis` the point is connected to.
+     * It refers to either the axis id or the index of the axis in the `xAxis`
+     * array.
+     */
+    xAxis?: number;
+    /**
+     * (Highstock) This option defines which `yAxis` the point is connected to.
+     * It refers to either the axis id or the index of the axis in the `yAxis`
+     * array.
+     */
+    yAxis?: number;
+}
+export interface NavigationBindingsRectangleAnnotationAnnotationsTypesVerticalLineTypePointsOptions {
+    controlPoint?: number;
+    /**
+     * (Highstock) The x position of the point.
+     */
+    x?: number;
+    /**
+     * (Highstock) The y position of the point.
+     */
+    y?: number;
+}
+/**
+ * (Highcharts, Highstock) A rectangle annotation bindings. Includes `start` and
+ * one event in `steps` array.
+ */
+export interface NavigationBindingsRectangleAnnotationOptions {
+    /**
+     * (Highcharts, Highstock) Options to customize the bindings' annotation
+     * shapes and labels.
+     */
+    annotationsOptions?: (AnnotationsOptions|NavigationBindingsRectangleAnnotationAnnotationsOptions);
+}
+/**
+ * (Highstock) Save a chart in localStorage under `highcharts-chart` key. Stored
+ * items:
+ *
+ * - annotations
+ *
+ * - indicators (with yAxes)
+ *
+ * - flags
+ */
+export interface NavigationBindingsSaveChartOptions {
+    noDataState?: string;
+}
+/**
  * (Highstock) Enable or disable the initial animation when a series is
  * displayed for the `annotation`. The animation can also be set as a
  * configuration object. Please note that this option only applies to the
@@ -74144,6 +86850,12 @@ export interface NavigationBindingsSegmentOptions {
      * labels.
      */
     annotationsOptions?: (AnnotationsOptions|NavigationBindingsSegmentAnnotationsOptions);
+}
+/**
+ * (Highstock) Change main series to `'hlc'` type.
+ */
+export interface NavigationBindingsSeriesTypeHLCOptions {
+    className?: string;
 }
 /**
  * (Highstock) Enable or disable the initial animation when a series is
@@ -77273,6 +89985,7 @@ export interface NavigationBindingsTimeCyclesOptions {
      * labels.
      */
     annotationsOptions?: (AnnotationsOptions|NavigationBindingsTimeCyclesAnnotationsOptions);
+    className?: string;
 }
 /**
  * (Highstock) Enable or disable the initial animation when a series is
@@ -83535,20 +96248,20 @@ export interface NavigationBindingsVerticalCounterOptions {
     annotationsOptions?: (AnnotationsOptions|NavigationBindingsVerticalCounterAnnotationsOptions);
 }
 /**
- * (Highcharts, Highstock, Highmaps, Gantt) Enable or disable the initial
- * animation when a series is displayed for the `annotation`. The animation can
- * also be set as a configuration object. Please note that this option only
- * applies to the initial animation. For other animations, see chart.animation
- * and the animation parameter under the API methods. The following properties
- * are supported:
+ * (Highcharts, Highstock) Enable or disable the initial animation when a series
+ * is displayed for the `annotation`. The animation can also be set as a
+ * configuration object. Please note that this option only applies to the
+ * initial animation. For other animations, see chart.animation and the
+ * animation parameter under the API methods. The following properties are
+ * supported:
  *
  * - `defer`: The animation delay time in milliseconds.
  */
 export interface NavigationBindingsVerticalLabelAnnotationsAnimationOptions {
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) The animation delay time in
-     * milliseconds. Set to `0` renders annotation immediately. As `undefined`
-     * inherits defer time from the series.animation.defer.
+     * (Highcharts, Highstock) The animation delay time in milliseconds. Set to
+     * `0` renders annotation immediately. As `undefined` inherits defer time
+     * from the series.animation.defer.
      */
     defer?: number;
 }
@@ -83559,164 +96272,154 @@ export interface NavigationBindingsVerticalLabelAnnotationsControlPointStyleOpti
     "stroke-width"?: number;
 }
 /**
- * (Highcharts, Highstock, Highmaps, Gantt) Events available in annotations.
+ * (Highcharts, Highstock) Events available in annotations.
  */
 export interface NavigationBindingsVerticalLabelAnnotationsEventsOptions {
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) Event callback when annotation
-     * is added to the chart.
+     * (Highcharts, Highstock) Event callback when annotation is added to the
+     * chart.
      */
     add?: EventCallbackFunction<Annotation>;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) Event callback when annotation
-     * is updated (e.g. drag and dropped or resized by control points).
+     * (Highcharts, Highstock) Event callback when annotation is updated (e.g.
+     * drag and dropped or resized by control points).
      */
     afterUpdate?: EventCallbackFunction<Annotation>;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) Fires when the annotation is
-     * clicked.
+     * (Highcharts, Highstock) Fires when the annotation is clicked.
      */
     click?: EventCallbackFunction<Annotation>;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) Fires when the annotation is
-     * dragged.
+     * (Highcharts, Highstock) Fires when the annotation is dragged.
      */
     drag?: EventCallbackFunction<Annotation>;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) Event callback when annotation
-     * is removed from the chart.
+     * (Highcharts, Highstock) Event callback when annotation is removed from
+     * the chart.
      */
     remove?: EventCallbackFunction<Annotation>;
 }
 /**
- * (Highcharts, Highstock, Highmaps, Gantt) Options for annotation's labels.
- * Each label inherits options from the labelOptions object. An option from the
- * labelOptions can be overwritten by config for a specific label.
+ * (Highcharts, Highstock) Options for annotation's labels. Each label inherits
+ * options from the labelOptions object. An option from the labelOptions can be
+ * overwritten by config for a specific label.
  */
 export interface NavigationBindingsVerticalLabelAnnotationsLabelOptions {
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) Accessibility options for an
-     * annotation label.
+     * (Highcharts, Highstock) Accessibility options for an annotation label.
      */
     accessibility?: AnnotationLabelAccessibilityOptionsObject;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) The alignment of the
-     * annotation's label. If right, the right side of the label should be
-     * touching the point.
+     * (Highcharts, Highstock) The alignment of the annotation's label. If
+     * right, the right side of the label should be touching the point.
      */
     align?: AlignValue;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) Whether to allow the
-     * annotation's labels to overlap. To make the labels less sensitive for
-     * overlapping, the can be set to 0.
+     * (Highcharts, Highstock) Whether to allow the annotation's labels to
+     * overlap. To make the labels less sensitive for overlapping, the can be
+     * set to 0.
      */
     allowOverlap?: boolean;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) The background color or gradient
-     * for the annotation's label.
+     * (Highcharts, Highstock) The background color or gradient for the
+     * annotation's label.
      */
     backgroundColor?: ColorType;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) The border color for the
-     * annotation's label.
+     * (Highcharts, Highstock) The border color for the annotation's label.
      */
     borderColor?: ColorType;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) The border radius in pixels for
-     * the annotation's label.
+     * (Highcharts, Highstock) The border radius in pixels for the annotation's
+     * label.
      */
     borderRadius?: number;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) The border width in pixels for
-     * the annotation's label.
+     * (Highcharts, Highstock) The border width in pixels for the annotation's
+     * label.
      */
     borderWidth?: number;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) A class name for styling by CSS.
+     * (Highcharts, Highstock) A class name for styling by CSS.
      */
     className?: string;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) Whether to hide the annotation's
-     * label that is outside the plot area.
+     * (Highcharts, Highstock) Whether to hide the annotation's label that is
+     * outside the plot area.
      */
     crop?: boolean;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) The label's pixel distance from
-     * the point.
+     * (Highcharts, Highstock) The label's pixel distance from the point.
      */
     distance?: number;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) A format string for the data
-     * label.
+     * (Highcharts, Highstock) A format string for the data label.
      */
     format?: string;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) Callback JavaScript function to
-     * format the annotation's label. Note that if a `format` or `text` are
-     * defined, the format or text take precedence and the formatter is ignored.
-     * `This` refers to a point object. The callback also receives an argument
-     * `ctx` so that arrow-functions can access the same context (the point in
-     * this case) as normal functions can using `this`. Since v12.6.0, the
-     * callback receives `ctx`.
+     * (Highcharts, Highstock) Callback JavaScript function to format the
+     * annotation's label. Note that if a `format` or `text` are defined, the
+     * format or text take precedence and the formatter is ignored. `This`
+     * refers to a point object. The callback also receives an argument `ctx` so
+     * that arrow-functions can access the same context (the point in this case)
+     * as normal functions can using `this`. Since v12.6.0, the callback
+     * receives `ctx`.
      */
     formatter?: FormatterCallbackFunction<Point>;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) Whether all the labels for an
-     * annotation are visible in the exported data table.
+     * (Highcharts, Highstock) Whether all the labels for an annotation are
+     * visible in the exported data table.
      */
     includeInDataExport?: boolean;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) How to handle the annotation's
-     * label that flow outside the plot area. The justify option aligns the
-     * label inside the plot area.
+     * (Highcharts, Highstock) How to handle the annotation's label that flow
+     * outside the plot area. The justify option aligns the label inside the
+     * plot area.
      */
     overflow?: OptionsOverflowValue;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) When either the borderWidth or
-     * the backgroundColor is set, this is the padding within the box.
+     * (Highcharts, Highstock) When either the borderWidth or the
+     * backgroundColor is set, this is the padding within the box.
      */
     padding?: number;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) The shadow of the box. The
-     * shadow can be an object configuration containing `color`, `offsetX`,
-     * `offsetY`, `opacity` and `width`.
+     * (Highcharts, Highstock) The shadow of the box. The shadow can be an
+     * object configuration containing `color`, `offsetX`, `offsetY`, `opacity`
+     * and `width`.
      */
     shadow?: (boolean|ShadowOptionsObject);
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) The name of a symbol to use for
-     * the border around the label. Symbols are predefined functions on the
-     * Renderer object.
+     * (Highcharts, Highstock) The name of a symbol to use for the border around
+     * the label. Symbols are predefined functions on the Renderer object.
      */
     shape?: string;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) Styles for the annotation's
-     * label.
+     * (Highcharts, Highstock) Styles for the annotation's label.
      */
     style?: CSSObject;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) Alias for the format option.
+     * (Highcharts, Highstock) Alias for the format option.
      */
     text?: string;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) Whether to use HTML to render
-     * the annotation's label.
+     * (Highcharts, Highstock) Whether to use HTML to render the annotation's
+     * label.
      */
     useHTML?: boolean;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) The vertical alignment of the
-     * annotation's label.
+     * (Highcharts, Highstock) The vertical alignment of the annotation's label.
      */
     verticalAlign?: VerticalAlignValue;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) The x position offset of the
-     * label relative to the point. Note that if a `distance` is defined, the
-     * distance takes precedence over `x` and `y` options.
+     * (Highcharts, Highstock) The x position offset of the label relative to
+     * the point. Note that if a `distance` is defined, the distance takes
+     * precedence over `x` and `y` options.
      */
     x?: number;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) The y position offset of the
-     * label relative to the point. Note that if a `distance` is defined, the
-     * distance takes precedence over `x` and `y` options.
+     * (Highcharts, Highstock) The y position offset of the label relative to
+     * the point. Note that if a `distance` is defined, the distance takes
+     * precedence over `x` and `y` options.
      */
     y?: number;
 }
@@ -83727,223 +96430,212 @@ export interface NavigationBindingsVerticalLabelAnnotationsLabelsControlPointsSt
     "stroke-width"?: number;
 }
 /**
- * (Highcharts, Highstock, Highmaps, Gantt) An array of labels for the
- * annotation. For options that apply to multiple labels, they can be added to
- * the labelOptions.
+ * (Highcharts, Highstock) An array of labels for the annotation. For options
+ * that apply to multiple labels, they can be added to the labelOptions.
  */
 export interface NavigationBindingsVerticalLabelAnnotationsLabelsOptions {
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) Accessibility options for an
-     * annotation label.
+     * (Highcharts, Highstock) Accessibility options for an annotation label.
      */
     accessibility?: AnnotationLabelAccessibilityOptionsObject;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) The alignment of the
-     * annotation's label. If right, the right side of the label should be
-     * touching the point.
+     * (Highcharts, Highstock) The alignment of the annotation's label. If
+     * right, the right side of the label should be touching the point.
      */
     align?: AlignValue;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) Whether to allow the
-     * annotation's labels to overlap. To make the labels less sensitive for
-     * overlapping, the can be set to 0.
+     * (Highcharts, Highstock) Whether to allow the annotation's labels to
+     * overlap. To make the labels less sensitive for overlapping, the can be
+     * set to 0.
      */
     allowOverlap?: boolean;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) The background color or gradient
-     * for the annotation's label.
+     * (Highcharts, Highstock) The background color or gradient for the
+     * annotation's label.
      */
     backgroundColor?: ColorType;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) The border color for the
-     * annotation's label.
+     * (Highcharts, Highstock) The border color for the annotation's label.
      */
     borderColor?: ColorType;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) The border radius in pixels for
-     * the annotation's label.
+     * (Highcharts, Highstock) The border radius in pixels for the annotation's
+     * label.
      */
     borderRadius?: number;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) The border width in pixels for
-     * the annotation's label.
+     * (Highcharts, Highstock) The border width in pixels for the annotation's
+     * label.
      */
     borderWidth?: number;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) A class name for styling by CSS.
+     * (Highcharts, Highstock) A class name for styling by CSS.
      */
     className?: string;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) The array of control points.
+     * (Highcharts, Highstock) The array of control points.
      */
     controlPoints?: (AnnotationControlPointOptionsObject|Array<AnnotationControlPointOptionsObject>);
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) Whether to hide the annotation's
-     * label that is outside the plot area.
+     * (Highcharts, Highstock) Whether to hide the annotation's label that is
+     * outside the plot area.
      */
     crop?: boolean;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) The label's pixel distance from
-     * the point.
+     * (Highcharts, Highstock) The label's pixel distance from the point.
      */
     distance?: number;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) A format string for the data
-     * label.
+     * (Highcharts, Highstock) A format string for the data label.
      */
     format?: string;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) Callback JavaScript function to
-     * format the annotation's label. Note that if a `format` or `text` are
-     * defined, the format or text take precedence and the formatter is ignored.
-     * `This` refers to a point object. The callback also receives an argument
-     * `ctx` so that arrow-functions can access the same context (the point in
-     * this case) as normal functions can using `this`. Since v12.6.0, the
-     * callback receives `ctx`.
+     * (Highcharts, Highstock) Callback JavaScript function to format the
+     * annotation's label. Note that if a `format` or `text` are defined, the
+     * format or text take precedence and the formatter is ignored. `This`
+     * refers to a point object. The callback also receives an argument `ctx` so
+     * that arrow-functions can access the same context (the point in this case)
+     * as normal functions can using `this`. Since v12.6.0, the callback
+     * receives `ctx`.
      */
     formatter?: FormatterCallbackFunction<Point>;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) An id for later identification
-     * of the annotation label.
+     * (Highcharts, Highstock) An id for later identification of the annotation
+     * label.
      */
     id?: string;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) Whether all the labels for an
-     * annotation are visible in the exported data table.
+     * (Highcharts, Highstock) Whether all the labels for an annotation are
+     * visible in the exported data table.
      */
     includeInDataExport?: boolean;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) How to handle the annotation's
-     * label that flow outside the plot area. The justify option aligns the
-     * label inside the plot area.
+     * (Highcharts, Highstock) How to handle the annotation's label that flow
+     * outside the plot area. The justify option aligns the label inside the
+     * plot area.
      */
     overflow?: OptionsOverflowValue;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) When either the borderWidth or
-     * the backgroundColor is set, this is the padding within the box.
+     * (Highcharts, Highstock) When either the borderWidth or the
+     * backgroundColor is set, this is the padding within the box.
      */
     padding?: number;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) This option defines the point to
-     * which the label will be connected. It can be either the point which
-     * exists in the series - it is referenced by the point's id - or a new
-     * point with defined x, y properties and optionally axes.
+     * (Highcharts, Highstock) This option defines the point to which the label
+     * will be connected. It can be either the point which exists in the series
+     * - it is referenced by the point's id - or a new point with defined x, y
+     * properties and optionally axes.
      */
     point?: AnnotationMockPointOptions;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) The shadow of the box. The
-     * shadow can be an object configuration containing `color`, `offsetX`,
-     * `offsetY`, `opacity` and `width`.
+     * (Highcharts, Highstock) The shadow of the box. The shadow can be an
+     * object configuration containing `color`, `offsetX`, `offsetY`, `opacity`
+     * and `width`.
      */
     shadow?: (boolean|ShadowOptionsObject);
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) The name of a symbol to use for
-     * the border around the label. Symbols are predefined functions on the
-     * Renderer object.
+     * (Highcharts, Highstock) The name of a symbol to use for the border around
+     * the label. Symbols are predefined functions on the Renderer object.
      */
     shape?: string;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) Styles for the annotation's
-     * label.
+     * (Highcharts, Highstock) Styles for the annotation's label.
      */
     style?: CSSObject;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) Alias for the format option.
+     * (Highcharts, Highstock) Alias for the format option.
      */
     text?: string;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) Whether to use HTML to render
-     * the annotation's label.
+     * (Highcharts, Highstock) Whether to use HTML to render the annotation's
+     * label.
      */
     useHTML?: boolean;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) The vertical alignment of the
-     * annotation's label.
+     * (Highcharts, Highstock) The vertical alignment of the annotation's label.
      */
     verticalAlign?: VerticalAlignValue;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) The x position offset of the
-     * label relative to the point. Note that if a `distance` is defined, the
-     * distance takes precedence over `x` and `y` options.
+     * (Highcharts, Highstock) The x position offset of the label relative to
+     * the point. Note that if a `distance` is defined, the distance takes
+     * precedence over `x` and `y` options.
      */
     x?: number;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) The y position offset of the
-     * label relative to the point. Note that if a `distance` is defined, the
-     * distance takes precedence over `x` and `y` options.
+     * (Highcharts, Highstock) The y position offset of the label relative to
+     * the point. Note that if a `distance` is defined, the distance takes
+     * precedence over `x` and `y` options.
      */
     y?: number;
 }
 /**
- * (Highcharts, Highstock, Highmaps, Gantt) Options to customize the bindings'
- * annotation shapes and labels.
+ * (Highcharts, Highstock) Options to customize the bindings' annotation shapes
+ * and labels.
  */
 export interface NavigationBindingsVerticalLabelAnnotationsOptions {
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) Enable or disable the initial
-     * animation when a series is displayed for the `annotation`. The animation
-     * can also be set as a configuration object. Please note that this option
-     * only applies to the initial animation. For other animations, see
-     * chart.animation and the animation parameter under the API methods. The
-     * following properties are supported:
+     * (Highcharts, Highstock) Enable or disable the initial animation when a
+     * series is displayed for the `annotation`. The animation can also be set
+     * as a configuration object. Please note that this option only applies to
+     * the initial animation. For other animations, see chart.animation and the
+     * animation parameter under the API methods. The following properties are
+     * supported:
      *
      * - `defer`: The animation delay time in milliseconds.
      */
     animation?: (boolean|NavigationBindingsVerticalLabelAnnotationsAnimationOptions|Partial<AnimationOptionsObject>);
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) A class name for styling by CSS.
+     * (Highcharts, Highstock) A class name for styling by CSS.
      */
     className?: string;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) Options for annotation's control
-     * points. Each control point inherits options from controlPointOptions
-     * object. Options from the controlPointOptions can be overwritten by
-     * options in a specific control point.
+     * (Highcharts, Highstock) Options for annotation's control points. Each
+     * control point inherits options from controlPointOptions object. Options
+     * from the controlPointOptions can be overwritten by options in a specific
+     * control point.
      */
     controlPointOptions?: AnnotationControlPointOptionsObject;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) Whether to hide the part of the
-     * annotation that is outside the plot area.
+     * (Highcharts, Highstock) Whether to hide the part of the annotation that
+     * is outside the plot area.
      */
     crop?: boolean;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) Allow an annotation to be
-     * draggable by a user. Possible values are `'x'`, `'xy'`, `'y'` and `''`
-     * (disabled).
+     * (Highcharts, Highstock) Allow an annotation to be draggable by a user.
+     * Possible values are `'x'`, `'xy'`, `'y'` and `''` (disabled).
      */
     draggable?: AnnotationDraggableValue;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) Events available in annotations.
+     * (Highcharts, Highstock) Events available in annotations.
      */
     events?: NavigationBindingsVerticalLabelAnnotationsEventsOptions;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) Sets an ID for an annotation.
-     * Can be user later when removing an annotation in
-     * Chart.removeAnnotation(id) method.
+     * (Highcharts, Highstock) Sets an ID for an annotation. Can be user later
+     * when removing an annotation in Chart.removeAnnotation(id) method.
      */
     id?: (number|string);
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) Options for annotation's labels.
-     * Each label inherits options from the labelOptions object. An option from
-     * the labelOptions can be overwritten by config for a specific label.
+     * (Highcharts, Highstock) Options for annotation's labels. Each label
+     * inherits options from the labelOptions object. An option from the
+     * labelOptions can be overwritten by config for a specific label.
      */
     labelOptions?: NavigationBindingsVerticalLabelAnnotationsLabelOptions;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) An array of labels for the
-     * annotation. For options that apply to multiple labels, they can be added
-     * to the labelOptions.
+     * (Highcharts, Highstock) An array of labels for the annotation. For
+     * options that apply to multiple labels, they can be added to the
+     * labelOptions.
      */
     labels?: Array<NavigationBindingsVerticalLabelAnnotationsLabelsOptions>;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) Options for annotation's shapes.
-     * Each shape inherits options from the shapeOptions object. An option from
-     * the shapeOptions can be overwritten by config for a specific shape.
+     * (Highcharts, Highstock) Options for annotation's shapes. Each shape
+     * inherits options from the shapeOptions object. An option from the
+     * shapeOptions can be overwritten by config for a specific shape.
      */
     shapeOptions?: NavigationBindingsVerticalLabelAnnotationsShapeOptions;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) An array of shapes for the
-     * annotation. For options that apply to multiple shapes, then can be added
-     * to the shapeOptions.
+     * (Highcharts, Highstock) An array of shapes for the annotation. For
+     * options that apply to multiple shapes, then can be added to the
+     * shapeOptions.
      */
     shapes?: Array<NavigationBindingsVerticalLabelAnnotationsShapesOptions>;
     /**
@@ -83952,8 +96644,8 @@ export interface NavigationBindingsVerticalLabelAnnotationsOptions {
      */
     type?: string;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) Additional options for an
-     * annotation with the type.
+     * (Highcharts, Highstock) Additional options for an annotation with the
+     * type.
      */
     typeOptions?: NavigationBindingsVerticalLabelAnnotationsTypeOptions;
     /**
@@ -83963,89 +96655,84 @@ export interface NavigationBindingsVerticalLabelAnnotationsOptions {
      */
     types?: NavigationBindingsVerticalLabelAnnotationsTypesOptions;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) Whether the annotation is
-     * visible.
+     * (Highcharts, Highstock) Whether the annotation is visible.
      */
     visible?: boolean;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) The Z index of the annotation.
+     * (Highcharts, Highstock) The Z index of the annotation.
      */
     zIndex?: number;
 }
 /**
- * (Highcharts, Highstock, Highmaps, Gantt) Options for annotation's shapes.
- * Each shape inherits options from the shapeOptions object. An option from the
- * shapeOptions can be overwritten by config for a specific shape.
+ * (Highcharts, Highstock) Options for annotation's shapes. Each shape inherits
+ * options from the shapeOptions object. An option from the shapeOptions can be
+ * overwritten by config for a specific shape.
  */
 export interface NavigationBindingsVerticalLabelAnnotationsShapeOptions {
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) Name of the dash style to use
-     * for the shape's stroke.
+     * (Highcharts, Highstock) Name of the dash style to use for the shape's
+     * stroke.
      */
     dashStyle?: DashStyleValue;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) The color of the shape's fill.
+     * (Highcharts, Highstock) The color of the shape's fill.
      */
     fill?: ColorType;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) The height of the `rect` shape.
-     * Can be defined in pixels or yAxis units, if shapes.yAxis index is
-     * defined.
+     * (Highcharts, Highstock) The height of the `rect` shape. Can be defined in
+     * pixels or yAxis units, if shapes.yAxis index is defined.
      */
     height?: number;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) The radius of the `circle`
-     * shape. Can be defined in pixels or yAxis units, if shapes.yAxis index is
-     * defined.
+     * (Highcharts, Highstock) The radius of the `circle` shape. Can be defined
+     * in pixels or yAxis units, if shapes.yAxis index is defined.
      */
     r?: number;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) The radius of the `ellipse`
-     * shape in y direction. Can be defined in pixels or yAxis units, if
-     * shapes.yAxis index is defined.
+     * (Highcharts, Highstock) The radius of the `ellipse` shape in y direction.
+     * Can be defined in pixels or yAxis units, if shapes.yAxis index is
+     * defined.
      */
     ry?: number;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) Defines additional snapping area
-     * around an annotation making this annotation to focus. Defined in pixels.
+     * (Highcharts, Highstock) Defines additional snapping area around an
+     * annotation making this annotation to focus. Defined in pixels.
      */
     snap?: number;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) The URL for an image to use as
-     * the annotation shape. Note, type has to be set to `'image'`.
+     * (Highcharts, Highstock) The URL for an image to use as the annotation
+     * shape. Note, type has to be set to `'image'`.
      */
     src?: string;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) The color of the shape's stroke.
+     * (Highcharts, Highstock) The color of the shape's stroke.
      */
     stroke?: ColorType;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) The pixel stroke width of the
-     * shape.
+     * (Highcharts, Highstock) The pixel stroke width of the shape.
      */
     strokeWidth?: number;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) The type of the shape. Available
-     * options are `circle`, `rect`, `ellipse` and `path`.
+     * (Highcharts, Highstock) The type of the shape. Available options are
+     * `circle`, `rect`, `ellipse` and `path`.
      */
     type?: string;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) The width of the `rect` shape.
-     * Can be defined in pixels or xAxis units, if shapes.xAxis index is
-     * defined.
+     * (Highcharts, Highstock) The width of the `rect` shape. Can be defined in
+     * pixels or xAxis units, if shapes.xAxis index is defined.
      */
     width?: number;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) The xAxis index which should be
-     * used for annotation's sizes and points coordinates conversion.
+     * (Highcharts, Highstock) The xAxis index which should be used for
+     * annotation's sizes and points coordinates conversion.
      *
      * This option is used for `rect` shape width, and all shapes point and
      * points coordinates.
      */
     xAxis?: number;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) The yAxis index which should be
-     * used for annotation's sizes and points coordinates conversion.
+     * (Highcharts, Highstock) The yAxis index which should be used for
+     * annotation's sizes and points coordinates conversion.
      *
      * This option is used for `rect` shape height, `circle` shape radius,
      * `ellipse` y direction radius, and all shapes point and points
@@ -84060,112 +96747,105 @@ export interface NavigationBindingsVerticalLabelAnnotationsShapesControlPointsSt
     "stroke-width"?: number;
 }
 /**
- * (Highcharts, Highstock, Highmaps, Gantt) An array of shapes for the
- * annotation. For options that apply to multiple shapes, then can be added to
- * the shapeOptions.
+ * (Highcharts, Highstock) An array of shapes for the annotation. For options
+ * that apply to multiple shapes, then can be added to the shapeOptions.
  */
 export interface NavigationBindingsVerticalLabelAnnotationsShapesOptions {
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) The array of control points.
+     * (Highcharts, Highstock) The array of control points.
      */
     controlPoints?: (AnnotationControlPointOptionsObject|Array<AnnotationControlPointOptionsObject>);
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) Name of the dash style to use
-     * for the shape's stroke.
+     * (Highcharts, Highstock) Name of the dash style to use for the shape's
+     * stroke.
      */
     dashStyle?: DashStyleValue;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) The color of the shape's fill.
+     * (Highcharts, Highstock) The color of the shape's fill.
      */
     fill?: ColorType;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) The height of the `rect` shape.
-     * Can be defined in pixels or yAxis units, if shapes.yAxis index is
-     * defined.
+     * (Highcharts, Highstock) The height of the `rect` shape. Can be defined in
+     * pixels or yAxis units, if shapes.yAxis index is defined.
      */
     height?: number;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) Id of the marker which will be
-     * drawn at the final vertex of the path. The `arrow` and `reverse-arrow`
-     * markers are available by default; custom markers can be defined in the
-     * defs option.
+     * (Highcharts, Highstock) Id of the marker which will be drawn at the final
+     * vertex of the path. The `arrow` and `reverse-arrow` markers are available
+     * by default; custom markers can be defined in the defs option.
      */
     markerEnd?: string;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) Id of the marker which will be
-     * drawn at the first vertex of the path. The `arrow` and `reverse-arrow`
-     * markers are available by default; custom markers can be defined in the
-     * defs option.
+     * (Highcharts, Highstock) Id of the marker which will be drawn at the first
+     * vertex of the path. The `arrow` and `reverse-arrow` markers are available
+     * by default; custom markers can be defined in the defs option.
      */
     markerStart?: string;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) This option defines the point to
-     * which the shape will be connected. It can be either the point which
-     * exists in the series - it is referenced by the point's id - or a new
-     * point with defined x, y properties and optionally axes.
+     * (Highcharts, Highstock) This option defines the point to which the shape
+     * will be connected. It can be either the point which exists in the series
+     * - it is referenced by the point's id - or a new point with defined x, y
+     * properties and optionally axes.
      */
     point?: AnnotationMockPointOptions;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) An array of points for the shape
-     * or a callback function that returns that shape point.
+     * (Highcharts, Highstock) An array of points for the shape or a callback
+     * function that returns that shape point.
      *
      * This option is available for shapes which can use multiple points such as
      * path. A point can be either a point object or a point's id.
      */
     points?: Array<AnnotationMockPointOptions>;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) The radius of the `circle`
-     * shape. Can be defined in pixels or yAxis units, if shapes.yAxis index is
-     * defined.
+     * (Highcharts, Highstock) The radius of the `circle` shape. Can be defined
+     * in pixels or yAxis units, if shapes.yAxis index is defined.
      */
     r?: number;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) The radius of the `ellipse`
-     * shape in y direction. Can be defined in pixels or yAxis units, if
-     * shapes.yAxis index is defined.
+     * (Highcharts, Highstock) The radius of the `ellipse` shape in y direction.
+     * Can be defined in pixels or yAxis units, if shapes.yAxis index is
+     * defined.
      */
     ry?: number;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) Defines additional snapping area
-     * around an annotation making this annotation to focus. Defined in pixels.
+     * (Highcharts, Highstock) Defines additional snapping area around an
+     * annotation making this annotation to focus. Defined in pixels.
      */
     snap?: number;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) The URL for an image to use as
-     * the annotation shape. Note, type has to be set to `'image'`.
+     * (Highcharts, Highstock) The URL for an image to use as the annotation
+     * shape. Note, type has to be set to `'image'`.
      */
     src?: string;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) The color of the shape's stroke.
+     * (Highcharts, Highstock) The color of the shape's stroke.
      */
     stroke?: ColorType;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) The pixel stroke width of the
-     * shape.
+     * (Highcharts, Highstock) The pixel stroke width of the shape.
      */
     strokeWidth?: number;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) The type of the shape. Available
-     * options are `circle`, `rect`, `ellipse` and `path`.
+     * (Highcharts, Highstock) The type of the shape. Available options are
+     * `circle`, `rect`, `ellipse` and `path`.
      */
     type?: string;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) The width of the `rect` shape.
-     * Can be defined in pixels or xAxis units, if shapes.xAxis index is
-     * defined.
+     * (Highcharts, Highstock) The width of the `rect` shape. Can be defined in
+     * pixels or xAxis units, if shapes.xAxis index is defined.
      */
     width?: number;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) The xAxis index which should be
-     * used for annotation's sizes and points coordinates conversion.
+     * (Highcharts, Highstock) The xAxis index which should be used for
+     * annotation's sizes and points coordinates conversion.
      *
      * This option is used for `rect` shape width, and all shapes point and
      * points coordinates.
      */
     xAxis?: number;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) The yAxis index which should be
-     * used for annotation's sizes and points coordinates conversion.
+     * (Highcharts, Highstock) The yAxis index which should be used for
+     * annotation's sizes and points coordinates conversion.
      *
      * This option is used for `rect` shape height, `circle` shape radius,
      * `ellipse` y direction radius, and all shapes point and points
@@ -84174,78 +96854,73 @@ export interface NavigationBindingsVerticalLabelAnnotationsShapesOptions {
     yAxis?: number;
 }
 /**
- * (Highcharts, Highstock, Highmaps, Gantt) Background shape options for the
- * annotation.
+ * (Highcharts, Highstock) Background shape options for the annotation.
  */
 export interface NavigationBindingsVerticalLabelAnnotationsTypeBackgroundOptions {
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) Name of the dash style to use
-     * for the shape's stroke.
+     * (Highcharts, Highstock) Name of the dash style to use for the shape's
+     * stroke.
      */
     dashStyle?: DashStyleValue;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) The color of the shape's fill.
+     * (Highcharts, Highstock) The color of the shape's fill.
      */
     fill?: ColorType;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) The height of the `rect` shape.
-     * Can be defined in pixels or yAxis units, if shapes.yAxis index is
-     * defined.
+     * (Highcharts, Highstock) The height of the `rect` shape. Can be defined in
+     * pixels or yAxis units, if shapes.yAxis index is defined.
      */
     height?: number;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) The radius of the `circle`
-     * shape. Can be defined in pixels or yAxis units, if shapes.yAxis index is
-     * defined.
+     * (Highcharts, Highstock) The radius of the `circle` shape. Can be defined
+     * in pixels or yAxis units, if shapes.yAxis index is defined.
      */
     r?: number;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) The radius of the `ellipse`
-     * shape in y direction. Can be defined in pixels or yAxis units, if
-     * shapes.yAxis index is defined.
+     * (Highcharts, Highstock) The radius of the `ellipse` shape in y direction.
+     * Can be defined in pixels or yAxis units, if shapes.yAxis index is
+     * defined.
      */
     ry?: number;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) Defines additional snapping area
-     * around an annotation making this annotation to focus. Defined in pixels.
+     * (Highcharts, Highstock) Defines additional snapping area around an
+     * annotation making this annotation to focus. Defined in pixels.
      */
     snap?: number;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) The URL for an image to use as
-     * the annotation shape. Note, type has to be set to `'image'`.
+     * (Highcharts, Highstock) The URL for an image to use as the annotation
+     * shape. Note, type has to be set to `'image'`.
      */
     src?: string;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) The color of the shape's stroke.
+     * (Highcharts, Highstock) The color of the shape's stroke.
      */
     stroke?: ColorType;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) The pixel stroke width of the
-     * shape.
+     * (Highcharts, Highstock) The pixel stroke width of the shape.
      */
     strokeWidth?: number;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) The type of the shape. Available
-     * options are `circle`, `rect`, `ellipse` and `path`.
+     * (Highcharts, Highstock) The type of the shape. Available options are
+     * `circle`, `rect`, `ellipse` and `path`.
      */
     type?: string;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) The width of the `rect` shape.
-     * Can be defined in pixels or xAxis units, if shapes.xAxis index is
-     * defined.
+     * (Highcharts, Highstock) The width of the `rect` shape. Can be defined in
+     * pixels or xAxis units, if shapes.xAxis index is defined.
      */
     width?: number;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) The xAxis index which should be
-     * used for annotation's sizes and points coordinates conversion.
+     * (Highcharts, Highstock) The xAxis index which should be used for
+     * annotation's sizes and points coordinates conversion.
      *
      * This option is used for `rect` shape width, and all shapes point and
      * points coordinates.
      */
     xAxis?: number;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) The yAxis index which should be
-     * used for annotation's sizes and points coordinates conversion.
+     * (Highcharts, Highstock) The yAxis index which should be used for
+     * annotation's sizes and points coordinates conversion.
      *
      * This option is used for `rect` shape height, `circle` shape radius,
      * `ellipse` y direction radius, and all shapes point and points
@@ -84254,77 +96929,73 @@ export interface NavigationBindingsVerticalLabelAnnotationsTypeBackgroundOptions
     yAxis?: number;
 }
 /**
- * (Highcharts, Highstock, Highmaps, Gantt) Line options.
+ * (Highcharts, Highstock) Line options.
  */
 export interface NavigationBindingsVerticalLabelAnnotationsTypeLineOptions {
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) Name of the dash style to use
-     * for the shape's stroke.
+     * (Highcharts, Highstock) Name of the dash style to use for the shape's
+     * stroke.
      */
     dashStyle?: DashStyleValue;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) The color of the shape's fill.
+     * (Highcharts, Highstock) The color of the shape's fill.
      */
     fill?: ColorType;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) The height of the `rect` shape.
-     * Can be defined in pixels or yAxis units, if shapes.yAxis index is
-     * defined.
+     * (Highcharts, Highstock) The height of the `rect` shape. Can be defined in
+     * pixels or yAxis units, if shapes.yAxis index is defined.
      */
     height?: number;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) The radius of the `circle`
-     * shape. Can be defined in pixels or yAxis units, if shapes.yAxis index is
-     * defined.
+     * (Highcharts, Highstock) The radius of the `circle` shape. Can be defined
+     * in pixels or yAxis units, if shapes.yAxis index is defined.
      */
     r?: number;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) The radius of the `ellipse`
-     * shape in y direction. Can be defined in pixels or yAxis units, if
-     * shapes.yAxis index is defined.
+     * (Highcharts, Highstock) The radius of the `ellipse` shape in y direction.
+     * Can be defined in pixels or yAxis units, if shapes.yAxis index is
+     * defined.
      */
     ry?: number;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) Defines additional snapping area
-     * around an annotation making this annotation to focus. Defined in pixels.
+     * (Highcharts, Highstock) Defines additional snapping area around an
+     * annotation making this annotation to focus. Defined in pixels.
      */
     snap?: number;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) The URL for an image to use as
-     * the annotation shape. Note, type has to be set to `'image'`.
+     * (Highcharts, Highstock) The URL for an image to use as the annotation
+     * shape. Note, type has to be set to `'image'`.
      */
     src?: string;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) The color of the shape's stroke.
+     * (Highcharts, Highstock) The color of the shape's stroke.
      */
     stroke?: ColorType;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) The pixel stroke width of the
-     * shape.
+     * (Highcharts, Highstock) The pixel stroke width of the shape.
      */
     strokeWidth?: number;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) The type of the shape. Available
-     * options are `circle`, `rect`, `ellipse` and `path`.
+     * (Highcharts, Highstock) The type of the shape. Available options are
+     * `circle`, `rect`, `ellipse` and `path`.
      */
     type?: string;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) The width of the `rect` shape.
-     * Can be defined in pixels or xAxis units, if shapes.xAxis index is
-     * defined.
+     * (Highcharts, Highstock) The width of the `rect` shape. Can be defined in
+     * pixels or xAxis units, if shapes.xAxis index is defined.
      */
     width?: number;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) The xAxis index which should be
-     * used for annotation's sizes and points coordinates conversion.
+     * (Highcharts, Highstock) The xAxis index which should be used for
+     * annotation's sizes and points coordinates conversion.
      *
      * This option is used for `rect` shape width, and all shapes point and
      * points coordinates.
      */
     xAxis?: number;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) The yAxis index which should be
-     * used for annotation's sizes and points coordinates conversion.
+     * (Highcharts, Highstock) The yAxis index which should be used for
+     * annotation's sizes and points coordinates conversion.
      *
      * This option is used for `rect` shape height, `circle` shape radius,
      * `ellipse` y direction radius, and all shapes point and points
@@ -84333,52 +97004,49 @@ export interface NavigationBindingsVerticalLabelAnnotationsTypeLineOptions {
     yAxis?: number;
 }
 /**
- * (Highcharts, Highstock, Highmaps, Gantt) Additional options for an annotation
- * with the type.
+ * (Highcharts, Highstock) Additional options for an annotation with the type.
  */
 export interface NavigationBindingsVerticalLabelAnnotationsTypeOptions {
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) Background shape options for the
-     * annotation.
+     * (Highcharts, Highstock) Background shape options for the annotation.
      */
     background?: NavigationBindingsVerticalLabelAnnotationsTypeBackgroundOptions;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) Height of the annotation in
-     * pixels.
+     * (Highcharts, Highstock) Height of the annotation in pixels.
      */
     height?: number;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) Line options.
+     * (Highcharts, Highstock) Line options.
      */
     line?: NavigationBindingsVerticalLabelAnnotationsTypeLineOptions;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) A single point that the
-     * annotation is attached to. It can be either the point which exists in the
-     * series - it is referenced by the point's id - or a new point with defined
-     * x, y properties and optionally axes.
+     * (Highcharts, Highstock) A single point that the annotation is attached
+     * to. It can be either the point which exists in the series - it is
+     * referenced by the point's id - or a new point with defined x, y
+     * properties and optionally axes.
      */
     point?: (string|AnnotationMockPointOptionsObject);
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) An array of points that the
-     * annotation is attached to. Each point can the point which exists in the
-     * series - it is referenced by the point's id - or a new point with defined
-     * x, y properties and optionally axes.
+     * (Highcharts, Highstock) An array of points that the annotation is
+     * attached to. Each point can the point which exists in the series - it is
+     * referenced by the point's id - or a new point with defined x, y
+     * properties and optionally axes.
      */
     points?: Array<(string|AnnotationMockPointOptionsObject)>;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) The annotation type identifier.
+     * (Highcharts, Highstock) The annotation type identifier.
      */
     type?: string;
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) This option defines which
-     * `xAxis` the point is connected to. It refers to either the axis id or the
-     * index of the axis in the `xAxis` array.
+     * (Highcharts, Highstock) This option defines which `xAxis` the point is
+     * connected to. It refers to either the axis id or the index of the axis in
+     * the `xAxis` array.
      */
     xAxis?: (number|string);
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) This option defines which
-     * `yAxis` the point is connected to. It refers to either the axis id or the
-     * index of the axis in the `yAxis` array.
+     * (Highcharts, Highstock) This option defines which `yAxis` the point is
+     * connected to. It refers to either the axis id or the index of the axis in
+     * the `yAxis` array.
      */
     yAxis?: (number|string);
 }
@@ -86725,8 +99393,8 @@ export interface NavigationBindingsVerticalLabelAnnotationsTypesVerticalLineType
 }
 export interface NavigationBindingsVerticalLabelOptions {
     /**
-     * (Highcharts, Highstock, Highmaps, Gantt) Options to customize the
-     * bindings' annotation shapes and labels.
+     * (Highcharts, Highstock) Options to customize the bindings' annotation
+     * shapes and labels.
      */
     annotationsOptions?: (AnnotationsOptions|NavigationBindingsVerticalLabelAnnotationsOptions);
 }
@@ -90195,7 +102863,22 @@ export interface NavigationOptions {
      * into all annotations.
      */
     annotationsOptions?: (AnnotationsOptions|NavigationAnnotationsOptions);
-    bindings?: NavigationBindingsOptions;
+    /**
+     * (Highcharts, Highstock) Bindings definitions for custom HTML buttons.
+     * Each binding implements simple event-driven interface:
+     *
+     * - `className`: classname used to bind event to
+     *
+     * - `init`: initial event, fired on button click
+     *
+     * - `start`: fired on first click on a chart
+     *
+     * - `steps`: array of sequential events fired one after another on each of
+     * users clicks
+     *
+     * - `end`: last event to be called after last step event
+     */
+    bindings?: (NavigationBindingsOptions|Dictionary<NavigationBindingsOptionsObject>);
     /**
      * (Highcharts, Highstock, Highmaps, Gantt) A CSS class name where all
      * bindings will be attached to. Multiple charts on the same page should

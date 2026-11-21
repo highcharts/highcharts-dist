@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-20)
+ * @license Highcharts JS v13.1.1-modified (2026-11-21)
  * @module highcharts/modules/sonification
  * @requires highcharts
  *
@@ -118,6 +118,7 @@ var highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default 
 
 const Options = {
     /**
+     * @requires     modules/sonification
      * @optionparent sonification
      */
     sonification: {

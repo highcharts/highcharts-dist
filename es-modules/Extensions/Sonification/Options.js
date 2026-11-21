@@ -14,6 +14,7 @@
 'use strict';
 const Options = {
     /**
+     * @requires     modules/sonification
      * @optionparent sonification
      */
     sonification: {

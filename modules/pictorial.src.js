@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-20)
+ * @license Highcharts JS v13.1.1-modified (2026-11-21)
  * @module highcharts/modules/pictorial
  * @requires highcharts
  *
@@ -1572,7 +1572,6 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @type      {Highcharts.ColorType}
  * @default   transparent
  * @product   highcharts
- * @requires  modules/pictorial
  * @apioption yAxis.stackShadow.borderColor
  */
 /**
@@ -1582,7 +1581,6 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @type      {number}
  * @default   0
  * @product   highcharts
- * @requires  modules/pictorial
  * @apioption yAxis.stackShadow.borderWidth
  */
 /**
@@ -1592,7 +1590,6 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @type      {Highcharts.ColorType}
  * @default   var(--highcharts-neutral-color-20)
  * @product   highcharts
- * @requires  modules/pictorial
  * @apioption yAxis.stackShadow.color
  */
 /**
@@ -1602,7 +1599,6 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  * @type      {boolean}
  * @default   false
  * @product   highcharts
- * @requires  modules/pictorial
  * @apioption yAxis.stackShadow.enabled
  */
 ''; // Adds doclets above to transpiled file

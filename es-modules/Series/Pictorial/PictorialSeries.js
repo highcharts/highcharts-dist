@@ -483,7 +483,6 @@ export default PictorialSeries;
  * @type      {Highcharts.ColorType}
  * @default   transparent
  * @product   highcharts
- * @requires  modules/pictorial
  * @apioption yAxis.stackShadow.borderColor
  */
 /**
@@ -493,7 +492,6 @@ export default PictorialSeries;
  * @type      {number}
  * @default   0
  * @product   highcharts
- * @requires  modules/pictorial
  * @apioption yAxis.stackShadow.borderWidth
  */
 /**
@@ -503,7 +501,6 @@ export default PictorialSeries;
  * @type      {Highcharts.ColorType}
  * @default   var(--highcharts-neutral-color-20)
  * @product   highcharts
- * @requires  modules/pictorial
  * @apioption yAxis.stackShadow.color
  */
 /**
@@ -513,7 +510,6 @@ export default PictorialSeries;
  * @type      {boolean}
  * @default   false
  * @product   highcharts
- * @requires  modules/pictorial
  * @apioption yAxis.stackShadow.enabled
  */
 ''; // Adds doclets above to transpiled file

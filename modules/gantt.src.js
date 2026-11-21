@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Gantt JS v13.1.1-modified (2026-11-20)
+ * @license Highcharts Gantt JS v13.1.1-modified (2026-11-21)
  * @module highcharts/modules/gantt
  * @requires highcharts
  *
@@ -728,6 +728,7 @@ const { composed } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_H
  * @extends   xAxis.plotLines
  * @excluding className, value
  * @product   gantt
+ * @requires  modules/current-date-indicator
  * @apioption xAxis.currentDateIndicator
  */
 const defaultOptions = {
@@ -8888,6 +8889,7 @@ const connectorsDefaults = {
      *
      * @declare      Highcharts.ConnectorsOptions
      * @product      gantt
+     * @requires     modules/pathfinder
      * @optionparent connectors
      */
     connectors: {
@@ -9119,6 +9121,7 @@ const connectorsDefaults = {
  * @since     6.2.0
  * @excluding enabled, algorithmMargin
  * @product   gantt
+ * @requires  modules/pathfinder
  * @apioption plotOptions.series.connectors
  */
 /**
@@ -9135,7 +9138,7 @@ const connectorsDefaults = {
  * @since     6.2.0
  * @excluding enabled
  * @product   gantt
- * @requires  highcharts-gantt
+ * @requires  modules/pathfinder
  * @apioption series.xrange.data.connect
  */
 /**
@@ -9851,7 +9854,7 @@ Pathfinder.prototype.algorithms = PathfinderAlgorithms;
 /* unused harmony import specifier */ var Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Gantt JS v13.1.1-modified (2026-11-20)
+ * @license Highcharts Gantt JS v13.1.1-modified (2026-11-21)
  * @module highcharts/modules/pathfinder
  * @requires highcharts
  *
@@ -9984,7 +9987,7 @@ function chartAdjustHeight() {
 /* unused harmony import specifier */ var static_scale_src_Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Gantt JS v13.1.1-modified (2026-11-20)
+ * @license Highcharts Gantt JS v13.1.1-modified (2026-11-21)
  * @module highcharts/modules/static-scale
  * @requires highcharts
  *
@@ -10820,7 +10823,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
 /* unused harmony import specifier */ var xrange_src_Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-20)
+ * @license Highcharts JS v13.1.1-modified (2026-11-21)
  * @module highcharts/modules/xrange
  * @requires highcharts
  *
@@ -10950,7 +10953,7 @@ class GanttPoint extends GanttPoint_XRangePoint {
  *
  * @extends      plotOptions.xrange
  * @product      gantt
- * @requires     highcharts-gantt
+ * @requires     modules/gantt
  * @optionparent plotOptions.gantt
  */
 const GanttSeriesDefaults = {
@@ -11020,7 +11023,7 @@ const GanttSeriesDefaults = {
  *
  * @extends   series,plotOptions.gantt
  * @product   gantt
- * @requires  highcharts-gantt
+ * @requires  modules/gantt
  * @apioption series.gantt
  */
 /**
@@ -12775,6 +12778,7 @@ const GridAxis = {
  *
  * @since     6.2.0
  * @product   gantt
+ * @requires  modules/grid-axis
  * @apioption xAxis.grid
  */
 /**
@@ -14264,7 +14268,7 @@ class GanttSeries extends XRange_XRangeSeries {
      * This override draws the point as a diamond if point.options.milestone
      * is true, and uses the original drawPoint() if it is false or not set.
      *
-     * @requires highcharts-gantt
+     * @requires modules/gantt
      *
      * @internal
      * @function Highcharts.seriesTypes.gantt#drawPoint

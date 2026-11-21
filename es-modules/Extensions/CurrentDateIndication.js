@@ -35,6 +35,7 @@ import { addEvent, merge, pushUnique, wrap } from '../Shared/Utilities.js';
  * @extends   xAxis.plotLines
  * @excluding className, value
  * @product   gantt
+ * @requires  modules/current-date-indicator
  * @apioption xAxis.currentDateIndicator
  */
 const defaultOptions = {

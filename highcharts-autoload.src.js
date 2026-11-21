@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-20)
+ * @license Highcharts JS v13.1.1-modified (2026-11-21)
  * @module highcharts/highcharts-autoload
  *
  * (c) 2009-2024 Torstein Honsi
@@ -1247,6 +1247,21 @@ const ChartDefaults = {
      * @apioption  chart.zoomBySingleTouch
      */
     /**
+     * Deprecated. Use
+     * [chart.zooming.key](#chart.zooming.key)
+     * instead.
+     *
+     * Set a key to hold when dragging to zoom the chart. This is useful to
+     * avoid zooming while moving points. Should be set different than
+     * [chart.panKey](#chart.panKey).
+     *
+     * @type       {string}
+     * @since      6.2.0
+     * @validvalue ["alt", "ctrl", "meta", "shift"]
+     * @deprecated 10.2.1
+     * @apioption  chart.zoomKey
+     */
+    /**
      * Chart zooming options.
      *
      * @sample     highcharts/plotoptions/sankey-node-color
@@ -1257,6 +1272,20 @@ const ChartDefaults = {
      * @since 10.2.1
      */
     zooming: {
+        /**
+         * Set a key to hold when dragging to zoom the chart. This is useful to
+         * avoid zooming while moving points. Should be set different than
+         * [chart.panKey](#chart.panKey).
+         *
+         * **Note:** If both zooming and panning are enabled without keys,
+         * zooming will take precedence by default. To prioritize panning,
+         * either set zooming key or [chart.panKey](#chart.panKey).
+         *
+         * @type       {string}
+         * @default    {highcharts} undefined
+         * @validvalue ["alt", "ctrl", "meta", "shift"]
+         * @apioption  chart.zooming.key
+         */
         /**
          * Equivalent to [type](#chart.zooming.type), but for multitouch
          * gestures only. By default, the `pinchType` is the same as the
@@ -16253,6 +16282,7 @@ var AxisDefaults;
          * @type      {Array<*>}
          * @since     4.1.0
          * @product   highcharts highstock gantt
+         * @requires  modules/broken-axis
          * @apioption xAxis.breaks
          */
         /**
@@ -49627,7 +49657,7 @@ var Responsive;
 ;// ./code/es-modules/masters/highcharts.src.js
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-20)
+ * @license Highcharts JS v13.1.1-modified (2026-11-21)
  * @module highcharts/highcharts
  *
  * (c) 2009-2026 Highsoft AS
@@ -49821,12 +49851,6 @@ const DependencyMapping = {
     'annotations.labelOptions.includeInDataExport': [
         'modules/export-data'
     ],
-    'annotations.labels.point': [
-        'modules/annotations'
-    ],
-    'annotations.shapes.point': [
-        'modules/annotations'
-    ],
     'annotations.type': [
         'modules/annotations-advanced'
     ],
@@ -49876,17 +49900,14 @@ const DependencyMapping = {
     'chart.polar': [
         'highcharts-more'
     ],
-    'chart.zoomKey': [
-        'modules/draggable-points'
-    ],
-    'chart.zooming.key': [
-        'modules/draggable-points'
-    ],
     'chart.zooming.mouseWheel': [
         'modules/mouse-wheel-zoom'
     ],
     'colorAxis': [
         'modules/coloraxis'
+    ],
+    'connectors': [
+        'modules/pathfinder'
     ],
     'data': [
         'modules/data'
@@ -49901,20 +49922,15 @@ const DependencyMapping = {
         'modules/accessibility'
     ],
     'exporting.csv': [
-        'modules/exporting',
         'modules/export-data'
     ],
     'exporting.csv.annotations': [
-        'modules/exporting',
-        'modules/export-data',
         'modules/annotations'
     ],
     'exporting.error': [
-        'modules/exporting',
         'modules/offline-exporting'
     ],
     'exporting.fallbackToExportServer': [
-        'modules/exporting',
         'modules/offline-exporting'
     ],
     'exporting.menuItemDefinitions.downloadCSV': [
@@ -49933,19 +49949,15 @@ const DependencyMapping = {
         'modules/export-data'
     ],
     'exporting.showTable': [
-        'modules/exporting',
         'modules/export-data'
     ],
     'exporting.tableCaption': [
-        'modules/exporting',
         'modules/export-data'
     ],
     'exporting.useMultiLevelHeaders': [
-        'modules/exporting',
         'modules/export-data'
     ],
     'exporting.useRowspanHeaders': [
-        'modules/exporting',
         'modules/export-data'
     ],
     'legend.accessibility': [
@@ -49972,17 +49984,100 @@ const DependencyMapping = {
     'pane': [
         'highcharts-more'
     ],
-    'plotOptions.series.data.connect': [
-        'highcharts-gantt'
-    ],
-    'plotOptions.series.data.description': [
+    'plotOptions.series.accessibility': [
         'modules/accessibility'
+    ],
+    'plotOptions.series.boostBlending': [
+        'modules/boost'
+    ],
+    'plotOptions.series.boostThreshold': [
+        'modules/boost'
+    ],
+    'plotOptions.series.cluster': [
+        'modules/marker-clusters'
+    ],
+    'plotOptions.series.connectors': [
+        'modules/pathfinder'
+    ],
+    'plotOptions.series.data.connect': [
+        'modules/pathfinder'
     ],
     'plotOptions.series.data.dragDrop': [
         'modules/draggable-points'
     ],
     'plotOptions.series.data.drilldown': [
         'modules/drilldown'
+    ],
+    'plotOptions.series.dataGrouping': [
+        'modules/stock'
+    ],
+    'plotOptions.series.dataLabels.textPath': [
+        'modules/textpath'
+    ],
+    'plotOptions.series.dataSorting': [
+        'modules/data-sorting'
+    ],
+    'plotOptions.series.depth': [
+        'highcharts-3d'
+    ],
+    'plotOptions.series.description': [
+        'modules/accessibility'
+    ],
+    'plotOptions.series.dragDrop': [
+        'modules/draggable-points'
+    ],
+    'plotOptions.series.edgeColor': [
+        'highcharts-3d'
+    ],
+    'plotOptions.series.edgeWidth': [
+        'highcharts-3d'
+    ],
+    'plotOptions.series.gapSize': [
+        'modules/broken-axis'
+    ],
+    'plotOptions.series.gapUnit': [
+        'modules/broken-axis'
+    ],
+    'plotOptions.series.groupZPadding': [
+        'highcharts-3d'
+    ],
+    'plotOptions.series.includeInDataExport': [
+        'modules/exporting',
+        'modules/export-data'
+    ],
+    'plotOptions.series.label': [
+        'modules/series-label'
+    ],
+    'plotOptions.series.lastPrice': [
+        'modules/price-indicator'
+    ],
+    'plotOptions.series.lastVisiblePrice': [
+        'modules/price-indicator'
+    ],
+    'plotOptions.series.onPoint': [
+        'highcharts-more',
+        'modules/series-on-point'
+    ],
+    'plotOptions.series.point.events.drag': [
+        'modules/draggable-points'
+    ],
+    'plotOptions.series.point.events.dragStart': [
+        'modules/draggable-points'
+    ],
+    'plotOptions.series.point.events.drop': [
+        'modules/draggable-points'
+    ],
+    'plotOptions.series.pointDescriptionFormat': [
+        'modules/accessibility'
+    ],
+    'plotOptions.series.pointDescriptionFormatter': [
+        'modules/accessibility'
+    ],
+    'plotOptions.series.sonification': [
+        'modules/sonification'
+    ],
+    'plotOptions.series.zoomEnabled': [
+        'modules/non-cartesian-zoom'
     ],
     'series.abands': [
         'indicators/indicators',
@@ -50061,6 +50156,10 @@ const DependencyMapping = {
     'series.columnrange': [
         'highcharts-more'
     ],
+    'series.contour': [
+        'modules/coloraxis',
+        'modules/contour'
+    ],
     'series.cylinder': [
         'highcharts-3d',
         'modules/cylinder'
@@ -50107,7 +50206,7 @@ const DependencyMapping = {
         'modules/funnel3d'
     ],
     'series.gantt': [
-        'highcharts-gantt'
+        'modules/gantt'
     ],
     'series.gauge': [
         'highcharts-more'
@@ -50290,6 +50389,7 @@ const DependencyMapping = {
         'modules/tiledwebmap'
     ],
     'series.tilemap': [
+        'modules/heatmap',
         'modules/tilemap'
     ],
     'series.timeline': [
@@ -50362,14 +50462,29 @@ const DependencyMapping = {
     'stockTools': [
         'modules/stock-tools'
     ],
+    'tooltip.clusterFormat': [
+        'modules/marker-clusters'
+    ],
     'xAxis.accessibility': [
         'modules/accessibility'
+    ],
+    'xAxis.breaks': [
+        'modules/broken-axis'
+    ],
+    'xAxis.currentDateIndicator': [
+        'modules/current-date-indicator'
+    ],
+    'xAxis.grid': [
+        'modules/grid-axis'
     ],
     'xAxis.labels.position3d': [
         'highcharts-3d'
     ],
     'xAxis.labels.skew3d': [
         'highcharts-3d'
+    ],
+    'xAxis.staticScale': [
+        'modules/static-scale'
     ],
     'xAxis.title.position3d': [
         'highcharts-3d'
@@ -50555,32 +50670,45 @@ class Loader {
  */
 Loader.getFiles = (options) => {
     const files = addedFiles.slice();
-    const recurse = (opts, path = []) => {
-        Object.entries(opts).forEach(([key, value]) => {
-            if (path.length === 1 && path[0] === 'series') {
-                key = value.type || options.chart?.type || 'line';
-            }
-            const fullKey = path.concat(key).join('.'), 
-            // Pick up properties that are set on series items, like
-            // `dragDrop` or `label`
-            seriesKey = fullKey.replace(/^series\.[a-zA-Z]+/, 'plotOptions.series'), fullKeys = [fullKey];
-            // Add special cases
-            if (seriesKey !== fullKey) {
-                fullKeys.push(seriesKey);
-            }
-            fullKeys.forEach((fullKey) => {
-                if (fullKey in Autoload_DependencyMapping) {
-                    Autoload_DependencyMapping[fullKey].forEach((file) => pushUnique(files, file));
-                }
-            });
-            if (value && typeof value === 'object' && key !== 'data') {
-                path.push(key);
-                recurse(value, path);
-                path.pop();
-            }
+    const addFiles = (key) => {
+        [
+            key,
+            // Options of series items and plotOptions.<type>, see
+            // normalizeKey in dependency-mapping.js
+            key.replace(/^(?:series|plotOptions)\.[a-zA-Z0-9]+/, 'plotOptions.series'),
+            // Other axes share the options documented for xAxis
+            key.replace(/^(?:y|z|color)Axis\./, 'xAxis.')
+        ].forEach((k) => {
+            (Autoload_DependencyMapping[k] || []).forEach((file) => pushUnique(files, file));
         });
     };
-    recurse(options);
+    const walk = (value, path) => {
+        if (Array.isArray(value)) {
+            value.forEach((item) => {
+                // Series items get their type in the path, other items
+                // share the array's path
+                if (path === 'series') {
+                    const itemPath = 'series.' +
+                        (item.type || options.chart?.type || 'line');
+                    addFiles(itemPath);
+                    walk(item, itemPath);
+                }
+                else {
+                    walk(item, path);
+                }
+            });
+        }
+        else if (value && typeof value === 'object') {
+            Object.entries(value).forEach(([key, child]) => {
+                const childPath = path ? `${path}.${key}` : key;
+                addFiles(childPath);
+                if (key !== 'data') {
+                    walk(child, childPath);
+                }
+            });
+        }
+    };
+    walk(options, '');
     // Advanced annotations
     if (options.annotations) {
         splat(options.annotations).forEach((annotation) => {
