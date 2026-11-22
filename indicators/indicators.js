@@ -1,5 +1,5 @@
 !/**
- * Highstock JS v13.1.1-modified (2026-11-21)
+ * Highstock JS v13.1.1-modified (2026-11-22)
  * @module highcharts/indicators/indicators
  * @requires highcharts
  * @requires highcharts/modules/stock

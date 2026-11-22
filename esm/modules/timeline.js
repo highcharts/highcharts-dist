@@ -1,5 +1,5 @@
 /**
- * Highcharts JS v13.1.1-modified (2026-11-21)
+ * Highcharts JS v13.1.1-modified (2026-11-22)
  * @module highcharts/modules/timeline
  * @requires highcharts
  *
