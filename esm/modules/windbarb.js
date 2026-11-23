@@ -1,5 +1,5 @@
 /**
- * Highcharts JS v13.1.1-modified (2026-11-22)
+ * Highcharts JS v13.1.1-modified (2026-11-23)
  * @module highcharts/modules/windbarb
  * @requires highcharts
  * @requires highcharts/modules/datagrouping

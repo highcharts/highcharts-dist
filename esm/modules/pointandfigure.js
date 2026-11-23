@@ -1,5 +1,5 @@
 /**
- * Highstock JS v13.1.1-modified (2026-11-22)
+ * Highstock JS v13.1.1-modified (2026-11-23)
  * @module highcharts/modules/pointandfigure
  * @requires highcharts
  * @requires highcharts/modules/stock
