@@ -1,5 +1,5 @@
 let t,e;/**
- * Highcharts JS v13.1.1-modified (2026-11-23)
+ * Highcharts JS v13.1.1-modified (2026-11-24)
  * @module highcharts/modules/pictorial
  * @requires highcharts
  *

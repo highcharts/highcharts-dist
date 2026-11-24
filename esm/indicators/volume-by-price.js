@@ -1,5 +1,5 @@
 /**
- * Highstock JS v13.1.1-modified (2026-11-23)
+ * Highstock JS v13.1.1-modified (2026-11-24)
  * @module highcharts/indicators/volume-by-price
  * @requires highcharts
  * @requires highcharts/modules/stock

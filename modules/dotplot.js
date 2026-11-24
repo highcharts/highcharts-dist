@@ -1,5 +1,5 @@
 !/**
- * Highcharts JS v13.1.1-modified (2026-11-23)
+ * Highcharts JS v13.1.1-modified (2026-11-24)
  * @module highcharts/modules/dotplot
  * @requires highcharts
  *

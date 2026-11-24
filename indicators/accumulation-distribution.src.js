@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.1.1-modified (2026-11-23)
+ * @license Highstock JS v13.1.1-modified (2026-11-24)
  * @module highcharts/indicators/accumulation-distribution
  * @requires highcharts
  * @requires highcharts/modules/stock
