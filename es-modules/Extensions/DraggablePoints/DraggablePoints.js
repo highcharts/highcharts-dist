@@ -76,6 +76,7 @@ function compose(ChartClass, SeriesClass) {
         addEvent(PointClass, 'mouseOut', onPointMouseOut);
         addEvent(PointClass, 'mouseOver', onPointMouseOver);
         addEvent(PointClass, 'remove', onPointRemove);
+        addEvent(SeriesClass, 'afterRender', onSeriesAfterRender);
         seriesProto.dragDropProps = DragDropProps.line;
         seriesProto.getGuideBox = seriesGetGuideBox;
         // Custom props for certain series types
@@ -200,6 +201,18 @@ function onPointRemove() {
     const chart = this.series.chart, dragHandles = chart.dragHandles;
     if (dragHandles && dragHandles.point === this.id) {
         chart.hideDragHandles();
+    }
+}
+/**
+ * Hide drag handles on a point if the series is re-rendered with dirty data.
+ * @internal
+ */
+function onSeriesAfterRender() {
+    const dragHandles = this.chart.dragHandles;
+    if (this.isDirtyData &&
+        dragHandles?.point &&
+        !this.points.find((p) => p.id === dragHandles.point)) {
+        this.chart.hideDragHandles();
     }
 }
 /**

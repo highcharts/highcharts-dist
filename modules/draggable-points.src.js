@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-24)
+ * @license Highcharts JS v13.1.1-modified (2026-11-25)
  * @module highcharts/modules/draggable-points
  * @requires highcharts
  *
@@ -2024,6 +2024,7 @@ function DraggablePoints_compose(ChartClass, SeriesClass) {
         (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.addEvent)(PointClass, 'mouseOut', onPointMouseOut);
         (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.addEvent)(PointClass, 'mouseOver', onPointMouseOver);
         (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.addEvent)(PointClass, 'remove', onPointRemove);
+        (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.addEvent)(SeriesClass, 'afterRender', onSeriesAfterRender);
         seriesProto.dragDropProps = DraggablePoints_DragDropProps.line;
         seriesProto.getGuideBox = seriesGetGuideBox;
         // Custom props for certain series types
@@ -2148,6 +2149,18 @@ function onPointRemove() {
     const chart = this.series.chart, dragHandles = chart.dragHandles;
     if (dragHandles && dragHandles.point === this.id) {
         chart.hideDragHandles();
+    }
+}
+/**
+ * Hide drag handles on a point if the series is re-rendered with dirty data.
+ * @internal
+ */
+function onSeriesAfterRender() {
+    const dragHandles = this.chart.dragHandles;
+    if (this.isDirtyData &&
+        dragHandles?.point &&
+        !this.points.find((p) => p.id === dragHandles.point)) {
+        this.chart.hideDragHandles();
     }
 }
 /**
