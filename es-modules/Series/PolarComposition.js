@@ -936,6 +936,8 @@ class PolarAdditions {
         RadialAxis.compose(AxisClass, TickClass);
         if (pushUnique(composed, 'Polar')) {
             const chartProto = ChartClass.prototype, pointProto = PointClass.prototype, pointerProto = PointerClass.prototype, seriesProto = SeriesClass.prototype;
+            chartProto.propsFromSeries.push('angular', 'polar');
+            chartProto.propsRequireUpdateSeries.push('chart.polar');
             addEvent(ChartClass, 'afterDrawChartBox', onChartAfterDrawChartBox);
             addEvent(ChartClass, 'createAxes', onChartCreateAxes);
             addEvent(ChartClass, 'init', onChartAfterInit);

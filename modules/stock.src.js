@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.1.1-modified (2026-11-25)
+ * @license Highstock JS v13.1.1-modified (2026-11-26)
  * @module highcharts/modules/stock
  * @requires highcharts
  *
@@ -10093,9 +10093,9 @@ const HLCSeriesDefaults = {
      * The approximate pixel width of each group. If for example a series
      * with 30 points is displayed over a 600 pixel wide plot area, no
      * grouping is performed. If however the series contains so many points
-     * that the spacing is less than the groupPixelWidth, Highcharts will
+     * that the spacing is less than the `groupPixelWidth`, Highcharts will
      * try to group it into appropriate groups so that each is more or less
-     * two pixels wide. Defaults to `5`.
+     * `groupPixelWidth` pixels wide. Defaults to `5`.
      *
      * @type      {number}
      * @default   5
@@ -10207,9 +10207,9 @@ const HLCSeriesDefaults = {
  *    series options.
  *    ```js
  *    data: [
- *        [0, 5, 6, 7],
- *        [1, 4, 8, 2],
- *        [2, 3, 4, 10]
+ *        [0, 7, 2, 6],
+ *        [1, 8, 4, 5],
+ *        [2, 9, 3, 8]
  *    ]
  *    ```
  *
@@ -10221,16 +10221,16 @@ const HLCSeriesDefaults = {
  *    ```js
  *    data: [{
  *        x: 1,
- *        high: 4,
- *        low: 5,
- *        close: 2,
+ *        high: 9,
+ *        low: 2,
+ *        close: 7,
  *        name: "Point2",
  *        color: "#00FF00"
  *    }, {
  *        x: 1,
- *        high: 3,
- *        low: 6,
- *        close: 7,
+ *        high: 8,
+ *        low: 4,
+ *        close: 5,
  *        name: "Point1",
  *        color: "#FF00FF"
  *    }]
@@ -10697,24 +10697,6 @@ const OHLCSeriesDefaults = {
      * @apioption plotOptions.ohlc.legendSymbol
      */
     legendSymbol: 'ohlc',
-    /**
-     * Determines which one of  `open`, `high`, `low`, `close` values should
-     * be represented as `point.y`, which is later used to set dataLabel
-     * position and [compare](#plotOptions.series.compare).
-     *
-     * @declare    Highcharts.OptionsPointValKeyValue
-     * @default    close
-     * @validvalue ["open", "high", "low", "close"]
-     * @product    highstock
-     * @apioption  plotOptions.ohlc.pointValKey
-     */
-    /**
-     * Line color for up points.
-     *
-     * @type      {Highcharts.ColorType}
-     * @product   highstock
-     * @apioption plotOptions.ohlc.upColor
-     */
     tooltip: {
         pointFormat: '<span style="color:{point.color}">\u25CF</span> ' +
             '<b> {series.name}</b><br/>' +
@@ -10724,6 +10706,24 @@ const OHLCSeriesDefaults = {
             '{series.chart.options.lang.stockClose}: {point.close}<br/>'
     }
 };
+/**
+ * Determines which one of  `open`, `high`, `low`, `close` values should
+ * be represented as `point.y`, which is later used to set dataLabel
+ * position and [compare](#plotOptions.series.compare).
+ *
+ * @declare    Highcharts.OptionsPointValKeyValue
+ * @default    close
+ * @validvalue ["open", "high", "low", "close"]
+ * @product    highstock
+ * @apioption  plotOptions.ohlc.pointValKey
+ */
+/**
+ * Line color for up points.
+ *
+ * @type      {Highcharts.ColorType}
+ * @product   highstock
+ * @apioption plotOptions.ohlc.upColor
+ */
 /**
  * The parameter allows setting line series type and use OHLC indicators.
  * Data in OHLC format is required.
@@ -10756,9 +10756,9 @@ const OHLCSeriesDefaults = {
  *    series options.
  *    ```js
  *    data: [
- *        [0, 6, 5, 6, 7],
- *        [1, 9, 4, 8, 2],
- *        [2, 6, 3, 4, 10]
+ *        [0, 4, 7, 2, 6],
+ *        [1, 6, 8, 4, 5],
+ *        [2, 5, 9, 3, 8]
  *    ]
  *    ```
  *
@@ -10771,17 +10771,17 @@ const OHLCSeriesDefaults = {
  *    data: [{
  *        x: 1,
  *        open: 3,
- *        high: 4,
- *        low: 5,
- *        close: 2,
+ *        high: 9,
+ *        low: 2,
+ *        close: 7,
  *        name: "Point2",
  *        color: "#00FF00"
  *    }, {
  *        x: 1,
- *        open: 4,
- *        high: 3,
- *        low: 6,
- *        close: 7,
+ *        open: 7,
+ *        high: 8,
+ *        low: 4,
+ *        close: 5,
  *        name: "Point1",
  *        color: "#FF00FF"
  *    }]
@@ -11012,23 +11012,11 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
  *         Candlestick chart
  *
  * @extends      plotOptions.ohlc
- * @excluding    borderColor,borderRadius,borderWidth
+ * @excluding    borderColor,borderRadius,borderWidth,stack,stacking
  * @product      highstock
  * @optionparent plotOptions.candlestick
  */
 const CandlestickSeriesDefaults = {
-    /**
-     * The specific line color for up candle sticks. The default is to
-     * inherit the general `lineColor` setting.
-     *
-     * @sample {highstock} stock/plotoptions/candlestick-linecolor/
-     *         Candlestick line colors
-     *
-     * @type      {Highcharts.ColorType}
-     * @since     1.3.6
-     * @product   highstock
-     * @apioption plotOptions.candlestick.upLineColor
-     */
     states: {
         /**
          * @extends plotOptions.column.states.hover
@@ -11108,15 +11096,57 @@ const CandlestickSeriesDefaults = {
     stickyTracking: true
 };
 /**
+ * The approximate pixel width of each group. If for example a series
+ * with 30 points is displayed over a 600 pixel wide plot area, no
+ * grouping is performed. If however the series contains so many points
+ * that the spacing is less than the `groupPixelWidth`, Highcharts will
+ * try to group it into appropriate groups so that each is more or less
+ * `groupPixelWidth` pixels wide.
+ *
+ * @type      {number}
+ * @default   10
+ * @product   highstock
+ * @apioption plotOptions.candlestick.dataGrouping.groupPixelWidth
+ */
+/**
+ * The color of the line/border of the hovered candlestick. When `undefined`,
+ * the line color of the normal state is used.
+ *
+ * @type      {Highcharts.ColorType}
+ * @product   highstock
+ * @apioption plotOptions.candlestick.states.hover.lineColor
+ */
+/**
+ * The specific line color for up candle sticks. The default is to
+ * inherit the general `lineColor` setting.
+ *
+ * @sample {highstock} stock/plotoptions/candlestick-linecolor/
+ *         Candlestick line colors
+ *
+ * @type      {Highcharts.ColorType}
+ * @since     1.3.6
+ * @product   highstock
+ * @apioption plotOptions.candlestick.upLineColor
+ */
+/**
  * A `candlestick` series. If the [type](#series.candlestick.type)
  * option is not specified, it is inherited from [chart.type](
  * #chart.type).
  *
  * @type      {*}
  * @extends   series,plotOptions.candlestick
- * @excluding borderColor, borderRadius, borderWidth, marker
+ * @excluding borderColor, borderRadius, borderWidth, marker, stack,
+ *            stacking
  * @product   highstock
  * @apioption series.candlestick
+ */
+/**
+ * Options for the selected point. These settings override the normal state
+ * options when a point is selected.
+ *
+ * @excluding borderColor
+ * @product   highstock
+ * @apioption series.candlestick.states.select
  */
 /**
  * An array of data points for the series. For the `candlestick` series
@@ -11131,9 +11161,9 @@ const CandlestickSeriesDefaults = {
  *    series options.
  *    ```js
  *    data: [
- *        [0, 7, 2, 0, 4],
- *        [1, 1, 4, 2, 8],
- *        [2, 3, 3, 9, 3]
+ *        [0, 4, 7, 2, 6],
+ *        [1, 6, 8, 4, 5],
+ *        [2, 5, 9, 3, 8]
  *    ]
  *    ```
  *
@@ -11145,18 +11175,18 @@ const CandlestickSeriesDefaults = {
  *    ```js
  *    data: [{
  *        x: 1,
- *        open: 9,
- *        high: 2,
- *        low: 4,
- *        close: 6,
+ *        open: 3,
+ *        high: 9,
+ *        low: 2,
+ *        close: 7,
  *        name: "Point2",
  *        color: "#00FF00"
  *    }, {
  *        x: 1,
- *        open: 1,
- *        high: 4,
- *        low: 7,
- *        close: 7,
+ *        open: 7,
+ *        high: 8,
+ *        low: 4,
+ *        close: 5,
  *        name: "Point1",
  *        color: "#FF00FF"
  *    }]
@@ -11168,6 +11198,30 @@ const CandlestickSeriesDefaults = {
  * @excluding y
  * @product   highstock
  * @apioption series.candlestick.data
+ */
+/**
+ * A name for the dash style to use for the candlestick. Overrides
+ * `dashStyle` on the series.
+ *
+ * @type      {Highcharts.DashStyleValue}
+ * @product   highstock
+ * @apioption series.candlestick.data.dashStyle
+ */
+/**
+ * The color of the line/border of the candlestick. Overrides `lineColor` and
+ * `upLineColor` on the series.
+ *
+ * @type      {Highcharts.ColorType}
+ * @product   highstock
+ * @apioption series.candlestick.data.lineColor
+ */
+/**
+ * A pixel value specifying a fixed width for the candlestick. Overrides
+ * `pointWidth` on the series.
+ *
+ * @type      {number}
+ * @product   highstock
+ * @apioption series.candlestick.data.pointWidth
  */
 ''; // Adds doclets above to transpiled
 /* *
@@ -12966,7 +13020,7 @@ var BrokenAxis;
 /* unused harmony import specifier */ var Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-25)
+ * @license Highcharts JS v13.1.1-modified (2026-11-26)
  * @module highcharts/modules/broken-axis
  * @requires highcharts
  *
@@ -13336,7 +13390,7 @@ let AxisConstructor;
  *
  * */
 /**
- * Check the groupPixelWidth and apply the grouping if needed.
+ * Check the `groupPixelWidth` and apply the grouping if needed.
  * Fired only after processing the data.
  *
  * @internal
@@ -13896,6 +13950,38 @@ function DataGroupingSeriesComposition_applyGrouping(hasExtremesChanged) {
         (lastDataGrouping && lastDataGrouping.totalRange) !==
             (currentDataGrouping && currentDataGrouping.totalRange);
 }
+/**
+ * Extend the original method, make the tooltip's header reflect the grouped
+ * range.
+ * @internal
+ */
+function wrapApplyKey(proceed) {
+    const { series } = this, time = series.chart.time, dateTime = series.xAxis?.dateTime, currentDataGrouping = series.currentDataGrouping, tooltipOptions = series.tooltipOptions, dataGroupingOptions = series.options.dataGrouping;
+    let xDateFormat = tooltipOptions.xDateFormat || '', xDateFormatEnd, key = this.name ?? this.category;
+    if (dateTime &&
+        currentDataGrouping &&
+        dataGroupingOptions &&
+        (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.isNumber)(key)) {
+        const dateTimeLabelFormats = dataGroupingOptions.dateTimeLabelFormats ||
+            // Fallback to commonOptions (#9693)
+            DataGrouping_DataGroupingDefaults.common.dateTimeLabelFormats, 
+        // Use the grouping information to get the right format
+        labelFormats = dateTimeLabelFormats[currentDataGrouping.unitName], groupStart = series.groupMap?.[this.index].groupStart ?? this.x, groupEnd = groupStart + (currentDataGrouping?.totalRange || 0) - 1;
+        if (currentDataGrouping.count === 1) {
+            xDateFormat = labelFormats[0];
+        }
+        else {
+            xDateFormat = labelFormats[1];
+            xDateFormatEnd = labelFormats[2];
+        }
+        key = time.dateFormat(xDateFormat, groupStart);
+        if (xDateFormatEnd) {
+            key += time.dateFormat(xDateFormatEnd, groupEnd);
+        }
+        return (this.key = key);
+    }
+    return proceed.call(this);
+}
 /** @internal */
 function DataGroupingSeriesComposition_compose(SeriesClass) {
     const seriesProto = SeriesClass.prototype;
@@ -13909,6 +13995,7 @@ function DataGroupingSeriesComposition_compose(SeriesClass) {
                 return false;
             }
         });
+        (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.wrap)(PointClass.prototype, 'applyKey', wrapApplyKey);
         (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.addEvent)(SeriesClass, 'afterSetOptions', onAfterSetOptions);
         (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.addEvent)(SeriesClass, 'destroy', destroyGroupedData);
         (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.extend)(seriesProto, {
@@ -14187,77 +14274,14 @@ const DataGroupingSeriesComposition = {
 
 
 
-
-
-const { format: DataGrouping_format } = (highcharts_Templating_commonjs_highcharts_Templating_commonjs2_highcharts_Templating_root_Highcharts_Templating_default());
-
-const { composed: DataGrouping_composed } = (highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_default());
-
 /* *
  *
  *  Functions
  *
  * */
-function DataGrouping_compose(AxisClass, SeriesClass, TooltipClass) {
+function DataGrouping_compose(AxisClass, SeriesClass) {
     DataGrouping_DataGroupingAxisComposition.compose(AxisClass);
     DataGrouping_DataGroupingSeriesComposition.compose(SeriesClass);
-    if (TooltipClass &&
-        (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pushUnique)(DataGrouping_composed, 'DataGrouping')) {
-        (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.addEvent)(TooltipClass, 'headerFormatter', onTooltipHeaderFormatter);
-    }
-}
-/**
- * Extend the original method, make the tooltip's header reflect the grouped
- * range.
- * @internal
- */
-function onTooltipHeaderFormatter(e) {
-    const chart = this.chart, time = chart.time, point = e.point, series = point.series, options = series.options, tooltipOptions = series.tooltipOptions, dataGroupingOptions = options.dataGrouping, xAxis = series.xAxis;
-    let xDateFormat = tooltipOptions.xDateFormat || '', xDateFormatEnd, currentDataGrouping, dateTimeLabelFormats, labelFormats, formattedKey, formatString = tooltipOptions[e.isFooter ? 'footerFormat' : 'headerFormat'];
-    // Apply only to grouped series
-    if (xAxis &&
-        xAxis.options.type === 'datetime' &&
-        dataGroupingOptions &&
-        (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.isNumber)(point.key)) {
-        // Set variables
-        currentDataGrouping = series.currentDataGrouping;
-        dateTimeLabelFormats = dataGroupingOptions.dateTimeLabelFormats ||
-            // Fallback to commonOptions (#9693)
-            DataGrouping_DataGroupingDefaults.common.dateTimeLabelFormats;
-        // If we have grouped data, use the grouping information to get the
-        // right format
-        if (currentDataGrouping) {
-            labelFormats = dateTimeLabelFormats[currentDataGrouping.unitName];
-            if (currentDataGrouping.count === 1) {
-                xDateFormat = labelFormats[0];
-            }
-            else {
-                xDateFormat = labelFormats[1];
-                xDateFormatEnd = labelFormats[2];
-            }
-            // If not grouped, and we don't have set the xDateFormat option, get the
-            // best fit, so if the least distance between points is one minute, show
-            // it, but if the least distance is one day, skip hours and minutes etc.
-        }
-        else if (!xDateFormat && dateTimeLabelFormats && xAxis.dateTime) {
-            xDateFormat = xAxis.dateTime.getXDateFormat(point.x, tooltipOptions.dateTimeLabelFormats);
-        }
-        const groupStart = series.groupMap?.[point.index].groupStart ?? point.key, groupEnd = groupStart + (currentDataGrouping?.totalRange || 0) - 1;
-        formattedKey = time.dateFormat(xDateFormat, groupStart);
-        if (xDateFormatEnd) {
-            formattedKey += time.dateFormat(xDateFormatEnd, groupEnd);
-        }
-        // Replace default header style with class name
-        if (series.chart.styledMode) {
-            formatString = this.styledModeFormat(formatString);
-        }
-        // Return the replaced format
-        e.text = DataGrouping_format(formatString, {
-            point: (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.extend)(point, { key: formattedKey }),
-            series
-        }, chart);
-        e.preventDefault();
-    }
 }
 /* *
  *
@@ -14521,10 +14545,10 @@ const DataGroupingComposition = {
  * The approximate pixel width of each group. If for example a series
  * with 30 points is displayed over a 600 pixel wide plot area, no grouping
  * is performed. If however the series contains so many points that
- * the spacing is less than the groupPixelWidth, Highcharts will try
+ * the spacing is less than the `groupPixelWidth`, Highcharts will try
  * to group it into appropriate groups so that each is more or less
- * two pixels wide. If multiple series with different group pixel widths
- * are drawn on the same x axis, all series will take the greatest width.
+ * `groupPixelWidth` pixels wide. If multiple series with different group pixel
+ * widths are drawn on the same x axis, all series will take the greatest width.
  * For example, line series have 2px default group width, while column
  * series have 10px. If combined, both the line and the column will
  * have 10px by default.
@@ -14627,9 +14651,9 @@ const DataGroupingComposition = {
  * The approximate pixel width of each group. If for example a series
  * with 30 points is displayed over a 600 pixel wide plot area, no grouping
  * is performed. If however the series contains so many points that
- * the spacing is less than the groupPixelWidth, Highcharts will try
+ * the spacing is less than the `groupPixelWidth`, Highcharts will try
  * to group it into appropriate groups so that each is more or less
- * two pixels wide. Defaults to `10`.
+ * `groupPixelWidth` pixels wide. Defaults to `10`.
  *
  * @sample {highstock} stock/plotoptions/series-datagrouping-grouppixelwidth/
  *         Two series with the same data density but different groupPixelWidth
@@ -14644,7 +14668,7 @@ const DataGroupingComposition = {
 /* unused harmony import specifier */ var datagrouping_src_Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.1.1-modified (2026-11-25)
+ * @license Highstock JS v13.1.1-modified (2026-11-26)
  * @module highcharts/modules/datagrouping
  * @requires highcharts
  *
@@ -14667,7 +14691,7 @@ datagrouping_src_G.dataGrouping.approximationDefaults = (datagrouping_src_G.data
     DataGrouping_ApproximationDefaults);
 datagrouping_src_G.dataGrouping.approximations = (datagrouping_src_G.dataGrouping.approximations ||
     DataGrouping_ApproximationRegistry);
-DataGrouping.compose(datagrouping_src_G.Axis, datagrouping_src_G.Series, datagrouping_src_G.Tooltip);
+DataGrouping.compose(datagrouping_src_G.Axis, datagrouping_src_G.Series);
 /* harmony default export */ const datagrouping_src = ((/* unused pure expression or super */ null && (datagrouping_src_Highcharts)));
 
 ;// ./code/es-modules/Extensions/Annotations/NavigationBindingsUtilities.js
@@ -15005,7 +15029,7 @@ const MouseWheelZoomComposition = {
 /* unused harmony import specifier */ var mouse_wheel_zoom_src_Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-25)
+ * @license Highcharts JS v13.1.1-modified (2026-11-26)
  * @module highcharts/modules/mouse-wheel-zoom
  * @requires highcharts
  *

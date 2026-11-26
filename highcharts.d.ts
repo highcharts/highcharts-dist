@@ -9521,12 +9521,13 @@ export interface DataGroupingOptionsObject {
      * (Highstock) The approximate pixel width of each group. If for example a
      * series with 30 points is displayed over a 600 pixel wide plot area, no
      * grouping is performed. If however the series contains so many points that
-     * the spacing is less than the groupPixelWidth, Highcharts will try to
-     * group it into appropriate groups so that each is more or less two pixels
-     * wide. If multiple series with different group pixel widths are drawn on
-     * the same x axis, all series will take the greatest width. For example,
-     * line series have 2px default group width, while column series have 10px.
-     * If combined, both the line and the column will have 10px by default.
+     * the spacing is less than the `groupPixelWidth`, Highcharts will try to
+     * group it into appropriate groups so that each is more or less
+     * `groupPixelWidth` pixels wide. If multiple series with different group
+     * pixel widths are drawn on the same x axis, all series will take the
+     * greatest width. For example, line series have 2px default group width,
+     * while column series have 10px. If combined, both the line and the column
+     * will have 10px by default.
      */
     groupPixelWidth?: number;
     /**
@@ -110866,6 +110867,11 @@ Array<SeriesSunburstDataLabelsOptionsObject>|Array<SeriesTreegraphDataLabelsOpti
      */
     length?: number;
     /**
+     * (Highstock) The color of the line/border of the candlestick. Overrides
+     * `lineColor` and `upLineColor` on the series.
+     */
+    lineColor?: ColorType;
+    /**
      * (Highcharts, Highstock) The low or minimum value for each data point.
      */
     low?: number;
@@ -116062,7 +116068,8 @@ Partial<AnimationOptionsObject>);
      */
     halo?: (SeriesStatesHoverHaloOptionsObject|null);
     /**
-     * (Highstock) The color of the line/border of the flag.
+     * (Highstock) The color of the line/border of the hovered candlestick. When
+     * `undefined`, the line color of the normal state is used.
      */
     lineColor?: ColorType;
     /**
@@ -127671,7 +127678,13 @@ export class Point {
     readonly index: number;
     /**
      * The point's name if it is defined, or its category in case of a category,
-     * otherwise the x value. Convenient for tooltip and data label formatting.
+     * otherwise the x value or datetime. Convenient for tooltip formatting,
+     * where it is used in the default header. The key is applied just in time
+     * for the tooltip formatting.
+     *
+     * For datetime axes the key is a localized time string, formatted according
+     * to the tooltip.dateTimeLabelFormats option or the tooltip.xDateFormat if
+     * defined.
      */
     key: (number|string);
     /**

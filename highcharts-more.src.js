@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-25)
+ * @license Highcharts JS v13.1.1-modified (2026-11-26)
  * @module highcharts/highcharts-more
  * @requires highcharts
  *
@@ -12735,6 +12735,8 @@ class PolarAdditions {
         Axis_RadialAxis.compose(AxisClass, TickClass);
         if ((0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.pushUnique)(PolarComposition_composed, 'Polar')) {
             const chartProto = ChartClass.prototype, pointProto = PointClass.prototype, pointerProto = PointerClass.prototype, seriesProto = SeriesClass.prototype;
+            chartProto.propsFromSeries.push('angular', 'polar');
+            chartProto.propsRequireUpdateSeries.push('chart.polar');
             (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.addEvent)(ChartClass, 'afterDrawChartBox', onChartAfterDrawChartBox);
             (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.addEvent)(ChartClass, 'createAxes', onChartCreateAxes);
             (0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.addEvent)(ChartClass, 'init', onChartAfterInit);

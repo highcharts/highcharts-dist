@@ -1526,6 +1526,10 @@ declare module "../highcharts" {
          */
         data?: Array<([(number|string), number, number, number]|[(number|string), number, number, number, number]|Highcharts.PointOptionsObject)>;
         /**
+         * Not available
+         */
+        stack?: undefined;
+        /**
          * (Highcharts, Highstock, Highmaps, Gantt) This property is only in
          * TypeScript non-optional and might be `undefined` in series objects
          * from unknown sources.

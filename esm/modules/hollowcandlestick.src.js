@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.1.1-modified (2026-11-25)
+ * @license Highstock JS v13.1.1-modified (2026-11-26)
  * @module highcharts/modules/hollowcandlestick
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -458,7 +458,7 @@ external_highcharts_src_js_default_SeriesRegistry_default().registerSeriesType('
  * @basic
  * @type      {Array<Array<(number|string),number,number,number>|Array<(number|string),number,number,number,number>|*>}
  * @extends   series.candlestick.data
- * @excluding y
+ * @excluding lineColor, y
  * @product   highstock
  * @apioption series.hollowcandlestick.data
  */

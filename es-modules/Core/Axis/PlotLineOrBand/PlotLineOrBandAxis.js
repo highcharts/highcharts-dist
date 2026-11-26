@@ -10,7 +10,7 @@
  *
  * */
 'use strict';
-import { addEvent, extend, isNumber, splat } from '../../../Shared/Utilities.js';
+import { addEvent, extend, isNumber, merge, splat } from '../../../Shared/Utilities.js';
 /* *
  *
  *  Composition
@@ -83,11 +83,13 @@ var PlotLineOrBandAxis;
             });
             // Update plot bands and lines one to one
             addEvent(AxisClass, 'update', function ({ options }) {
+                const PlotItemClass = PlotLineOrBandClass;
                 for (const coll of ['plotBands', 'plotLines']) {
                     // Check if we have new options to process, otherwise do
                     // nothing with existing plot lines and bands
                     if (options[coll]) {
-                        const plotItems = this[coll];
+                        // Work on copies, not on the user's options (#25527)
+                        const plotItems = this[coll], itemsOptions = [];
                         splat(options[coll]).forEach((pOptions = {}, i) => {
                             // Match by id
                             let pItem;
@@ -98,27 +100,28 @@ var PlotLineOrBandAxis;
                             pItem || (pItem = plotItems[i]);
                             // Update
                             if (pItem) {
-                                pItem.update(pOptions, false);
-                                options[coll][i] = pItem.options;
-                                // Add
+                                pItem.options = merge(pItem.options, pOptions);
+                                // Add, rendered in Axis.render
                             }
                             else {
-                                pItem = this[coll === 'plotBands' ?
-                                    'addPlotBand' :
-                                    'addPlotLine'](pOptions);
+                                pItem = new PlotItemClass(this, merge(pOptions), coll);
+                                plotItems.push(pItem);
                             }
                             pItem.isActive = true;
+                            itemsOptions[i] = pItem.options;
                         });
                         // Remove inactive items from end to start
                         let i = plotItems.length;
                         while (i--) {
                             if (!plotItems[i].isActive) {
-                                plotItems[i].remove();
+                                plotItems[i].destroy();
+                                plotItems.splice(i, 1);
                             }
                             else {
                                 delete plotItems[i].isActive;
                             }
                         }
+                        options[coll] = itemsOptions;
                     }
                 }
             });

@@ -14,11 +14,11 @@ import { animObject } from './Animation/AnimationUtilities.js';
 import F from './Templating.js';
 const { format } = F;
 import H from './Globals.js';
-const { composed, dateFormats, doc, isSafari } = H;
+const { composed, doc, isSafari } = H;
 import R from './Renderer/RendererUtilities.js';
 const { distribute } = R;
 import SVGRenderer from './Renderer/SVG/SVGRenderer.js';
-import { addEvent, clamp, css, discardElement, extend, fireEvent, getAlignFactor, internalClearTimeout, isArray, isNumber, isObject, isString, merge, pushUnique, splat, syncTimeout } from '../Shared/Utilities.js';
+import { addEvent, clamp, css, discardElement, extend, fireEvent, getAlignFactor, internalClearTimeout, isArray, isNumber, isString, merge, pushUnique, splat, syncTimeout } from '../Shared/Utilities.js';
 /**
  * Clear all timeouts for showing and hiding the tooltip.
  *
@@ -766,6 +766,9 @@ class Tooltip {
             points.forEach((item) => item.setState('hover'));
             point.points = points;
         }
+        // Set the `point.key` for each point, just in time for the tooltip
+        // formatting. Used in formatter functions and format strings.
+        points.forEach((item) => item.applyKey());
         this.len = points.length; // #6128
         const text = isString(formatString) ?
             format(formatString, point, chart) :
@@ -1229,35 +1232,11 @@ class Tooltip {
      * @function Highcharts.Tooltip#headerFooterFormatter
      */
     headerFooterFormatter(point, isFooter) {
-        const series = point.series, tooltipOptions = series.tooltipOptions, xAxis = series.xAxis, dateTime = xAxis?.dateTime, e = {
-            isFooter,
-            point
-        };
-        let xDateFormat = tooltipOptions.xDateFormat || '', formatString = tooltipOptions[isFooter ? 'footerFormat' : 'headerFormat'];
-        fireEvent(this, 'headerFormatter', e, function (e) {
-            // Guess the best date format based on the closest point distance
-            // (#568, #3418)
-            if (dateTime && !xDateFormat && isNumber(point.key)) {
-                xDateFormat = dateTime.getXDateFormat(point.key, tooltipOptions.dateTimeLabelFormats);
-            }
-            // Insert the footer date format if any
-            if (dateTime && xDateFormat) {
-                if (isObject(xDateFormat)) {
-                    const format = xDateFormat;
-                    dateFormats[0] = (timestamp) => series.chart.time.dateFormat(format, timestamp);
-                    xDateFormat = '%0';
-                }
-                (point.tooltipDateKeys || ['key']).forEach((key) => {
-                    formatString = formatString.replace(new RegExp('point\\.' + key + '([ \\)}])'), `(point.${key}:${xDateFormat})$1`);
-                });
-            }
+        const { chart, tooltipOptions } = point.series, formatString = tooltipOptions[isFooter ? 'footerFormat' : 'headerFormat'];
+        return format(chart.styledMode ?
             // Replace default header style with class name
-            if (series.chart.styledMode) {
-                formatString = this.styledModeFormat(formatString);
-            }
-            e.text = format(formatString, point, this.chart);
-        });
-        return e.text || '';
+            this.styledModeFormat(formatString) :
+            formatString, point, chart);
     }
     /**
      * Updates the tooltip with the provided tooltip options.

@@ -1658,8 +1658,9 @@ class Chart {
     }
     /**
      * Detect whether a certain chart property is needed based on inspecting its
-     * options and series. This mainly applies to the chart.inverted property,
-     * and in extensions to the chart.angular and chart.polar properties.
+     * options and series. The inspected properties are listed in
+     * `propsFromSeries`, which modules extend, for example highcharts-more
+     * with `angular` and `polar`.
      *
      * @internal
      * @function Highcharts.Chart#propFromSeries
@@ -1673,7 +1674,7 @@ class Chart {
          * @name Highcharts.Chart#inverted
          * @type {boolean|undefined}
          */
-        ['inverted', 'angular', 'polar'].forEach(function (key) {
+        chart.propsFromSeries.forEach(function (key) {
             // The default series type's class
             klass = seriesTypes[optionsChart.type];
             // Get the value from available chart-wide properties
@@ -2416,11 +2417,10 @@ class Chart {
             if ('className' in optionsChart) {
                 chart.setClassName(optionsChart.className);
             }
-            if ('inverted' in optionsChart ||
-                'polar' in optionsChart ||
-                'type' in optionsChart) {
-                // Parse options.chart.inverted and options.chart.polar together
-                // with the available series.
+            if ('type' in optionsChart ||
+                chart.propsFromSeries.some((key) => key in optionsChart)) {
+                // Parse options like chart.inverted together with the
+                // available series.
                 chart.propFromSeries();
                 updateAllAxes = true;
             }
@@ -2906,6 +2906,12 @@ extend(Chart.prototype, {
         'series'
     ],
     /**
+     * Chart properties that are set from chart options or required by series
+     * types, see `propFromSeries`. Can be extended from plugins.
+     * @internal
+     */
+    propsFromSeries: ['inverted'],
+    /**
      * These properties cause isDirtyBox to be set to true when updating. Can be
      * extended from plugins.
      * @internal
@@ -2947,7 +2953,6 @@ extend(Chart.prototype, {
      */
     propsRequireUpdateSeries: [
         'chart.inverted',
-        'chart.polar',
         'chart.ignoreHiddenSeries',
         'chart.type',
         'colors',

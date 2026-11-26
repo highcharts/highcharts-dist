@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.1.1-modified (2026-11-25)
+ * @license Highstock JS v13.1.1-modified (2026-11-26)
  * @module highcharts/modules/datagrouping
  * @requires highcharts
  *
@@ -397,7 +397,7 @@ let AxisConstructor;
  *
  * */
 /**
- * Check the groupPixelWidth and apply the grouping if needed.
+ * Check the `groupPixelWidth` and apply the grouping if needed.
  * Fired only after processing the data.
  *
  * @internal
@@ -1497,6 +1497,38 @@ function DataGroupingSeriesComposition_applyGrouping(hasExtremesChanged) {
         (lastDataGrouping && lastDataGrouping.totalRange) !==
             (currentDataGrouping && currentDataGrouping.totalRange);
 }
+/**
+ * Extend the original method, make the tooltip's header reflect the grouped
+ * range.
+ * @internal
+ */
+function wrapApplyKey(proceed) {
+    const { series } = this, time = series.chart.time, dateTime = series.xAxis?.dateTime, currentDataGrouping = series.currentDataGrouping, tooltipOptions = series.tooltipOptions, dataGroupingOptions = series.options.dataGrouping;
+    let xDateFormat = tooltipOptions.xDateFormat || '', xDateFormatEnd, key = this.name ?? this.category;
+    if (dateTime &&
+        currentDataGrouping &&
+        dataGroupingOptions &&
+        (0,external_highcharts_src_js_default_namespaceObject.isNumber)(key)) {
+        const dateTimeLabelFormats = dataGroupingOptions.dateTimeLabelFormats ||
+            // Fallback to commonOptions (#9693)
+            DataGrouping_DataGroupingDefaults.common.dateTimeLabelFormats, 
+        // Use the grouping information to get the right format
+        labelFormats = dateTimeLabelFormats[currentDataGrouping.unitName], groupStart = series.groupMap?.[this.index].groupStart ?? this.x, groupEnd = groupStart + (currentDataGrouping?.totalRange || 0) - 1;
+        if (currentDataGrouping.count === 1) {
+            xDateFormat = labelFormats[0];
+        }
+        else {
+            xDateFormat = labelFormats[1];
+            xDateFormatEnd = labelFormats[2];
+        }
+        key = time.dateFormat(xDateFormat, groupStart);
+        if (xDateFormatEnd) {
+            key += time.dateFormat(xDateFormatEnd, groupEnd);
+        }
+        return (this.key = key);
+    }
+    return proceed.call(this);
+}
 /** @internal */
 function DataGroupingSeriesComposition_compose(SeriesClass) {
     const seriesProto = SeriesClass.prototype;
@@ -1510,6 +1542,7 @@ function DataGroupingSeriesComposition_compose(SeriesClass) {
                 return false;
             }
         });
+        (0,external_highcharts_src_js_default_namespaceObject.wrap)(PointClass.prototype, 'applyKey', wrapApplyKey);
         (0,external_highcharts_src_js_default_namespaceObject.addEvent)(SeriesClass, 'afterSetOptions', onAfterSetOptions);
         (0,external_highcharts_src_js_default_namespaceObject.addEvent)(SeriesClass, 'destroy', destroyGroupedData);
         (0,external_highcharts_src_js_default_namespaceObject.extend)(seriesProto, {
@@ -1773,9 +1806,6 @@ const DataGroupingSeriesComposition = {
 /** @internal */
 /* harmony default export */ const DataGrouping_DataGroupingSeriesComposition = (DataGroupingSeriesComposition);
 
-;// external ["../highcharts.src.js","default","Templating"]
-const external_highcharts_src_js_default_Templating_namespaceObject = __WEBPACK_EXTERNAL_MODULE__highcharts_src_js_8202131d__["default"].Templating;
-var external_highcharts_src_js_default_Templating_default = /*#__PURE__*/__webpack_require__.n(external_highcharts_src_js_default_Templating_namespaceObject);
 ;// ./code/es-modules/Extensions/DataGrouping/DataGrouping.js
 /* *
  *
@@ -1791,77 +1821,14 @@ var external_highcharts_src_js_default_Templating_default = /*#__PURE__*/__webpa
 
 
 
-
-
-const { format } = (external_highcharts_src_js_default_Templating_default());
-
-const { composed: DataGrouping_composed } = (external_highcharts_src_js_default_default());
-
 /* *
  *
  *  Functions
  *
  * */
-function DataGrouping_compose(AxisClass, SeriesClass, TooltipClass) {
+function DataGrouping_compose(AxisClass, SeriesClass) {
     DataGrouping_DataGroupingAxisComposition.compose(AxisClass);
     DataGrouping_DataGroupingSeriesComposition.compose(SeriesClass);
-    if (TooltipClass &&
-        (0,external_highcharts_src_js_default_namespaceObject.pushUnique)(DataGrouping_composed, 'DataGrouping')) {
-        (0,external_highcharts_src_js_default_namespaceObject.addEvent)(TooltipClass, 'headerFormatter', onTooltipHeaderFormatter);
-    }
-}
-/**
- * Extend the original method, make the tooltip's header reflect the grouped
- * range.
- * @internal
- */
-function onTooltipHeaderFormatter(e) {
-    const chart = this.chart, time = chart.time, point = e.point, series = point.series, options = series.options, tooltipOptions = series.tooltipOptions, dataGroupingOptions = options.dataGrouping, xAxis = series.xAxis;
-    let xDateFormat = tooltipOptions.xDateFormat || '', xDateFormatEnd, currentDataGrouping, dateTimeLabelFormats, labelFormats, formattedKey, formatString = tooltipOptions[e.isFooter ? 'footerFormat' : 'headerFormat'];
-    // Apply only to grouped series
-    if (xAxis &&
-        xAxis.options.type === 'datetime' &&
-        dataGroupingOptions &&
-        (0,external_highcharts_src_js_default_namespaceObject.isNumber)(point.key)) {
-        // Set variables
-        currentDataGrouping = series.currentDataGrouping;
-        dateTimeLabelFormats = dataGroupingOptions.dateTimeLabelFormats ||
-            // Fallback to commonOptions (#9693)
-            DataGrouping_DataGroupingDefaults.common.dateTimeLabelFormats;
-        // If we have grouped data, use the grouping information to get the
-        // right format
-        if (currentDataGrouping) {
-            labelFormats = dateTimeLabelFormats[currentDataGrouping.unitName];
-            if (currentDataGrouping.count === 1) {
-                xDateFormat = labelFormats[0];
-            }
-            else {
-                xDateFormat = labelFormats[1];
-                xDateFormatEnd = labelFormats[2];
-            }
-            // If not grouped, and we don't have set the xDateFormat option, get the
-            // best fit, so if the least distance between points is one minute, show
-            // it, but if the least distance is one day, skip hours and minutes etc.
-        }
-        else if (!xDateFormat && dateTimeLabelFormats && xAxis.dateTime) {
-            xDateFormat = xAxis.dateTime.getXDateFormat(point.x, tooltipOptions.dateTimeLabelFormats);
-        }
-        const groupStart = series.groupMap?.[point.index].groupStart ?? point.key, groupEnd = groupStart + (currentDataGrouping?.totalRange || 0) - 1;
-        formattedKey = time.dateFormat(xDateFormat, groupStart);
-        if (xDateFormatEnd) {
-            formattedKey += time.dateFormat(xDateFormatEnd, groupEnd);
-        }
-        // Replace default header style with class name
-        if (series.chart.styledMode) {
-            formatString = this.styledModeFormat(formatString);
-        }
-        // Return the replaced format
-        e.text = format(formatString, {
-            point: (0,external_highcharts_src_js_default_namespaceObject.extend)(point, { key: formattedKey }),
-            series
-        }, chart);
-        e.preventDefault();
-    }
 }
 /* *
  *
@@ -2125,10 +2092,10 @@ const DataGroupingComposition = {
  * The approximate pixel width of each group. If for example a series
  * with 30 points is displayed over a 600 pixel wide plot area, no grouping
  * is performed. If however the series contains so many points that
- * the spacing is less than the groupPixelWidth, Highcharts will try
+ * the spacing is less than the `groupPixelWidth`, Highcharts will try
  * to group it into appropriate groups so that each is more or less
- * two pixels wide. If multiple series with different group pixel widths
- * are drawn on the same x axis, all series will take the greatest width.
+ * `groupPixelWidth` pixels wide. If multiple series with different group pixel
+ * widths are drawn on the same x axis, all series will take the greatest width.
  * For example, line series have 2px default group width, while column
  * series have 10px. If combined, both the line and the column will
  * have 10px by default.
@@ -2231,9 +2198,9 @@ const DataGroupingComposition = {
  * The approximate pixel width of each group. If for example a series
  * with 30 points is displayed over a 600 pixel wide plot area, no grouping
  * is performed. If however the series contains so many points that
- * the spacing is less than the groupPixelWidth, Highcharts will try
+ * the spacing is less than the `groupPixelWidth`, Highcharts will try
  * to group it into appropriate groups so that each is more or less
- * two pixels wide. Defaults to `10`.
+ * `groupPixelWidth` pixels wide. Defaults to `10`.
  *
  * @sample {highstock} stock/plotoptions/series-datagrouping-grouppixelwidth/
  *         Two series with the same data density but different groupPixelWidth
@@ -2257,7 +2224,7 @@ G.dataGrouping.approximationDefaults = (G.dataGrouping.approximationDefaults ||
     DataGrouping_ApproximationDefaults);
 G.dataGrouping.approximations = (G.dataGrouping.approximations ||
     DataGrouping_ApproximationRegistry);
-DataGrouping.compose(G.Axis, G.Series, G.Tooltip);
+DataGrouping.compose(G.Axis, G.Series);
 /* harmony default export */ const datagrouping_src = ((external_highcharts_src_js_default_default()));
 
 export { datagrouping_src as default };

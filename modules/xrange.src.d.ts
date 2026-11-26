@@ -7,6 +7,7 @@ import * as globals from "../globals.src";
 import * as _Highcharts from "../highcharts.src";
 declare module "../highcharts.src" {
     interface Point {
+        keyEnd: any;
         x2?: number;
     }
     interface PointOptionsObject {

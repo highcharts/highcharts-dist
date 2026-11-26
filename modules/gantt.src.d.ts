@@ -13,6 +13,11 @@ declare module "../highcharts.src" {
     }
     interface Point {
         /**
+         * The formatted ending x-value (typically date), for use in a tooltip
+         * formatter.
+         */
+        keyEnd: any;
+        /**
          * The ending X value of the range point.
          */
         x2?: number;

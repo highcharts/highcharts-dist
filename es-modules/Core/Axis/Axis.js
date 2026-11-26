@@ -2996,8 +2996,10 @@ class Axis {
      */
     update(options = {}, redraw = true) {
         const chart = this.chart;
-        fireEvent(this, 'update', { options });
         options = merge(this.userOptions, options);
+        // Fired with the merged copy, so that listeners can replace options
+        // without mutating the user's object (#25527)
+        fireEvent(this, 'update', { options });
         this.isDirty = this.forceRedraw = true;
         this.init(chart, options);
         chart.isDirtyBox = true;

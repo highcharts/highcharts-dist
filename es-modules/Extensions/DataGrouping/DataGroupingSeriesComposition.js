@@ -16,7 +16,7 @@ import DataTableCore from '../../Data/DataTableCore.js';
 import DateTimeAxis from '../../Core/Axis/DateTimeAxis.js';
 import D from '../../Core/Defaults.js';
 import Series from '../../Core/Series/Series.js';
-import { addEvent, defined, extend, isNumber, merge, splat } from '../../Shared/Utilities.js';
+import { addEvent, defined, extend, isNumber, merge, splat, wrap } from '../../Shared/Utilities.js';
 import { error } from '../../Core/Utilities.js';
 /* *
  *
@@ -224,6 +224,38 @@ function applyGrouping(hasExtremesChanged) {
         (lastDataGrouping && lastDataGrouping.totalRange) !==
             (currentDataGrouping && currentDataGrouping.totalRange);
 }
+/**
+ * Extend the original method, make the tooltip's header reflect the grouped
+ * range.
+ * @internal
+ */
+function wrapApplyKey(proceed) {
+    const { series } = this, time = series.chart.time, dateTime = series.xAxis?.dateTime, currentDataGrouping = series.currentDataGrouping, tooltipOptions = series.tooltipOptions, dataGroupingOptions = series.options.dataGrouping;
+    let xDateFormat = tooltipOptions.xDateFormat || '', xDateFormatEnd, key = this.name ?? this.category;
+    if (dateTime &&
+        currentDataGrouping &&
+        dataGroupingOptions &&
+        isNumber(key)) {
+        const dateTimeLabelFormats = dataGroupingOptions.dateTimeLabelFormats ||
+            // Fallback to commonOptions (#9693)
+            DataGroupingDefaults.common.dateTimeLabelFormats, 
+        // Use the grouping information to get the right format
+        labelFormats = dateTimeLabelFormats[currentDataGrouping.unitName], groupStart = series.groupMap?.[this.index].groupStart ?? this.x, groupEnd = groupStart + (currentDataGrouping?.totalRange || 0) - 1;
+        if (currentDataGrouping.count === 1) {
+            xDateFormat = labelFormats[0];
+        }
+        else {
+            xDateFormat = labelFormats[1];
+            xDateFormatEnd = labelFormats[2];
+        }
+        key = time.dateFormat(xDateFormat, groupStart);
+        if (xDateFormatEnd) {
+            key += time.dateFormat(xDateFormatEnd, groupEnd);
+        }
+        return (this.key = key);
+    }
+    return proceed.call(this);
+}
 /** @internal */
 function compose(SeriesClass) {
     const seriesProto = SeriesClass.prototype;
@@ -237,6 +269,7 @@ function compose(SeriesClass) {
                 return false;
             }
         });
+        wrap(PointClass.prototype, 'applyKey', wrapApplyKey);
         addEvent(SeriesClass, 'afterSetOptions', onAfterSetOptions);
         addEvent(SeriesClass, 'destroy', destroyGroupedData);
         extend(seriesProto, {

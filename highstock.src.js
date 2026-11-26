@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Stock v13.1.1-modified (2026-11-25)
+ * @license Highcharts Stock v13.1.1-modified (2026-11-26)
  * @module highcharts/highstock
  *
  * (c) 2009-2026 Highsoft AS
@@ -23143,8 +23143,10 @@ class Axis {
      */
     update(options = {}, redraw = true) {
         const chart = this.chart;
-        fireEvent(this, 'update', { options });
         options = merge(this.userOptions, options);
+        // Fired with the merged copy, so that listeners can replace options
+        // without mutating the user's object (#25527)
+        fireEvent(this, 'update', { options });
         this.isDirty = this.forceRedraw = true;
         this.init(chart, options);
         chart.isDirtyBox = true;
@@ -23957,11 +23959,13 @@ var PlotLineOrBandAxis;
             });
             // Update plot bands and lines one to one
             addEvent(AxisClass, 'update', function ({ options }) {
+                const PlotItemClass = PlotLineOrBandClass;
                 for (const coll of ['plotBands', 'plotLines']) {
                     // Check if we have new options to process, otherwise do
                     // nothing with existing plot lines and bands
                     if (options[coll]) {
-                        const plotItems = this[coll];
+                        // Work on copies, not on the user's options (#25527)
+                        const plotItems = this[coll], itemsOptions = [];
                         splat(options[coll]).forEach((pOptions = {}, i) => {
                             // Match by id
                             let pItem;
@@ -23972,27 +23976,28 @@ var PlotLineOrBandAxis;
                             pItem || (pItem = plotItems[i]);
                             // Update
                             if (pItem) {
-                                pItem.update(pOptions, false);
-                                options[coll][i] = pItem.options;
-                                // Add
+                                pItem.options = merge(pItem.options, pOptions);
+                                // Add, rendered in Axis.render
                             }
                             else {
-                                pItem = this[coll === 'plotBands' ?
-                                    'addPlotBand' :
-                                    'addPlotLine'](pOptions);
+                                pItem = new PlotItemClass(this, merge(pOptions), coll);
+                                plotItems.push(pItem);
                             }
                             pItem.isActive = true;
+                            itemsOptions[i] = pItem.options;
                         });
                         // Remove inactive items from end to start
                         let i = plotItems.length;
                         while (i--) {
                             if (!plotItems[i].isActive) {
-                                plotItems[i].remove();
+                                plotItems[i].destroy();
+                                plotItems.splice(i, 1);
                             }
                             else {
                                 delete plotItems[i].isActive;
                             }
                         }
+                        options[coll] = itemsOptions;
                     }
                 }
             });
@@ -25222,7 +25227,7 @@ class PlotLineOrBand {
 
 const { format: Tooltip_format } = Core_Templating;
 
-const { composed: Tooltip_composed, dateFormats, doc: Tooltip_doc, isSafari } = Core_Globals;
+const { composed: Tooltip_composed, doc: Tooltip_doc, isSafari } = Core_Globals;
 
 const { distribute } = Renderer_RendererUtilities;
 
@@ -25974,6 +25979,9 @@ class Tooltip {
             points.forEach((item) => item.setState('hover'));
             point.points = points;
         }
+        // Set the `point.key` for each point, just in time for the tooltip
+        // formatting. Used in formatter functions and format strings.
+        points.forEach((item) => item.applyKey());
         this.len = points.length; // #6128
         const text = isString(formatString) ?
             Tooltip_format(formatString, point, chart) :
@@ -26437,35 +26445,11 @@ class Tooltip {
      * @function Highcharts.Tooltip#headerFooterFormatter
      */
     headerFooterFormatter(point, isFooter) {
-        const series = point.series, tooltipOptions = series.tooltipOptions, xAxis = series.xAxis, dateTime = xAxis?.dateTime, e = {
-            isFooter,
-            point
-        };
-        let xDateFormat = tooltipOptions.xDateFormat || '', formatString = tooltipOptions[isFooter ? 'footerFormat' : 'headerFormat'];
-        fireEvent(this, 'headerFormatter', e, function (e) {
-            // Guess the best date format based on the closest point distance
-            // (#568, #3418)
-            if (dateTime && !xDateFormat && isNumber(point.key)) {
-                xDateFormat = dateTime.getXDateFormat(point.key, tooltipOptions.dateTimeLabelFormats);
-            }
-            // Insert the footer date format if any
-            if (dateTime && xDateFormat) {
-                if (isObject(xDateFormat)) {
-                    const format = xDateFormat;
-                    dateFormats[0] = (timestamp) => series.chart.time.dateFormat(format, timestamp);
-                    xDateFormat = '%0';
-                }
-                (point.tooltipDateKeys || ['key']).forEach((key) => {
-                    formatString = formatString.replace(new RegExp('point\\.' + key + '([ \\)}])'), `(point.${key}:${xDateFormat})$1`);
-                });
-            }
+        const { chart, tooltipOptions } = point.series, formatString = tooltipOptions[isFooter ? 'footerFormat' : 'headerFormat'];
+        return Tooltip_format(chart.styledMode ?
             // Replace default header style with class name
-            if (series.chart.styledMode) {
-                formatString = this.styledModeFormat(formatString);
-            }
-            e.text = Tooltip_format(formatString, point, this.chart);
-        });
-        return e.text || '';
+            this.styledModeFormat(formatString) :
+            formatString, point, chart);
     }
     /**
      * Updates the tooltip with the provided tooltip options.
@@ -26783,7 +26767,13 @@ class Point {
      */
     /**
      * The point's name if it is defined, or its category in case of a category,
-     * otherwise the x value. Convenient for tooltip and data label formatting.
+     * otherwise the x value or datetime. Convenient for tooltip formatting,
+     * where it is used in the default header. The key is applied just in time
+     * for the tooltip formatting.
+     *
+     * For datetime axes the key is a localized time string, formatted according
+     * to the [tooltip.dateTimeLabelFormats](#tooltip.dateTimeLabelFormats)
+     * option or the [tooltip.xDateFormat](#tooltip.xDateFormat) if defined.
      *
      * @name Highcharts.Point#key
      * @type {number|string}
@@ -27397,6 +27387,21 @@ class Point {
             return result[key];
         }, object);
         return object;
+    }
+    /**
+     * Applies the `point.key` property, which is used in tooltip formatting. If
+     * the point has a name or category, it will be used as the key. If the
+     * point is on a datetime axis and has a numeric x value, it will be
+     * formatted accordingly.
+     * @internal
+     * */
+    applyKey(key = this.key) {
+        const series = this.series, tooltipOptions = series.tooltipOptions, dateTime = series.xAxis?.dateTime;
+        if (dateTime && isNumber(key)) {
+            key = series.chart.time.dateFormat(tooltipOptions.xDateFormat ||
+                dateTime.getXDateFormat(key, tooltipOptions.dateTimeLabelFormats), key);
+        }
+        return (this.key = key);
     }
     /** @internal */
     shouldDraw() {
@@ -40291,8 +40296,9 @@ class Chart {
     }
     /**
      * Detect whether a certain chart property is needed based on inspecting its
-     * options and series. This mainly applies to the chart.inverted property,
-     * and in extensions to the chart.angular and chart.polar properties.
+     * options and series. The inspected properties are listed in
+     * `propsFromSeries`, which modules extend, for example highcharts-more
+     * with `angular` and `polar`.
      *
      * @internal
      * @function Highcharts.Chart#propFromSeries
@@ -40306,7 +40312,7 @@ class Chart {
          * @name Highcharts.Chart#inverted
          * @type {boolean|undefined}
          */
-        ['inverted', 'angular', 'polar'].forEach(function (key) {
+        chart.propsFromSeries.forEach(function (key) {
             // The default series type's class
             klass = Chart_seriesTypes[optionsChart.type];
             // Get the value from available chart-wide properties
@@ -41049,11 +41055,10 @@ class Chart {
             if ('className' in optionsChart) {
                 chart.setClassName(optionsChart.className);
             }
-            if ('inverted' in optionsChart ||
-                'polar' in optionsChart ||
-                'type' in optionsChart) {
-                // Parse options.chart.inverted and options.chart.polar together
-                // with the available series.
+            if ('type' in optionsChart ||
+                chart.propsFromSeries.some((key) => key in optionsChart)) {
+                // Parse options like chart.inverted together with the
+                // available series.
                 chart.propFromSeries();
                 updateAllAxes = true;
             }
@@ -41539,6 +41544,12 @@ extend(Chart.prototype, {
         'series'
     ],
     /**
+     * Chart properties that are set from chart options or required by series
+     * types, see `propFromSeries`. Can be extended from plugins.
+     * @internal
+     */
+    propsFromSeries: ['inverted'],
+    /**
      * These properties cause isDirtyBox to be set to true when updating. Can be
      * extended from plugins.
      * @internal
@@ -41580,7 +41591,6 @@ extend(Chart.prototype, {
      */
     propsRequireUpdateSeries: [
         'chart.inverted',
-        'chart.polar',
         'chart.ignoreHiddenSeries',
         'chart.type',
         'colors',
@@ -49657,7 +49667,7 @@ var Responsive;
 ;// ./code/es-modules/masters/highcharts.src.js
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-25)
+ * @license Highcharts JS v13.1.1-modified (2026-11-26)
  * @module highcharts/highcharts
  *
  * (c) 2009-2026 Highsoft AS
@@ -58257,9 +58267,9 @@ const HLCSeriesDefaults = {
      * The approximate pixel width of each group. If for example a series
      * with 30 points is displayed over a 600 pixel wide plot area, no
      * grouping is performed. If however the series contains so many points
-     * that the spacing is less than the groupPixelWidth, Highcharts will
+     * that the spacing is less than the `groupPixelWidth`, Highcharts will
      * try to group it into appropriate groups so that each is more or less
-     * two pixels wide. Defaults to `5`.
+     * `groupPixelWidth` pixels wide. Defaults to `5`.
      *
      * @type      {number}
      * @default   5
@@ -58371,9 +58381,9 @@ const HLCSeriesDefaults = {
  *    series options.
  *    ```js
  *    data: [
- *        [0, 5, 6, 7],
- *        [1, 4, 8, 2],
- *        [2, 3, 4, 10]
+ *        [0, 7, 2, 6],
+ *        [1, 8, 4, 5],
+ *        [2, 9, 3, 8]
  *    ]
  *    ```
  *
@@ -58385,16 +58395,16 @@ const HLCSeriesDefaults = {
  *    ```js
  *    data: [{
  *        x: 1,
- *        high: 4,
- *        low: 5,
- *        close: 2,
+ *        high: 9,
+ *        low: 2,
+ *        close: 7,
  *        name: "Point2",
  *        color: "#00FF00"
  *    }, {
  *        x: 1,
- *        high: 3,
- *        low: 6,
- *        close: 7,
+ *        high: 8,
+ *        low: 4,
+ *        close: 5,
  *        name: "Point1",
  *        color: "#FF00FF"
  *    }]
@@ -58861,24 +58871,6 @@ const OHLCSeriesDefaults = {
      * @apioption plotOptions.ohlc.legendSymbol
      */
     legendSymbol: 'ohlc',
-    /**
-     * Determines which one of  `open`, `high`, `low`, `close` values should
-     * be represented as `point.y`, which is later used to set dataLabel
-     * position and [compare](#plotOptions.series.compare).
-     *
-     * @declare    Highcharts.OptionsPointValKeyValue
-     * @default    close
-     * @validvalue ["open", "high", "low", "close"]
-     * @product    highstock
-     * @apioption  plotOptions.ohlc.pointValKey
-     */
-    /**
-     * Line color for up points.
-     *
-     * @type      {Highcharts.ColorType}
-     * @product   highstock
-     * @apioption plotOptions.ohlc.upColor
-     */
     tooltip: {
         pointFormat: '<span style="color:{point.color}">\u25CF</span> ' +
             '<b> {series.name}</b><br/>' +
@@ -58888,6 +58880,24 @@ const OHLCSeriesDefaults = {
             '{series.chart.options.lang.stockClose}: {point.close}<br/>'
     }
 };
+/**
+ * Determines which one of  `open`, `high`, `low`, `close` values should
+ * be represented as `point.y`, which is later used to set dataLabel
+ * position and [compare](#plotOptions.series.compare).
+ *
+ * @declare    Highcharts.OptionsPointValKeyValue
+ * @default    close
+ * @validvalue ["open", "high", "low", "close"]
+ * @product    highstock
+ * @apioption  plotOptions.ohlc.pointValKey
+ */
+/**
+ * Line color for up points.
+ *
+ * @type      {Highcharts.ColorType}
+ * @product   highstock
+ * @apioption plotOptions.ohlc.upColor
+ */
 /**
  * The parameter allows setting line series type and use OHLC indicators.
  * Data in OHLC format is required.
@@ -58920,9 +58930,9 @@ const OHLCSeriesDefaults = {
  *    series options.
  *    ```js
  *    data: [
- *        [0, 6, 5, 6, 7],
- *        [1, 9, 4, 8, 2],
- *        [2, 6, 3, 4, 10]
+ *        [0, 4, 7, 2, 6],
+ *        [1, 6, 8, 4, 5],
+ *        [2, 5, 9, 3, 8]
  *    ]
  *    ```
  *
@@ -58935,17 +58945,17 @@ const OHLCSeriesDefaults = {
  *    data: [{
  *        x: 1,
  *        open: 3,
- *        high: 4,
- *        low: 5,
- *        close: 2,
+ *        high: 9,
+ *        low: 2,
+ *        close: 7,
  *        name: "Point2",
  *        color: "#00FF00"
  *    }, {
  *        x: 1,
- *        open: 4,
- *        high: 3,
- *        low: 6,
- *        close: 7,
+ *        open: 7,
+ *        high: 8,
+ *        low: 4,
+ *        close: 5,
  *        name: "Point1",
  *        color: "#FF00FF"
  *    }]
@@ -59176,23 +59186,11 @@ Series_SeriesRegistry.registerSeriesType('ohlc', OHLCSeries);
  *         Candlestick chart
  *
  * @extends      plotOptions.ohlc
- * @excluding    borderColor,borderRadius,borderWidth
+ * @excluding    borderColor,borderRadius,borderWidth,stack,stacking
  * @product      highstock
  * @optionparent plotOptions.candlestick
  */
 const CandlestickSeriesDefaults = {
-    /**
-     * The specific line color for up candle sticks. The default is to
-     * inherit the general `lineColor` setting.
-     *
-     * @sample {highstock} stock/plotoptions/candlestick-linecolor/
-     *         Candlestick line colors
-     *
-     * @type      {Highcharts.ColorType}
-     * @since     1.3.6
-     * @product   highstock
-     * @apioption plotOptions.candlestick.upLineColor
-     */
     states: {
         /**
          * @extends plotOptions.column.states.hover
@@ -59272,15 +59270,57 @@ const CandlestickSeriesDefaults = {
     stickyTracking: true
 };
 /**
+ * The approximate pixel width of each group. If for example a series
+ * with 30 points is displayed over a 600 pixel wide plot area, no
+ * grouping is performed. If however the series contains so many points
+ * that the spacing is less than the `groupPixelWidth`, Highcharts will
+ * try to group it into appropriate groups so that each is more or less
+ * `groupPixelWidth` pixels wide.
+ *
+ * @type      {number}
+ * @default   10
+ * @product   highstock
+ * @apioption plotOptions.candlestick.dataGrouping.groupPixelWidth
+ */
+/**
+ * The color of the line/border of the hovered candlestick. When `undefined`,
+ * the line color of the normal state is used.
+ *
+ * @type      {Highcharts.ColorType}
+ * @product   highstock
+ * @apioption plotOptions.candlestick.states.hover.lineColor
+ */
+/**
+ * The specific line color for up candle sticks. The default is to
+ * inherit the general `lineColor` setting.
+ *
+ * @sample {highstock} stock/plotoptions/candlestick-linecolor/
+ *         Candlestick line colors
+ *
+ * @type      {Highcharts.ColorType}
+ * @since     1.3.6
+ * @product   highstock
+ * @apioption plotOptions.candlestick.upLineColor
+ */
+/**
  * A `candlestick` series. If the [type](#series.candlestick.type)
  * option is not specified, it is inherited from [chart.type](
  * #chart.type).
  *
  * @type      {*}
  * @extends   series,plotOptions.candlestick
- * @excluding borderColor, borderRadius, borderWidth, marker
+ * @excluding borderColor, borderRadius, borderWidth, marker, stack,
+ *            stacking
  * @product   highstock
  * @apioption series.candlestick
+ */
+/**
+ * Options for the selected point. These settings override the normal state
+ * options when a point is selected.
+ *
+ * @excluding borderColor
+ * @product   highstock
+ * @apioption series.candlestick.states.select
  */
 /**
  * An array of data points for the series. For the `candlestick` series
@@ -59295,9 +59335,9 @@ const CandlestickSeriesDefaults = {
  *    series options.
  *    ```js
  *    data: [
- *        [0, 7, 2, 0, 4],
- *        [1, 1, 4, 2, 8],
- *        [2, 3, 3, 9, 3]
+ *        [0, 4, 7, 2, 6],
+ *        [1, 6, 8, 4, 5],
+ *        [2, 5, 9, 3, 8]
  *    ]
  *    ```
  *
@@ -59309,18 +59349,18 @@ const CandlestickSeriesDefaults = {
  *    ```js
  *    data: [{
  *        x: 1,
- *        open: 9,
- *        high: 2,
- *        low: 4,
- *        close: 6,
+ *        open: 3,
+ *        high: 9,
+ *        low: 2,
+ *        close: 7,
  *        name: "Point2",
  *        color: "#00FF00"
  *    }, {
  *        x: 1,
- *        open: 1,
- *        high: 4,
- *        low: 7,
- *        close: 7,
+ *        open: 7,
+ *        high: 8,
+ *        low: 4,
+ *        close: 5,
  *        name: "Point1",
  *        color: "#FF00FF"
  *    }]
@@ -59332,6 +59372,30 @@ const CandlestickSeriesDefaults = {
  * @excluding y
  * @product   highstock
  * @apioption series.candlestick.data
+ */
+/**
+ * A name for the dash style to use for the candlestick. Overrides
+ * `dashStyle` on the series.
+ *
+ * @type      {Highcharts.DashStyleValue}
+ * @product   highstock
+ * @apioption series.candlestick.data.dashStyle
+ */
+/**
+ * The color of the line/border of the candlestick. Overrides `lineColor` and
+ * `upLineColor` on the series.
+ *
+ * @type      {Highcharts.ColorType}
+ * @product   highstock
+ * @apioption series.candlestick.data.lineColor
+ */
+/**
+ * A pixel value specifying a fixed width for the candlestick. Overrides
+ * `pointWidth` on the series.
+ *
+ * @type      {number}
+ * @product   highstock
+ * @apioption series.candlestick.data.pointWidth
  */
 ''; // Adds doclets above to transpiled
 /* *
@@ -61127,7 +61191,7 @@ var BrokenAxis;
 /* unused harmony import specifier */ var Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-25)
+ * @license Highcharts JS v13.1.1-modified (2026-11-26)
  * @module highcharts/modules/broken-axis
  * @requires highcharts
  *
@@ -61497,7 +61561,7 @@ let AxisConstructor;
  *
  * */
 /**
- * Check the groupPixelWidth and apply the grouping if needed.
+ * Check the `groupPixelWidth` and apply the grouping if needed.
  * Fired only after processing the data.
  *
  * @internal
@@ -61870,6 +61934,38 @@ function DataGroupingSeriesComposition_applyGrouping(hasExtremesChanged) {
         (lastDataGrouping && lastDataGrouping.totalRange) !==
             (currentDataGrouping && currentDataGrouping.totalRange);
 }
+/**
+ * Extend the original method, make the tooltip's header reflect the grouped
+ * range.
+ * @internal
+ */
+function wrapApplyKey(proceed) {
+    const { series } = this, time = series.chart.time, dateTime = series.xAxis?.dateTime, currentDataGrouping = series.currentDataGrouping, tooltipOptions = series.tooltipOptions, dataGroupingOptions = series.options.dataGrouping;
+    let xDateFormat = tooltipOptions.xDateFormat || '', xDateFormatEnd, key = this.name ?? this.category;
+    if (dateTime &&
+        currentDataGrouping &&
+        dataGroupingOptions &&
+        isNumber(key)) {
+        const dateTimeLabelFormats = dataGroupingOptions.dateTimeLabelFormats ||
+            // Fallback to commonOptions (#9693)
+            DataGrouping_DataGroupingDefaults.common.dateTimeLabelFormats, 
+        // Use the grouping information to get the right format
+        labelFormats = dateTimeLabelFormats[currentDataGrouping.unitName], groupStart = series.groupMap?.[this.index].groupStart ?? this.x, groupEnd = groupStart + (currentDataGrouping?.totalRange || 0) - 1;
+        if (currentDataGrouping.count === 1) {
+            xDateFormat = labelFormats[0];
+        }
+        else {
+            xDateFormat = labelFormats[1];
+            xDateFormatEnd = labelFormats[2];
+        }
+        key = time.dateFormat(xDateFormat, groupStart);
+        if (xDateFormatEnd) {
+            key += time.dateFormat(xDateFormatEnd, groupEnd);
+        }
+        return (this.key = key);
+    }
+    return proceed.call(this);
+}
 /** @internal */
 function DataGroupingSeriesComposition_compose(SeriesClass) {
     const seriesProto = SeriesClass.prototype;
@@ -61883,6 +61979,7 @@ function DataGroupingSeriesComposition_compose(SeriesClass) {
                 return false;
             }
         });
+        wrap(PointClass.prototype, 'applyKey', wrapApplyKey);
         addEvent(SeriesClass, 'afterSetOptions', onAfterSetOptions);
         addEvent(SeriesClass, 'destroy', destroyGroupedData);
         extend(seriesProto, {
@@ -62161,77 +62258,14 @@ const DataGroupingSeriesComposition = {
 
 
 
-
-
-const { format: DataGrouping_format } = Core_Templating;
-
-const { composed: DataGrouping_composed } = Core_Globals;
-
 /* *
  *
  *  Functions
  *
  * */
-function DataGrouping_compose(AxisClass, SeriesClass, TooltipClass) {
+function DataGrouping_compose(AxisClass, SeriesClass) {
     DataGrouping_DataGroupingAxisComposition.compose(AxisClass);
     DataGrouping_DataGroupingSeriesComposition.compose(SeriesClass);
-    if (TooltipClass &&
-        pushUnique(DataGrouping_composed, 'DataGrouping')) {
-        addEvent(TooltipClass, 'headerFormatter', onTooltipHeaderFormatter);
-    }
-}
-/**
- * Extend the original method, make the tooltip's header reflect the grouped
- * range.
- * @internal
- */
-function onTooltipHeaderFormatter(e) {
-    const chart = this.chart, time = chart.time, point = e.point, series = point.series, options = series.options, tooltipOptions = series.tooltipOptions, dataGroupingOptions = options.dataGrouping, xAxis = series.xAxis;
-    let xDateFormat = tooltipOptions.xDateFormat || '', xDateFormatEnd, currentDataGrouping, dateTimeLabelFormats, labelFormats, formattedKey, formatString = tooltipOptions[e.isFooter ? 'footerFormat' : 'headerFormat'];
-    // Apply only to grouped series
-    if (xAxis &&
-        xAxis.options.type === 'datetime' &&
-        dataGroupingOptions &&
-        isNumber(point.key)) {
-        // Set variables
-        currentDataGrouping = series.currentDataGrouping;
-        dateTimeLabelFormats = dataGroupingOptions.dateTimeLabelFormats ||
-            // Fallback to commonOptions (#9693)
-            DataGrouping_DataGroupingDefaults.common.dateTimeLabelFormats;
-        // If we have grouped data, use the grouping information to get the
-        // right format
-        if (currentDataGrouping) {
-            labelFormats = dateTimeLabelFormats[currentDataGrouping.unitName];
-            if (currentDataGrouping.count === 1) {
-                xDateFormat = labelFormats[0];
-            }
-            else {
-                xDateFormat = labelFormats[1];
-                xDateFormatEnd = labelFormats[2];
-            }
-            // If not grouped, and we don't have set the xDateFormat option, get the
-            // best fit, so if the least distance between points is one minute, show
-            // it, but if the least distance is one day, skip hours and minutes etc.
-        }
-        else if (!xDateFormat && dateTimeLabelFormats && xAxis.dateTime) {
-            xDateFormat = xAxis.dateTime.getXDateFormat(point.x, tooltipOptions.dateTimeLabelFormats);
-        }
-        const groupStart = series.groupMap?.[point.index].groupStart ?? point.key, groupEnd = groupStart + (currentDataGrouping?.totalRange || 0) - 1;
-        formattedKey = time.dateFormat(xDateFormat, groupStart);
-        if (xDateFormatEnd) {
-            formattedKey += time.dateFormat(xDateFormatEnd, groupEnd);
-        }
-        // Replace default header style with class name
-        if (series.chart.styledMode) {
-            formatString = this.styledModeFormat(formatString);
-        }
-        // Return the replaced format
-        e.text = DataGrouping_format(formatString, {
-            point: extend(point, { key: formattedKey }),
-            series
-        }, chart);
-        e.preventDefault();
-    }
 }
 /* *
  *
@@ -62495,10 +62529,10 @@ const DataGroupingComposition = {
  * The approximate pixel width of each group. If for example a series
  * with 30 points is displayed over a 600 pixel wide plot area, no grouping
  * is performed. If however the series contains so many points that
- * the spacing is less than the groupPixelWidth, Highcharts will try
+ * the spacing is less than the `groupPixelWidth`, Highcharts will try
  * to group it into appropriate groups so that each is more or less
- * two pixels wide. If multiple series with different group pixel widths
- * are drawn on the same x axis, all series will take the greatest width.
+ * `groupPixelWidth` pixels wide. If multiple series with different group pixel
+ * widths are drawn on the same x axis, all series will take the greatest width.
  * For example, line series have 2px default group width, while column
  * series have 10px. If combined, both the line and the column will
  * have 10px by default.
@@ -62601,9 +62635,9 @@ const DataGroupingComposition = {
  * The approximate pixel width of each group. If for example a series
  * with 30 points is displayed over a 600 pixel wide plot area, no grouping
  * is performed. If however the series contains so many points that
- * the spacing is less than the groupPixelWidth, Highcharts will try
+ * the spacing is less than the `groupPixelWidth`, Highcharts will try
  * to group it into appropriate groups so that each is more or less
- * two pixels wide. Defaults to `10`.
+ * `groupPixelWidth` pixels wide. Defaults to `10`.
  *
  * @sample {highstock} stock/plotoptions/series-datagrouping-grouppixelwidth/
  *         Two series with the same data density but different groupPixelWidth
@@ -62618,7 +62652,7 @@ const DataGroupingComposition = {
 /* unused harmony import specifier */ var datagrouping_src_Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.1.1-modified (2026-11-25)
+ * @license Highstock JS v13.1.1-modified (2026-11-26)
  * @module highcharts/modules/datagrouping
  * @requires highcharts
  *
@@ -62641,7 +62675,7 @@ datagrouping_src_G.dataGrouping.approximationDefaults = (datagrouping_src_G.data
     DataGrouping_ApproximationDefaults);
 datagrouping_src_G.dataGrouping.approximations = (datagrouping_src_G.dataGrouping.approximations ||
     DataGrouping_ApproximationRegistry);
-DataGrouping.compose(datagrouping_src_G.Axis, datagrouping_src_G.Series, datagrouping_src_G.Tooltip);
+DataGrouping.compose(datagrouping_src_G.Axis, datagrouping_src_G.Series);
 /* harmony default export */ const datagrouping_src = ((/* unused pure expression or super */ null && (datagrouping_src_Highcharts)));
 
 ;// ./code/es-modules/Extensions/Annotations/NavigationBindingsUtilities.js
@@ -62979,7 +63013,7 @@ const MouseWheelZoomComposition = {
 /* unused harmony import specifier */ var mouse_wheel_zoom_src_Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-25)
+ * @license Highcharts JS v13.1.1-modified (2026-11-26)
  * @module highcharts/modules/mouse-wheel-zoom
  * @requires highcharts
  *
@@ -63003,7 +63037,7 @@ mouse_wheel_zoom_src_G.MouseWheelZoom.compose(mouse_wheel_zoom_src_G.Chart);
 /* unused harmony import specifier */ var stock_src_Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.1.1-modified (2026-11-25)
+ * @license Highstock JS v13.1.1-modified (2026-11-26)
  * @module highcharts/modules/stock
  * @requires highcharts
  *

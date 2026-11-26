@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Gantt JS v13.1.1-modified (2026-11-25)
+ * @license Highcharts Gantt JS v13.1.1-modified (2026-11-26)
  * @module highcharts/highcharts-gantt
  *
  * (c) 2017-2026 Highsoft AS
@@ -23149,8 +23149,10 @@ class Axis {
      */
     update(options = {}, redraw = true) {
         const chart = this.chart;
-        fireEvent(this, 'update', { options });
         options = merge(this.userOptions, options);
+        // Fired with the merged copy, so that listeners can replace options
+        // without mutating the user's object (#25527)
+        fireEvent(this, 'update', { options });
         this.isDirty = this.forceRedraw = true;
         this.init(chart, options);
         chart.isDirtyBox = true;
@@ -23963,11 +23965,13 @@ var PlotLineOrBandAxis;
             });
             // Update plot bands and lines one to one
             addEvent(AxisClass, 'update', function ({ options }) {
+                const PlotItemClass = PlotLineOrBandClass;
                 for (const coll of ['plotBands', 'plotLines']) {
                     // Check if we have new options to process, otherwise do
                     // nothing with existing plot lines and bands
                     if (options[coll]) {
-                        const plotItems = this[coll];
+                        // Work on copies, not on the user's options (#25527)
+                        const plotItems = this[coll], itemsOptions = [];
                         splat(options[coll]).forEach((pOptions = {}, i) => {
                             // Match by id
                             let pItem;
@@ -23978,27 +23982,28 @@ var PlotLineOrBandAxis;
                             pItem || (pItem = plotItems[i]);
                             // Update
                             if (pItem) {
-                                pItem.update(pOptions, false);
-                                options[coll][i] = pItem.options;
-                                // Add
+                                pItem.options = merge(pItem.options, pOptions);
+                                // Add, rendered in Axis.render
                             }
                             else {
-                                pItem = this[coll === 'plotBands' ?
-                                    'addPlotBand' :
-                                    'addPlotLine'](pOptions);
+                                pItem = new PlotItemClass(this, merge(pOptions), coll);
+                                plotItems.push(pItem);
                             }
                             pItem.isActive = true;
+                            itemsOptions[i] = pItem.options;
                         });
                         // Remove inactive items from end to start
                         let i = plotItems.length;
                         while (i--) {
                             if (!plotItems[i].isActive) {
-                                plotItems[i].remove();
+                                plotItems[i].destroy();
+                                plotItems.splice(i, 1);
                             }
                             else {
                                 delete plotItems[i].isActive;
                             }
                         }
+                        options[coll] = itemsOptions;
                     }
                 }
             });
@@ -25228,7 +25233,7 @@ class PlotLineOrBand {
 
 const { format: Tooltip_format } = Core_Templating;
 
-const { composed: Tooltip_composed, dateFormats, doc: Tooltip_doc, isSafari } = Core_Globals;
+const { composed: Tooltip_composed, doc: Tooltip_doc, isSafari } = Core_Globals;
 
 const { distribute } = Renderer_RendererUtilities;
 
@@ -25980,6 +25985,9 @@ class Tooltip {
             points.forEach((item) => item.setState('hover'));
             point.points = points;
         }
+        // Set the `point.key` for each point, just in time for the tooltip
+        // formatting. Used in formatter functions and format strings.
+        points.forEach((item) => item.applyKey());
         this.len = points.length; // #6128
         const text = isString(formatString) ?
             Tooltip_format(formatString, point, chart) :
@@ -26443,35 +26451,11 @@ class Tooltip {
      * @function Highcharts.Tooltip#headerFooterFormatter
      */
     headerFooterFormatter(point, isFooter) {
-        const series = point.series, tooltipOptions = series.tooltipOptions, xAxis = series.xAxis, dateTime = xAxis?.dateTime, e = {
-            isFooter,
-            point
-        };
-        let xDateFormat = tooltipOptions.xDateFormat || '', formatString = tooltipOptions[isFooter ? 'footerFormat' : 'headerFormat'];
-        fireEvent(this, 'headerFormatter', e, function (e) {
-            // Guess the best date format based on the closest point distance
-            // (#568, #3418)
-            if (dateTime && !xDateFormat && isNumber(point.key)) {
-                xDateFormat = dateTime.getXDateFormat(point.key, tooltipOptions.dateTimeLabelFormats);
-            }
-            // Insert the footer date format if any
-            if (dateTime && xDateFormat) {
-                if (isObject(xDateFormat)) {
-                    const format = xDateFormat;
-                    dateFormats[0] = (timestamp) => series.chart.time.dateFormat(format, timestamp);
-                    xDateFormat = '%0';
-                }
-                (point.tooltipDateKeys || ['key']).forEach((key) => {
-                    formatString = formatString.replace(new RegExp('point\\.' + key + '([ \\)}])'), `(point.${key}:${xDateFormat})$1`);
-                });
-            }
+        const { chart, tooltipOptions } = point.series, formatString = tooltipOptions[isFooter ? 'footerFormat' : 'headerFormat'];
+        return Tooltip_format(chart.styledMode ?
             // Replace default header style with class name
-            if (series.chart.styledMode) {
-                formatString = this.styledModeFormat(formatString);
-            }
-            e.text = Tooltip_format(formatString, point, this.chart);
-        });
-        return e.text || '';
+            this.styledModeFormat(formatString) :
+            formatString, point, chart);
     }
     /**
      * Updates the tooltip with the provided tooltip options.
@@ -26789,7 +26773,13 @@ class Point {
      */
     /**
      * The point's name if it is defined, or its category in case of a category,
-     * otherwise the x value. Convenient for tooltip and data label formatting.
+     * otherwise the x value or datetime. Convenient for tooltip formatting,
+     * where it is used in the default header. The key is applied just in time
+     * for the tooltip formatting.
+     *
+     * For datetime axes the key is a localized time string, formatted according
+     * to the [tooltip.dateTimeLabelFormats](#tooltip.dateTimeLabelFormats)
+     * option or the [tooltip.xDateFormat](#tooltip.xDateFormat) if defined.
      *
      * @name Highcharts.Point#key
      * @type {number|string}
@@ -27403,6 +27393,21 @@ class Point {
             return result[key];
         }, object);
         return object;
+    }
+    /**
+     * Applies the `point.key` property, which is used in tooltip formatting. If
+     * the point has a name or category, it will be used as the key. If the
+     * point is on a datetime axis and has a numeric x value, it will be
+     * formatted accordingly.
+     * @internal
+     * */
+    applyKey(key = this.key) {
+        const series = this.series, tooltipOptions = series.tooltipOptions, dateTime = series.xAxis?.dateTime;
+        if (dateTime && isNumber(key)) {
+            key = series.chart.time.dateFormat(tooltipOptions.xDateFormat ||
+                dateTime.getXDateFormat(key, tooltipOptions.dateTimeLabelFormats), key);
+        }
+        return (this.key = key);
     }
     /** @internal */
     shouldDraw() {
@@ -40297,8 +40302,9 @@ class Chart {
     }
     /**
      * Detect whether a certain chart property is needed based on inspecting its
-     * options and series. This mainly applies to the chart.inverted property,
-     * and in extensions to the chart.angular and chart.polar properties.
+     * options and series. The inspected properties are listed in
+     * `propsFromSeries`, which modules extend, for example highcharts-more
+     * with `angular` and `polar`.
      *
      * @internal
      * @function Highcharts.Chart#propFromSeries
@@ -40312,7 +40318,7 @@ class Chart {
          * @name Highcharts.Chart#inverted
          * @type {boolean|undefined}
          */
-        ['inverted', 'angular', 'polar'].forEach(function (key) {
+        chart.propsFromSeries.forEach(function (key) {
             // The default series type's class
             klass = Chart_seriesTypes[optionsChart.type];
             // Get the value from available chart-wide properties
@@ -41055,11 +41061,10 @@ class Chart {
             if ('className' in optionsChart) {
                 chart.setClassName(optionsChart.className);
             }
-            if ('inverted' in optionsChart ||
-                'polar' in optionsChart ||
-                'type' in optionsChart) {
-                // Parse options.chart.inverted and options.chart.polar together
-                // with the available series.
+            if ('type' in optionsChart ||
+                chart.propsFromSeries.some((key) => key in optionsChart)) {
+                // Parse options like chart.inverted together with the
+                // available series.
                 chart.propFromSeries();
                 updateAllAxes = true;
             }
@@ -41545,6 +41550,12 @@ extend(Chart.prototype, {
         'series'
     ],
     /**
+     * Chart properties that are set from chart options or required by series
+     * types, see `propFromSeries`. Can be extended from plugins.
+     * @internal
+     */
+    propsFromSeries: ['inverted'],
+    /**
      * These properties cause isDirtyBox to be set to true when updating. Can be
      * extended from plugins.
      * @internal
@@ -41586,7 +41597,6 @@ extend(Chart.prototype, {
      */
     propsRequireUpdateSeries: [
         'chart.inverted',
-        'chart.polar',
         'chart.ignoreHiddenSeries',
         'chart.type',
         'colors',
@@ -49663,7 +49673,7 @@ var Responsive;
 ;// ./code/es-modules/masters/highcharts.src.js
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-25)
+ * @license Highcharts JS v13.1.1-modified (2026-11-26)
  * @module highcharts/highcharts
  *
  * (c) 2009-2026 Highsoft AS
@@ -58560,7 +58570,7 @@ Pathfinder.prototype.algorithms = PathfinderAlgorithms;
 /* unused harmony import specifier */ var Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Gantt JS v13.1.1-modified (2026-11-25)
+ * @license Highcharts Gantt JS v13.1.1-modified (2026-11-26)
  * @module highcharts/modules/pathfinder
  * @requires highcharts
  *
@@ -58693,7 +58703,7 @@ function chartAdjustHeight() {
 /* unused harmony import specifier */ var static_scale_src_Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Gantt JS v13.1.1-modified (2026-11-25)
+ * @license Highcharts Gantt JS v13.1.1-modified (2026-11-26)
  * @module highcharts/modules/static-scale
  * @requires highcharts
  *
@@ -58798,7 +58808,7 @@ const XRangeSeriesDefaults = {
         }
     },
     tooltip: {
-        headerFormat: '<span style="font-size: 0.8em">{ucfirst point.x} - {point.x2}</span><br/>',
+        headerFormat: '<span style="font-size: 0.8em">{ucfirst point.key} - {point.keyEnd}</span><br/>',
         pointFormat: '<span style="color:{point.color}">\u25CF</span> {series.name}: <b>{point.yCategory}</b><br/>'
     },
     /**
@@ -58989,6 +58999,14 @@ class XRangePoint extends ColumnPoint {
      *
      * */
     /**
+     * Extend the parent function by setting an end key
+     * @internal
+     * */
+    applyKey() {
+        this.keyEnd = super.applyKey(this.x2);
+        return super.applyKey(this.x);
+    }
+    /**
      * @internal
      */
     resolveColor() {
@@ -59044,8 +59062,7 @@ class XRangePoint extends ColumnPoint {
     }
 }
 extend(XRangePoint.prototype, {
-    ttBelow: false,
-    tooltipDateKeys: ['x', 'x2']
+    ttBelow: false
 });
 /* *
  *
@@ -59063,6 +59080,12 @@ extend(XRangePoint.prototype, {
  *  API Declarations
  *
  * */
+/**
+ * The formatted ending x-value (typically date), for use in a tooltip
+ * formatter.
+ *
+ * @name Highcharts.Point#keyEnd
+ */
 /**
  * The ending X value of the range point.
  * @name Highcharts.Point#x2
@@ -59523,7 +59546,7 @@ Series_SeriesRegistry.registerSeriesType('xrange', XRangeSeries);
 /* unused harmony import specifier */ var xrange_src_Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-25)
+ * @license Highcharts JS v13.1.1-modified (2026-11-26)
  * @module highcharts/modules/xrange
  * @requires highcharts
  *
@@ -60491,7 +60514,7 @@ var BrokenAxis;
 
 
 
-const { composed: GridAxis_composed, dateFormats: GridAxis_dateFormats } = Core_Globals;
+const { composed: GridAxis_composed, dateFormats } = Core_Globals;
 
 
 /* *
@@ -61435,11 +61458,11 @@ class GridAxisAdditions {
  *
  * */
 // First letter of the day of the week, e.g. 'M' for 'Monday'.
-GridAxis_dateFormats.E = function (timestamp) {
+dateFormats.E = function (timestamp) {
     return this.dateFormat('%a', timestamp, true).charAt(0);
 };
 // Adds week date format
-GridAxis_dateFormats.W = function (timestamp) {
+dateFormats.W = function (timestamp) {
     const d = this.toParts(timestamp), firstDay = (d[7] + 6) % 7, thursday = d.slice(0);
     thursday[2] = d[2] - firstDay + 3;
     const firstThursday = this.toParts(this.makeTime(thursday[0], 0, 1));
@@ -63049,7 +63072,7 @@ Series_SeriesRegistry.registerSeriesType('gantt', GanttSeries);
 /* unused harmony import specifier */ var gantt_src_Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Gantt JS v13.1.1-modified (2026-11-25)
+ * @license Highcharts Gantt JS v13.1.1-modified (2026-11-26)
  * @module highcharts/modules/gantt
  * @requires highcharts
  *

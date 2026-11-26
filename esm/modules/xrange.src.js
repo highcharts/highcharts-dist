@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-25)
+ * @license Highcharts JS v13.1.1-modified (2026-11-26)
  * @module highcharts/modules/xrange
  * @requires highcharts
  *
@@ -140,7 +140,7 @@ const XRangeSeriesDefaults = {
         }
     },
     tooltip: {
-        headerFormat: '<span style="font-size: 0.8em">{ucfirst point.x} - {point.x2}</span><br/>',
+        headerFormat: '<span style="font-size: 0.8em">{ucfirst point.key} - {point.keyEnd}</span><br/>',
         pointFormat: '<span style="color:{point.color}">\u25CF</span> {series.name}: <b>{point.yCategory}</b><br/>'
     },
     /**
@@ -331,6 +331,14 @@ class XRangePoint extends ColumnPoint {
      *
      * */
     /**
+     * Extend the parent function by setting an end key
+     * @internal
+     * */
+    applyKey() {
+        this.keyEnd = super.applyKey(this.x2);
+        return super.applyKey(this.x);
+    }
+    /**
      * @internal
      */
     resolveColor() {
@@ -386,8 +394,7 @@ class XRangePoint extends ColumnPoint {
     }
 }
 ;(0,external_highcharts_src_js_default_namespaceObject.extend)(XRangePoint.prototype, {
-    ttBelow: false,
-    tooltipDateKeys: ['x', 'x2']
+    ttBelow: false
 });
 /* *
  *
@@ -405,6 +412,12 @@ class XRangePoint extends ColumnPoint {
  *  API Declarations
  *
  * */
+/**
+ * The formatted ending x-value (typically date), for use in a tooltip
+ * formatter.
+ *
+ * @name Highcharts.Point#keyEnd
+ */
 /**
  * The ending X value of the range point.
  * @name Highcharts.Point#x2

@@ -33,9 +33,9 @@ const HLCSeriesDefaults = {
      * The approximate pixel width of each group. If for example a series
      * with 30 points is displayed over a 600 pixel wide plot area, no
      * grouping is performed. If however the series contains so many points
-     * that the spacing is less than the groupPixelWidth, Highcharts will
+     * that the spacing is less than the `groupPixelWidth`, Highcharts will
      * try to group it into appropriate groups so that each is more or less
-     * two pixels wide. Defaults to `5`.
+     * `groupPixelWidth` pixels wide. Defaults to `5`.
      *
      * @type      {number}
      * @default   5
@@ -147,9 +147,9 @@ const HLCSeriesDefaults = {
  *    series options.
  *    ```js
  *    data: [
- *        [0, 5, 6, 7],
- *        [1, 4, 8, 2],
- *        [2, 3, 4, 10]
+ *        [0, 7, 2, 6],
+ *        [1, 8, 4, 5],
+ *        [2, 9, 3, 8]
  *    ]
  *    ```
  *
@@ -161,16 +161,16 @@ const HLCSeriesDefaults = {
  *    ```js
  *    data: [{
  *        x: 1,
- *        high: 4,
- *        low: 5,
- *        close: 2,
+ *        high: 9,
+ *        low: 2,
+ *        close: 7,
  *        name: "Point2",
  *        color: "#00FF00"
  *    }, {
  *        x: 1,
- *        high: 3,
- *        low: 6,
- *        close: 7,
+ *        high: 8,
+ *        low: 4,
+ *        close: 5,
  *        name: "Point1",
  *        color: "#FF00FF"
  *    }]

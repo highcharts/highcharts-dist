@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Gantt JS v13.1.1-modified (2026-11-25)
+ * @license Highcharts Gantt JS v13.1.1-modified (2026-11-26)
  * @module highcharts/modules/gantt
  * @requires highcharts
  *
@@ -9854,7 +9854,7 @@ Pathfinder.prototype.algorithms = PathfinderAlgorithms;
 /* unused harmony import specifier */ var Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Gantt JS v13.1.1-modified (2026-11-25)
+ * @license Highcharts Gantt JS v13.1.1-modified (2026-11-26)
  * @module highcharts/modules/pathfinder
  * @requires highcharts
  *
@@ -9987,7 +9987,7 @@ function chartAdjustHeight() {
 /* unused harmony import specifier */ var static_scale_src_Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts Gantt JS v13.1.1-modified (2026-11-25)
+ * @license Highcharts Gantt JS v13.1.1-modified (2026-11-26)
  * @module highcharts/modules/static-scale
  * @requires highcharts
  *
@@ -10098,7 +10098,7 @@ const XRangeSeriesDefaults = {
         }
     },
     tooltip: {
-        headerFormat: '<span style="font-size: 0.8em">{ucfirst point.x} - {point.x2}</span><br/>',
+        headerFormat: '<span style="font-size: 0.8em">{ucfirst point.key} - {point.keyEnd}</span><br/>',
         pointFormat: '<span style="color:{point.color}">\u25CF</span> {series.name}: <b>{point.yCategory}</b><br/>'
     },
     /**
@@ -10289,6 +10289,14 @@ class XRangePoint extends ColumnPoint {
      *
      * */
     /**
+     * Extend the parent function by setting an end key
+     * @internal
+     * */
+    applyKey() {
+        this.keyEnd = super.applyKey(this.x2);
+        return super.applyKey(this.x);
+    }
+    /**
      * @internal
      */
     resolveColor() {
@@ -10344,8 +10352,7 @@ class XRangePoint extends ColumnPoint {
     }
 }
 ;(0,highcharts_commonjs_highcharts_commonjs2_highcharts_root_Highcharts_.extend)(XRangePoint.prototype, {
-    ttBelow: false,
-    tooltipDateKeys: ['x', 'x2']
+    ttBelow: false
 });
 /* *
  *
@@ -10363,6 +10370,12 @@ class XRangePoint extends ColumnPoint {
  *  API Declarations
  *
  * */
+/**
+ * The formatted ending x-value (typically date), for use in a tooltip
+ * formatter.
+ *
+ * @name Highcharts.Point#keyEnd
+ */
 /**
  * The ending X value of the range point.
  * @name Highcharts.Point#x2
@@ -10823,7 +10836,7 @@ highcharts_SeriesRegistry_commonjs_highcharts_SeriesRegistry_commonjs2_highchart
 /* unused harmony import specifier */ var xrange_src_Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-25)
+ * @license Highcharts JS v13.1.1-modified (2026-11-26)
  * @module highcharts/modules/xrange
  * @requires highcharts
  *

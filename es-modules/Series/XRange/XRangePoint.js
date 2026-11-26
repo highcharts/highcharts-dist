@@ -62,6 +62,14 @@ class XRangePoint extends ColumnPoint {
      *
      * */
     /**
+     * Extend the parent function by setting an end key
+     * @internal
+     * */
+    applyKey() {
+        this.keyEnd = super.applyKey(this.x2);
+        return super.applyKey(this.x);
+    }
+    /**
      * @internal
      */
     resolveColor() {
@@ -117,8 +125,7 @@ class XRangePoint extends ColumnPoint {
     }
 }
 extend(XRangePoint.prototype, {
-    ttBelow: false,
-    tooltipDateKeys: ['x', 'x2']
+    ttBelow: false
 });
 /* *
  *
@@ -136,6 +143,12 @@ export default XRangePoint;
  *  API Declarations
  *
  * */
+/**
+ * The formatted ending x-value (typically date), for use in a tooltip
+ * formatter.
+ *
+ * @name Highcharts.Point#keyEnd
+ */
 /**
  * The ending X value of the range point.
  * @name Highcharts.Point#x2

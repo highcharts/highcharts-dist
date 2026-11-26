@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.1.1-modified (2026-11-25)
+ * @license Highstock JS v13.1.1-modified (2026-11-26)
  * @module highcharts/modules/datagrouping
  * @requires highcharts
  *
@@ -23,5 +23,5 @@ G.dataGrouping.approximationDefaults = (G.dataGrouping.approximationDefaults ||
     ApproximationDefaults);
 G.dataGrouping.approximations = (G.dataGrouping.approximations ||
     ApproximationRegistry);
-DataGrouping.compose(G.Axis, G.Series, G.Tooltip);
+DataGrouping.compose(G.Axis, G.Series);
 export default Highcharts;
