@@ -1,5 +1,5 @@
 let t;/**
- * Highstock JS v13.1.1-modified (2026-11-26)
+ * Highstock JS v13.1.1-modified (2026-11-27)
  * @module highcharts/modules/datagrouping
  * @requires highcharts
  *

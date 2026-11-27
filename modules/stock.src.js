@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.1.1-modified (2026-11-26)
+ * @license Highstock JS v13.1.1-modified (2026-11-27)
  * @module highcharts/modules/stock
  * @requires highcharts
  *
@@ -13020,7 +13020,7 @@ var BrokenAxis;
 /* unused harmony import specifier */ var Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-26)
+ * @license Highcharts JS v13.1.1-modified (2026-11-27)
  * @module highcharts/modules/broken-axis
  * @requires highcharts
  *
@@ -14668,7 +14668,7 @@ const DataGroupingComposition = {
 /* unused harmony import specifier */ var datagrouping_src_Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highstock JS v13.1.1-modified (2026-11-26)
+ * @license Highstock JS v13.1.1-modified (2026-11-27)
  * @module highcharts/modules/datagrouping
  * @requires highcharts
  *
@@ -15029,7 +15029,7 @@ const MouseWheelZoomComposition = {
 /* unused harmony import specifier */ var mouse_wheel_zoom_src_Highcharts;
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-26)
+ * @license Highcharts JS v13.1.1-modified (2026-11-27)
  * @module highcharts/modules/mouse-wheel-zoom
  * @requires highcharts
  *

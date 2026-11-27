@@ -1,5 +1,5 @@
 !/**
- * Highcharts JS v13.1.1-modified (2026-11-26)
+ * Highcharts JS v13.1.1-modified (2026-11-27)
  * @module highcharts/themes/sunset
  * @requires highcharts
  *

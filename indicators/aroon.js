@@ -1,5 +1,5 @@
 !/**
- * Highstock JS v13.1.1-modified (2026-11-26)
+ * Highstock JS v13.1.1-modified (2026-11-27)
  * @module highcharts/indicators/aroon
  * @requires highcharts
  * @requires highcharts/modules/stock
