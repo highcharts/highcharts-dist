@@ -1,5 +1,5 @@
 let t;/**
- * Highcharts JS v13.1.1-modified (2026-11-27)
+ * Highcharts JS v13.1.1-modified (2026-11-28)
  * @module highcharts/modules/navigator
  * @requires highcharts
  *

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LicenseRef-Highcharts
 /**
- * @license Highcharts JS v13.1.1-modified (2026-11-27)
+ * @license Highcharts JS v13.1.1-modified (2026-11-28)
  * @module highcharts/modules/color-axis
  * @requires highcharts
  *
